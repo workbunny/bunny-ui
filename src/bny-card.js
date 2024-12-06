@@ -1,7 +1,7 @@
 import htmx from "./htmx"
 
+// 拓展-卡片
 (function () {
-    // 拓展
     htmx.defineExtension("bny-card", {
         onEvent: function (name, evt) {
             if (name === "htmx:beforeSwap") {

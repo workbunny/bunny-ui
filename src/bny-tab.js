@@ -1,6 +1,7 @@
 import htmx from "./htmx"
 import tool from "./tool"
 
+// 拓展-选项卡
 (function () {
     /**
      * 获取顶级标签
@@ -17,7 +18,6 @@ import tool from "./tool"
         }
         return null
     }
-    // 拓展
     htmx.defineExtension("bny-tab", {
         onEvent: function (name, evt) {
             const elem = evt.target
