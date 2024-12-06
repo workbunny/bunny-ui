@@ -26,16 +26,17 @@
             <i class="icon icon-yueliang"></i>
         </button>
     </p>
-    <div id="tab-demo" class="bny-tab" selected="2" hx-ext="bny-tab">
-        <div class="bny-tab-title">
-            <button class="bny-tab-item" hx-get="/doc/color.html">颜色</button>
-            <button class="bny-tab-item" hx-get="/doc/btn.html">按钮</button>
-            <button class="bny-tab-item" hx-get="/doc/form.html">表单</button>
-        </div>
-        <div class="bny-tab-body" hx-trigger="load">
-            <div></div>
-            <div></div>
-            <div></div>
+    <div class="container bny-card">
+        <div class="bny-card-body">
+            <div id="tab-demo" class="bny-tab" selected="3" hx-ext="bny-tab">
+                <div class="bny-tab-title">
+                    <div class="bny-tab-item" hx-get="/doc/color.html">颜色</div>
+                    <div class="bny-tab-item" hx-get="/doc/btn.html">按钮</div>
+                    <div class="bny-tab-item" hx-get="/doc/form.html">表单</div>
+                    <div class="bny-tab-item" hx-get="/doc/card.html">卡片</div>
+                </div>
+                <div class="bny-tab-body" hx-trigger="load"></div>
+            </div>
         </div>
     </div>
     <script>
@@ -49,6 +50,9 @@
                 document.querySelector("html").setAttribute("class", "")
             }
         })
+    </script>
+    <script>
+
     </script>
 </body>
 

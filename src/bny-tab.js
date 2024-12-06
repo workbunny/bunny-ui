@@ -1,5 +1,5 @@
 import htmx from "./htmx"
-import tool from "./tool";
+import tool from "./tool"
 
 (function () {
     /**
@@ -21,11 +21,13 @@ import tool from "./tool";
     htmx.defineExtension("bny-tab", {
         onEvent: function (name, evt) {
             const elem = evt.target
-            const id = elem.id
             if (name === "htmx:beforeProcessNode") {
                 if (elem.classList.contains("bny-tab")) {
                     const items = htmx.findAll(".bny-tab-item", elem)
+                    const tab_body = htmx.find(".bny-tab-body", elem)
                     items.forEach((item, index) => {
+                        let div = document.createElement("div")
+                        tab_body.append(div)
                         htmx.on(item, "click", function (e) {
                             htmx.find(elem, ".bny-tab-body .this")?.classList.remove("this")
                             const body = htmx.find(elem, `.bny-tab-body>div:nth-child(${index + 1})`)
@@ -48,6 +50,7 @@ import tool from "./tool";
                     const index = tool.indexOf(elem)
                     const body = htmx.find(getTopParent(elem), `.bny-tab-body>div:nth-child(${index + 1})`)
                     body.innerHTML = evt.detail.serverResponse
+                    htmx.process(body)
                     return false
                 }
             }

@@ -1,0 +1,60 @@
+<div>
+    <div class="bny-card" style="width: 20rem;">
+        <img src="https://picsum.photos/768" alt="Card example image">
+        <div class="bny-card-body">
+            <h4 class="bny-card-title">欢迎光临兔子卡片！</h4>
+            <h5 class="bny-card-subtitle">奈斯小标题。</h5>
+            <p class="bny-card-text">注意，本例中的卡片宽度已设置为20rem，否则它将尝试填充卡片所在的当前容器/行。</p>
+            <button class="bny-btn">让我去这里！</button>
+        </div>
+    </div>
+    <br>
+    <div class="bny-card" style="width: 20rem;">
+        <div class="bny-card-body">
+            <h4 class="bny-card-title">欢迎光临兔子卡片！</h4>
+            <h5 class="bny-card-subtitle">奈斯小标题。</h5>
+            <p class="bny-card-text">注意，本例中的卡片宽度已设置为20rem，否则它将尝试填充卡片所在的当前容器/行。</p>
+            <button class="bny-btn">让我去这里！</button>
+        </div>
+        <img class="image-bottom" src="https://unsplash.it/550/250" alt="Card example image">
+    </div>
+    <br>
+    <div class="bny-card" style="width: 20rem;">
+        <div class="bny-card-body">
+            <h4 class="bny-card-title">欢迎光临兔子卡片！</h4>
+            <h5 class="bny-card-subtitle">奈斯小标题。</h5>
+            <p class="bny-card-text">注意，本例中的卡片宽度已设置为20rem，否则它将尝试填充卡片所在的当前容器/行。</p>
+            <a class="bny-card-link" href="#">第一link</a>
+            <a class="bny-card-link" href="#">第二link</a>
+        </div>
+    </div>
+    <br>
+    <div class="bny-card" style="width: 20rem;">
+        <div class="bny-card-header">
+            头部
+        </div>
+        <div class="bny-card-body">
+            <h4 class="bny-card-title">欢迎光临兔子卡片！</h4>
+            <h5 class="bny-card-subtitle">奈斯小标题。</h5>
+            <p class="bny-card-text">注意，本例中的卡片宽度已设置为20rem，否则它将尝试填充卡片所在的当前容器/行。</p>
+            <button class="bny-btn">让我去这里！</button>
+        </div>
+        <div class="bny-card-footer">
+            底部
+        </div>
+    </div>
+    <br>
+
+    <p>htmx ext</p>
+    <div style="width: 20rem;" hx-get="/doc/json/card/demo01.json" hx-ext="bny-card" hx-trigger="load">
+        加载中
+    </div>
+    <br>
+    <div style="width: 20rem;" hx-get="/doc/json/card/demo02.json" hx-ext="bny-card" hx-trigger="load">
+        加载中
+    </div>
+    <br>
+    <div style="width: 20rem;" hx-get="/doc/json/card/demo03.json" hx-ext="bny-card" hx-trigger="load">
+        加载中
+    </div>
+</div>
