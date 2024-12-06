@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>bunny-ui</title>
+    <link rel="shortcut icon" href="/dist/bunny.jpg" type="image/x-icon">
+    <link rel="stylesheet" href="/dist/bunny.css">
+    <link rel="stylesheet" href="/dist/iconfont/iconfont.css">
+    <script src="/dist/bunny.js"></script>
+</head>
+
+<body>
+    <style>
+        .bny-tab-body>div {
+            display: none;
+        }
+
+        .bny-tab-body .this {
+            display: block;
+        }
+    </style>
+    <p>
+        <button class="bny-btn" id="is_dark">
+            <i class="icon icon-yueliang"></i>
+        </button>
+    </p>
+    <div id="tab-demo" class="bny-tab" selected="2" hx-ext="bny-tab">
+        <div class="bny-tab-title">
+            <button class="bny-tab-item" hx-get="/doc/color.html">颜色</button>
+            <button class="bny-tab-item" hx-get="/doc/btn.html">按钮</button>
+            <button class="bny-tab-item" hx-get="/doc/form.html">表单</button>
+        </div>
+        <div class="bny-tab-body" hx-trigger="load">
+            <div></div>
+            <div></div>
+            <div></div>
+        </div>
+    </div>
+    <script>
+        htmx.on("#is_dark", "click", function () {
+            let find = htmx.find("i", this)
+            if (find.getAttribute("class") == "icon icon-yueliang") {
+                find.setAttribute("class", "icon icon-taiyang")
+                document.querySelector("html").setAttribute("class", "dark")
+            } else {
+                find.setAttribute("class", "icon icon-yueliang")
+                document.querySelector("html").setAttribute("class", "")
+            }
+        })
+    </script>
+</body>
+
+</html>
