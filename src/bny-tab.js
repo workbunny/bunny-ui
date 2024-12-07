@@ -3,59 +3,70 @@ import tool from "./tool"
 
 // 拓展-选项卡
 (function () {
-    /**
-     * 获取顶级标签
-     * @param {object} elem 标签对象
-     * @returns object|null
-     */
-    function getTopParent(elem) {
-        let current = elem
-        while (current.parentNode) {
-            current = current.parentNode
-            if (current.classList.contains("bny-tab")) {
-                return current
-            }
+    
+    function beforeProcessNode(evt) {
+        const elem = evt.target
+        if (evt.target.classList.contains("bny-tab")) {
+            let items = htmx.findAll(".bny-tab-item", elem)
+            items.forEach((item) => {
+                htmx.on(item, "click", function () {
+                    const index = tool.indexOf(this)
+                    const parent = this.parentNode.parentNode
+                    const body = htmx.find(parent, `.bny-tab-body>div:nth-child(${index + 1})`)
+                    htmx.find(parent, ".bny-tab-title .this")?.classList.remove("this")
+                    htmx.find(parent, ".bny-tab-body .this")?.classList.remove("this")
+                    htmx.addClass(this, "this")
+                    htmx.addClass(body, "this")
+                })
+            });
+            return false
         }
-        return null
+        return true
     }
+
+    function afterProcessNode(evt) {
+        const elem = evt.target
+        if (elem.classList.contains("bny-tab-body")) {
+            const num = htmx.findAll(elem.parentNode, ".bny-tab-title .bny-tab-item").length
+            const then_num = htmx.findAll(elem, "div").length
+            if ((num - then_num) > 0) {
+                for (let i = 0; i < (num - then_num); i++) {
+                    const div = document.createElement("div")
+                    elem.append(div)
+                }
+            }
+            let parent = elem.parentNode
+            const selected = parent.getAttribute("selected") ?? 0
+            const default_item = htmx.find(parent,
+                `.bny-tab-title .bny-tab-item:nth-child(${Number(selected) + 1})`)
+            default_item.click()
+        }
+    }
+
+    function beforeSwap(evt) {
+        const elem = evt.target
+        if (elem.classList.contains("bny-tab-item")) {
+            const index = tool.indexOf(elem)
+            const body = htmx.find(elem.parentNode.parentNode, `.bny-tab-body>div:nth-child(${index + 1})`)
+            // body.innerHTML = evt.detail.serverResponse
+            htmx.swap(body, evt.detail.serverResponse, { swapStyle: "innerHTML" })
+            // htmx.process(body)
+        }
+    }
+
     htmx.defineExtension("bny-tab", {
         onEvent: function (name, evt) {
-            const elem = evt.target
+            // console.log(name, evt)
             if (name === "htmx:beforeProcessNode") {
-                if (elem.classList.contains("bny-tab")) {
-                    const items = htmx.findAll(".bny-tab-item", elem)
-                    const tab_body = htmx.find(".bny-tab-body", elem)
-                    items.forEach((item) => {
-                        let div = document.createElement("div")
-                        tab_body.append(div)
-                        htmx.on(item, "click", function () {
-                            const index = tool.indexOf(this)
-                            htmx.find(elem, ".bny-tab-title .this")?.classList.remove("this")
-                            htmx.find(elem, ".bny-tab-body .this")?.classList.remove("this")
-                            htmx.addClass(this, "this")
-                            const body = htmx.find(elem, `.bny-tab-body>div:nth-child(${index + 1})`)
-                            htmx.addClass(body, "this")
-                        })
-                    });
-                }
+                return beforeProcessNode(evt)
             }
             if (name === "htmx:afterProcessNode") {
-                if (elem.classList.contains("bny-tab-body")) {
-                    let parent = getTopParent(elem)
-                    const selected = parent.getAttribute("selected") ?? 0
-                    const default_item = htmx.find(parent,
-                        `.bny-tab-title .bny-tab-item:nth-child(${Number(selected) + 1})`)
-                    default_item.click()
-                }
+                afterProcessNode(evt)
+                return false
             }
             if (name === "htmx:beforeSwap") {
-                if (elem.classList.contains("bny-tab-item")) {
-                    const index = tool.indexOf(elem)
-                    const body = htmx.find(getTopParent(elem), `.bny-tab-body>div:nth-child(${index + 1})`)
-                    body.innerHTML = evt.detail.serverResponse
-                    htmx.process(body)
-                    return false
-                }
+                beforeSwap(evt)
+                return false
             }
         }
     })
