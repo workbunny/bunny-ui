@@ -25,11 +25,14 @@ import tool from "./tool"
                 if (elem.classList.contains("bny-tab")) {
                     const items = htmx.findAll(".bny-tab-item", elem)
                     const tab_body = htmx.find(".bny-tab-body", elem)
-                    items.forEach((item, index) => {
+                    items.forEach((item) => {
                         let div = document.createElement("div")
                         tab_body.append(div)
-                        htmx.on(item, "click", function (e) {
+                        htmx.on(item, "click", function () {
+                            const index = tool.indexOf(this)
+                            htmx.find(elem, ".bny-tab-title .this")?.classList.remove("this")
                             htmx.find(elem, ".bny-tab-body .this")?.classList.remove("this")
+                            htmx.addClass(this, "this")
                             const body = htmx.find(elem, `.bny-tab-body>div:nth-child(${index + 1})`)
                             htmx.addClass(body, "this")
                         })

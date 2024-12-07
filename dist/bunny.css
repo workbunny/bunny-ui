@@ -1,7 +1,7 @@
 /* 颜色 */
 html {
     /* 默认 */
-    --primary: #303133;
+    --primary: #3c3b39;
     /* 通用 */
     --secondary: #0b74d5;
     /* 成功 */
@@ -22,7 +22,7 @@ html {
     --black-light: #23292e;
 
     /* 默认-10 */
-    --primary-10: #303133e0;
+    --primary-10: #3c3b39e0;
     /* 通用-10 */
     --secondary-10: #0b74d5e0;
     /* 成功-10 */
@@ -43,7 +43,7 @@ html {
     --back-light-10: #23292ee0;
 
     /* 默认-40 */
-    --primary-40: #303133b0;
+    --primary-40: #3c3b39b0;
     /* 通用-40 */
     --secondary-40: #0b74d5b0;
     /* 成功-40 */
@@ -80,15 +80,15 @@ html {
 /* 暗黑 */
 html.dark {
     --primary: #FAFAFA;
-    --white: #23292e;
+    --white: #3c3b39;
     --black: #FAFAFA;
 
     --primary-10: #FAFAFAe0;
-    --white-10: #23292ee0;
+    --white-10: #3c3b39e0;
     --black-10: #FAFAFAe0;
 
     --primary-40: #FAFAFAb0;
-    --white-40: #23292eb0;
+    --white-40: #3c3b39b0;
     --black-40: #FAFAFAb0;
 
     --body-bg: #2f363c;
@@ -99,6 +99,7 @@ body {
     background-color: var(--body-bg);
     color: var(--primary);
     font-size: var(--font-size);
+    font-family: "Microsoft YaHei";
 }
 
 
@@ -144,12 +145,6 @@ body {
     margin: 0 auto;
 }
 
-body {
-    font-family: "Microsoft YaHei";
-    font-size: 14px;
-    color: #333;
-}
-
 h1,
 h2,
 h3,
@@ -167,6 +162,8 @@ ol {
 img {
     border: none;
     vertical-align: middle;
+    max-width: 100%;
+    max-height: 100%;
 }
 
 a {
@@ -816,6 +813,61 @@ button[disabled].bny-btn {
 
 .bny-card .bny-card-footer {
     border-top: 2px solid var(--muted-10);
+}
+
+/* 选项卡 */
+.bny-tab {
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+}
+
+.bny-tab .bny-tab-title {
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: center;
+    width: 100%;
+    border: 2px solid var(--primary);
+}
+
+.bny-tab .bny-tab-title .bny-tab-item {
+    position: relative;
+    line-height: 40px;
+    min-width: 65px;
+    margin: 0;
+    padding: 0 15px;
+    text-align: center;
+    cursor: pointer;
+    display: inline-block;
+    vertical-align: middle;
+    color: var(--primary);
+}
+
+.bny-tab .bny-tab-title .bny-tab-item:hover {
+    background-color: var(--primary-10);
+    color: var(--white-10);
+}
+
+.bny-tab .bny-tab-title .bny-tab-item:active {
+    background-color: var(--primary-40);
+    color: var(--white-40);
+}
+
+.bny-tab .bny-tab-title .this {
+    background-color: var(--primary);
+    color: var(--white);
+}
+
+.bny-tab .bny-tab-body {
+    padding: 15px 0;
+}
+
+.bny-tab .bny-tab-body>div {
+    display: none;
+}
+
+.bny-tab .bny-tab-body .this {
+    display: block;
 }
 
 /* 布局 */

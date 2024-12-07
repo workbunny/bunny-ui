@@ -33,7 +33,7 @@ import htmx from "./htmx"
                 } else {
                     evt.detail.elt.innerHTML = `<div class="bny-card">加载失败...</div>`
                 }
-                console.log(evt.detail)
+                // console.log(evt.detail)
                 return false
             }
         }
