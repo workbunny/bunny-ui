@@ -752,7 +752,8 @@ button[disabled].bny-btn {
 }
 
 .bny-checkbox input[type="checkbox"]:checked+span::before {
-    content: "√";
+    /* content: "√"; */
+    background-color: var(--muted);
 }
 
 /* 卡片 */
