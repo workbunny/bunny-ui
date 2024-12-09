@@ -1,7 +1,7 @@
 <div align="center">
 
 <a href="https://workbunny.github.io/bunny-ui/">
-  <img src="dist/bunny.jpg" width="81" alt="bunny">
+  <img src="/dist/bunny.jpg" width="81" alt="bunny">
 </a>
 
 </div>
