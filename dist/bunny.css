@@ -224,6 +224,7 @@ h6 {
     text-align: center;
     transition: var(--transition);
     box-shadow: var(--box-shadow);
+    margin-bottom: 8px;
 }
 
 a.bny-btn {
