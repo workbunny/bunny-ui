@@ -1,10 +1,8 @@
-<div align="center">
+<p align="center"><img width="260px" src="https://chaz6chez.cn/images/workbunny-logo.png" alt="workbunny"></p>
 
-<a href="https://workbunny.github.io/bunny-ui/">
-  <img src="/dist/bunny.jpg" width="81" alt="bunny">
-</a>
+**<p align="center">workbunny/bunny-ui</p>**
 
-</div>
+**<p align="center">🐇 HTMX 拓展 Web UI 组件库. 🐇</p>**
 
 # [Bunny-UI](https://workbunny.github.io/bunny-ui/)
 
