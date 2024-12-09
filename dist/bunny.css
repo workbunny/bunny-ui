@@ -828,6 +828,7 @@ button[disabled].bny-btn {
     align-items: center;
     width: 100%;
     border: 2px solid var(--primary);
+    flex-wrap: wrap;
 }
 
 .bny-tab .bny-tab-title .bny-tab-item {
@@ -896,6 +897,99 @@ button[disabled].bny-btn {
     padding: initial;
     white-space: pre;
 }
+
+/* 提示tips */
+/* [tips-top],
+[tips-right],
+[tips-bottom],
+[tips-left] {
+    margin: 24px;
+    position: relative;
+}
+
+[tips-top]:hover::after,
+[tips-right]:hover::after,
+[tips-bottom]:hover::after,
+[tips-left]:hover::after {
+    opacity: 1;
+    transition: opacity 235ms ease-in-out, visibility 0s linear;
+    visibility: visible;
+}
+
+[tips-top]::after,
+[tips-right]::after,
+[tips-bottom]::after,
+[tips-left]::after {
+    background-color: var(--black-40);
+    border-color: var(--primary-40);
+    color: var(--white-10);
+    border-style: solid;
+    border-width: 2px;
+    font-size: 0.7em;
+    left: 50%;
+    min-width: 80px;
+    opacity: 0;
+    padding: 4px 2px;
+    position: absolute;
+    text-align: center;
+    top: -6px;
+    transform: translateX(-50%) translateY(-100%);
+    transition: opacity 235ms ease-in-out, visibility 0s linear 235ms;
+    visibility: hidden;
+    border-radius: 4px;
+}
+
+[tips-top]::before {
+    left: 50%;
+}
+
+[tips-top]::after {
+    content: attr(tips-top)!important;
+    left: 50%;
+}
+
+[tips-bottom]::before {
+    margin-top: 8px;
+    top: 100%;
+    transform: translateX(-50%) translatey(-100%) rotate(-180deg);
+}
+
+[tips-bottom]::after {
+    content: attr(tips-bottom);
+    margin-top: 8px;
+    top: 100%;
+    transform: translateX(-50%) translateY(0%);
+}
+
+[tips-left]::before {
+    left: 0;
+    margin-left: -12px;
+    top: 50%;
+    transform: translateY(-50%) rotate(-90deg);
+}
+
+[tips-left]::after {
+    content: attr(tips-left);
+    left: 0;
+    margin-left: -8px;
+    top: 50%;
+    transform: translateX(-100%) translateY(-50%);
+}
+
+[tips-right]::before {
+    left: 100%;
+    margin-left: 1px;
+    top: 50%;
+    transform: translatey(-50%) rotate(90deg);
+}
+
+[tips-right]::after {
+    content: attr(tips-right);
+    left: 100%;
+    margin-left: 8px;
+    top: 50%;
+    transform: translateX(0%) translateY(-50%);
+} */
 
 /* 布局 */
 .row {
