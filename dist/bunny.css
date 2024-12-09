@@ -870,6 +870,33 @@ button[disabled].bny-btn {
     display: block;
 }
 
+/* 代码code */
+.bny-code {
+    font-family: monospace, monospace;
+    color: var(--primary);
+    background-color: var(--white);
+    border-color: var(--muted);
+    border-radius: 3px;
+    border-style: solid;
+    border-width: 1px;
+    display: block;
+    line-height: 1.5;
+    overflow-x: auto;
+    padding: 1rem;
+    white-space: pre;
+    word-break: break-all;
+    word-wrap: break-word;
+}
+
+.bny-code code {
+    color: var(--primary);
+    background: transparent;
+    display: block;
+    font-size: inherit;
+    padding: initial;
+    white-space: pre;
+}
+
 /* 布局 */
 .row {
     display: flex;

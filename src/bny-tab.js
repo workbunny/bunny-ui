@@ -48,9 +48,7 @@ import tool from "./tool"
         if (elem.classList.contains("bny-tab-item")) {
             const index = tool.indexOf(elem)
             const body = htmx.find(elem.parentNode.parentNode, `.bny-tab-body>div:nth-child(${index + 1})`)
-            // body.innerHTML = evt.detail.serverResponse
             htmx.swap(body, evt.detail.serverResponse, { swapStyle: "innerHTML" })
-            // htmx.process(body)
         }
     }
 

@@ -9,6 +9,18 @@ let tool = {
             .prototype
             .indexOf
             .call(elem.parentNode.children, elem)
+    },
+    /**
+     * 转义HTML
+     * @param {string} str 字符串
+     * @returns string
+     */
+    escapeHTML: function (str) {
+        return str.replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;")
     }
 }
 
