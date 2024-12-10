@@ -107,8 +107,8 @@ body {
 html,
 body,
 div,
-ul,
-li,
+/* ul, */
+/* li, */
 h1,
 h2,
 h3,
@@ -119,7 +119,7 @@ p,
 dl,
 dt,
 dd,
-ol,
+/* ol, */
 form,
 input,
 textarea,
@@ -1095,6 +1095,74 @@ button[disabled].bny-btn {
 
 .alert-del:hover {
     cursor: pointer;
+}
+
+/* 列表 */
+ol {
+    list-style-type: decimal;
+}
+
+ol ol {
+    list-style-type: upper-alpha;
+}
+
+ol ol ol {
+    list-style-type: upper-roman;
+}
+
+ol ol ol ol {
+    list-style-type: lower-alpha;
+}
+
+ol ol ol ol ol {
+    list-style-type: lower-roman;
+}
+
+ul {
+    list-style: none;
+    margin-left: 0;
+}
+
+ul li::before {
+    content: "-";
+}
+
+ul li {
+    text-indent: -7px;
+}
+
+ul li .badge,
+ul li [popover-bottom]::after,
+ul li [popover-left]::after,
+ul li [popover-right]::after,
+ul li [popover-top]::after {
+    text-indent: 0;
+}
+
+ul li::before {
+    left: -7px;
+    position: relative;
+}
+
+ul ul li::before {
+    content: "+";
+}
+
+ul ul ul li::before {
+    content: "~";
+}
+
+ul ul ul ul li::before {
+    content: "⤍";
+}
+
+ul ul ul ul ul li::before {
+    content: "⁎";
+}
+
+ul.inline li {
+    display: inline;
+    margin-left: 5px;
 }
 
 /* 布局 */
