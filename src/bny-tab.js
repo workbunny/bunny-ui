@@ -3,7 +3,7 @@ import tool from "./tool"
 
 // 拓展-选项卡
 (function () {
-    
+
     function beforeProcessNode(evt) {
         const elem = evt.target
         if (evt.target.classList.contains("bny-tab")) {
@@ -13,8 +13,12 @@ import tool from "./tool"
                     const index = tool.indexOf(this)
                     const parent = this.parentNode.parentNode
                     const body = htmx.find(parent, `.bny-tab-body>div:nth-child(${index + 1})`)
-                    htmx.find(parent, ".bny-tab-title .this")?.classList.remove("this")
-                    htmx.find(parent, ".bny-tab-body .this")?.classList.remove("this")
+                    htmx.findAll(parent, ".bny-tab-title .this").forEach(function (v) {
+                        v.classList.remove("this")
+                    })
+                    htmx.findAll(parent, ".bny-tab-body .this").forEach(function (vv) {
+                        vv.classList.remove("this")
+                    })
                     htmx.addClass(this, "this")
                     htmx.addClass(body, "this")
                 })
