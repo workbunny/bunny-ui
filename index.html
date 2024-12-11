@@ -41,19 +41,48 @@
                 <div class="bny-tab-item" hx-get="doc/flexbox.html">弹性盒子</div>
                 <div class="bny-tab-item" hx-get="doc/typography.html">排版</div>
                 <div class="bny-tab-item" hx-get="doc/list.html">列表</div>
+                <div class="bny-tab-item" hx-get="doc/menu.html">菜单</div>
             </div>
             <div class="bny-tab-body" hx-trigger="load"></div>
         </div>
     </div>
     <script>
-        htmx.on("#is_dark", "click", function () {
+        // 主题切换函数
+        const changeTheme = () => {
+            document.querySelector('html').classList.toggle('dark')
+        }
+        const changeBtn = (func, $eve) => {
+            const x = $eve.clientX
+            const y = $eve.clientY
+            // 计算鼠标点击位置距离视窗的最大圆半径
+            const endRadius = Math.hypot(
+                Math.max(x, innerWidth - x),
+                Math.max(y, innerHeight - y),
+            )
+            document.documentElement.style.setProperty('--x', x + 'px')
+            document.documentElement.style.setProperty('--y', y + 'px')
+            document.documentElement.style.setProperty('--r', endRadius + 'px')
+            // 判断浏览器是否支持document.startViewTransition
+            if (document.startViewTransition) {
+                // 如果支持就使用document.startViewTransition方法
+                document.startViewTransition(() => {
+                    func.call() // 这里的函数是切换主题的函数，调用changeBtn函数时进行传入
+                })
+            } else {
+                // 如果不支持，就使用最原始的方式，切换主题
+                func.call()
+            }
+        }
+        htmx.on("#is_dark", "click", function (e) {
             let find = htmx.find("i", this)
             if (find.getAttribute("class") == "icon icon-yueliang") {
                 find.setAttribute("class", "icon icon-taiyang")
-                document.querySelector("html").setAttribute("class", "dark")
+                // document.querySelector("html").setAttribute("class", "dark")
+                changeBtn(changeTheme, e)
             } else {
                 find.setAttribute("class", "icon icon-yueliang")
-                document.querySelector("html").setAttribute("class", "")
+                // document.querySelector("html").setAttribute("class", "")
+                changeBtn(changeTheme, e)
             }
         })
     </script>

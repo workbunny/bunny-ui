@@ -94,6 +94,48 @@ html.dark {
     --body-bg: #2f363c;
 }
 
+::view-transition-old(*) {
+    animation: none;
+}
+
+::view-transition-new(*) {
+    animation: clip 0.5s ease-in;
+}
+
+::view-transition-old(root) {
+    z-index: 1;
+}
+
+::view-transition-new(root) {
+    z-index: 9999;
+}
+
+html.dark::view-transition-old(*) {
+    animation: clip 0.5s ease-in reverse;
+}
+
+html.dark::view-transition-new(*) {
+    animation: none;
+}
+
+html.dark::view-transition-old(root) {
+    z-index: 9999;
+}
+
+html.dark::view-transition-new(root) {
+    z-index: 1;
+}
+
+@keyframes clip {
+    from {
+        clip-path: circle(0% at var(--x) var(--y));
+    }
+
+    to {
+        clip-path: circle(var(--r) at var(--x) var(--y));
+    }
+}
+
 /* 默认body */
 body {
     background-color: var(--body-bg);
