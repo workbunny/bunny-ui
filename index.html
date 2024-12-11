@@ -77,11 +77,9 @@
             let find = htmx.find("i", this)
             if (find.getAttribute("class") == "icon icon-yueliang") {
                 find.setAttribute("class", "icon icon-taiyang")
-                // document.querySelector("html").setAttribute("class", "dark")
                 changeBtn(changeTheme, e)
             } else {
                 find.setAttribute("class", "icon icon-yueliang")
-                // document.querySelector("html").setAttribute("class", "")
                 changeBtn(changeTheme, e)
             }
         })
