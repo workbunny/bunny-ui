@@ -1,0 +1,23 @@
+{
+    "code": 1,
+    "data": [
+        {
+            "url": "#",
+            "icon": "icon icon-shouye",
+            "title": "首页"
+        },
+        {
+            "url": "javascript:;",
+            "icon": "icon icon-shezhi",
+            "title": "设置",
+            "children": [
+                {
+                    "url": "#",
+                    "icon": "icon icon-ziyuan",
+                    "title": "资源"
+                }
+            ]
+        }
+    ],
+    "msg": "请求成功"
+}

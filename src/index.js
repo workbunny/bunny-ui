@@ -4,5 +4,6 @@ import "./bny-card.js"
 import "./bny-code.js"
 import "./bny-marquee.js"
 import "./bny-alert.js"
+import "./bny-menu.js"
 
 window.htmx = htmx
