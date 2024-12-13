@@ -943,97 +943,62 @@ button[disabled].bny-btn {
 }
 
 /* 提示tips */
-/* [tips-top],
-[tips-right],
+[tips-top],
 [tips-bottom],
-[tips-left] {
-    margin: 24px;
+[tips-left],
+[tips-right] {
     position: relative;
+    overflow: unset;
 }
 
-[tips-top]:hover::after,
-[tips-right]:hover::after,
-[tips-bottom]:hover::after,
-[tips-left]:hover::after {
-    opacity: 1;
-    transition: opacity 235ms ease-in-out, visibility 0s linear;
-    visibility: visible;
-}
-
-[tips-top]::after,
-[tips-right]::after,
-[tips-bottom]::after,
-[tips-left]::after {
-    background-color: var(--black-40);
-    border-color: var(--primary-40);
-    color: var(--white-10);
-    border-style: solid;
-    border-width: 2px;
-    font-size: 0.7em;
-    left: 50%;
-    min-width: 80px;
-    opacity: 0;
-    padding: 4px 2px;
-    position: absolute;
-    text-align: center;
-    top: -6px;
-    transform: translateX(-50%) translateY(-100%);
-    transition: opacity 235ms ease-in-out, visibility 0s linear 235ms;
-    visibility: hidden;
-    border-radius: 4px;
-}
-
-[tips-top]::before {
-    left: 50%;
-}
-
-[tips-top]::after {
-    content: attr(tips-top)!important;
-    left: 50%;
-}
-
-[tips-bottom]::before {
-    margin-top: 8px;
-    top: 100%;
-    transform: translateX(-50%) translatey(-100%) rotate(-180deg);
-}
-
-[tips-bottom]::after {
-    content: attr(tips-bottom);
-    margin-top: 8px;
-    top: 100%;
-    transform: translateX(-50%) translateY(0%);
-}
-
-[tips-left]::before {
-    left: 0;
-    margin-left: -12px;
-    top: 50%;
-    transform: translateY(-50%) rotate(-90deg);
-}
-
-[tips-left]::after {
-    content: attr(tips-left);
-    left: 0;
-    margin-left: -8px;
-    top: 50%;
-    transform: translateX(-100%) translateY(-50%);
-}
-
+[tips-top]::before,
+[tips-bottom]::before,
+[tips-left]::before,
 [tips-right]::before {
-    left: 100%;
-    margin-left: 1px;
-    top: 50%;
-    transform: translatey(-50%) rotate(90deg);
+    content: "";
+    position: absolute;
+    background-color: var(--muted);
+    color: var(--white-ligth);
+    border-radius: 4px;
+    white-space: nowrap;
+    /* 确保文本不会换行 */
+    z-index: 999;
 }
 
-[tips-right]::after {
-    content: attr(tips-right);
-    left: 100%;
-    margin-left: 8px;
+[tips-top]:hover:before,
+[tips-bottom]:hover::before,
+[tips-left]:hover::before,
+[tips-right]:hover::before {
+    padding: 5px 10px;
+}
+
+[tips-top]:hover:before {
+    content: attr(tips-top);
+    bottom: 125%;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+[tips-bottom]:hover:before {
+    content: attr(tips-bottom);
+    top: 125%;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+[tips-left]:hover:before {
+    content: attr(tips-left);
     top: 50%;
-    transform: translateX(0%) translateY(-50%);
-} */
+    right: 125%;
+    transform: translateY(-50%);
+}
+
+[tips-right]:hover:before {
+    content: attr(tips-right);
+    top: 50%;
+    left: 125%;
+    transform: translateY(-50%);
+}
 
 /* 走马灯 */
 .bny-marquee {
