@@ -1205,6 +1205,64 @@ menu.bny-menu[vertical] li:hover>menu {
     transform: translateX(0);
 }
 
+/* 引用 */
+blockquote {
+    margin: 0;
+    margin-bottom: 10px;
+    padding: 12px;
+    line-height: 1.8;
+    border: 2px solid var(--muted);
+    border-left: 5px solid var(--primary);
+    background-color: var(--muted);
+    color: var(--primary);
+}
+
+blockquote[type="border"] {
+    border: 2px solid var(--primary);
+    border-left-width: 5px;
+    background-color: var(--white);
+}
+
+/* 字段集 */
+fieldset.bny-fieldset {
+    border-color: var(--muted);
+    margin-bottom: 10px;
+    padding: 0;
+    border-width: 1px;
+    border-style: solid;
+}
+
+fieldset legend {
+    margin-left: 20px;
+    padding: 0 10px;
+    font-size: 20px;
+    color: var(--primary);
+    line-height: 1.8;
+}
+
+fieldset.bny-fieldset .bny-fieldset-box {
+    padding: 12px;
+}
+
+fieldset.bny-fieldset-title {
+    margin: 12px 0;
+    border-width: 0;
+    border-top-width: 1px;
+    border-color: var(--muted);
+}
+
+hr {
+    height: 0;
+    line-height: 0;
+    margin: 10px 0;
+    padding: 0;
+    border: none;
+    border-bottom: 1px solid var(--muted);
+    clear: both;
+    overflow: hidden;
+    background: 0 0;
+}
+
 /* 列表 */
 ol {
     list-style-type: decimal;
