@@ -916,7 +916,7 @@ button[disabled].bny-btn {
 }
 
 /* 代码code */
-.bny-code {
+pre {
     font-family: monospace, monospace;
     color: var(--primary);
     background-color: var(--white);
@@ -933,7 +933,7 @@ button[disabled].bny-btn {
     word-wrap: break-word;
 }
 
-.bny-code code {
+pre code {
     color: var(--primary);
     background: transparent;
     display: block;

@@ -5,10 +5,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>bunny-ui</title>
+    <!-- bunny-ui -->
     <link rel="shortcut icon" href="dist/bunny.jpg" type="image/x-icon">
     <link rel="stylesheet" href="dist/bunny.css">
     <link rel="stylesheet" href="dist/iconfont/iconfont.css">
     <script src="dist/bunny.js"></script>
+    <!-- markedjs -->
+    <script src="marked.min.js"></script>
+
 </head>
 
 <body>
@@ -29,23 +33,39 @@
     <div class="container">
         <div class="bny-tab" selected="1" hx-ext="bny-tab">
             <div class="bny-tab-title shadow">
-                <div class="bny-tab-item" hx-get="doc/color.html">颜色</div>
-                <div class="bny-tab-item" hx-get="doc/btn.html">按钮</div>
-                <div class="bny-tab-item" hx-get="doc/form.html">表单</div>
-                <div class="bny-tab-item" hx-get="doc/card.html">卡片</div>
-                <div class="bny-tab-item" hx-get="doc/tab.html">选项卡</div>
-                <div class="bny-tab-item" hx-get="doc/code.html">代码</div>
-                <div class="bny-tab-item" hx-get="doc/tips.html">提示</div>
-                <div class="bny-tab-item" hx-get="doc/marquee.html">走马灯</div>
-                <div class="bny-tab-item" hx-get="doc/alert.html">警示</div>
-                <div class="bny-tab-item" hx-get="doc/flexbox.html">弹性盒子</div>
-                <div class="bny-tab-item" hx-get="doc/typography.html">排版</div>
-                <div class="bny-tab-item" hx-get="doc/list.html">列表</div>
-                <div class="bny-tab-item" hx-get="doc/menu.html">菜单</div>
-                <div class="bny-tab-item" hx-get="doc/subsidiary.html">辅助</div>
-                <div class="bny-tab-item" hx-get="doc/class.html">公共类</div>
+                <div class="bny-tab-item">颜色</div>
+                <div class="bny-tab-item">按钮</div>
+                <div class="bny-tab-item">表单</div>
+                <div class="bny-tab-item">卡片</div>
+                <div class="bny-tab-item">选项卡</div>
+                <div class="bny-tab-item">代码</div>
+                <div class="bny-tab-item">提示</div>
+                <div class="bny-tab-item">走马灯</div>
+                <div class="bny-tab-item">警示</div>
+                <div class="bny-tab-item">弹性盒子</div>
+                <div class="bny-tab-item">排版</div>
+                <div class="bny-tab-item">列表</div>
+                <div class="bny-tab-item">菜单</div>
+                <div class="bny-tab-item">辅助</div>
+                <div class="bny-tab-item">公共类</div>
             </div>
-            <div class="bny-tab-body" hx-trigger="load"></div>
+            <div class="bny-tab-body" hx-trigger="load">
+                <div class="marked" hx-get="doc/color.md" hx-trigger="load"></div>
+                <div class="marked" hx-get="doc/btn.md" hx-trigger="load"></div>
+                <div class="marked" hx-get="doc/form.md" hx-trigger="load"></div>
+                <div class="marked" hx-get="doc/card.md" hx-trigger="load"></div>
+                <div class="marked" hx-get="doc/tab.md" hx-trigger="load"></div>
+                <div class="marked" hx-get="doc/code.md" hx-trigger="load"></div>
+                <div class="marked" hx-get="doc/tips.md" hx-trigger="load"></div>
+                <div class="marked" hx-get="doc/marquee.md" hx-trigger="load"></div>
+                <div class="marked" hx-get="doc/alert.md" hx-trigger="load"></div>
+                <div class="marked" hx-get="doc/flexbox.md" hx-trigger="load"></div>
+                <div class="marked" hx-get="doc/typography.md" hx-trigger="load"></div>
+                <div class="marked" hx-get="doc/list.md" hx-trigger="load"></div>
+                <div class="marked" hx-get="doc/menu.md" hx-trigger="load"></div>
+                <div class="marked" hx-get="doc/subsidiary.md" hx-trigger="load"></div>
+                <div class="marked" hx-get="doc/class.md" hx-trigger="load"></div>
+            </div>
         </div>
     </div>
     <script>
@@ -83,6 +103,22 @@
             } else {
                 find.setAttribute("class", "icon icon-yueliang")
                 changeBtn(changeTheme, e)
+            }
+        })
+    </script>
+    <script>
+        function is_marked(elem,evt) {
+            if (evt.detail.xhr.status === 200) {
+                const marked_body = marked.parse(evt.detail.serverResponse)
+                htmx.swap(elem, marked_body, { swapStyle: "innerHTML" })
+            } else {
+                htmx.swap(elem, "网络错误...", { swapStyle: "innerHTML" })
+            }
+        }
+        htmx.on("htmx:beforeSwap", function (evt) {
+            const elem = evt.target
+            if (elem.classList.contains("marked")) {
+                is_marked(elem,evt)
             }
         })
     </script>

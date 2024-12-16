@@ -6,21 +6,22 @@ import tool from "./tool"
 
     function beforeProcessNode(evt) {
         const elem = evt.target
-        if (evt.target.classList.contains("bny-tab")) {
+        if (elem !== null && evt.target.classList.contains("bny-tab")) {
             let items = htmx.findAll(".bny-tab-item", elem)
             items.forEach((item) => {
                 htmx.on(item, "click", function () {
                     const index = tool.indexOf(this)
                     const parent = this.parentNode.parentNode
                     const body = htmx.find(parent, `.bny-tab-body>div:nth-child(${index + 1})`)
-                    htmx.findAll(parent, ".bny-tab-title .this").forEach(function (v) {
+                    htmx.findAll(parent, ".bny-tab-title .this").forEach(async function (v) {
                         v.classList.remove("this")
                     })
-                    htmx.findAll(parent, ".bny-tab-body .this").forEach(function (vv) {
+                    htmx.findAll(parent, ".bny-tab-body .this").forEach(async function (vv) {
                         vv.classList.remove("this")
                     })
                     htmx.addClass(this, "this")
                     htmx.addClass(body, "this")
+                    htmx.process(body)
                 })
             });
             return false
@@ -30,7 +31,7 @@ import tool from "./tool"
 
     function afterProcessNode(evt) {
         const elem = evt.target
-        if (elem.classList.contains("bny-tab-body")) {
+        if (elem !== null && elem.classList.contains("bny-tab-body")) {
             const num = htmx.findAll(elem.parentNode, ".bny-tab-title .bny-tab-item").length
             const then_num = htmx.findAll(elem, "div").length
             if ((num - then_num) > 0) {
@@ -49,10 +50,15 @@ import tool from "./tool"
 
     function beforeSwap(evt) {
         const elem = evt.target
-        if (elem.classList.contains("bny-tab-item")) {
+        if (elem !== null && elem.classList.contains("bny-tab-item")) {
             const index = tool.indexOf(elem)
             const body = htmx.find(elem.parentNode.parentNode, `.bny-tab-body>div:nth-child(${index + 1})`)
-            htmx.swap(body, evt.detail.serverResponse, { swapStyle: "innerHTML" })
+            if (evt.detail.xhr.status === 200) {
+                htmx.swap(body, evt.detail.serverResponse, { swapStyle: "innerHTML" })
+                // body.innerHTML = evt.detail.serverResponse
+            } else {
+                htmx.swap(body, "网络错误...", { swapStyle: "innerHTML" })
+            }
         }
     }
 
