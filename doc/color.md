@@ -111,19 +111,19 @@
     <div class="col col-3 border">
         <span>默认</span>
     </div>
-    <div class="col col-3 border-secondary">
+    <div class="col col-3 border border-secondary">
         <span>蓝色</span>
     </div>
-    <div class="col col-3 border-success">
+    <div class="col col-3 border border-success">
         <span>绿色</span>
     </div>
-    <div class="col col-3 border-warning">
+    <div class="col col-3 border border-warning">
         <span>黄色</span>
     </div>
-    <div class="col col-3 border-danger">
+    <div class="col col-3 border border-danger">
         <span>红色</span>
     </div>
-    <div class="col col-3 border-muted">
+    <div class="col col-3 border border-muted">
         <span>灰色</span>
     </div>
 </div>
@@ -135,19 +135,19 @@
     <div class="col col-3 border">
         <span>默认</span>
     </div>
-    <div class="col col-3 border-secondary">
+    <div class="col col-3 border border-secondary">
         <span>蓝色</span>
     </div>
-    <div class="col col-3 border-success">
+    <div class="col col-3 border border-success">
         <span>绿色</span>
     </div>
-    <div class="col col-3 border-warning">
+    <div class="col col-3 border border-warning">
         <span>黄色</span>
     </div>
-    <div class="col col-3 border-danger">
+    <div class="col col-3 border border-danger">
         <span>红色</span>
     </div>
-    <div class="col col-3 border-muted">
+    <div class="col col-3 border border-muted">
         <span>灰色</span>
     </div>
 </div>
