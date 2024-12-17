@@ -104,3 +104,51 @@
     </div>
 </div>
 ```
+
+#### 边框色
+
+<div class="row">
+    <div class="col col-3 border">
+        <span>默认</span>
+    </div>
+    <div class="col col-3 border-secondary">
+        <span>蓝色</span>
+    </div>
+    <div class="col col-3 border-success">
+        <span>绿色</span>
+    </div>
+    <div class="col col-3 border-warning">
+        <span>黄色</span>
+    </div>
+    <div class="col col-3 border-danger">
+        <span>红色</span>
+    </div>
+    <div class="col col-3 border-muted">
+        <span>灰色</span>
+    </div>
+</div>
+
+代码：
+
+```html
+<div class="row">
+    <div class="col col-3 border">
+        <span>默认</span>
+    </div>
+    <div class="col col-3 border-secondary">
+        <span>蓝色</span>
+    </div>
+    <div class="col col-3 border-success">
+        <span>绿色</span>
+    </div>
+    <div class="col col-3 border-warning">
+        <span>黄色</span>
+    </div>
+    <div class="col col-3 border-danger">
+        <span>红色</span>
+    </div>
+    <div class="col col-3 border-muted">
+        <span>灰色</span>
+    </div>
+</div>
+```
