@@ -1265,7 +1265,7 @@ hr {
 }
 
 /* 表格 */
-.bny-table {
+table {
     width: 100%;
     margin: 10px 0;
     background-color: var(--white);
@@ -1274,16 +1274,16 @@ hr {
 }
 
 @media only screen and (max-width: 480px) {
-    .bny-table thead tr th {
+    table thead tr th {
         padding: 2%;
     }
 
-    .bny-table tbody tr td {
+    table tbody tr td {
         padding: 2%;
     }
 }
 
-.bny-table thead tr th {
+table thead tr th {
     border: 1px solid var(--muted-40);
     line-height: 1.5;
     padding: 8px;
@@ -1291,14 +1291,14 @@ hr {
     vertical-align: bottom;
 }
 
-.bny-table tbody tr td {
+table tbody tr td {
     border: 1px solid var(--muted-40);
     line-height: 1.5;
     padding: 8px;
     vertical-align: top;
 }
 
-.bny-table tr:hover {
+table tr:hover {
     background-color: var(--muted-40);
 }
 

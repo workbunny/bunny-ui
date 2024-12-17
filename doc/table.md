@@ -1,6 +1,6 @@
 表格：
 
-<table class="bny-table">
+<table>
     <colgroup>
         <col width="150">
         <col width="150">
@@ -30,7 +30,7 @@
 代码：
 
 ```html
-<table class="bny-table">
+<table>
     <colgroup>
         <col width="150">
         <col width="150">
