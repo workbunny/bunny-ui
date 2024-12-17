@@ -12,7 +12,9 @@
     <script src="dist/bunny.js"></script>
     <!-- markedjs -->
     <script src="marked.min.js"></script>
-
+    <!-- highlightjs -->
+    <link rel="stylesheet" href="vs2015.min.css">
+    <script src="highlight.min.js"></script>
 </head>
 
 <body>
@@ -48,6 +50,7 @@
                 <div class="bny-tab-item">菜单</div>
                 <div class="bny-tab-item">辅助</div>
                 <div class="bny-tab-item">公共类</div>
+                <div class="bny-tab-item">表格</div>
             </div>
             <div class="bny-tab-body" hx-trigger="load">
                 <div class="marked" hx-get="doc/color.md" hx-trigger="load"></div>
@@ -65,6 +68,7 @@
                 <div class="marked" hx-get="doc/menu.md" hx-trigger="load"></div>
                 <div class="marked" hx-get="doc/subsidiary.md" hx-trigger="load"></div>
                 <div class="marked" hx-get="doc/class.md" hx-trigger="load"></div>
+                <div class="marked" hx-get="doc/table.md" hx-trigger="load"></div>
             </div>
         </div>
     </div>
@@ -107,10 +111,11 @@
         })
     </script>
     <script>
-        function is_marked(elem,evt) {
+        function is_marked(elem, evt) {
             if (evt.detail.xhr.status === 200) {
                 const marked_body = marked.parse(evt.detail.serverResponse)
                 htmx.swap(elem, marked_body, { swapStyle: "innerHTML" })
+                hljs.highlightAll();
             } else {
                 htmx.swap(elem, "网络错误...", { swapStyle: "innerHTML" })
             }
@@ -118,7 +123,7 @@
         htmx.on("htmx:beforeSwap", function (evt) {
             const elem = evt.target
             if (elem.classList.contains("marked")) {
-                is_marked(elem,evt)
+                is_marked(elem, evt)
             }
         })
     </script>
