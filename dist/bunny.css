@@ -1251,6 +1251,7 @@ fieldset.bny-fieldset-title {
     border-color: var(--muted);
 }
 
+/* 水平线 */
 hr {
     height: 0;
     line-height: 0;
@@ -1754,10 +1755,6 @@ ul.inline li {
 
 .tr {
     text-align: right;
-}
-
-.text-left {
-    text-align: left;
 }
 
 .clearfix {

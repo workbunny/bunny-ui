@@ -21,7 +21,10 @@ import tool from "./tool"
                     })
                     htmx.addClass(this, "this")
                     htmx.addClass(body, "this")
-                    htmx.process(body)
+                    if (!body.classList.contains("process")) {
+                        htmx.process(body)
+                        htmx.addClass(body, "process")
+                    }
                 })
             });
             return false

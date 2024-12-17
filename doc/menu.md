@@ -136,7 +136,7 @@
                 </a>
             </li>
             <li>
-                <a href="">
+                <a href="javascript:;">
                     <i class="icon icon-shezhi"></i>
                     <span>设置</span>
                 </a>
@@ -194,7 +194,7 @@
                 </a>
             </li>
             <li>
-                <a href="">
+                <a href="javascript:;">
                     <i class="icon icon-shezhi"></i>
                     <span>设置</span>
                 </a>
