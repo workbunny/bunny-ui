@@ -36,7 +36,7 @@
 <div class="bny-marquee col border" hx-ext="bny-marquee">
     <div class="bny-marquee-content">
         <div style="width: 100px;">
-            <img src="/dist/bunny.jpg" alt="logo">
+            <img src="dist/bunny.jpg" alt="logo">
         </div>
     </div>
 </div>
@@ -47,7 +47,7 @@
 <div class="bny-marquee col border" hx-ext="bny-marquee">
     <div class="bny-marquee-content">
         <div style="width: 100px;">
-            <img src="/dist/bunny.jpg" alt="logo">
+            <img src="dist/bunny.jpg" alt="logo">
         </div>
     </div>
 </div>
