@@ -8,4 +8,4 @@ import "./bny-alert.js"
 import "./bny-menu.js"
 
 window.htmx = htmx
-window.bunny = bunny
+window.bunny = new bunny
