@@ -5,7 +5,7 @@ import "./bny-card.js"
 import "./bny-code.js"
 import "./bny-marquee.js"
 import "./bny-alert.js"
-import "./bny-menu.js"
+import "./bny-confirm.js"
 
 window.htmx = htmx
 window.bunny = new bunny
