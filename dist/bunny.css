@@ -1333,6 +1333,8 @@ table tr:hover {
     z-index: 991;
 }
 
+/* 消息框 */
+
 .bny-msg {
     padding: 8px 16px;
 }
