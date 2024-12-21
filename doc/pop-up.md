@@ -5,9 +5,9 @@
 <script>
     // 确认框监听
     document.body.addEventListener("htmx:confirm", function (e) {
-        e.preventDefault()
         const text = e.target.getAttribute("hx-confirm")
         if (text !== null) {
+            e.preventDefault()
             bunny.confirm({
                 text,
                 yes: () => {
