@@ -25,4 +25,3 @@
 <button class="bny-btn" onclick="bunny.msg({text:'你好,我的样式改变了',style:'bg-success'})">style消息框</button>
 <button class="bny-btn" onclick="bunny.msg({text:'你好,我的时间更久了',time:5000})">时间消息框</button>
 ```
-
