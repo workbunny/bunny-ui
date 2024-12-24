@@ -1291,7 +1291,7 @@ hr {
 table {
     width: 100%;
     margin: 10px 0;
-    background-color: var(--white);
+    /* background-color: var(--white); */
     color: var(--primary);
     border: 1px solid var(--muted-40);
 }
@@ -1322,7 +1322,7 @@ table tbody tr td {
 }
 
 table tr:hover {
-    background-color: var(--muted-40);
+    background-color: var(--white);
 }
 
 /* 遮蔽层 */
