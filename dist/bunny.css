@@ -74,6 +74,10 @@ html {
     --box-shadow-hover: 0px 1px 1px rgba(0, 0, 0, 0.3);
     --transform-3d-010: translate3d(0, 1px, 0);
 
+    /* 圆角 */
+    --border-radius: 4px;
+    --border-radius-large: 8px;
+
     --body-bg: #fff;
 }
 
@@ -261,7 +265,7 @@ h6 {
     background-color: var(--white);
     border: 2px solid var(--primary);
     padding: 4px 11px;
-    border-radius: 8px;
+    border-radius: var(--border-radius-large);
     overflow: hidden;
     text-align: center;
     transition: var(--transition);
@@ -509,7 +513,7 @@ button[disabled].bny-btn {
     padding-left: 10px;
     background-color: var(--white);
     color: var(--black);
-    border-radius: 4px;
+    border-radius: var(--border-radius);
     height: 38px;
     line-height: 1.3;
     transition: var(--transition);
@@ -590,7 +594,7 @@ button[disabled].bny-btn {
     box-sizing: border-box;
     border: 2px solid var(--primary);
     border-right-width: 1px;
-    border-radius: 4px;
+    border-radius: var(--border-radius);
     border-top-right-radius: 0;
     border-bottom-right-radius: 0;
     background-color: var(--muted-40);
@@ -619,7 +623,7 @@ button[disabled].bny-btn {
     line-height: 20px;
     box-sizing: border-box;
     border: 2px solid var(--primary);
-    border-radius: 4px;
+    border-radius: var(--border-radius);
     background-color: var(--muted-40);
     color: var(--primary);
     border-bottom-left-radius: 0;
@@ -646,7 +650,7 @@ button[disabled].bny-btn {
     border: 2px solid var(--primary);
     color: var(--primary);
     background-color: var(--white);
-    border-radius: 4px;
+    border-radius: var(--border-radius);
     height: 38px;
     line-height: 1.3;
     padding-left: 10px;
@@ -785,7 +789,7 @@ button[disabled].bny-btn {
     height: 1rem;
     display: inline-flex;
     margin-right: 5px;
-    border-radius: 4px;
+    border-radius: var(--border-radius);
     align-items: center;
     justify-content: center;
     color: var(--primary);
@@ -887,6 +891,7 @@ button[disabled].bny-btn {
     width: 100%;
     border: 2px solid var(--primary);
     flex-wrap: wrap;
+    border-radius: var(--border-radius);
 }
 
 .bny-tab .bny-tab-title .bny-tab-item {
@@ -942,7 +947,7 @@ pre {
     font-family: monospace, monospace;
     color: var(--primary);
     background-color: var(--white);
-    border-color: var(--muted);
+    border-color: var(--primary-10);
     border-radius: 3px;
     border-style: solid;
     border-width: 1px;
@@ -982,7 +987,7 @@ pre code {
     position: absolute;
     background-color: var(--muted);
     color: var(--white-ligth);
-    border-radius: 4px;
+    border-radius: var(--border-radius);
     white-space: nowrap;
     /* 确保文本不会换行 */
     z-index: 999;
@@ -1134,7 +1139,7 @@ menu.bny-menu {
     margin: 0;
     display: flex;
     border: 2px solid var(--primary);
-    background-color: var(--muted-40);
+    background-color: var(--white);
     z-index: 999;
 }
 
@@ -1183,6 +1188,14 @@ menu.bny-menu li a {
     text-align: center;
 }
 
+menu.bny-menu li.this {
+    background-color: var(--primary);
+}
+
+menu.bny-menu li.this>a {
+    color: var(--white);
+}
+
 menu.bny-menu menu menu {
     top: 0;
     left: 100%;
@@ -1199,11 +1212,15 @@ menu.bny-menu li:hover>menu {
 
 menu.bny-menu li:hover>menu::before {
     border-style: solid;
-    background-color: var(--muted-40);
+    background-color: var(--white);
 }
 
 menu.bny-menu li:hover {
-    background-color: var(--muted);
+    background-color: var(--primary-10);
+}
+
+menu.bny-menu li:hover>a {
+    color: var(--white);
 }
 
 menu.bny-menu[vertical] {
@@ -1248,7 +1265,7 @@ blockquote[type="border"] {
 
 /* 字段集 */
 fieldset.bny-fieldset {
-    border-color: var(--muted);
+    border-color: var(--primary);
     margin-bottom: 10px;
     padding: 0;
     border-width: 1px;
@@ -1271,7 +1288,7 @@ fieldset.bny-fieldset-title {
     margin: 12px 0;
     border-width: 0;
     border-top-width: 1px;
-    border-color: var(--muted);
+    border-color: var(--primary);
 }
 
 /* 水平线 */
@@ -1281,7 +1298,7 @@ hr {
     margin: 10px 0;
     padding: 0;
     border: none;
-    border-bottom: 1px solid var(--muted);
+    border-bottom: 1px solid var(--primary);
     clear: both;
     overflow: hidden;
     background: 0 0;
@@ -1364,7 +1381,7 @@ table tr:hover {
     max-width: calc(100vw - 32px);
     border: 2px solid var(--primary);
     padding: 8px 16px;
-    border-radius: 4px;
+    border-radius: var(--border-radius);
     background-color: var(--white);
 
 }
@@ -1420,12 +1437,12 @@ table tr:hover {
 /* 面板 */
 .bny-panel {
     position: relative;
-    border-width: 1px;
+    border-width: 2px;
     border-style: solid;
     border-radius: 2px;
-    border-color: var(--muted-10);
+    border-color: var(--primary);
     box-shadow: 1px 1px 4px rgb(0 0 0 / 8%);
-    border-radius: 4px;
+    border-radius: var(--border-radius);
     overflow: hidden;
 }
 
@@ -1444,7 +1461,7 @@ table tr:hover {
     line-height: 42px;
     padding: 0 15px;
     background-color: var(--white);
-    border-bottom: 1px solid var(--muted-10);
+    border-bottom: 1px solid var(--primary-10);
     list-style: none;
 }
 
@@ -1472,13 +1489,13 @@ table tr:hover {
 }
 
 .bny-panel details[open]:last-child summary {
-    border-bottom: 1px solid var(--muted-10);
+    border-bottom: 1px solid var(--primary-10);
 }
 
 .bny-panel .bny-panel-body {
     padding: 10px 15px;
     line-height: 1.6;
-    border-bottom: 1px solid var(--muted-10);
+    border-bottom: 1px solid var(--primary-10);
 }
 
 .bny-panel details:last-child .bny-panel-body {
@@ -1487,7 +1504,7 @@ table tr:hover {
 
 /* 加载 */
 .bny-loading {
-    border: 5px solid var(--muted-10);
+    border: 5px solid var(--muted-40);
     border-top: 5px solid var(--primary);
     border-radius: 50%;
     width: 2.5em;
@@ -2138,6 +2155,7 @@ ul.inline li {
 .border {
     border: 2px solid var(--primary);
     color: var(--primary);
+    border-radius: var(--border-radius);
 }
 
 .border-secondary {
