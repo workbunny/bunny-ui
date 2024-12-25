@@ -1293,7 +1293,7 @@ table {
     margin: 10px 0;
     /* background-color: var(--white); */
     color: var(--primary);
-    border: 1px solid var(--muted-40);
+    border: 2px solid var(--primary);
 }
 
 @media only screen and (max-width: 480px) {
@@ -1307,7 +1307,7 @@ table {
 }
 
 table thead tr th {
-    border: 1px solid var(--muted-40);
+    border: 1px solid var(--primary);
     line-height: 1.5;
     padding: 8px;
     text-align: left;
@@ -1315,7 +1315,7 @@ table thead tr th {
 }
 
 table tbody tr td {
-    border: 1px solid var(--muted-40);
+    border: 1px solid var(--primary);
     line-height: 1.5;
     padding: 8px;
     vertical-align: top;
