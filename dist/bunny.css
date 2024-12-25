@@ -1311,6 +1311,7 @@ table {
     /* background-color: var(--white); */
     color: var(--primary);
     border: 2px solid var(--primary);
+    /* overflow: hidden; */
 }
 
 @media only screen and (max-width: 480px) {
@@ -1324,6 +1325,7 @@ table {
 }
 
 table thead tr th {
+    border-radius: var(--border-radius);
     border: 1px solid var(--primary);
     line-height: 1.5;
     padding: 8px;
