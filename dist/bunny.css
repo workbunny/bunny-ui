@@ -671,6 +671,11 @@ button[disabled].bny-btn {
     border-bottom-left-radius: 0;
 }
 
+[disabled].bny-select {
+    cursor: not-allowed;
+    opacity: 0.5;
+}
+
 /* 单选框 */
 .bny-radio {
     height: 38px;
