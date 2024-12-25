@@ -763,9 +763,6 @@ button[disabled].bny-btn {
     line-height: 20px;
     padding: 0 10px;
     color: var(--primary);
-    border: 2px solid var(--primary);
-    border-left-width: 0;
-    border-right-width: 0;
 }
 
 .bny-checkbox:hover {
@@ -800,6 +797,12 @@ button[disabled].bny-btn {
     border-color: var(--success-10);
 }
 
+.bny-form-pane .bny-checkbox {
+    border: 2px solid var(--primary);
+    border-left-width: 0;
+    border-right-width: 0;
+}
+
 .bny-checkbox input[type="checkbox"]:checked+span::before {
     /* content: "√"; */
     background-color: var(--muted);
@@ -814,6 +817,87 @@ button[disabled].bny-btn {
     border-right-width: 2px;
     border-top-right-radius: 4px;
     border-bottom-right-radius: 4px;
+}
+
+/* 开关 */
+.bny-switch {
+    display: inline-flex;
+    height: 38px;
+    align-items: center;
+    /* justify-content: center; */
+    line-height: 20px;
+    padding: 0 10px;
+    line-height: 38px;
+}
+
+.bny-switch:hover {
+    cursor: pointer;
+}
+
+.bny-switch>input {
+    display: none;
+}
+
+.bny-switch>.bny-switch-slider {
+    display: inline-flex;
+    width: 56px;
+    height: 24px;
+    border-radius: var(--border-radius);
+    border: 2px solid var(--primary);
+    border-radius: 20px;
+    align-items: center;
+    position: relative;
+}
+
+.bny-switch>.bny-switch-slider::before {
+    content: "";
+    width: 16px;
+    height: 16px;
+    background-color: var(--muted);
+    box-sizing: border-box;
+    border-radius: 50%;
+    margin: 0 2px;
+    transition: var(--transition);
+}
+
+.bny-switch>.bny-switch-slider>span {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    font-size: 14px;
+    padding: 0 4px;
+}
+
+.bny-switch>.bny-switch-slider>span:first-child {
+    display: none;
+}
+
+.bny-switch>input[type="checkbox"]:checked+.bny-switch-slider {
+    background-color: var(--muted);
+}
+
+.bny-switch>input[type="checkbox"]:checked+.bny-switch-slider>span:first-child {
+    display: flex;
+    justify-content: flex-start;
+    color: var(--white);
+}
+
+.bny-switch>input[type="checkbox"]:checked+.bny-switch-slider>span:last-child {
+    display: none;
+}
+
+.bny-switch>input[type="checkbox"]:checked+.bny-switch-slider::before {
+    transform: translateX(32px);
+    background-color: var(--white);
+}
+
+.bny-form-pane label:nth-child(2) {
+    border-left: 1px solid var(--primary);
 }
 
 /* 卡片 */

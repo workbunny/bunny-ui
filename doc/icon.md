@@ -27,9 +27,9 @@
         align-items: center;
         justify-content: center;
         flex-direction: column;
-        -webkit-transition: font-size 0.25s linear, width 0.25s linear;
-        -moz-transition: font-size 0.25s linear, width 0.25s linear;
-        transition: font-size 0.25s linear, width 0.25s linear;
+        -webkit-transition: font-size 0.25s linear;
+        -moz-transition: font-size 0.25s linear;
+        transition: font-size 0.25s linear;
     }
 
     .icon-list .icon-item span:hover {
