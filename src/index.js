@@ -6,6 +6,7 @@ import "./bny-code.js"
 import "./bny-marquee.js"
 import "./bny-alert.js"
 import "./bny-confirm.js"
+import "./bny-nav.js"
 
 window.htmx = htmx
 window.bunny = new bunny
