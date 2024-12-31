@@ -70,6 +70,7 @@ html {
 
     /* 其他 */
     --transition: all 235ms ease 0s;
+    --box-shadow-small: 0px 0px 5px rgba(0, 0, 0, 0.4);
     --box-shadow: 0px 5px 5px rgba(0, 0, 0, 0.2);
     --box-shadow-hover: 0px 1px 1px rgba(0, 0, 0, 0.3);
     --transform-3d-010: translate3d(0, 1px, 0);
@@ -1629,211 +1630,265 @@ table tr:hover {
     align-items: center;
     justify-content: space-between;
     font-size: var(--font-size-16);
-    box-shadow: var(--box-shadow);
+    box-shadow: var(--box-shadow-small);
     font-weight: bold;
-    height: 3.5rem;
+    height: 4rem;
 }
 
-.bny-nav-data {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.bny-nav-data .bny-nav-toggle,
-.bny-nav-data .bny-nav-brand {
+.bny-nav:not([tree]) .bny-nav-data {
+    min-width: 100px;
     padding: 0 1rem;
+    height: 100%;
 }
 
-.bny-nav-data .bny-nav-toggle:hover {
-    cursor: pointer;
+.bny-nav .bny-nav-data .bny-nav-brand {
+    display: flex;
+    height: 100%;
+    align-items: center;
+    justify-content: center;
 }
 
-.bny-nav-brand a {
-    text-decoration: none;
+.bny-nav .bny-nav-data .bny-nav-brand a {
     font-size: var(--font-size-20);
+    padding: 5px 0;
 }
 
-.bny-nav-toggle i {
-    font-size: var(--font-size-20);
+.bny-nav .bny-nav-data .bny-nav-brand a img {
+    max-width: 100%;
+    max-height: 100%;
 }
 
-.bny-nav-data .bny-nav-toggle {
+.bny-nav .bny-nav-data .bny-nav-toggle {
     display: none;
 }
 
-.bny-nav-menu {
-    display: flex;
-    list-style: none;
-    margin: 0;
-    padding: 0;
+.bny-nav .bny-nav-menu {
+    width: 100%;
     height: 100%;
 }
 
-.bny-nav-menu menu {
+.bny-nav .bny-nav-menu li {
+    list-style-type: none;
+    height: 100%;
+    position: relative;
+}
+
+.bny-nav .bny-nav-menu a {
     display: flex;
-    list-style: none;
+    height: 100%;
+    padding: 0 1rem;
+    align-items: center;
+    justify-content: space-between;
+    column-gap: 3px;
+}
+
+.bny-nav .bny-nav-dropdown {
+    position: relative;
+}
+
+.bny-nav .bny-nav-dropdown menu a {
+    padding: 1rem;
+}
+
+.bny-nav .bny-nav-menu menu {
     margin: 0;
     padding: 0;
 }
 
-.bny-nav-menu>menu {
+
+.bny-nav .add,
+.bny-nav .arrow {
+    transition: var(--transition);
+}
+
+.bny-nav .bny-nav-menu>menu {
+    display: flex;
+    width: 100%;
     height: 100%;
-    column-gap: 3.5rem;
+    align-items: center;
+    justify-content: flex-end;
     padding: 0 1rem;
 }
 
-.bny-nav-menu li {
-    position: relative;
-    list-style-type: none;
-}
-
-.bny-nav-menu li a i {
-    transition: var(--transition);
-    font-size: var(--font-size-16);
-}
-
-.bny-nav-menu a {
-    text-decoration: none;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    column-gap: 2px;
-    height: 100%;
-}
-
-.bny-nav-menu .bny-nav-dropdown>menu {
-    background-color: var(--white);
+.bny-nav .bny-nav-menu>menu menu {
     display: none;
     position: absolute;
-    top: 100%;
-    left: 0;
-    z-index: 1;
-    width: 125px;
+    background-color: var(--white);
+    box-shadow: 0 0px 1px rgba(0, 0, 0, 0.4);
     min-width: max-content;
-    box-shadow: var(--box-shadow);
+    flex-direction: column;
+    top: 100%;
 }
 
-.bny-nav-menu .bny-nav-dropdown>menu menu {
-    top: 0px;
+
+.bny-nav .bny-nav-menu>menu menu menu {
     left: 100%;
+    top: 0;
 }
 
-.bny-nav-dropdown>menu li a {
-    padding: 1rem;
-    width: 100%;
-    text-align: left;
+.bny-nav:not([tree]) .bny-nav-dropdown:hover>menu {
+    animation: menu 235ms ease-in-out;
+    display: flex;
 }
 
-.bny-nav-dropdown:hover>menu {
-    display: block;
-    animation: fadeInTo 235ms ease-in-out;
-    height: max-content;
-}
-
-.bny-nav-dropdown:hover>a .arrow {
+.bny-nav:not([tree]) .bny-nav-dropdown:hover>a i.arrow {
     transform: rotate(90deg);
 }
 
-.bny-nav-dropdown:hover>a .add {
+.bny-nav:not([tree]) .bny-nav-dropdown:hover>a i.add {
     transform: rotate(45deg);
 }
 
-@keyframes fadeInTo {
+@keyframes menu {
     from {
-        opacity: 0;
-        transform: translateY(30px);
+        transform: translateY(10px);
     }
 
     to {
-        opacity: 1;
         transform: translateY(0);
     }
 }
 
-/* 移动端样式 */
-@media (max-width: 1118px) {
+.bny-nav:not([tree]) .bny-nav-menu li:hover::before,
+.bny-nav:not([tree]) .bny-nav-menu li.this::before {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background-color: var(--primary);
+}
+
+@media only screen and (max-width: 1110px) {
+    .bny-nav .bny-nav-data .bny-nav-toggle {
+        display: flex;
+    }
+
+    .bny-nav .bny-nav-data .bny-nav-toggle .close {
+        display: none;
+    }
+
+    .bny-nav .bny-nav-data .bny-nav-toggle.show-icon .close {
+        display: block;
+    }
+
+    .bny-nav .bny-nav-data .bny-nav-toggle.show-icon .burger {
+        display: none;
+    }
+
     .bny-nav {
-        flex-wrap: wrap;
+        flex-direction: column;
         height: auto;
     }
 
-    .bny-nav-data {
+    .bny-nav:not([tree]) .bny-nav-data {
         width: 100%;
-        height: 3.5rem;
-    }
-
-    .bny-nav-data .bny-nav-toggle {
         display: flex;
-        padding: 0 1rem;
-        height: 100%;
         align-items: center;
+        justify-content: space-between;
+        height: 3.5rem;
+        box-shadow: 0 0 1px rgba(0, 0, 0, 0.4);
     }
 
-    .bny-nav-data .burger {
-        display: block;
+    .bny-nav:not([tree]) .bny-nav-data i {
+        font-size: var(--font-size-20);
     }
 
-    .bny-nav-data .close {
-        display: none;
+    .bny-nav:not([tree]) .bny-nav-menu {
+        max-height: calc(100vh - 3.5rem);
+        overflow: auto;
     }
 
-    .bny-nav-data .show-icon .close {
-        display: block;
-    }
-
-    .bny-nav-data .show-icon .burger {
-        display: none;
-    }
-
-    .bny-nav .bny-nav-menu {
-        display: none;
-    }
-
-    .bny-nav .bny-nav-menu.show-menu {
-        display: block;
-    }
-
-    .bny-nav .bny-nav-menu {
-        width: 100%;
-    }
-
-    .bny-nav .bny-nav-menu menu {
+    .bny-nav:not([tree]) .bny-nav-menu>menu {
         flex-direction: column;
-        align-items: stretch;
-        justify-content: center;
+        display: none;
     }
 
-    .bny-nav .bny-nav-menu menu a {
-        padding: 1.2rem;
+    .bny-nav:not([tree]) .bny-nav-menu.show-menu>menu {
+        display: flex;
+        animation: menu-pe-form 235ms ease-in-out;
     }
 
-    .bny-nav-dropdown:hover>menu {
-        position: unset;
-        box-shadow: none;
-        width: 100%;
-        animation: fadeInFrom 235ms ease-in-out;
-    }
-
-    .bny-nav-dropdown:hover>menu a {
-        padding-left: 2rem;
-    }
-
-    .bny-nav-dropdown:hover>a {
-        background-color: var(--muted-10);
-    }
-
-    @keyframes fadeInFrom {
+    @keyframes menu-pe-form {
         from {
-            opacity: 0;
-            transform: translateY(-10px);
+            transform: translateY(-100%);
         }
 
         to {
-            opacity: 1;
             transform: translateY(0);
         }
     }
+
+    .bny-nav:not([tree]) .bny-nav-menu>menu li {
+        width: 100%;
+    }
+
+    .bny-nav:not([tree]) .bny-nav-menu>menu a {
+        padding: 1rem;
+    }
+
+    .bny-nav:not([tree]) .bny-nav-menu>menu menu {
+        position: unset;
+        box-shadow: none;
+    }
+
+    .bny-nav:not([tree]) .bny-nav-dropdown:hover>menu {
+        background-color: var(--muted-40);
+    }
+}
+
+[tree].bny-nav {
+    flex-wrap: wrap;
+    flex-direction: column;
+    height: auto;
+}
+
+[tree].bny-nav .bny-nav-data {
+    width: 100%;
+    height: 3.6rem;
+    border-bottom: 2px solid var(--primary);
+}
+
+[tree].bny-nav .bny-nav-menu>menu {
+    flex-direction: column;
+    padding: 0;
+}
+
+[tree].bny-nav .bny-nav-menu>menu menu {
+    background-color: var(--muted-40);
+}
+
+[tree].bny-nav .bny-nav-menu menu li {
+    width: 100%;
+}
+
+[tree].bny-nav .bny-nav-menu menu li.this {
+    background-color: var(--primary);
+    color: var(--white);
+}
+
+[tree].bny-nav .bny-nav-menu menu li.this i,
+[tree].bny-nav .bny-nav-menu menu li.this a {
+    color: var(--white);
+}
+
+[tree].bny-nav .bny-nav-menu menu li>a:hover::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 2px;
+    height: 100%;
+    background-color: var(--primary);
+}
+
+[tree].bny-nav .bny-nav-menu menu a {
+    padding: 1rem;
+}
+
+[tree].bny-nav .bny-nav-menu>menu menu {
+    position: unset;
 }
 
 /* 列表 */
