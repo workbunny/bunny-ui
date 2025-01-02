@@ -14,7 +14,6 @@ import htmx from "./htmx.js"
                     var textWidth = content.offsetWidth;
                     var duration = (textWidth + containerWidth) / Number(speed); // 假设50px/s的速度
                     content.style.animationDuration = duration + 's';
-                    return false
                 }
             }
         }

@@ -68,17 +68,21 @@
     </div>
 </div>
 <script>
-    // 获取所有具有 'box' class 的元素
-    const boxes = document.querySelectorAll('#anim .box');
-    // 遍历这些元素，并为每个元素添加点击事件监听器
-    boxes.forEach(box => {
-        box.addEventListener('click', function (elem) {
-            const div = this.querySelector("div")
-            const str = this.querySelector("span").innerHTML
-            div.classList.toggle(str)
-            setTimeout(function () {
+    try {
+        // 获取所有具有 'box' class 的元素
+        const boxes = document.querySelectorAll('#anim .box');
+        // 遍历这些元素，并为每个元素添加点击事件监听器
+        boxes.forEach(box => {
+            box.addEventListener('click', function (elem) {
+                const div = this.querySelector("div")
+                const str = this.querySelector("span").innerHTML
                 div.classList.toggle(str)
-            }, 800)
+                setTimeout(function () {
+                    div.classList.toggle(str)
+                }, 800)
+            });
         });
-    });
+    } catch (error) {
+        console.log("不重要的信息", error)
+    }
 </script>
