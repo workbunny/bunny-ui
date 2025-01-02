@@ -1526,6 +1526,71 @@ table tr:hover {
     }
 }
 
+.bny-anim-rotate {
+    /* 旋转 */
+    animation: anim-spin .8s linear infinite;
+}
+
+.bny-anim-left {
+    /* 左侧滑出 */
+    animation: anim-left 235ms ease-in-out;
+}
+
+@keyframes anim-left {
+    from {
+        transform: translateX(-100%);
+    }
+
+    to {
+        transform: translateX(0);
+    }
+}
+
+.bny-anim-right {
+    /* 右侧滑出 */
+    animation: anim-right 235ms ease-in-out;
+}
+
+@keyframes anim-right {
+    from {
+        transform: translateX(100%);
+    }
+
+    to {
+        transform: translateX(0);
+    }
+}
+
+.bny-anim-up {
+    /* 顶部滑出 */
+    animation: anim-up 235ms ease-in-out;
+}
+
+@keyframes anim-up {
+    from {
+        transform: translateY(-100%);
+    }
+
+    to {
+        transform: translateY(0);
+    }
+}
+
+.bny-anim-down {
+    /* 底部滑出 */
+    animation: anim-down 235ms ease-in-out;
+}
+
+@keyframes anim-down {
+    from {
+        transform: translateY(100%);
+    }
+
+    to {
+        transform: translateY(0);
+    }
+}
+
 /* 面板 */
 .bny-panel {
     position: relative;
@@ -1601,7 +1666,7 @@ table tr:hover {
     border-radius: 50%;
     width: 2.5em;
     height: 2.5em;
-    animation: spin .8s linear infinite;
+    animation: anim-spin .8s linear infinite;
 }
 
 .bny-loading[size="small"] {
@@ -1614,7 +1679,7 @@ table tr:hover {
     height: 4.5em;
 }
 
-@keyframes spin {
+@keyframes anim-spin {
     0% {
         transform: rotate(0deg);
     }
