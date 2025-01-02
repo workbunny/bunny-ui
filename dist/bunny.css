@@ -908,7 +908,7 @@ button[disabled].bny-btn {
 
 /* 卡片 */
 .bny-card {
-    border: 2px solid var(--muted-10);
+    border: 2px solid var(--primary-10);
     transition: var(--transition);
     box-shadow: var(--box-shadow);
     box-sizing: border-box;
@@ -960,11 +960,11 @@ button[disabled].bny-btn {
 }
 
 .bny-card .bny-card-header {
-    border-bottom: 2px solid var(--muted-10);
+    border-bottom: 2px solid var(--primary-10);
 }
 
 .bny-card .bny-card-footer {
-    border-top: 2px solid var(--muted-10);
+    border-top: 2px solid var(--primary-10);
 }
 
 /* 选项卡 */
