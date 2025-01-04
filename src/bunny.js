@@ -3,7 +3,7 @@
  */
 class bunny {
     constructor() {
-        this.v = "0.0.2"
+        this.v = "0.0.3"
     }
 
     /**
