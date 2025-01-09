@@ -1938,14 +1938,13 @@ table tr:hover {
     color: var(--white);
 }
 
-[tree].bny-nav .bny-nav-menu menu li>a:hover::before {
-    content: "";
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 2px;
-    height: 100%;
-    background-color: var(--primary);
+[tree].bny-nav .bny-nav-menu menu li>a {
+    border-left: 0 solid var(--primary);
+    transition: var(--transition);
+}
+
+[tree].bny-nav .bny-nav-menu menu li>a:hover {
+    border-left-width: 5px;
 }
 
 [tree].bny-nav .bny-nav-menu menu a {
@@ -1955,6 +1954,21 @@ table tr:hover {
 [tree].bny-nav .bny-nav-menu>menu menu {
     position: unset;
 }
+
+/* 徽章 */
+.bny-badge {
+    position: relative;
+    display: inline-block;
+    padding: 0 .2em;
+    font-size: 75%;
+    text-align: center;
+    border-radius: 2px;
+    background-color: var(--muted);
+    color: var(--white);
+    left: 2px;
+    top: -2px;
+}
+
 
 /* 列表 */
 ol {
