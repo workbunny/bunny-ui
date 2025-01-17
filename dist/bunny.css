@@ -1977,6 +1977,21 @@ table tr:hover {
     top: -2px;
 }
 
+/* 滚动条 */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--primary-10);
+    border-radius: 3px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--muted-40);
+    border-radius: 3px;
+}
 
 /* 列表 */
 ol {
