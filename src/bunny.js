@@ -83,6 +83,47 @@ class bunny {
         shield.appendChild(confirmBox)
         document.body.appendChild(shield)
     }
+
+    /**
+     * 警告框
+     * @param {Object} options 配置
+     * @param {String} options.text 内容
+     * @param {String} options.style 样式
+     * @param {Boolean} options.del 是否可关闭
+     * @param {Number} options.time 时间
+     */
+    alert({ text = "这是警告信息！", style = "alert-primary", del = false, time = 3000 }) {
+        let del_text = ""
+        if (del) {
+            del_text = `<span class="alert-del">X</span>`
+        }
+        const alert = document.createElement("div")
+        alert.className = `bny-layer`
+        alert.innerHTML = `<div class="bny-alert bny-anim-up">
+            <div class="${style}">
+            ${text}${del_text}
+            </div>
+        </div>`
+        document.body.appendChild(alert)
+
+        if (del) {
+            alert.querySelector(".alert-del").addEventListener("click", function () {
+                alert.querySelector(".bny-alert>div").classList.add("bny-anim-scalesmall")
+                setTimeout(function () {
+                    alert.remove()
+                }, 230)
+            })
+        } else {
+            setTimeout(() => {
+                alert.querySelector(".bny-alert>div").classList.add("bny-anim-scalesmall")
+                setTimeout(function () {
+                    alert.remove()
+                }, 230)
+            }, time)
+        }
+
+
+    }
 }
 
 

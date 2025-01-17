@@ -11,10 +11,10 @@ import htmx from "./htmx"
                 del_div.textContent = "X"
                 alert.append(del_div)
                 htmx.on(del_div, "click", function () {
-                    // this.parentNode.remove()
-                    this.parentNode.style.opacity = 0
+                    let parent = this.parentNode
+                    parent.style.opacity = 0
                     setTimeout(() => {
-                        this.parentNode.remove()
+                        parent.remove()
                     }, 235)
                 })
             }
