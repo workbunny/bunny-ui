@@ -41,7 +41,7 @@ import htmx from "./htmx"
                             dropdowns[i].querySelector("a>i.add").style.transform = "rotate(45deg)"
                         }
                     }
-                    return false
+                    // return false
                 }
             }
         }
@@ -54,7 +54,7 @@ import htmx from "./htmx"
                         item.classList.remove("this")
                     })
                 treeNode[i].classList.toggle("this")
-                return false
+                // return false
             }
         }
     }
