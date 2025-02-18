@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bunny 企业站</title>
+    <!-- Bunny-UI -->
+    <link rel="shortcut icon" href="./assets/Bunny-0.0.4/bunny.jpg" type="image/x-icon">
+    <link rel="stylesheet" href="./assets/Bunny-0.0.4/bunny.css">
+    <link rel="stylesheet" href="./assets/Bunny-0.0.4/iconfont/iconfont.css">
+    <script src="./assets/Bunny-0.0.4/bunny.js"></script>
+    <!-- base.css -->
+    <link rel="stylesheet" href="./assets/css/base.css">
+</head>
+
+<body>
+    <!-- 头部 -->
+    <header class="bny-header">
+        <div class="container">
+            <nav class="bny-nav" hx-ext="bny-nav">
+                <div class="bny-nav-data">
+                    <!-- 品牌 -->
+                    <div class="bny-nav-brand">
+                        <a href="/">企业官网</a>
+                    </div>
+                    <!-- 切换 -->
+                    <div class="bny-nav-toggle">
+                        <i class="icon icon-gengduo1 burger"></i>
+                        <i class="icon icon-cuo close"></i>
+                    </div>
+                </div>
+                <!-- 菜单 -->
+                <div class="bny-nav-menu">
+                    <menu>
+                        <li>
+                            <a href="/index.html">官网首页</a>
+                        </li>
+                        <!-- 子菜单 -->
+                        <li class="bny-nav-dropdown">
+                            <a href="/goods.html">
+                                产品中心
+                                <i class="icon icon-you2 arrow"></i>
+                            </a>
+                            <menu>
+                                <li>
+                                    <a href="/goods.html">产品类型一</a>
+                                </li>
+                                <li>
+                                    <a href="/goods.html">产品类型二</a>
+                                </li>
+                            </menu>
+                        </li>
+                        <li><a href="/news.html">新闻中心</a></li>
+                        <li><a href="/contact.html">联系我们</a></li>
+                        <li><a href="/about.html">关于我们</a></li>
+                    </menu>
+                </div>
+            </nav>
+        </div>
+    </header>
+    <!-- 横幅 -->
+    <div class="banner">
+        <img src="./assets/images/1920x500.png" alt="1920x500">
+        <div class="row banner-content">
+            <div class="col-12 align-middle">
+                <h3 class="bny-title">联系我们</h3>
+                <p class="bny-subheading">Contact us</p>
+            </div>
+        </div>
+    </div>
+    <!-- 内容 -->
+    <div class="container">
+        <!-- 面包屑 -->
+        <div class="breadcrumb">
+            <div><a href="/index.html">官网首页</a></div>
+            <div>联系我们</div>
+        </div>
+        <!-- 联系我们 -->
+        <div class="contact">
+            <form action="" class="bny-form">
+                <div class="bny-form-pane">
+                    <label for="bnyInput1">昵称：</label>
+                    <input type="text" id="bnyInput1" class="bny-input inline" placeholder="输入您的昵称">
+                </div>
+                <div class="bny-form-pane">
+                    <label for="bnyInput1">手机：</label>
+                    <input type="text" id="bnyInput1" class="bny-input inline" placeholder="输入您的手机">
+                </div>
+                <div class="bny-form-pane">
+                    <label for="bnyInput1">微信：</label>
+                    <input type="text" id="bnyInput1" class="bny-input inline" placeholder="输入您的微信（选填）">
+                </div>
+                <div class="bny-form-pane">
+                    <label>类型：</label>
+                    <select class="bny-select">
+                        <option value="合作伙伴">合作伙伴</option>
+                        <option value="加入我们">加入我们</option>
+                        <option value="反馈问题">反馈问题</option>
+                    </select>
+                </div>
+                <div class="bny-form-text">
+                    <label for="bnyInput6">留言：</label>
+                    <textarea id="bnyInput6" class="bny-textarea" placeholder="请输入留言内容"></textarea>
+                </div>
+            </form>
+        </div>
+    </div>
+    <!-- 底部 -->
+    <footer class="bny-footer">
+        <div class="container">
+            <div class="line"></div>
+            <div class="link">
+                <a href="/index.html" target="_blank">官网首页</a>
+                <a href="/goods.html" target="_blank">产品中心</a>
+                <a href="/news.html" target="_blank">新闻中心</a>
+                <a href="/contact.html" target="_blank">联系我们</a>
+                <a href="/about.html" target="_blank">关于我们</a>
+            </div>
+            <div class="address tc">
+                <p>XXXXXXXXXX@163.com</p>
+                <p>广东省广州市某某区某某街道110号</p>
+                <p class="tc">Copyright © 2025 Bunny 企业站 <a href="http://www.beian.gov.cn/"
+                        target="_blank">粤ICP备XXXXXXXX号</a></p>
+            </div>
+        </div>
+    </footer>
+</body>
+
+</html>

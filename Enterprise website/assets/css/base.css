@@ -1,0 +1,176 @@
+@media only screen and (max-width: 768px) {
+    .col {
+        padding: .5rem;
+    }
+}
+
+img {
+    max-width: 100%;
+    max-height: 100%;
+}
+
+.bny-card-title {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+/* 头部 */
+.bny-header {
+    box-shadow: var(--box-shadow-small);
+    position: relative;
+    z-index: 1000;
+}
+
+.container {
+    max-width: 1200px;
+}
+
+.bny-header .bny-nav {
+    box-shadow: none;
+}
+
+.bny-header .bny-nav .bny-nav-brand {
+    white-space: nowrap;
+}
+
+@media screen and (max-width: 767px) {
+    .bny-header .container {
+        width: 100%;
+    }
+}
+
+/* 底部 */
+.bny-footer {
+    background: var(--black-light);
+    color: var(--white-ligth);
+}
+
+.bny-footer .container {
+    padding-top: 35px;
+}
+
+.bny-footer a {
+    color: var(--white-ligth);
+}
+
+.bny-footer .line {
+    width: 220px;
+    height: 2px;
+    background: var(--white-ligth);
+    margin: 0 auto;
+}
+
+.bny-footer .link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.bny-footer .link a {
+    padding: 0 10px;
+}
+
+.bny-footer .address {
+    padding-top: 15px;
+}
+
+.bny-footer .address p {
+    padding-top: 8px;
+}
+
+/* 横幅 */
+.banner {
+    position: relative;
+}
+
+.banner .banner-content {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    background-color: rgba(0, 0, 0, .3);
+    color: var(--white-ligth);
+}
+
+/* 内容 */
+.bny-title {
+    text-align: center;
+}
+
+.bny-subheading {
+    text-align: center;
+}
+
+.box {
+    margin-top: 50px;
+}
+
+.box-list {
+    margin-top: 30px;
+}
+
+/* 面包屑 */
+.breadcrumb {
+    padding: 10px 16px;
+    list-style: none;
+    background-color: var(--white);
+    margin-top: 15px;
+}
+
+.breadcrumb>div {
+    display: inline;
+    font-size: 18px;
+}
+
+.breadcrumb>div+div:before {
+    padding: 8px;
+    content: "/\00a0";
+}
+
+.breadcrumb>div a {
+    color: var(--secondary);
+    text-decoration: none;
+}
+
+@media screen and (max-width: 767px) {
+    .breadcrumb>div {
+        font-size: 14px;
+    }
+}
+
+/* 联系我们 */
+.contact {
+    padding: 50px 0;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+/* 详情 */
+.details .hot h4 {
+    margin-top: 30px;
+    margin-bottom: 15px;
+}
+
+.details .hot .hot-box {
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    flex-direction: column;
+    padding: 0 1rem;
+}
+
+.details .hot .hot-box a {
+    padding: .5rem 0;
+    font-size: var(--font-size-20);
+    display: block;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.content {
+    box-sizing: border-box;
+}
