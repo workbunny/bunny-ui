@@ -2,7 +2,7 @@
     <p>提示：</p>
     <div class="row">
         <div class="col col-3">
-            <button class="bny-btn" tips-top="向上" title="向上">显示在上</button>
+            <button class="bny-btn" tips-top="向上">显示在上</button>
         </div>
         <div class="col col-3">
             <button class="bny-btn" tips-bottom="向下">显示在下</button>
@@ -19,14 +19,14 @@
             <span tips-top="向上">我这个向上</span>
         </div>
     </div>
-</div> 
+</div>
 
 代码：
 
 ```html
 <div class="row">
     <div class="col col-3">
-        <button class="bny-btn" tips-top="向上" title="向上">显示在上</button>
+        <button class="bny-btn" tips-top="向上">显示在上</button>
     </div>
     <div class="col col-3">
         <button class="bny-btn" tips-bottom="向下">显示在下</button>
