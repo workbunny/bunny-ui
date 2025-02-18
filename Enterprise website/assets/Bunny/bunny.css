@@ -1719,6 +1719,7 @@ table tr:hover {
     height: 100%;
     align-items: center;
     justify-content: center;
+    white-space: nowrap;
 }
 
 .bny-nav .bny-nav-data .bny-nav-brand a {
@@ -1993,6 +1994,35 @@ table tr:hover {
     border-radius: 3px;
 }
 
+/* 面包屑 */
+.bny-breadcrumb {
+    padding: 10px 16px;
+    list-style: none;
+    background-color: var(--white);
+    margin-top: 15px;
+}
+
+.bny-breadcrumb>div {
+    display: inline;
+    font-size: var(--font-size-20);
+}
+
+.bny-breadcrumb>div+div::before {
+    padding: 8px;
+    content: "/\00a0";
+}
+
+.bny-breadcrumb>div a {
+    color: var(--secondary);
+    text-decoration: none;
+}
+
+@media screen and (max-width: 768px) {
+    .bny-breadcrumb>div {
+        font-size: var(--font-size);
+    }
+}
+
 /* 列表 */
 ol {
     list-style-type: decimal;
@@ -2106,6 +2136,7 @@ ul.inline li {
     .col {
         flex: 0 0 100%;
         max-width: 100%;
+        padding: .5rem;
     }
 }
 
