@@ -92,7 +92,7 @@ class bunny {
      * @param {Boolean} options.del 是否可关闭
      * @param {Number} options.time 时间
      */
-    alert({ text = "这是警告信息！", style = "alert-primary", del = false, time = 3000 }) {
+    alert({ text = "警告信息！", style = "alert-primary", del = false, time = 3000 }) {
         let del_text = ""
         if (del) {
             del_text = `<span class="alert-del">X</span>`
@@ -121,8 +121,122 @@ class bunny {
                 }, 230)
             }, time)
         }
+    }
+
+    open({ title = "信息", content = "", width = "680px", height = "520px" } = {}) {
+
+        // 判断内容是否是链接
+        if (content.startsWith("http://") || content.startsWith("https://")) {
+            content = `<iframe src="${content}"></iframe>`;
+        }
+
+        const windowWidth = window.innerWidth;
+        const windowHeight = window.innerHeight;
+        const num = document.querySelectorAll(".bny-open").length;
+        let currentX = parseInt(width) >= windowWidth ? 0 : ((windowWidth - parseInt(width)) / 2) + (num * 10);
+        let currentY = parseInt(height) >= windowHeight ? 0 : ((windowHeight - parseInt(height)) / 2) + (num * 10);
+
+        const open = document.createElement("div");
+        Object.assign(open.style, {
+            width,
+            height,
+            left: `${currentX}px`,
+            top: `${currentY}px`
+        });
+        open.className = "bny-open bny-anim-scale";
+        open.innerHTML = `
+          <div class="bny-open-header">
+            <div class="bny-open-title">${title}</div>
+            <div class="bny-open-setwin">
+              <span class="icon icon-jian min-auto"></span>
+              <span class="icon icon-quanping zoom"></span>
+              <span class="icon icon-cuo close-btn"></span>
+            </div>
+          </div>
+          <div class="bny-open-content">${content}</div>
+        `;
+
+        document.body.appendChild(open);
+
+        this.#initDrag(open.querySelector(".bny-open-header"), open);
+        this.#initResize(open.querySelector(".zoom"), open, width, height, currentX, currentY);
+        this.#initMinimize(open.querySelector(".min-auto"), open, num, width, height, currentX, currentY);
+
+        open.addEventListener('click', () => {
+            // 获取所有的 div 元素
+            let openZindex = document.querySelectorAll('.bny-open');
+            let maxZIndex = 0;
+            // 遍历所有的 div 元素
+            for (let i = 0; i < openZindex.length; i++) {
+                let div = openZindex[i];
+                // 获取当前 div 的 z-index 值
+                const zIndex = parseInt(window.getComputedStyle(div).zIndex);
+                if (zIndex > maxZIndex) {
+                    maxZIndex = zIndex;
+                }
+            }
+            open.style.zIndex = maxZIndex + 1;
+        });
+
+        open.querySelector(".close-btn").addEventListener("click", e => {
+            open.classList.add("bny-anim-scalesmall");
+            setTimeout(() => open.remove(), 230);
+            e.stopPropagation();
+        });
 
 
+    }
+
+    #initDrag(header, open) {
+        let startX, startY, newX, newY;
+        header.addEventListener('mousedown', e => {
+            [startX, startY] = [e.clientX, e.clientY];
+            [newX, newY] = [parseInt(open.style.left), parseInt(open.style.top)];
+            open.classList.add('dragging');
+        });
+        document.addEventListener('mousemove', e => {
+            if (!open.classList.contains('dragging')) return;
+            Object.assign(open.style, {
+                left: `${newX + e.clientX - startX}px`,
+                top: `${newY + e.clientY - startY}px`
+            });
+        });
+        document.addEventListener('mouseup', () => open.classList.remove('dragging'));
+    }
+
+    #initResize(zoomBtn, open, width, height, currentX, currentY) {
+        zoomBtn.addEventListener('click', e => {
+            if (zoomBtn.classList.contains('icon-quanping')) {
+                Object.assign(open.style, { width: '100%', height: '100%', top: '0', left: '0' });
+                zoomBtn.classList.remove('icon-quanping');
+                zoomBtn.classList.add('icon-suoxiao');
+            } else {
+                Object.assign(open.style, { width, height, top: `${currentY}px`, left: `${currentX}px` });
+                zoomBtn.classList.remove('icon-suoxiao');
+                zoomBtn.classList.add('icon-quanping');
+            }
+            e.stopPropagation();
+        });
+    }
+
+    #initMinimize(minBtn, open, num, width, height, currentX, currentY) {
+        minBtn.addEventListener('click', e => {
+            if (minBtn.classList.contains('icon-jian')) {
+                Object.assign(open.style, { width: '125px', height: 'min-content', bottom: '0', left: `${num * 125}px`, top: 'unset' });
+                open.querySelector('.bny-open-content').style.display = 'none';
+                open.querySelector('.zoom').style.display = 'none';
+                minBtn.classList.remove('icon-jian');
+                minBtn.classList.add('icon-fuzhi');
+            } else {
+                Object.assign(open.style, { width, height, top: `${currentY}px`, left: `${currentX}px`, bottom: 'unset' });
+                open.querySelector('.bny-open-content').style.display = 'block';
+                open.querySelector('.zoom').style.display = 'inline-block';
+                open.querySelector('.zoom').classList.replace('icon-suoxiao', 'icon-quanping');
+                minBtn.classList.remove('icon-fuzhi');
+                minBtn.classList.add('icon-jian');
+            }
+            e.stopPropagation();
+        });
     }
 }
 

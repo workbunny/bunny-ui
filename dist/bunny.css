@@ -1512,6 +1512,61 @@ table tr:hover {
     text-align: right;
 }
 
+/* 页面框 */
+.bny-open {
+    display: block;
+    border: 2px solid var(--primary);
+    background-color: var(--white);
+    max-width: 100%;
+    max-height: 100%;
+    z-index: 9999;
+    position: fixed;
+    /* top: 50%;
+    left: 50%; */
+    box-shadow: var(--box-shadow-small);
+    box-sizing: border-box;
+    overflow: hidden;
+}
+
+.bny-open .bny-open-header {
+    display: flex;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 0 16px;
+    justify-content: space-between;
+    height: 50px;
+    line-height: 50px;
+    border-bottom: 2px solid var(--primary);
+}
+
+.bny-open .bny-open-header:active {
+    cursor: move;
+}
+
+.bny-open .bny-open-header .bny-open-setwin {
+    white-space: nowrap;
+}
+
+.bny-open .bny-open-header .bny-open-setwin span {
+    margin-left: 10px;
+}
+
+.bny-open .bny-open-header .bny-open-setwin span:hover {
+    cursor: pointer;
+}
+
+.bny-open .bny-open-content {
+    box-sizing: border-box;
+    width: 100%;
+    height: calc(100% - 50px);
+}
+
+.bny-open .bny-open-content iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+}
+
 /* 动画 */
 .bny-anim-scale {
     /* 放大 */
