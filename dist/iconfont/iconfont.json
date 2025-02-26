@@ -6,6 +6,20 @@
   "description": "simmah",
   "glyphs": [
     {
+      "icon_id": "6129089",
+      "name": "右滑",
+      "font_class": "youhua",
+      "unicode": "e773",
+      "unicode_decimal": 59251
+    },
+    {
+      "icon_id": "39640190",
+      "name": "左滑",
+      "font_class": "zuohua",
+      "unicode": "e628",
+      "unicode_decimal": 58920
+    },
+    {
       "icon_id": "17562600",
       "name": "不感兴趣",
       "font_class": "buganxingqu",
