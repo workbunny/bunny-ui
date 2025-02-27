@@ -163,8 +163,10 @@
             选项一
             <span class="icon icon-cuo del"></span>
         </div>
+        <!-- 标记属性`bny-id` -->
         <div class="bny-tab-item" bny-id="2">
             选项二
+            <!-- 有删除按钮才可能触发删除 -->
             <span class="icon icon-cuo del"></span>
         </div>
         <div class="bny-tab-item">

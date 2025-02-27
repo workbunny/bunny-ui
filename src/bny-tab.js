@@ -253,8 +253,11 @@ import tool from "./tool"
                 case "this":
                     const this_item = htmx.find(tab, ".bny-tab-item.this")
                     const this_body = htmx.find(tab, ".bny-tab-body>div.this")
-                    this_item.remove()
-                    this_body.remove()
+                    const isDel = htmx.find(this_item, ".del")
+                    if (isDel) {
+                        this_item.remove()
+                        this_body.remove()
+                    }
                     break;
                 case "all":
                     items.forEach((i) => {
@@ -287,8 +290,12 @@ import tool from "./tool"
                     const index = tool.indexOf(item)
                     const body = htmx.find(tab,
                         `.bny-tab-body>div:nth-child(${index + 1})`)
-                    item.remove()
-                    body.remove()
+                    const isDel_ = htmx.find(item, ".del")
+                    if (isDel_) {
+                        item.remove()
+                        body.remove()
+                    }
+
             }
             const item = htmx.find(tab, ".bny-tab-item")
             if (item) {
