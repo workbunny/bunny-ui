@@ -105,6 +105,12 @@
 > 添加和删除
 
 <button class="bny-btn" hx-ext="bny-tab-add" hx-get="doc/json/tab/add.json" bny-target="#demo01">追加</button>
+<button class="bny-btn" hx-ext="bny-tab-add" bny-target="#demo01"
+    bny-data='{"data":{"name":"静态追加","conten":"静态数据","isDelete":true}}'>静态追加</button>
+<button class="bny-btn" hx-ext="bny-tab-del" bny-target="#demo01" bny-id="2">删除指定(选项二)</button>
+<button class="bny-btn" hx-ext="bny-tab-del" bny-target="#demo01" bny-id="this">删除当前</button>
+<button class="bny-btn" hx-ext="bny-tab-del" bny-target="#demo01" bny-id="all">删除全部</button>
+<button class="bny-btn" hx-ext="bny-tab-del" bny-target="#demo01" bny-id="other">删除其他</button>
 
 <div style="width: 300px;">
     <div class="bny-tab" id="demo01" hx-ext="bny-tab" nowrap>
@@ -113,8 +119,10 @@
                 选项一
                 <span class="icon icon-cuo del"></span>
             </div>
-            <div class="bny-tab-item">
+            <!-- 标记属性`bny-id` -->
+            <div class="bny-tab-item" bny-id="2">
                 选项二
+                <!-- 有删除按钮才可能触发删除 -->
                 <span class="icon icon-cuo del"></span>
             </div>
             <div class="bny-tab-item">
@@ -142,6 +150,12 @@
 
 ```html
 <button class="bny-btn" hx-ext="bny-tab-add" hx-get="doc/json/tab/add.json" bny-target="#demo01">追加</button>
+<button class="bny-btn" hx-ext="bny-tab-add" bny-target="#demo01"
+    bny-data='{"data":{"name":"静态追加","conten":"静态数据","isDelete":true}}'>静态追加</button>
+<button class="bny-btn" hx-ext="bny-tab-del" bny-target="#demo01" bny-id="2">删除指定(选项二)</button>
+<button class="bny-btn" hx-ext="bny-tab-del" bny-target="#demo01" bny-id="this">删除当前</button>
+<button class="bny-btn" hx-ext="bny-tab-del" bny-target="#demo01" bny-id="all">删除全部</button>
+<button class="bny-btn" hx-ext="bny-tab-del" bny-target="#demo01" bny-id="other">删除其他</button>
 
 <div class="bny-tab" id="demo01" hx-ext="bny-tab" nowrap>
     <div class="bny-tab-title">
@@ -149,7 +163,7 @@
             选项一
             <span class="icon icon-cuo del"></span>
         </div>
-        <div class="bny-tab-item">
+        <div class="bny-tab-item" bny-id="2">
             选项二
             <span class="icon icon-cuo del"></span>
         </div>
@@ -180,11 +194,12 @@
 
 ```json
 {
-    "data": {
-        "name": "add", // 名称
-        "conten": "新的内容<h1>新内容</h1>", // 内容
-        "isDelete": true, // 是否显示删除按钮
-        "url": "" // 当url不为空时，使用url获取内容
-    }
+"data": {
+"id" : "11", // id 可以设置id防止重复
+"name": "add", // 名称
+"conten": "新的内容<h1>新内容</h1>", // 内容
+"isDelete": true, // 是否显示删除按钮
+"url": "" // 当url不为空时，使用url获取内容
+}
 }
 ```

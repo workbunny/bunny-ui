@@ -982,7 +982,7 @@ button[disabled].bny-btn {
     border: 2px solid var(--primary);
     flex-wrap: wrap;
     border-radius: var(--border-radius);
-    height: 44px;
+    min-height: 44px;
 }
 
 .bny-tab[nowrap] .bny-tab-title {

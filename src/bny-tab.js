@@ -158,22 +158,28 @@ import tool from "./tool"
     })
 
     /**
-     * 添加选项卡
-     * @param {Event} evt 
-     * @returns 
+     * 
+     * @param {string} selector 选择器
+     * @param {object} res 数据
+     * @returns false
      */
-    function addTab(evt) {
-        const bny_target = evt.target.getAttribute("bny-target")
-        if (bny_target === null && bny_target === "") {
-            throw new Error("bny-target not be null or ''");
-        }
-        const res = JSON.parse(evt.detail.xhr.response)
-        const tab = htmx.find(document.body, bny_target)
+    function addTab(selector, res) {
+        const tab = htmx.find(selector)
         let del_html = ""
         if (res.data.isDelete) {
             del_html = `<span class="icon icon-cuo del"></span>`
         }
         const item = document.createElement("div")
+        if (res.data.id) {
+            const is_item = htmx.find(tab,
+                `.bny-tab-item[bny-id="${res.data.id}"]`)
+            if (is_item) {
+                is_item.click()
+                return false;
+            } else {
+                item.setAttribute("bny-id", res.data.id)
+            }
+        }
         item.classList.add("bny-tab-item")
         if (res.data.url && res.data.url !== "") {
             item.setAttribute("hx-get", res.data.url)
@@ -188,10 +194,121 @@ import tool from "./tool"
         return false;
     }
 
+    /**
+     * swap添加选项卡
+     * @param {Event} evt 
+     * @returns 
+     */
+    function SwapAddTab(evt) {
+        const res = JSON.parse(evt.detail.serverResponse)
+        return addTab(evt.target.getAttribute("bny-target"), res);
+    }
+
+    /**
+     * 静态添加选项卡
+     * @param {Event} evt 
+     */
+    function StaticAddTab(evt) {
+        if (evt.target.getAttribute("hx-get") === null) {
+            const res = JSON.parse(evt.target.getAttribute("bny-data"))
+            htmx.on(evt.target, "click", () => {
+                addTab(evt.target.getAttribute("bny-target"), res)
+            })
+        }
+    }
+
+    /**
+     * 定义一个名为 "bny-tab-add" 的 htmx 扩展
+     * 该扩展在特定事件发生时执行相应的操作
+     * 
+     */
     htmx.defineExtension("bny-tab-add", {
         onEvent: function (name, evt) {
+            if (name === "htmx:afterProcessNode") {
+                const bny_target = evt.target.getAttribute("bny-target")
+                if (bny_target === null || bny_target === "") {
+                    throw new Error("bny-target not be null or ''");
+                }
+                StaticAddTab(evt)
+            }
             if (name === "htmx:beforeSwap") {
-                return addTab(evt)
+                return SwapAddTab(evt)
+            }
+        }
+    })
+
+    /**
+     * 删除选项卡
+     * @param {Event} evt 
+     */
+    function delTab(evt) {
+        htmx.on(evt.target, "click", () => {
+            const tab = htmx.find(evt.target.getAttribute("bny-target"))
+            const id = evt.target.getAttribute("bny-id")
+            const items = htmx.findAll(tab, ".bny-tab-item")
+            if (id === null || id === "") {
+                return
+            }
+            switch (id) {
+                case "this":
+                    const this_item = htmx.find(tab, ".bny-tab-item.this")
+                    const this_body = htmx.find(tab, ".bny-tab-body>div.this")
+                    this_item.remove()
+                    this_body.remove()
+                    break;
+                case "all":
+                    items.forEach((i) => {
+                        const index = tool.indexOf(i)
+                        const body = htmx.find(tab,
+                            `.bny-tab-body>div:nth-child(${index + 1})`)
+                        const isDel = htmx.find(i, ".del")
+                        if (isDel) {
+                            i.remove()
+                            body.remove()
+                        }
+                    })
+                    break;
+                case "other":
+                    items.forEach((i) => {
+                        if (!i.classList.contains("this")) {
+                            const index = tool.indexOf(i)
+                            const body = htmx.find(tab,
+                                `.bny-tab-body>div:nth-child(${index + 1})`)
+                            const isDel = htmx.find(i, ".del")
+                            if (isDel) {
+                                i.remove()
+                                body.remove()
+                            }
+                        }
+                    })
+                    break;
+                default:
+                    const item = htmx.find(tab, `.bny-tab-item[bny-id="${id}"]`)
+                    const index = tool.indexOf(item)
+                    const body = htmx.find(tab,
+                        `.bny-tab-body>div:nth-child(${index + 1})`)
+                    item.remove()
+                    body.remove()
+            }
+            const item = htmx.find(tab, ".bny-tab-item")
+            if (item) {
+                item.click()
+            }
+        })
+    }
+
+    /**
+     * 定义一个名为 "bny-tab-del" 的 htmx 扩展
+     * 该扩展在特定事件发生时执行相应的操作
+     */
+    htmx.defineExtension("bny-tab-del", {
+        onEvent: function (name, evt) {
+            if (name === "htmx:afterProcessNode") {
+                const bny_target = evt.target.getAttribute("bny-target")
+                if (bny_target === null || bny_target === "") {
+                    throw new Error("bny-target not be null or ''");
+                }
+                delTab(evt)
             }
         }
     })
