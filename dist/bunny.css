@@ -2143,6 +2143,25 @@ table tr:hover {
     }
 }
 
+/* 下拉菜单 */
+.bny-dropdown {
+    position: fixed;
+    min-width: 120px;
+    background: var(--white);
+    border: 2px solid var(--primary);
+    box-shadow: var(--box-shadow-small);
+    opacity: 0;
+    transform: translateY(-10px);
+    transition: var(--transition);
+    z-index: 1000;
+    border-radius: var(--border-radius);
+}
+
+.bny-dropdown.active {
+    opacity: 1;
+    transform: translateY(0);
+}
+
 /* 列表 */
 ol {
     list-style-type: decimal;

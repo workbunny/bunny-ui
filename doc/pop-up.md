@@ -43,11 +43,13 @@
 #### 页面框
 
 <button class="bny-btn" onclick="bunny.open({content:'这里发出一个页面框！'})">页面框</button>
-<button class="bny-btn" onclick="bunny.open({title:'这是新标题',width:'300px',height:'300px',content:'这里发出一个页面框！'})">页面框(标题、宽高)</button>
+<button class="bny-btn"
+    onclick="bunny.open({title:'这是新标题',width:'300px',height:'300px',content:'这里发出一个页面框！'})">页面框(标题、宽高)</button>
 <button class="bny-btn" onclick="bunny.open({content:'https://workbunny.github.io/bunny-ui/'})">页面框(链接)</button>
 
 ```html
 <button class="bny-btn" onclick="bunny.open({content:'这里发出一个页面框！'})">页面框</button>
-<button class="bny-btn" onclick="bunny.open({title:'这是新标题',width:'300px',height:'300px',content:'这里发出一个页面框！'})">页面框(标题、宽高)</button>
+<button class="bny-btn"
+    onclick="bunny.open({title:'这是新标题',width:'300px',height:'300px',content:'这里发出一个页面框！'})">页面框(标题、宽高)</button>
 <button class="bny-btn" onclick="bunny.open({content:'https://workbunny.github.io/bunny-ui/'})">页面框(链接)</button>
 ```

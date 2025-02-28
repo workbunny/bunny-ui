@@ -123,6 +123,14 @@ class bunny {
         }
     }
 
+    /**
+     * 打开一个新的窗口
+     * @param {Object} options - 窗口配置选项
+     * @param {string} [options.title="信息"] - 窗口的标题
+     * @param {string} [options.content=""] - 窗口的内容，可以是文本或URL
+     * @param {string} [options.width="680px"] - 窗口的宽度
+     * @param {string} [options.height="520px"] - 窗口的高度
+     */
     open({ title = "信息", content = "", width = "680px", height = "520px" } = {}) {
 
         // 判断内容是否是链接
@@ -183,8 +191,6 @@ class bunny {
             setTimeout(() => open.remove(), 230);
             e.stopPropagation();
         });
-
-
     }
 
     #initDrag(header, open) {
