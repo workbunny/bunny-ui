@@ -1292,6 +1292,10 @@ pre code {
     list-style: none;
 }
 
+.bny-menu menu {
+    margin: 0;
+}
+
 .menu-list {
     margin: 0;
     display: block;
