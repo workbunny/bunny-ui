@@ -1279,116 +1279,87 @@ pre code {
 }
 
 /* 菜单栏 */
-menu.bny-menu {
-    list-style: none;
-    padding: 0;
-    margin: 0;
+.bny-menu {
     display: flex;
-    border: 2px solid var(--primary);
-    background-color: var(--white);
-    z-index: 999;
-}
-
-menu.bny-menu menu {
-    list-style: none;
-    padding: 2px;
-    margin: 0px;
-    border: 4px solid rgba(0, 0, 0, 0);
-    display: block;
-    position: absolute;
-    top: 100%;
-    left: -6px;
-    width: max-content;
-    height: 0;
-    overflow: hidden;
-    transition: var(--transition);
-    -webkit-transform: translateY(-20px);
-    /* 调整纵向时的初始位置 */
-    -moz-transform: translateY(-20px);
-    transform: translateY(-20px);
-}
-
-menu.bny-menu menu::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    border: 2px solid var(--primary);
-    border-style: none;
-    overflow: hidden;
-}
-
-menu.bny-menu li {
-    list-style-type: none;
-    position: relative;
-    padding: 0 1rem;
-    min-width: max-content;
-}
-
-menu.bny-menu li a {
-    color: var(--primary);
-    line-height: 56px;
-    height: 56px;
-    text-align: center;
-}
-
-menu.bny-menu li.this {
-    background-color: var(--primary);
-}
-
-menu.bny-menu li.this>a {
-    color: var(--white);
-}
-
-menu.bny-menu menu menu {
-    top: 0;
-    left: 100%;
-}
-
-menu.bny-menu li:hover>menu {
-    height: auto !important;
-    overflow: unset;
-    -webkit-transform: translateY(1px);
-    /* 调整纵向时的最终位置 */
-    -moz-transform: translateY(1px);
-    transform: translateY(1px);
-}
-
-menu.bny-menu li:hover>menu::before {
-    border-style: solid;
-    background-color: var(--white);
-}
-
-menu.bny-menu li:hover {
-    background-color: var(--primary-10);
-}
-
-menu.bny-menu li:hover>a {
-    color: var(--white);
-}
-
-menu.bny-menu[vertical] {
     flex-direction: column;
-    width: max-content;
+    background-color: var(--white);
+    border-radius: var(--border-radius-large);
+    box-shadow: var(--box-shadow-small);
+    width: min-content;
 }
 
-menu.bny-menu[vertical] menu {
-    left: 0;
-    top: 0;
-    -webkit-transform: translateX(-20px);
-    /* 调整纵向时的初始位置 */
-    -moz-transform: translateX(-20px);
-    transform: translateX(-20px);
+.bny-menu li {
+    list-style: none;
 }
 
-menu.bny-menu[vertical] li:hover>menu {
+.menu-list {
+    margin: 0;
+    display: block;
+    width: 100%;
+    padding: 4px;
+}
+
+.menu-list+.menu-list {
+    border-top: 1px solid var(--primary-10);
+}
+
+.menu-sub-list {
+    display: none;
+    padding: 4px;
+    background-color: var(--white);
+    border-radius: var(--border-radius-large);
+    box-shadow: var(--box-shadow-small);
+    position: absolute;
     left: 100%;
-    -webkit-transform: translateX(0);
-    /* 调整纵向时的最终位置 */
-    -moz-transform: translateX(0);
-    transform: translateX(0);
+    right: 0;
+    z-index: 100;
+    width: 100%;
+    top: 0;
+    flex-direction: column;
+}
+
+.menu-sub-list:hover {
+    display: flex;
+}
+
+.menu-item {
+    position: relative;
+}
+
+.menu-btn {
+    font: inherit;
+    border: 0;
+    padding: 4px 4px;
+    padding-right: 36px;
+    width: 100%;
+    border-radius: var(--border-radius-large);
+    text-align: left;
+    display: flex;
+    align-items: center;
+    position: relative;
+    background-color: var(--white);
+    white-space: nowrap;
+}
+
+.menu-btn:hover {
+    cursor: pointer;
+    background-color: var(--primary-10);
+    color: var(--white);
+}
+
+.menu-btn:hover+.menu-sub-list {
+    display: flex;
+}
+
+.menu-btn .icon {
+    flex-shrink: 0;
+    margin-right: 5px;
+}
+
+.menu-btn .icon:nth-of-type(2) {
+    margin-right: 0;
+    position: absolute;
+    right: 8px;
 }
 
 /* 引用 */
@@ -2146,7 +2117,7 @@ table tr:hover {
 /* 下拉菜单 */
 .bny-dropdown {
     position: fixed;
-    min-width: 120px;
+    min-width: min-content;
     background: var(--white);
     border: 2px solid var(--primary);
     box-shadow: var(--box-shadow-small);
@@ -2154,7 +2125,8 @@ table tr:hover {
     transform: translateY(-10px);
     transition: var(--transition);
     z-index: 1000;
-    border-radius: var(--border-radius);
+    border-radius: var(--border-radius-large);
+    overflow: hidden;
 }
 
 .bny-dropdown.active {

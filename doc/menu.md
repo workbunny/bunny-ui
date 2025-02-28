@@ -1,231 +1,127 @@
-<p>静态：</p>
-<p>横向</p>
-<menu class="bny-menu">
-    <li>
-        <a href="#">
-            <i class="icon icon-shouye"></i>
-            <span>首页</span>
-        </a>
-    </li>
-    <li>
-        <a href="javascript:;">
-            <i class="icon icon-ziyuan"></i>
-            <span>资源</span>
-        </a>
-        <menu>
-            <li>
-                <a href="">
-                    <i class="icon icon-shezhi"></i>
-                    <span>设置</span>
-                </a>
-            </li>
-            <li>
-                <a href="">
-                    <i class="icon icon-shezhi"></i>
-                    <span>设置</span>
-                </a>
-                <menu>
-                    <li>
-                        <a href="">
-                            <i class="icon icon-shezhi"></i>
-                            <span>设置3</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="">
-                            <i class="icon icon-shezhi"></i>
-                            <span>设置3</span>
-                        </a>
-                    </li>
-                </menu>
-            </li>
-        </menu>
-    </li>
-    <li>
-        <a href="#">
-            <i class="icon icon-shouye"></i>
-            <span>首页</span>
-        </a>
-    </li>
-    <li>
-        <a href="#">
-            <i class="icon icon-shouye"></i>
-            <span>首页</span>
-        </a>
-    </li>
-</menu>
+#### 菜单
 
-代码：
-
-```html
-<menu class="bny-menu">
-    <li>
-        <a href="#">
-            <i class="icon icon-shouye"></i>
-            <span>首页</span>
-        </a>
-    </li>
-    <li>
-        <a href="javascript:;">
-            <i class="icon icon-ziyuan"></i>
-            <span>资源</span>
-        </a>
-        <menu>
-            <li>
-                <a href="">
-                    <i class="icon icon-shezhi"></i>
-                    <span>设置</span>
-                </a>
-            </li>
-            <li>
-                <a href="">
-                    <i class="icon icon-shezhi"></i>
-                    <span>设置</span>
-                </a>
-                <menu>
-                    <li>
-                        <a href="">
-                            <i class="icon icon-shezhi"></i>
-                            <span>设置3</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="">
-                            <i class="icon icon-shezhi"></i>
-                            <span>设置3</span>
-                        </a>
-                    </li>
-                </menu>
-            </li>
-        </menu>
-    </li>
-    <li>
-        <a href="#">
-            <i class="icon icon-shouye"></i>
-            <span>首页</span>
-        </a>
-    </li>
-    <li>
-        <a href="#">
-            <i class="icon icon-shouye"></i>
-            <span>首页</span>
-        </a>
-    </li>
-</menu>
-```
-
-<br>
-<p>纵向</p>
-<menu class="bny-menu" vertical>
-    <li>
-        <a href="#">
-            <i class="icon icon-shouye"></i>
-            <span>首页</span>
-        </a>
-    </li>
-    <li>
-        <a href="javascript:;">
-            <i class="icon icon-ziyuan"></i>
-            <span>资源</span>
-        </a>
-        <menu>
-            <li>
-                <a href="">
-                    <i class="icon icon-shezhi"></i>
-                    <span>设置</span>
-                </a>
-            </li>
-            <li>
-                <a href="javascript:;">
-                    <i class="icon icon-shezhi"></i>
-                    <span>设置</span>
-                </a>
-                <menu>
-                    <li>
-                        <a href="">
-                            <i class="icon icon-shezhi"></i>
-                            <span>设置3</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="">
-                            <i class="icon icon-shezhi"></i>
-                            <span>设置3</span>
-                        </a>
-                    </li>
-                </menu>
-            </li>
-        </menu>
-    </li>
-    <li>
-        <a href="#">
-            <i class="icon icon-shouye"></i>
-            <span>首页</span>
-        </a>
-    </li>
-    <li>
-        <a href="#">
-            <i class="icon icon-shouye"></i>
-            <span>首页</span>
-        </a>
-    </li>
-</menu>
-
-代码：
+<div class="bny-menu">
+    <menu class="menu-list">
+        <li class="menu-item">
+            <a class="menu-btn">分享</a>
+        </li>
+        <li class="menu-item">
+            <a class="menu-btn">重命名</a>
+        </li>
+    </menu>
+    <menu class="menu-list">
+        <li class="menu-item">
+            <a class="menu-btn">
+                <i class="icon icon-weixuanzhong"></i>
+                无状态
+                <i class="icon icon-you2"></i>
+            </a>
+            <menu class="menu-sub-list">
+                <li class="menu-item">
+                    <a class="menu-btn">
+                        需要审查
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a class="menu-btn">
+                        在加载中
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a class="menu-btn">
+                        批准
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a class="menu-btn">
+                        无状态
+                    </a>
+                </li>
+            </menu>
+        </li>
+        <li class="menu-item">
+            <a class="menu-btn">复制链接地址</a>
+        </li>
+        <li class="menu-item">
+            <a class="menu-btn">移动</a>
+        </li>
+        <li class="menu-item">
+            <a class="menu-btn">复制</a>
+        </li>
+        <li class="menu-item">
+            <a class="menu-btn">粘贴</a>
+        </li>
+        <li class="menu-item">
+            <a class="menu-btn">下载</a>
+        </li>
+    </menu>
+    <menu class="menu-list">
+        <li class="menu-item">
+            <a class="menu-btn">删除</a>
+        </li>
+    </menu>
+</div>
 
 ```html
-<menu class="bny-menu" vertical>
-    <li>
-        <a href="#">
-            <i class="icon icon-shouye"></i>
-            <span>首页</span>
-        </a>
-    </li>
-    <li>
-        <a href="javascript:;">
-            <i class="icon icon-ziyuan"></i>
-            <span>资源</span>
-        </a>
-        <menu>
-            <li>
-                <a href="">
-                    <i class="icon icon-shezhi"></i>
-                    <span>设置</span>
-                </a>
-            </li>
-            <li>
-                <a href="javascript:;">
-                    <i class="icon icon-shezhi"></i>
-                    <span>设置</span>
-                </a>
-                <menu>
-                    <li>
-                        <a href="">
-                            <i class="icon icon-shezhi"></i>
-                            <span>设置3</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="">
-                            <i class="icon icon-shezhi"></i>
-                            <span>设置3</span>
-                        </a>
-                    </li>
-                </menu>
-            </li>
-        </menu>
-    </li>
-    <li>
-        <a href="#">
-            <i class="icon icon-shouye"></i>
-            <span>首页</span>
-        </a>
-    </li>
-    <li>
-        <a href="#">
-            <i class="icon icon-shouye"></i>
-            <span>首页</span>
-        </a>
-    </li>
-</menu>
+<div class="bny-menu">
+    <menu class="menu-list">
+        <li class="menu-item">
+            <a class="menu-btn">分享</a>
+        </li>
+        <li class="menu-item">
+            <a class="menu-btn">重命名</a>
+        </li>
+    </menu>
+    <menu class="menu-list">
+        <li class="menu-item">
+            <a class="menu-btn">
+                <i class="icon icon-weixuanzhong"></i>
+                无状态
+                <i class="icon icon-you2"></i>
+            </a>
+            <menu class="menu-sub-list">
+                <li class="menu-item">
+                    <a class="menu-btn">
+                        需要审查
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a class="menu-btn">
+                        在加载中
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a class="menu-btn">
+                        批准
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a class="menu-btn">
+                        无状态
+                    </a>
+                </li>
+            </menu>
+        </li>
+        <li class="menu-item">
+            <a class="menu-btn">复制链接地址</a>
+        </li>
+        <li class="menu-item">
+            <a class="menu-btn">移动</a>
+        </li>
+        <li class="menu-item">
+            <a class="menu-btn">复制</a>
+        </li>
+        <li class="menu-item">
+            <a class="menu-btn">粘贴</a>
+        </li>
+        <li class="menu-item">
+            <a class="menu-btn">下载</a>
+        </li>
+    </menu>
+    <menu class="menu-list">
+        <li class="menu-item">
+            <a class="menu-btn">删除</a>
+        </li>
+    </menu>
+</div>
 ```
