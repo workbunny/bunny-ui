@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Bunny-ui</title>
+    <link rel="shortcut icon" href="/assets/bunny/bunny.png" type="image/x-icon">
+    <link href="/assets/bunny/bunny.css" rel="stylesheet" />
+    <link href="/assets/bunny/iconfont/iconfont.css" rel="stylesheet" />
+    <script src="/assets/bunny/bunny.js"></script>
+    <!-- css -->
+    <link rel="stylesheet" href="/index.css">
+</head>
+
+<body>
+    <div class="bny-layout">
+        <!-- 头部 -->
+        <div class="bny-layout-header">
+            <!-- 头部左边 -->
+            <div class="bny-layout-header-left">
+                <div class="bny-layout-header-item">
+                    <a href="javascript:;" title="侧边伸缩">
+                        <i class="icon icon-liebiaoxingshi"></i>
+                    </a>
+                </div>
+                <div class="bny-layout-header-item">
+                    <a href="https://workbunny.github.io/bunny-ui/" target="_blank" title="前台">
+                        <i class="icon icon-wangye"></i>
+                    </a>
+                </div>
+                <div class="bny-layout-header-item">
+                    <a href="javascript:;" title="刷新">
+                        <i class="icon icon-shuaxin_2"></i>
+                    </a>
+                </div>
+            </div>
+            <!-- 头部右边 -->
+            <div class="bny-layout-header-right">
+                <div class="bny-layout-header-item">
+                    <a href="javascript:;" title="消息">
+                        <i class="icon icon-dengpao"></i>
+                    </a>
+                </div>
+                <div class="bny-layout-header-item">
+                    <a href="javascript:;" title="便签">
+                        <i class="icon icon-biaoqian"></i>
+                    </a>
+                </div>
+                <div class="bny-layout-header-item">
+                    <a href="javascript:;" id="is_dark" title="主题">
+                        <i class="icon icon-yueliang"></i>
+                    </a>
+                </div>
+                <div class="bny-layout-header-item">
+                    <a href="javascript:;" title="缩放">
+                        <i class="icon icon-quanping"></i>
+                    </a>
+                </div>
+                <div class="bny-layout-header-item">
+                    <a href="javascript:;" title="User">
+                        User
+                    </a>
+                </div>
+                <div class="bny-layout-header-item">
+                    <a href="javascript:;" title="设置">
+                        <i class="icon icon-shezhi"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+        <!-- 侧边 -->
+        <div class="bny-layout-side">
+            <!-- 导航 -->
+            <nav class="bny-nav" tree hx-ext="bny-nav">
+                <div class="bny-nav-data">
+                    <!-- 品牌 -->
+                    <div class="bny-nav-brand">
+                        <a href="/">BunnyUI</a>
+                    </div>
+                </div>
+                <!-- 菜单 -->
+                <div class="bny-nav-menu">
+                    <menu>
+                        <li>
+                            <a href="javascript:;" hx-trigger="load once" hx-ext="bny-tab-add"
+                                bny-target="#layout-body-tab"
+                                bny-data='{"data":{"id":"0","name":"工作台","url":"/view/workbench.html"}}'>
+                                <div>
+                                    <i class="icon icon-shuju"></i>
+                                    <span>工作台</span>
+                                </div>
+                            </a>
+                        </li>
+                    </menu>
+                </div>
+            </nav>
+        </div>
+        <!-- 主体 -->
+        <div class="bny-layout-body">
+            <div class="bny-tab" id="layout-body-tab" hx-ext="bny-tab" nowrap>
+                <div class="bny-tab-title">
+                </div>
+                <div class="bny-tab-body">
+                </div>
+                <div class="bny-tab-more">
+                    <span class="icon icon-xia2" hx-ext="bny-dropdown" hx-get="/components/tab_more.html"
+                        hx-target="#bny-tab-more"></span>
+                    <div id="bny-tab-more"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- js -->
+    <script src="/index.js"></script>
+</body>
+
+</html>
