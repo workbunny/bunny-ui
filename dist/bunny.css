@@ -2248,6 +2248,7 @@ ul.inline li {
 }
 
 @media only screen and (max-width: 768px) {
+
     .col {
         flex: 0 0 100%;
         max-width: 100%;
@@ -2323,6 +2324,23 @@ ul.inline li {
 }
 
 @media only screen and (min-width: 480px) {
+
+    .bny-hide-xs {
+        display: none;
+    }
+
+    .bny-show-xs-block {
+        display: block;
+    }
+
+    .bny-show-xs-inline {
+        display: inline;
+    }
+
+    .bny-show-xs-inline-block {
+        display: inline-block;
+    }
+
     .xs-1 {
         flex: 0 0 8.3333333333%;
         max-width: 8.3333333333%;
@@ -2385,6 +2403,23 @@ ul.inline li {
 }
 
 @media only screen and (min-width: 768px) {
+
+    .bny-hide-sm {
+        display: none;
+    }
+
+    .bny-show-sm-block {
+        display: block;
+    }
+
+    .bny-show-sm-inline {
+        display: inline;
+    }
+
+    .bny-show-sm-inline-block {
+        display: inline-block;
+    }
+
     .sm-1 {
         flex: 0 0 8.3333333333%;
         max-width: 8.3333333333%;
@@ -2447,6 +2482,23 @@ ul.inline li {
 }
 
 @media only screen and (min-width: 992px) {
+
+    .bny-hide-md {
+        display: none;
+    }
+
+    .bny-show-md-block {
+        display: block;
+    }
+
+    .bny-show-md-inline {
+        display: inline;
+    }
+
+    .bny-show-md-inline-block {
+        display: inline-block;
+    }
+
     .md-1 {
         flex: 0 0 8.3333333333%;
         max-width: 8.3333333333%;
@@ -2509,6 +2561,23 @@ ul.inline li {
 }
 
 @media only screen and (min-width: 1200px) {
+
+    .bny-hide-lg {
+        display: none;
+    }
+
+    .bny-show-lg-block {
+        display: block;
+    }
+
+    .bny-show-lg-inline {
+        display: inline;
+    }
+
+    .bny-show-lg-inline-block {
+        display: inline-block;
+    }
+
     .lg-1 {
         flex: 0 0 8.3333333333%;
         max-width: 8.3333333333%;
@@ -2805,4 +2874,34 @@ ul.inline li {
     /* 黑色 */
     border-color: var(--black);
     color: var(--black);
+}
+
+/* 显示隐藏 */
+.bny-show {
+    display: block
+}
+
+.bny-hide {
+    display: none
+}
+
+/* 显示隐藏 垂直 */
+.bny-show-v {
+    visibility: visible
+}
+
+.bny-hide-v {
+    visibility: hidden
+}
+
+.bny-show-block {
+    display: block
+}
+
+.bny-show-inline {
+    display: inline
+}
+
+.bny-show-inline-block {
+    display: inline-block
 }

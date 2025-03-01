@@ -16,3 +16,14 @@
 | tc | 文本居中对齐 |
 | tr | 文本右对齐 |
 | shadow | 阴影 |
+| bny-show | 显示 |
+| bny-hide | 隐藏 |
+| bny-show-v | 垂直显示 |
+| bny-hide-v | 垂直隐藏 |
+| bny-show-block | 块状显示 |
+| bny-show-inline | 行内显示 |
+| bny-show-inline-block | 行内块状显示 |
+| bny-show-*-block | 定义不同设备下的 display: block; * 可选值有：xs、sm、md、lg |
+| bny-show-*-inline	| 定义不同设备下的 display: inline; * 可选值同上 |
+| layui-show-*-inline-block | 定义不同设备下的 display: inline-block; * 可选值同上 |
+| layui-hide-* | 定义不同设备下的隐藏类，即： display: none; * 可选值同上 |
