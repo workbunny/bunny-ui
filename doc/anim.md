@@ -24,43 +24,43 @@
     }
 </style>
 <div class="row" id="anim">
-    <div class="col col-3">
+    <div class="col-xs-3">
         <div class="box">
             <div>放大</div>
             <span>bny-anim-scale</span>
         </div>
     </div>
-    <div class="col col-3">
+    <div class="col-xs-3">
         <div class="box">
             <div>缩小</div>
             <span>bny-anim-scalesmall</span>
         </div>
     </div>
-    <div class="col col-3">
+    <div class="col-xs-3">
         <div class="box">
             <div>无限旋转</div>
             <span>bny-anim-rotate</span>
         </div>
     </div>
-    <div class="col col-3">
+    <div class="col-xs-3">
         <div class="box">
             <div>左侧滑出</div>
             <span>bny-anim-left</span>
         </div>
     </div>
-    <div class="col col-3">
+    <div class="col-xs-3">
         <div class="box">
             <div>右侧滑出</div>
             <span>bny-anim-right</span>
         </div>
     </div>
-    <div class="col col-3">
+    <div class="col-xs-3">
         <div class="box">
             <div>顶部滑出</div>
             <span>bny-anim-up</span>
         </div>
     </div>
-    <div class="col col-3">
+    <div class="col-xs-3">
         <div class="box">
             <div>底部滑出</div>
             <span>bny-anim-down</span>
