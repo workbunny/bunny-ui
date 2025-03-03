@@ -48,6 +48,7 @@
     align-items: center;
     justify-content: center;
     border-radius: var(--border-radius-large);
+    text-decoration: none;
 }
 
 .bny-layout .bny-layout-header .bny-layout-header-item:hover a {
@@ -145,6 +146,7 @@
 
     .bny-layout .bny-layout-header {
         margin-left: 0;
+        width: 100%;
     }
 
     .bny-layout .bny-layout-body {
