@@ -15,7 +15,7 @@ import htmx from "./htmx"
                     parent.style.opacity = 0
                     setTimeout(() => {
                         parent.remove()
-                    }, 235)
+                    }, 225)
                 })
             }
         }

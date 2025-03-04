@@ -26,7 +26,7 @@ class bunny {
             layer.classList.add("bny-anim-scalesmall")
             setTimeout(function () {
                 layer.remove()
-            }, 230)
+            }, 225)
             fn(layer)
         }, time)
     }
@@ -64,7 +64,7 @@ class bunny {
             confirmBox.classList.add("bny-anim-scalesmall")
             setTimeout(function () {
                 shield.remove();
-            }, 230)
+            }, 225)
         });
 
         // 阻止点击确认框时冒泡到遮罩层
@@ -74,7 +74,7 @@ class bunny {
                 confirmBox.classList.add("bny-anim-scalesmall")
                 setTimeout(function () {
                     shield.remove();
-                }, 230)
+                }, 225)
             }
             event.stopPropagation()
         });
@@ -111,14 +111,14 @@ class bunny {
                 alert.querySelector(".bny-alert>div").classList.add("bny-anim-scalesmall")
                 setTimeout(function () {
                     alert.remove()
-                }, 230)
+                }, 225)
             })
         } else {
             setTimeout(() => {
                 alert.querySelector(".bny-alert>div").classList.add("bny-anim-scalesmall")
                 setTimeout(function () {
                     alert.remove()
-                }, 230)
+                }, 225)
             }, time)
         }
     }
@@ -126,98 +126,189 @@ class bunny {
     /**
      * 打开一个新的窗口
      * @param {Object} options - 窗口配置选项
-     * @param {string} [options.title="信息"] - 窗口的标题
+     * @param {string|false} [options.title="信息"] - 窗口的标题
      * @param {string} [options.content=""] - 窗口的内容，可以是文本或URL
      * @param {string} [options.width="680px"] - 窗口的宽度
      * @param {string} [options.height="520px"] - 窗口的高度
+     * @param {string|Array} [options.offset="auto"] - 窗口的位置，可选值为"auto"、"top"、"bottom"、"left"、"right" 或数组形式的位置坐标
+     * @param {boolean} [options.shade=false] - 是否显示遮罩层 点击遮罩层关闭窗口
+     * @param {number} [options.anim=0] - 窗口的动画效果，可选值为0、1、2、3、4
+     * @returns {void}
      */
-    open({ title = "信息", content = "", width = "680px", height = "520px" } = {}) {
+    page({ title = "信息", content = "", width = "680px", height = "520px", offset = "auto", shade = false, anim = 0 }) {
 
         // 判断内容是否是链接
         if (content.startsWith("http://") || content.startsWith("https://")) {
             content = `<iframe src="${content}"></iframe>`;
         }
-
-        const windowWidth = window.innerWidth;
-        const windowHeight = window.innerHeight;
-        const num = document.querySelectorAll(".bny-open").length;
-        let currentX = parseInt(width) >= windowWidth ? 0 : ((windowWidth - parseInt(width)) / 2) + (num * 10);
-        let currentY = parseInt(height) >= windowHeight ? 0 : ((windowHeight - parseInt(height)) / 2) + (num * 10);
-
-        const open = document.createElement("div");
-        Object.assign(open.style, {
-            width,
-            height,
-            left: `${currentX}px`,
-            top: `${currentY}px`
-        });
-        open.className = "bny-open bny-anim-scale";
-        open.innerHTML = `
-          <div class="bny-open-header">
-            <div class="bny-open-title">${title}</div>
-            <div class="bny-open-setwin">
+        const page = document.createElement("div")
+        const windowWidth = window.innerWidth
+        const windowHeight = window.innerHeight
+        if (width === "100%") {
+            width = windowWidth + "px"
+        }
+        if (height === "100%") {
+            height = windowHeight + "px"
+        }
+        const num = document.querySelectorAll(".bny-page").length
+        let currentX = parseInt(width) >= windowWidth ? 0 : ((windowWidth - parseInt(width)) / 2) + (num * 10)
+        let currentY = parseInt(height) >= windowHeight ? 0 : ((windowHeight - parseInt(height)) / 2) + (num * 10)
+        switch (offset) {
+            case "auto":
+                Object.assign(page.style, {
+                    width,
+                    height,
+                    left: `${currentX}px`,
+                    top: `${currentY}px`
+                });
+                break;
+            case "top":
+                Object.assign(page.style, {
+                    width,
+                    height,
+                    // 窗口的水平中间位置
+                    left: `${currentX}px`,
+                    top: '0'
+                })
+                break;
+            case "bottom":
+                Object.assign(page.style, {
+                    width,
+                    height,
+                    // 窗口的水平中间位置
+                    left: `${currentX}px`,
+                    top: `${windowHeight - parseInt(height)}px`
+                })
+                break;
+            case "left":
+                Object.assign(page.style, {
+                    width,
+                    height,
+                    left: '0',
+                    top: `${currentY}px`
+                })
+                break;
+            case "right":
+                Object.assign(page.style, {
+                    width,
+                    height,
+                    left: `${windowWidth - parseInt(width)}px`,
+                    top: `${currentY}px`
+                })
+                break;
+            default:
+                Object.assign(page.style, {
+                    width,
+                    height,
+                    left: `${offset[0]}`,
+                    top: `${offset[1]}`
+                })
+        }
+        page.className = "bny-page";
+        let anim_class = ["bny-anim-scale", "bny-anim-scalesmall"]
+        switch (anim) {
+            case 1:
+                anim_class[0] = "bny-anim-left"
+                anim_class[1] = "bny-anim-leftOut"
+                break;
+            case 2:
+                anim_class[0] = "bny-anim-right"
+                anim_class[1] = "bny-anim-rightOut"
+                break;
+            case 3:
+                anim_class[0] = "bny-anim-up"
+                anim_class[1] = "bny-anim-upOut"
+                break;
+            case 4:
+                anim_class[0] = "bny-anim-down"
+                anim_class[1] = "bny-anim-downOut"
+                break;
+        }
+        let is_title = "";
+        if (title === false) {
+            is_title = "display:none"
+        }
+        page.classList.add(anim_class[0]);
+        page.innerHTML = `
+          <div class="bny-page-header" style="${is_title}">
+            <div class="bny-page-title">${title}</div>
+            <div class="bny-page-setwin">
               <span class="icon icon-jian min-auto"></span>
               <span class="icon icon-quanping zoom"></span>
               <span class="icon icon-cuo close-btn"></span>
             </div>
           </div>
-          <div class="bny-open-content">${content}</div>
+          <div class="bny-page-content">${content}</div>
         `;
 
-        document.body.appendChild(open);
+        this.#initDrag(page.querySelector(".bny-page-header"), page);
+        this.#initResize(page.querySelector(".zoom"), page, width, height, currentX, currentY);
+        this.#initMinimize(page.querySelector(".min-auto"), page, num, width, height, currentX, currentY);
 
-        this.#initDrag(open.querySelector(".bny-open-header"), open);
-        this.#initResize(open.querySelector(".zoom"), open, width, height, currentX, currentY);
-        this.#initMinimize(open.querySelector(".min-auto"), open, num, width, height, currentX, currentY);
-
-        open.addEventListener('click', () => {
+        page.addEventListener('click', () => {
             // 获取所有的 div 元素
-            let openZindex = document.querySelectorAll('.bny-open');
+            let pageZindex = document.querySelectorAll('.bny-page');
             let maxZIndex = 0;
             // 遍历所有的 div 元素
-            for (let i = 0; i < openZindex.length; i++) {
-                let div = openZindex[i];
+            for (let i = 0; i < pageZindex.length; i++) {
+                let div = pageZindex[i];
                 // 获取当前 div 的 z-index 值
                 const zIndex = parseInt(window.getComputedStyle(div).zIndex);
                 if (zIndex > maxZIndex) {
                     maxZIndex = zIndex;
                 }
             }
-            open.style.zIndex = maxZIndex + 1;
+            page.style.zIndex = maxZIndex + 1;
         });
-
-        open.querySelector(".close-btn").addEventListener("click", e => {
-            open.classList.add("bny-anim-scalesmall");
-            setTimeout(() => open.remove(), 230);
-            e.stopPropagation();
-        });
+        // 关闭按钮
+        if (shade) {
+            const shade = document.createElement("div")
+            shade.className = "bny-layer"
+            shade.appendChild(page)
+            document.body.appendChild(shade)
+            shade.addEventListener("click", e => {
+                if (e.target === shade) {
+                    page.classList.add(anim_class[1])
+                    setTimeout(() => shade.remove(), 225)
+                } else {
+                    e.stopPropagation()
+                }
+            })
+        } else {
+            document.body.appendChild(page);
+            page.querySelector(".close-btn").addEventListener("click", e => {
+                page.classList.add(anim_class[1]);
+                setTimeout(() => page.remove(), 225);
+                e.stopPropagation();
+            });
+        }
     }
 
-    #initDrag(header, open) {
+    #initDrag(header, page) {
         let startX, startY, newX, newY;
         header.addEventListener('mousedown', e => {
             [startX, startY] = [e.clientX, e.clientY];
-            [newX, newY] = [parseInt(open.style.left), parseInt(open.style.top)];
-            open.classList.add('dragging');
+            [newX, newY] = [parseInt(page.style.left), parseInt(page.style.top)];
+            page.classList.add('dragging');
         });
         document.addEventListener('mousemove', e => {
-            if (!open.classList.contains('dragging')) return;
-            Object.assign(open.style, {
+            if (!page.classList.contains('dragging')) return;
+            Object.assign(page.style, {
                 left: `${newX + e.clientX - startX}px`,
                 top: `${newY + e.clientY - startY}px`
             });
         });
-        document.addEventListener('mouseup', () => open.classList.remove('dragging'));
+        document.addEventListener('mouseup', () => page.classList.remove('dragging'));
     }
 
-    #initResize(zoomBtn, open, width, height, currentX, currentY) {
+    #initResize(zoomBtn, page, width, height, currentX, currentY) {
         zoomBtn.addEventListener('click', e => {
             if (zoomBtn.classList.contains('icon-quanping')) {
-                Object.assign(open.style, { width: '100%', height: '100%', top: '0', left: '0' });
+                Object.assign(page.style, { width: '100%', height: '100%', top: '0', left: '0' });
                 zoomBtn.classList.remove('icon-quanping');
                 zoomBtn.classList.add('icon-suoxiao');
             } else {
-                Object.assign(open.style, { width, height, top: `${currentY}px`, left: `${currentX}px` });
+                Object.assign(page.style, { width, height, top: `${currentY}px`, left: `${currentX}px` });
                 zoomBtn.classList.remove('icon-suoxiao');
                 zoomBtn.classList.add('icon-quanping');
             }
@@ -225,19 +316,19 @@ class bunny {
         });
     }
 
-    #initMinimize(minBtn, open, num, width, height, currentX, currentY) {
+    #initMinimize(minBtn, page, num, width, height, currentX, currentY) {
         minBtn.addEventListener('click', e => {
             if (minBtn.classList.contains('icon-jian')) {
-                Object.assign(open.style, { width: '125px', height: 'min-content', bottom: '0', left: `${num * 125}px`, top: 'unset' });
-                open.querySelector('.bny-open-content').style.display = 'none';
-                open.querySelector('.zoom').style.display = 'none';
+                Object.assign(page.style, { width: '125px', height: 'min-content', bottom: '0', left: `${num * 125}px`, top: 'unset' });
+                page.querySelector('.bny-page-content').style.display = 'none';
+                page.querySelector('.zoom').style.display = 'none';
                 minBtn.classList.remove('icon-jian');
                 minBtn.classList.add('icon-fuzhi');
             } else {
-                Object.assign(open.style, { width, height, top: `${currentY}px`, left: `${currentX}px`, bottom: 'unset' });
-                open.querySelector('.bny-open-content').style.display = 'block';
-                open.querySelector('.zoom').style.display = 'inline-block';
-                open.querySelector('.zoom').classList.replace('icon-suoxiao', 'icon-quanping');
+                Object.assign(page.style, { width, height, top: `${currentY}px`, left: `${currentX}px`, bottom: 'unset' });
+                page.querySelector('.bny-page-content').style.display = 'block';
+                page.querySelector('.zoom').style.display = 'inline-block';
+                page.querySelector('.zoom').classList.replace('icon-suoxiao', 'icon-quanping');
                 minBtn.classList.remove('icon-fuzhi');
                 minBtn.classList.add('icon-jian');
             }
