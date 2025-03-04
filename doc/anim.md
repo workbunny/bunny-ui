@@ -5,6 +5,7 @@
         display: flex;
         flex-direction: column;
         align-items: center;
+        padding: 20px;
     }
 
     .box>div {
@@ -50,8 +51,20 @@
     </div>
     <div class="col-xs-3">
         <div class="box">
+            <div>左侧退出</div>
+            <span>bny-anim-leftOut</span>
+        </div>
+    </div>
+    <div class="col-xs-3">
+        <div class="box">
             <div>右侧滑出</div>
             <span>bny-anim-right</span>
+        </div>
+    </div>
+    <div class="col-xs-3">
+        <div class="box">
+            <div>右侧退出</div>
+            <span>bny-anim-rightOut</span>
         </div>
     </div>
     <div class="col-xs-3">
@@ -62,8 +75,20 @@
     </div>
     <div class="col-xs-3">
         <div class="box">
+            <div>顶部退出</div>
+            <span>bny-anim-upOut</span>
+        </div>
+    </div>
+    <div class="col-xs-3">
+        <div class="box">
             <div>底部滑出</div>
             <span>bny-anim-down</span>
+        </div>
+    </div>
+    <div class="col-xs-3">
+        <div class="box">
+            <div>底部退出</div>
+            <span>bny-anim-downOut</span>
         </div>
     </div>
 </div>
