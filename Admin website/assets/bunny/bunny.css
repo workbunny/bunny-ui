@@ -1536,7 +1536,7 @@ table tr:hover {
 }
 
 /* 页面框 */
-.bny-open {
+.bny-page {
     display: block;
     border: 2px solid var(--primary);
     background-color: var(--white);
@@ -1551,7 +1551,7 @@ table tr:hover {
     overflow: hidden;
 }
 
-.bny-open .bny-open-header {
+.bny-page .bny-page-header {
     display: flex;
     width: 100%;
     box-sizing: border-box;
@@ -1562,29 +1562,29 @@ table tr:hover {
     border-bottom: 2px solid var(--primary);
 }
 
-.bny-open .bny-open-header:active {
+.bny-page .bny-page-header:active {
     cursor: move;
 }
 
-.bny-open .bny-open-header .bny-open-setwin {
+.bny-page .bny-page-header .bny-page-setwin {
     white-space: nowrap;
 }
 
-.bny-open .bny-open-header .bny-open-setwin span {
+.bny-page .bny-page-header .bny-page-setwin span {
     margin-left: 10px;
 }
 
-.bny-open .bny-open-header .bny-open-setwin span:hover {
+.bny-page .bny-page-header .bny-page-setwin span:hover {
     cursor: pointer;
 }
 
-.bny-open .bny-open-content {
+.bny-page .bny-page-content {
     box-sizing: border-box;
     width: 100%;
     height: calc(100% - 50px);
 }
 
-.bny-open .bny-open-content iframe {
+.bny-page .bny-page-content>iframe {
     width: 100%;
     height: 100%;
     border: none;
@@ -1641,6 +1641,21 @@ table tr:hover {
     }
 }
 
+.bny-anim-leftOut {
+    /* 退出到左侧 */
+    animation: anim-leftOut 235ms ease-in-out;
+}
+
+@keyframes anim-leftOut {
+    from {
+        transform: translateX(0);
+    }
+
+    to {
+        transform: translateX(-100%);
+    }
+}
+
 .bny-anim-right {
     /* 右侧滑出 */
     animation: anim-right 235ms ease-in-out;
@@ -1653,6 +1668,21 @@ table tr:hover {
 
     to {
         transform: translateX(0);
+    }
+}
+
+.bny-anim-rightOut {
+    /* 退出到右侧 */
+    animation: anim-rightOut 235ms ease-in-out;
+}
+
+@keyframes anim-rightOut {
+    from {
+        transform: translateX(0);
+    }
+
+    to {
+        transform: translateX(100%);
     }
 }
 
@@ -1671,6 +1701,21 @@ table tr:hover {
     }
 }
 
+.bny-anim-upOut {
+    /* 退出到顶部 */
+    animation: anim-upOut 235ms ease-in-out;
+}
+
+@keyframes anim-upOut {
+    from {
+        transform: translateY(0);
+    }
+
+    to {
+        transform: translateY(-100%);
+    }
+}
+
 .bny-anim-down {
     /* 底部滑出 */
     animation: anim-down 235ms ease-in-out;
@@ -1683,6 +1728,21 @@ table tr:hover {
 
     to {
         transform: translateY(0);
+    }
+}
+
+.bny-anim-downOut {
+    /* 退出到底部 */
+    animation: anim-downOut 235ms ease-in-out;
+}
+
+@keyframes anim-downOut {
+    from {
+        transform: translateY(0);
+    }
+
+    to {
+        transform: translateY(100%);
     }
 }
 
