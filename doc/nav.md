@@ -1,346 +1,66 @@
-导航栏
-
-<style>
-    header {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        z-index: 999;
-        background: var(--white);
-    }
-
-    header i,
-    header a {
-        color: var(--primary);
-    }
-</style>
-<header>
-    <nav class="bny-nav" hx-ext="bny-nav">
-        <div class="bny-nav-data">
-            <!-- 品牌 -->
-            <div class="bny-nav-brand">
-                <a href="#">BunnyUI</a>
-            </div>
-            <!-- 切换 -->
-            <div class="bny-nav-toggle">
-                <i class="icon icon-gengduo1 burger"></i>
-                <i class="icon icon-cuo close"></i>
-            </div>
-        </div>
-        <!-- 菜单 -->
-        <div class="bny-nav-menu">
-            <menu>
-                <li>
-                    <a href="#">首页</a>
-                </li>
-                <li>
-                    <a href="#">公司</a>
-                </li>
-                <!-- 子菜单 -->
-                <li class="bny-nav-dropdown">
+### 导航栏
+<!-- 导航栏 -->
+<nav class="bny-nav">
+    <!-- 导航栏标题 -->
+    <div class="bny-nav-title">
+        <a href="javascript:;">
+            <!-- <img src="/dist/bunny.jpg" alt="bunny"> -->
+            BunnyUI
+        </a>
+    </div>
+    <!-- 导航栏主体 -->
+    <ul class="bny-nav-body">
+        <li class="bny-nav-item">
+            <a href="javascript:;">
+                <span>首页</span>
+            </a>
+        </li>
+        <li class="bny-nav-item">
+            <a href="javascript:;">
+                <span>编程</span>
+                <i class="icon icon-you2 bny-nav-more"></i>
+            </a>
+            <!-- 导航栏子项 -->
+            <ul class="bny-nav-child">
+                <li class="bny-nav-item">
                     <a href="javascript:;">
-                        分析
-                        <i class="icon icon-you2 arrow"></i>
+                        <span>HTML</span>
                     </a>
-                    <menu>
-                        <li>
-                            <a href="#">概述</a>
-                        </li>
-                        <li>
-                            <a href="#">交易</a>
-                        </li>
-                        <!-- 孙菜单 -->
-                        <li class="bny-nav-dropdown">
+                </li>
+                <li class="bny-nav-item">
+                    <a href="javascript:;">
+                        <span>JAVASCRIPT</span>
+                    </a>
+                    <!-- 导航栏子项 -->
+                    <ul class="bny-nav-child">
+                        <li class="bny-nav-item">
                             <a href="javascript:;">
-                                报告
-                                <i class="icon icon-jia add"></i>
+                                <span>HTMX</span>
                             </a>
-                            <menu>
-                                <li>
-                                    <a href="#">文档</a>
-                                </li>
-                                <li>
-                                    <a href="#">支付</a>
-                                </li>
-                                <li>
-                                    <a href="#">退款</a>
-                                </li>
-                            </menu>
                         </li>
-                    </menu>
-                </li>
-                <li><a href="#">产品</a></li>
-                <!-- 子菜单 -->
-                <li class="bny-nav-dropdown">
-                    <a href="javascript:;">
-                        用户
-                        <i class="icon icon-you2 arrow"></i>
-                    </a>
-                    <menu>
-                        <li>
-                            <a href="#">配置信息</a>
-                        </li>
-                        <li>
-                            <a href="#">账户</a>
-                        </li>
-                        <li>
-                            <a href="#">留言</a>
-                        </li>
-                    </menu>
-                </li>
-                <li><a href="#">关于我们</a></li>
-            </menu>
-        </div>
-    </nav>
-</header>
-<nav class="bny-nav" hx-ext="bny-nav">
-    <div class="bny-nav-data">
-        <!-- 品牌 -->
-        <div class="bny-nav-brand">
-            <a href="#">BunnyUI</a>
-        </div>
-        <!-- 切换 -->
-        <div class="bny-nav-toggle">
-            <i class="icon icon-gengduo1 burger"></i>
-            <i class="icon icon-cuo close"></i>
-        </div>
-    </div>
-    <!-- 菜单 -->
-    <div class="bny-nav-menu">
-        <menu>
-            <li class="this">
-                <a href="#">首页</a>
-            </li>
-            <li>
-                <a href="#">公司</a>
-            </li>
-            <!-- 子菜单 -->
-            <li class="bny-nav-dropdown">
-                <a href="javascript:;">
-                    分析
-                    <i class="icon icon-you2 arrow"></i>
-                </a>
-                <menu>
-                    <li>
-                        <a href="#">概述</a>
-                    </li>
-                    <li>
-                        <a href="#">交易</a>
-                    </li>
-                    <!-- 孙菜单 -->
-                    <li class="bny-nav-dropdown">
-                        <a href="javascript:;">
-                            报告
-                            <i class="icon icon-jia add"></i>
-                        </a>
-                        <menu>
-                            <li>
-                                <a href="#">文档</a>
-                            </li>
-                            <li>
-                                <a href="#">支付</a>
-                            </li>
-                            <li>
-                                <a href="#">退款</a>
-                            </li>
-                        </menu>
-                    </li>
-                </menu>
-            </li>
-            <li><a href="#">产品</a></li>
-            <!-- 子菜单 -->
-            <li class="bny-nav-dropdown">
-                <a href="javascript:;">
-                    用户
-                    <i class="icon icon-you2 arrow"></i>
-                </a>
-                <menu>
-                    <li>
-                        <a href="#">配置信息</a>
-                    </li>
-                    <li>
-                        <a href="#">账户</a>
-                    </li>
-                    <li>
-                        <a href="#">留言</a>
-                    </li>
-                </menu>
-            </li>
-            <li><a href="#">关于我们</a></li>
-        </menu>
-    </div>
-</nav>
-
-```html
-<nav class="bny-nav" hx-ext="bny-nav">
-    <div class="bny-nav-data">
-        <!-- 品牌 -->
-        <div class="bny-nav-brand">
-            <a href="#">BunnyUI</a>
-        </div>
-        <!-- 切换 -->
-        <div class="bny-nav-toggle">
-            <i class="icon icon-gengduo1 burger"></i>
-            <i class="icon icon-cuo close"></i>
-        </div>
-    </div>
-    <!-- 菜单 -->
-    <div class="bny-nav-menu">
-        <menu>
-            <li>
-                <a href="#">首页</a>
-            </li>
-            <li>
-                <a href="#">公司</a>
-            </li>
-            <!-- 子菜单 -->
-            <li class="bny-nav-dropdown">
-                <a href="javascript:;">
-                    分析
-                    <i class="icon icon-you2 arrow"></i>
-                </a>
-                <menu>
-                    <li>
-                        <a href="#">概述</a>
-                    </li>
-                    <li>
-                        <a href="#">交易</a>
-                    </li>
-                    <!-- 孙菜单 -->
-                    <li class="bny-nav-dropdown">
-                        <a href="javascript:;">
-                            报告
-                            <i class="icon icon-jia add"></i>
-                        </a>
-                        <menu>
-                            <li>
-                                <a href="#">文档</a>
-                            </li>
-                            <li>
-                                <a href="#">支付</a>
-                            </li>
-                            <li>
-                                <a href="#">退款</a>
-                            </li>
-                        </menu>
-                    </li>
-                </menu>
-            </li>
-            <li><a href="#">产品</a></li>
-            <!-- 子菜单 -->
-            <li class="bny-nav-dropdown">
-                <a href="javascript:;">
-                    用户
-                    <i class="icon icon-you2 arrow"></i>
-                </a>
-                <menu>
-                    <li>
-                        <a href="#">配置信息</a>
-                    </li>
-                    <li>
-                        <a href="#">账户</a>
-                    </li>
-                    <li>
-                        <a href="#">留言</a>
-                    </li>
-                </menu>
-            </li>
-            <li><a href="#">关于我们</a></li>
-        </menu>
-    </div>
-</nav>
-```
-
-左侧导航栏
-
-<div style="width: 230px;">
-    <nav class="bny-nav" tree hx-ext="bny-nav">
-        <div class="bny-nav-data">
-            <!-- 品牌 -->
-            <div class="bny-nav-brand">
-                <a href="/">BunnyUI</a>
-            </div>
-        </div>
-        <!-- 菜单 -->
-        <div class="bny-nav-menu">
-            <menu>
-                <li>
-                    <a href="javascript:;">首页</a>
-                </li>
-                <li class="this">
-                    <a href="javascript:;">公司</a>
-                </li>
-                <!-- 子菜单 -->
-                <li class="bny-nav-dropdown">
-                    <a href="javascript:;">
-                        分析
-                        <i class="icon icon-you2 arrow"></i>
-                    </a>
-                    <menu>
-                        <li>
-                            <a href="javascript:;">概述</a>
-                        </li>
-                        <li>
-                            <a href="javascript:;">交易</a>
-                        </li>
-                        <!-- 孙菜单 -->
-                        <li class="bny-nav-dropdown">
+                        <li class="bny-nav-item">
                             <a href="javascript:;">
-                                报告
-                                <i class="icon icon-jia add"></i>
+                                <span>VUE</span>
                             </a>
-                            <menu>
-                                <li>
-                                    <a href="javascript:;">文档</a>
-                                </li>
-                                <li>
-                                    <a href="javascript:;">支付</a>
-                                </li>
-                                <li>
-                                    <a href="javascript:;">退款</a>
-                                </li>
-                            </menu>
                         </li>
-                    </menu>
+                    </ul>
                 </li>
-                <li><a href="javascript:;">产品</a></li>
-                <!-- 子菜单 -->
-                <li class="bny-nav-dropdown">
+                <li class="bny-nav-item">
                     <a href="javascript:;">
-                        用户
-                        <i class="icon icon-you2 arrow"></i>
+                        <span>CSS</span>
                     </a>
-                    <menu>
-                        <li>
-                            <a href="javascript:;">配置信息</a>
-                        </li>
-                        <li>
-                            <a href="javascript:;">账户</a>
-                        </li>
-                        <li>
-                            <a href="javascript:;">留言</a>
-                        </li>
-                    </menu>
                 </li>
-                <li><a href="javascript:;">关于我们</a></li>
-            </menu>
-        </div>
-    </nav>
-</div>
-
-```html
-<!-- 添加属性tree即可 -->
-<nav class="bny-nav" tree hx-ext="bny-nav">
-    <div class="bny-nav-data">
-        <!-- 品牌 -->
-        <div class="bny-nav-brand">
-            <a href="/">BunnyUI</a>
-        </div>
-    </div>
-    <!-- 菜单 -->
-    <div class="bny-nav-menu">
-        ....
-    </div>
+            </ul>
+        </li>
+        <li class="bny-nav-item">
+            <a href="javascript:;">
+                <span>关于我们</span>
+            </a>
+        </li>
+        <li class="bny-nav-item">
+            <a href="javascript:;">
+                <span>联系我们</span>
+            </a>
+        </li>
+    </ul>
 </nav>
-```

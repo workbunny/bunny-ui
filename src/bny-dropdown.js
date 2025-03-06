@@ -83,12 +83,9 @@ import htmx from "./htmx"
 
     htmx.defineExtension("bny-dropdown", {
         onEvent: function (name, evt) {
-
-            if (name === "htmx:afterProcessNode") {
-                const dropdown = createDropdown(evt.target)
-                evt.target.addEventListener("click", function (e) {
-                    dropdown.toggle()
-                })
+            const dropdown = createDropdown(evt.target)
+            if (name === "htmx:xhr:loadend") {
+                dropdown.toggle()
             }
         }
     })
