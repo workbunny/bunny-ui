@@ -1855,6 +1855,11 @@ table tr:hover {
     align-items: center;
     flex-wrap: nowrap;
     box-shadow: var(--box-shadow-small);
+    background-color: var(--white);
+}
+
+.bny-nav a {
+    text-decoration: none;
 }
 
 .bny-nav .bny-nav-title {
@@ -1865,6 +1870,14 @@ table tr:hover {
     height: 60px;
     padding: 5px;
     display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.bny-nav .bny-nav-title a {
+    display: flex;
+    width: 100%;
+    height: 100%;
     align-items: center;
     justify-content: center;
 }
@@ -1885,11 +1898,35 @@ table tr:hover {
     display: flex;
     align-items: center;
     justify-content: center;
+    position: relative;
+}
+
+.bny-nav .bny-nav-body ul {
+    padding: 0;
 }
 
 .bny-nav .bny-nav-body li a {
-    padding: 0 10px;
+    padding: 0 20px;
     font-size: var(--font-size-16);
+    white-space: nowrap;
+    align-items: center;
+    display: inline-flex;
+    position: relative;
+}
+
+.bny-nav .bny-nav-body li a .bny-nav-more {
+    position: absolute;
+    top: 6px;
+    right: 3px;
+    left: auto;
+    margin-top: 0;
+    font-size: var(--font-size);
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.bny-nav .bny-nav-body li a cite {
+    font-style: normal;
 }
 
 .bny-nav .bny-nav-body li::before {
@@ -1898,12 +1935,267 @@ table tr:hover {
 
 .bny-nav .bny-nav-body .bny-nav-child {
     display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: min-content;
+    background-color: var(--white);
+    box-shadow: var(--box-shadow-small);
 }
 
-.bny-nav .bny-nav-item a>.bny-nav-more{
-    margin-left: 5px;
+.bny-nav .bny-nav-body .bny-nav-child a {
+    width: 100%;
+    margin: 10px 0;
 }
 
+.bny-nav .bny-nav-body li.child-hover>.bny-nav-child {
+    display: block;
+    animation: anim-bny-nav-down 235ms ease-in-out;
+}
+
+@keyframes anim-bny-nav-down {
+    from {
+        transform: translateY(-10px);
+    }
+
+    to {
+        transform: translateY(0);
+    }
+}
+
+.bny-nav .bny-nav-body .bny-nav-child .bny-nav-child {
+    left: 100%;
+    top: 0;
+}
+
+.bny-nav .bny-nav-body li.child-hover>a>.bny-nav-more {
+    transform: rotate(90deg);
+}
+
+.bny-nav .bny-nav-toggle {
+    display: none;
+    width: calc(100% - 180px);
+}
+
+.bny-nav .bny-nav-toggle a {
+    padding: 15px;
+    font-size: var(--font-size-20);
+}
+
+@media screen and (max-width: 768px) {
+    .bny-nav {
+        flex-wrap: wrap;
+    }
+
+    .bny-nav .bny-nav-toggle {
+        display: block;
+        text-align: right;
+    }
+
+    .bny-nav .bny-nav-body {
+        height: 0;
+        overflow: hidden auto;
+        transition: var(--transition);
+        border-top: 1px solid var(--primary);
+        width: 100%;
+        flex-direction: column;
+    }
+
+    .bny-nav .bny-nav-body li {
+        height: auto !important;
+        flex-direction: column;
+        margin: 0 !important;
+    }
+
+    .bny-nav .bny-nav-body a {
+        width: 100%;
+        height: auto;
+        padding: 20px !important;
+        padding-right: 40px !important;
+    }
+
+    .bny-nav .bny-nav-body a .bny-nav-more {
+        font-size: 26px !important;
+        top: 18px !important;
+    }
+
+    .bny-nav.nav-toggle .bny-nav-body {
+        height: 300px;
+    }
+
+    .bny-nav .bny-nav-child {
+        position: unset !important;
+        box-shadow: none !important;
+        width: 100% !important;
+        background-color: var(--muted-40) !important;
+        animation: anim-bny-nav-down2 235ms;
+        overflow: hidden;
+        min-height: min-content;
+    }
+}
+
+@keyframes anim-bny-nav-down2 {
+    from {
+        height: 0;
+    }
+
+    to {
+        height: auto;
+    }
+}
+
+/* 侧边导航栏 */
+.bny-nav-lateral {
+    width: 100%;
+    height: 100%;
+    background-color: var(--white);
+    box-shadow: var(--box-shadow-small);
+}
+
+.bny-nav-lateral .bny-nav-title {
+    height: 60px;
+    width: 100%;
+}
+
+.bny-nav-lateral .bny-nav-title a {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    align-items: center;
+    justify-content: center;
+    font-size: var(--font-size-20);
+    font-weight: 500;
+}
+
+.bny-nav-lateral .bny-nav-title .nav-logo {
+    display: none;
+}
+
+.bny-nav-lateral .bny-nav-body {
+    width: 100%;
+    border-top: 1px solid var(--primary);
+}
+
+.bny-nav-lateral a {
+    text-decoration: none;
+}
+
+.bny-nav-lateral .bny-nav-body li a cite {
+    font-style: normal;
+}
+
+.bny-nav-lateral .bny-nav-body li::before {
+    display: none;
+}
+
+.bny-nav-lateral ul {
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.bny-nav-lateral ul li {
+    text-indent: 0;
+    position: relative;
+}
+
+.bny-nav-lateral .bny-nav-item a {
+    padding: 15px 20px;
+    display: block;
+    font-size: var(--font-size-16);
+    padding-right: 5px;
+}
+
+.bny-nav-lateral .bny-nav-item a .bny-nav-more {
+    float: right;
+    font-size: var(--font-size-20);
+    transition: var(--transition);
+}
+
+.bny-nav-lateral .bny-nav-item .bny-nav-child {
+    display: none;
+    /* box-shadow: var(--box-shadow-small); */
+    z-index: 999;
+    background-color: var(--white);
+}
+
+.bny-nav-lateral .bny-nav-item.child-hover>a>.bny-nav-more {
+    transform: rotate(90deg);
+}
+
+.bny-nav-lateral .bny-nav-item.child-hover>.bny-nav-child {
+    display: block;
+    background-color: var(--muted-40);
+}
+
+.bny-nav-lateral.nav-toggle {
+    width: 60px;
+}
+
+.bny-nav-lateral.nav-toggle .bny-nav-title .nav-logo {
+    display: block;
+}
+
+.bny-nav-lateral.nav-toggle .bny-nav-title .nav-name {
+    display: none;
+}
+
+.bny-nav-lateral.nav-toggle a {
+    white-space: nowrap;
+    display: flex;
+    flex-wrap: nowrap;
+}
+
+.bny-nav-lateral.nav-toggle .bny-nav-body a cite {
+    display: none;
+}
+
+.bny-nav-lateral.nav-toggle .bny-nav-child cite {
+    display: block !important;
+}
+
+.bny-nav-lateral.nav-toggle a .nav-icon {
+    font-size: var(--font-size-20);
+    margin-right: 20px;
+}
+
+.bny-nav-lateral.nav-toggle a .bny-nav-more {
+    display: none;
+}
+
+.bny-nav-lateral.nav-toggle .bny-nav-child .bny-nav-more {
+    display: block !important;
+    padding-left: 10px;
+}
+
+.bny-nav-lateral.nav-toggle .bny-nav-child {
+    position: absolute;
+    top: 0;
+    left: 100%;
+    width: auto;
+    box-shadow: var(--box-shadow-small);
+}
+
+.bny-nav-lateral.nav-toggle .bny-nav-item {
+    z-index: 999;
+}
+
+.bny-nav-lateral.nav-toggle .child-hover .bny-nav-child {
+    background-color: var(--white) !important;
+}
+
+.bny-nav-lateral.nav-toggle .bny-nav-item.child-hover>.bny-nav-child {
+    display: block;
+}
+
+.bny-nav-lateral.nav-toggle .child-hover>a>.bny-nav-more {
+    transform: rotate(90deg);
+}
+
+.bny-nav-lateral.nav-toggle .bny-nav-child .bny-nav-item a {
+    padding: 15px !important;
+}
 
 /* 徽章 */
 .bny-badge {
@@ -1980,17 +2272,25 @@ table tr:hover {
     background: var(--white);
     border: 2px solid var(--primary);
     box-shadow: var(--box-shadow-small);
-    opacity: 0;
-    transform: translateY(-10px);
-    transition: var(--transition);
+    animation: anim-bny-dropdown 235ms ease-in-out;
     z-index: 1000;
     border-radius: var(--border-radius-large);
     overflow: hidden;
+    display: none;
 }
 
 .bny-dropdown.active {
-    opacity: 1;
-    transform: translateY(0);
+    display: block;
+}
+
+@keyframes anim-bny-dropdown {
+    from {
+        transform: translateY(-10px);
+    }
+
+    to {
+        transform: translateY(0);
+    }
 }
 
 /* 列表 */
