@@ -2270,27 +2270,20 @@ table tr:hover {
     position: fixed;
     min-width: min-content;
     background: var(--white);
-    border: 2px solid var(--primary);
     box-shadow: var(--box-shadow-small);
-    animation: anim-bny-dropdown 235ms ease-in-out;
+    opacity: 0;
+    transform: translateY(-10px);
+    transition: var(--transition);
     z-index: 1000;
+    height: 0;
     border-radius: var(--border-radius-large);
     overflow: hidden;
-    display: none;
 }
 
 .bny-dropdown.active {
-    display: block;
-}
-
-@keyframes anim-bny-dropdown {
-    from {
-        transform: translateY(-10px);
-    }
-
-    to {
-        transform: translateY(0);
-    }
+    opacity: 1;
+    transform: translateY(0);
+    height: auto;
 }
 
 /* 列表 */
