@@ -1,3 +1,4 @@
+
 // 主题切换函数
 const changeTheme = () => {
     document.querySelector('html').classList.toggle('dark')
@@ -44,7 +45,7 @@ let is_menu = false
 // 此事件在 htmx 将新节点加载到 DOM 中时触发。
 document.body.addEventListener("htmx:load", function (event) {
     if (!is_menu) {
-        const menu = htmx.find(".bny-layout-side .bny-nav")
+        const menu = htmx.find(".bny-layout-side .bny-nav-lateral")
         if (menu) {
             const item = htmx.find(menu, "li>a")
             item.click()
@@ -172,9 +173,27 @@ htmx.on("#fullScreen", "click", function (e) {
 // 点击伸缩菜单
 htmx.on("#left-menu", "click", function (e) {
     const layout = htmx.find(".bny-layout")
-    if (layout.classList.contains("mini-menu")) {
-        layout.classList.remove("mini-menu")
+    const menu = htmx.find(".bny-layout-side .bny-nav-lateral")
+
+    if (window.innerWidth < 768) {
+        bunny.page({
+            title: false,
+            content: `<nav class="bny-nav-lateral" hx-ext="bny-nav-lateral">${menu.innerHTML}</nav>`,
+            width: "220px",
+            height: "100%",
+            offset: "left",
+            anim: 1,
+            shade: true,
+        })
+        const layer = htmx.find(".bny-layer")
+        // htmx.process(layer)
     } else {
-        layout.classList.add("mini-menu")
+        if (layout.classList.contains("mini-menu")) {
+            layout.classList.remove("mini-menu")
+            menu.classList.remove("nav-toggle")
+        } else {
+            layout.classList.add("mini-menu")
+            menu.classList.add("nav-toggle")
+        }
     }
 })

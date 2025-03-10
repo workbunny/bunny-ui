@@ -1,111 +1,101 @@
-<!-- 导航 -->
-<nav class="bny-nav" tree hx-ext="bny-nav">
-    <div class="bny-nav-data">
-        <!-- 品牌 -->
-        <div class="bny-nav-brand">
-            <a href="/" class="bny-logo">
-                <span>BunnyUI</span>
-                <img src="/assets/bunny/bunny.png" alt="logo">
+<!-- 侧边导航栏 -->
+<nav class="bny-nav-lateral" hx-ext="bny-nav-lateral">
+    <!-- 导航栏标题 -->
+    <div class="bny-nav-title">
+        <a href="javascript:;">
+            <img class="nav-logo" src="/assets/bunny/bunny.png" alt="bunny" />
+            <span class="nav-name">BunnyUI</span>
+        </a>
+    </div>
+    <!-- 导航栏主体 -->
+    <ul class="bny-nav-body">
+        <li class="bny-nav-item">
+            <a href="javascript:;" hx-ext="bny-tab-add" bny-target="#layout-body-tab"
+                bny-data='{"data":{"id":"0","name":"工作台","url":"/view/workbench.html"}}'>
+                <i class="icon icon-shuju"></i>
+                <cite>工作台</cite>
             </a>
-        </div>
-    </div>
-    <!-- 菜单 -->
-    <div class="bny-nav-menu">
-        <menu>
-            <li>
-                <a href="javascript:;" hx-ext="bny-tab-add" bny-target="#layout-body-tab"
-                    bny-data='{"data":{"id":"0","name":"工作台","url":"/view/workbench.html"}}'>
-                    <div>
-                        <i class="icon icon-shuju"></i>
-                        <span>工作台</span>
-                    </div>
-                </a>
-            </li>
-            <li class="bny-nav-dropdown">
-                <a href="javascript:;">
-                    <div>
-                        <i class="icon icon-guanli"></i>
-                        <span>组件</span>
-                    </div>
-                    <i class="icon icon-you2 arrow"></i>
-                </a>
-                <menu>
-                    <li class="bny-nav-dropdown">
-                        <a href="javascript:;">
-                            弹性盒子
-                            <i class="icon icon-you2 arrow"></i>
-                        </a>
-                        <menu>
-                            <li>
-                                <a href="javascript:;">
-                                    从堆叠到水平排列
-                                </a>
-                            </li>
-                        </menu>
-                    </li>
-                    <li>
-                        <a href="javascript:;">
-                            按钮
-                        </a>
-                    </li>
-                    <li>
-                        <a href="javascript:;">
-                            表单
-                        </a>
-                    </li>
-                    <li>
-                        <a href="javascript:;">
-                            表格
-                        </a>
-                    </li>
-                    <li>
-                        <a href="javascript:;">
-                            弹出框
-                        </a>
-                    </li>
-                    <li>
-                        <a href="javascript:;">
-                            面板
-                        </a>
-                    </li>
-                </menu>
-            </li>
-            <li class="bny-nav-dropdown">
-                <a href="javascript:;">
-                    <div>
-                        <i class="icon icon-fenlei_6"></i>
-                        <span>页面</span>
-                    </div>
-                    <i class="icon icon-you2 arrow"></i>
-                </a>
-                <menu>
-                    <li>
-                        <a href="javascript:;">
-                            个人主页
-                        </a>
-                    </li>
-                    <li>
-                        <a href="javascript:;">
-                            通讯录
-                        </a>
-                    </li>
-                    <li>
-                        <a href="javascript:;">
-                            404页面
-                        </a>
-                    </li>
-                    <li>
-                        <a href="javascript:;">
-                            出错页
-                        </a>
-                    </li>
-                    <li>
-                        <a href="javascript:;">
-                            iframe
-                        </a>
-                    </li>
-                </menu>
-            </li>
-        </menu>
-    </div>
+        </li>
+        <li class="bny-nav-item">
+            <a href="javascript:;">
+                <i class="icon icon-guanli"></i>
+                <cite>组件</cite>
+            </a>
+            <!-- 导航栏子项 -->
+            <ul class="bny-nav-child">
+                <li class="bny-nav-item">
+                    <a href="javascript:;">
+                        <i class="icon icon-jingbao"></i>
+                        <cite>弹性盒子</cite>
+                    </a>
+                    <!-- 导航栏子项 -->
+                    <ul class="bny-nav-child">
+                        <li class="bny-nav-item">
+                            <a href="javascript:;">
+                                <cite>从堆叠到水平排列</cite>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+                <li class="bny-nav-item">
+                    <a href="javascript:;">
+                        <cite>按钮</cite>
+                    </a>
+                </li>
+                <li class="bny-nav-item">
+                    <a href="javascript:;">
+                        <cite>表单</cite>
+                    </a>
+                </li>
+                <li class="bny-nav-item">
+                    <a href="javascript:;">
+                        <cite>表格</cite>
+                    </a>
+                </li>
+                <li class="bny-nav-item">
+                    <a href="javascript:;">
+                        <cite>弹出框</cite>
+                    </a>
+                </li>
+                <li class="bny-nav-item">
+                    <a href="javascript:;">
+                        <cite>面板</cite>
+                    </a>
+                </li>
+            </ul>
+        </li>
+        <li class="bny-nav-item">
+            <a href="javascript:;">
+                <i class="icon icon-fenlei_6"></i>
+                <cite>页面</cite>
+            </a>
+            <ul class="bny-nav-child">
+                <li class="bny-nav-item">
+                    <a href="javascript:;">
+                        <cite>个人主页</cite>
+                    </a>
+                </li>
+                <li class="bny-nav-item">
+                    <a href="javascript:;">
+                        <cite>通讯录</cite>
+                    </a>
+                </li>
+                <li class="bny-nav-item">
+                    <a href="javascript:;">
+                        <cite>404页面</cite>
+                    </a>
+                </li>
+                <li class="bny-nav-item">
+                    <a href="javascript:;">
+                        <cite>出错页</cite>
+                    </a>
+                </li>
+                <li class="bny-nav-item">
+                    <a href="javascript:;">
+                        <cite>iframe</cite>
+                    </a>
+                </li>
+            </ul>
+        </li>
+    </ul>
 </nav>

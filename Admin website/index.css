@@ -10,7 +10,7 @@
 
 /* 容器头部 */
 .bny-layout .bny-layout-header {
-    height: 3.6rem;
+    height: 60px;
     position: absolute;
     width: calc(100% - 220px);
     top: 0;
@@ -70,7 +70,7 @@
     left: 0;
     height: 100%;
     z-index: 1000;
-    overflow: hidden auto;
+    /* overflow: hidden auto; */
     border-right: 2px solid var(--primary);
     background-color: var(--white);
     transition: var(--transition);
@@ -86,7 +86,7 @@
     width: calc(100% - 220px);
     top: 55.99px;
     left: 220px;
-    height: calc(100% - 3.6rem);
+    height: calc(100% - 60px);
     overflow: hidden;
     background: var(--white);
     transition: var(--transition);
@@ -129,10 +129,11 @@
     padding: 0 5px;
     cursor: pointer;
     background-color: var(--white);
-    line-height: 40px;
+    line-height: 38px;
     border: 2px solid var(--primary);
     border-radius: var(--border-radius);
     float: right;
+    margin-top: 2px;
 }
 
 .bny-layout .bny-layout-body .bny-tab .bny-tab-body {
@@ -148,8 +149,9 @@
 
 /* 左侧菜单伸缩 */
 .mini-menu .bny-layout-side {
-    width: 60px;
-    overflow: hidden;
+    width: 62px;
+    /* overflow: hidden; */
+    position: relative;
 }
 
 .mini-menu .bny-layout-side .bny-nav {
@@ -161,13 +163,13 @@
 }
 
 .mini-menu .bny-layout-header {
-    width: calc(100% - 60px);
-    margin-left: 60px;
+    width: calc(100% - 62px);
+    margin-left: 62px;
 }
 
 .mini-menu .bny-layout-body {
-    width: calc(100% - 60px);
-    left: 60px;
+    width: calc(100% - 62px);
+    left: 62px;
 }
 
 .mini-menu .bny-logo img {
@@ -201,3 +203,12 @@
 }
 
 /* -------------------------布局容器END------------------------- */
+
+.bny-nav-lateral {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    left: 0;
+    top: 0;
+    z-index: 1000;
+}
