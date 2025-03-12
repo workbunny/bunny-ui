@@ -80,7 +80,7 @@
 <nav class="bny-nav-lateral" hx-ext="bny-nav-lateral">
     <!-- logo详情 -->
     <div class="bny-nav-title">
-        <img src="/dist/bunny.png" alt="bunny" class="logo" />
+        <img src="dist/bunny.png" alt="bunny" class="logo" />
         <span class="bny-nav-text">BunnyUI</span>
     </div>
     <!-- 导航栏主体 -->
@@ -170,7 +170,7 @@
 <nav class="bny-nav-lateral" hx-ext="bny-nav-lateral">
     <!-- logo详情 -->
     <div class="bny-nav-title">
-        <img src="/dist/bunny.png" alt="bunny" class="logo" />
+        <img src="dist/bunny.png" alt="bunny" class="logo" />
         <span class="bny-nav-text">BunnyUI</span>
     </div>
     <!-- 导航栏主体 -->
@@ -260,7 +260,7 @@
 <nav class="bny-nav-lateral close" hx-ext="bny-nav-lateral">
     <!-- logo详情 -->
     <div class="bny-nav-title">
-        <img src="/dist/bunny.png" alt="bunny" class="logo" />
+        <img src="dist/bunny.png" alt="bunny" class="logo" />
         <span class="bny-nav-text">BunnyUI</span>
     </div>
     <!-- 导航栏主体 -->

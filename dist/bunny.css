@@ -557,13 +557,25 @@ button[disabled].bny-btn {
 }
 
 .bny-form-group label:first-child {
-    display: block;
+    display: flex;
     padding: 9px 15px;
+    margin-bottom: 5px;
     padding-left: 0px;
-    /* width: 80px; */
     font-weight: 400;
     line-height: 20px;
+    flex-wrap: nowrap;
+    align-items: center;
     color: var(--primary);
+}
+
+.bny-form-group label:first-child::before {
+    content: "";
+    height: 20px;
+    background-color: var(--primary);
+    display: inline-block;
+    border: 2px solid var(--primary);
+    margin-right: 5px;
+    border-radius: 10px;
 }
 
 .bny-form-inline {
@@ -576,8 +588,8 @@ button[disabled].bny-btn {
 .bny-form-inline label:first-child {
     position: relative;
     padding: 9px 15px;
-    width: 80px;
-    min-width: 80px;
+    width: 110px;
+    min-width: 110px;
     font-weight: 400;
     line-height: 20px;
     text-align: right;
@@ -593,12 +605,12 @@ button[disabled].bny-btn {
 
 .bny-form-pane label:first-child {
     position: relative;
-    padding: 7px 15px;
-    width: 80px;
-    min-width: 80px;
+    padding: 7px 5px;
+    width: 110px;
+    min-width: 110px;
     font-weight: 400;
     line-height: 20px;
-    text-align: right;
+    text-align: center;
     box-sizing: border-box;
     border: 2px solid var(--primary);
     border-right-width: 1px;
