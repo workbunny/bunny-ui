@@ -1,90 +1,16 @@
 ### 导航栏
 
-<style>
-    header {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        z-index: 999;
-    }
-</style>
-<header>
-    <!-- 导航栏 -->
-    <nav class="bny-nav" hx-ext="bny-nav">
-        <!-- 导航栏标题 -->
-        <div class="bny-nav-title">
-            <a href="javascript:;">
-                <img src="/dist/bunny.jpg" alt="bunny" />
-                <!-- BunnyUI -->
-            </a>
-        </div>
-        <!-- 导航栏主体 -->
-        <ul class="bny-nav-body">
-            <li class="bny-nav-item">
-                <a href="javascript:;">
-                    <cite>首页</cite>
-                </a>
-            </li>
-            <li class="bny-nav-item">
-                <a href="javascript:;">
-                    <cite>编程</cite>
-                </a>
-                <!-- 导航栏子项 -->
-                <ul class="bny-nav-child">
-                    <li class="bny-nav-item">
-                        <a href="javascript:;">
-                            <cite>HTML</cite>
-                        </a>
-                    </li>
-                    <li class="bny-nav-item">
-                        <a href="javascript:;">
-                            <i class="icon icon-jingbao"></i>
-                            <cite>JAVASCRIPT</cite>
-                        </a>
-                        <!-- 导航栏子项 -->
-                        <ul class="bny-nav-child">
-                            <li class="bny-nav-item">
-                                <a href="javascript:;">
-                                    <cite>HTMX</cite>
-                                </a>
-                            </li>
-                            <li class="bny-nav-item">
-                                <a href="javascript:;">
-                                    <cite>VUE</cite>
-                                </a>
-                            </li>
-                        </ul>
-                    </li>
-                    <li class="bny-nav-item">
-                        <a href="javascript:;">
-                            <cite>CSS</cite>
-                        </a>
-                    </li>
-                </ul>
-            </li>
-            <li class="bny-nav-item">
-                <a href="javascript:;">
-                    <cite>关于我们</cite>
-                </a>
-            </li>
-            <li class="bny-nav-item">
-                <a href="javascript:;">
-                    <cite>联系我们</cite>
-                </a>
-            </li>
-        </ul>
-    </nav>
-</header>
-
 <!-- 导航栏 -->
 <nav class="bny-nav" hx-ext="bny-nav">
     <!-- 导航栏标题 -->
     <div class="bny-nav-title">
         <a href="javascript:;">
-            <!-- <img src="/dist/bunny.jpg" alt="bunny"/> -->
+            <!-- <img src="/dist/bunny.jpg" alt="bunny" /> -->
             BunnyUI
         </a>
+        <button class="bny-btn toggle">
+            <i class="icon icon-gengduo1"></i>
+        </button>
     </div>
     <!-- 导航栏主体 -->
     <ul class="bny-nav-body">
@@ -93,42 +19,10 @@
                 <cite>首页</cite>
             </a>
         </li>
-        <li class="bny-nav-item">
+        <li class="bny-nav-item active">
             <a href="javascript:;">
                 <cite>编程</cite>
             </a>
-            <!-- 导航栏子项 -->
-            <ul class="bny-nav-child">
-                <li class="bny-nav-item">
-                    <a href="javascript:;">
-                        <cite>HTML</cite>
-                    </a>
-                </li>
-                <li class="bny-nav-item">
-                    <a href="javascript:;">
-                        <i class="icon icon-jingbao"></i>
-                        <cite>JAVASCRIPT</cite>
-                    </a>
-                    <!-- 导航栏子项 -->
-                    <ul class="bny-nav-child">
-                        <li class="bny-nav-item">
-                            <a href="javascript:;">
-                                <cite>HTMX</cite>
-                            </a>
-                        </li>
-                        <li class="bny-nav-item">
-                            <a href="javascript:;">
-                                <cite>VUE</cite>
-                            </a>
-                        </li>
-                    </ul>
-                </li>
-                <li class="bny-nav-item">
-                    <a href="javascript:;">
-                        <cite>CSS</cite>
-                    </a>
-                </li>
-            </ul>
         </li>
         <li class="bny-nav-item">
             <a href="javascript:;">
@@ -149,9 +43,11 @@
     <!-- 导航栏标题 -->
     <div class="bny-nav-title">
         <a href="javascript:;">
-            <!-- <img src="/dist/bunny.jpg" alt="bunny"/> -->
             BunnyUI
         </a>
+        <button class="bny-btn toggle">
+            <i class="icon icon-gengduo1"></i>
+        </button>
     </div>
     <!-- 导航栏主体 -->
     <ul class="bny-nav-body">
@@ -160,42 +56,10 @@
                 <cite>首页</cite>
             </a>
         </li>
-        <li class="bny-nav-item">
+        <li class="bny-nav-item active">
             <a href="javascript:;">
                 <cite>编程</cite>
             </a>
-            <!-- 导航栏子项 -->
-            <ul class="bny-nav-child">
-                <li class="bny-nav-item">
-                    <a href="javascript:;">
-                        <cite>HTML</cite>
-                    </a>
-                </li>
-                <li class="bny-nav-item">
-                    <a href="javascript:;">
-                        <i class="icon icon-jingbao"></i>
-                        <cite>JAVASCRIPT</cite>
-                    </a>
-                    <!-- 导航栏子项 -->
-                    <ul class="bny-nav-child">
-                        <li class="bny-nav-item">
-                            <a href="javascript:;">
-                                <cite>HTMX</cite>
-                            </a>
-                        </li>
-                        <li class="bny-nav-item">
-                            <a href="javascript:;">
-                                <cite>VUE</cite>
-                            </a>
-                        </li>
-                    </ul>
-                </li>
-                <li class="bny-nav-item">
-                    <a href="javascript:;">
-                        <cite>CSS</cite>
-                    </a>
-                </li>
-            </ul>
         </li>
         <li class="bny-nav-item">
             <a href="javascript:;">
@@ -211,282 +75,279 @@
 </nav>
 ```
 
-<div style="width: 220px;">
-    <!-- 侧边导航栏 -->
-    <nav class="bny-nav-lateral" hx-ext="bny-nav-lateral">
-        <!-- 导航栏标题 -->
-        <div class="bny-nav-title">
-            <a href="javascript:;">
-                <img class="nav-logo" src="/dist/bunny.jpg" alt="bunny" />
-                <span class="nav-name">BunnyUI</span>
-            </a>
-        </div>
-        <!-- 导航栏主体 -->
-        <ul class="bny-nav-body">
-            <li class="bny-nav-item">
-                <a href="javascript:;">
-                    <cite>首页</cite>
-                </a>
-            </li>
-            <li class="bny-nav-item">
-                <a href="javascript:;">
-                    <cite>编程</cite>
-                </a>
-                <!-- 导航栏子项 -->
-                <ul class="bny-nav-child">
-                    <li class="bny-nav-item">
-                        <a href="javascript:;">
-                            <cite>HTML</cite>
-                        </a>
-                    </li>
-                    <li class="bny-nav-item">
-                        <a href="javascript:;">
-                            <i class="icon icon-jingbao"></i>
-                            <cite>JAVASCRIPT</cite>
-                        </a>
-                        <!-- 导航栏子项 -->
-                        <ul class="bny-nav-child">
-                            <li class="bny-nav-item">
-                                <a href="javascript:;">
-                                    <cite>HTMX</cite>
-                                </a>
-                            </li>
-                            <li class="bny-nav-item">
-                                <a href="javascript:;">
-                                    <cite>VUE</cite>
-                                </a>
-                            </li>
-                        </ul>
-                    </li>
-                    <li class="bny-nav-item">
-                        <a href="javascript:;">
-                            <cite>CSS</cite>
-                        </a>
-                    </li>
-                </ul>
-            </li>
-            <li class="bny-nav-item">
-                <a href="javascript:;">
-                    <cite>关于我们</cite>
-                </a>
-            </li>
-            <li class="bny-nav-item">
-                <a href="javascript:;">
-                    <cite>联系我们</cite>
-                </a>
-            </li>
-        </ul>
-    </nav>
-</div>
+### 侧边栏
 
-```html
-<div style="width: 220px;">
-    <!-- 侧边导航栏 -->
-    <nav class="bny-nav-lateral" hx-ext="bny-nav-lateral">
-        <!-- 导航栏标题 -->
-        <div class="bny-nav-title">
-            <a href="javascript:;">
-                <img class="nav-logo" src="/dist/bunny.jpg" alt="bunny" />
-                <span class="nav-name">BunnyUI</span>
-            </a>
-        </div>
-        <!-- 导航栏主体 -->
-        <ul class="bny-nav-body">
-            <li class="bny-nav-item">
-                <a href="javascript:;">
-                    <cite>首页</cite>
-                </a>
-            </li>
-            <li class="bny-nav-item">
-                <a href="javascript:;">
-                    <cite>编程</cite>
-                </a>
-                <!-- 导航栏子项 -->
-                <ul class="bny-nav-child">
-                    <li class="bny-nav-item">
-                        <a href="javascript:;">
-                            <cite>HTML</cite>
-                        </a>
-                    </li>
-                    <li class="bny-nav-item">
-                        <a href="javascript:;">
-                            <i class="icon icon-jingbao"></i>
-                            <cite>JAVASCRIPT</cite>
-                        </a>
-                        <!-- 导航栏子项 -->
-                        <ul class="bny-nav-child">
-                            <li class="bny-nav-item">
-                                <a href="javascript:;">
-                                    <cite>HTMX</cite>
-                                </a>
-                            </li>
-                            <li class="bny-nav-item">
-                                <a href="javascript:;">
-                                    <cite>VUE</cite>
-                                </a>
-                            </li>
-                        </ul>
-                    </li>
-                    <li class="bny-nav-item">
-                        <a href="javascript:;">
-                            <cite>CSS</cite>
-                        </a>
-                    </li>
-                </ul>
-            </li>
-            <li class="bny-nav-item">
-                <a href="javascript:;">
-                    <cite>关于我们</cite>
-                </a>
-            </li>
-            <li class="bny-nav-item">
-                <a href="javascript:;">
-                    <cite>联系我们</cite>
-                </a>
-            </li>
-        </ul>
-    </nav>
-</div>
-```
-
-<!-- 侧边导航栏 -->
-<nav class="bny-nav-lateral nav-toggle" hx-ext="bny-nav-lateral">
-    <!-- 导航栏标题 -->
+<nav class="bny-nav-lateral" hx-ext="bny-nav-lateral">
+    <!-- logo详情 -->
     <div class="bny-nav-title">
-        <a href="javascript:;">
-            <img class="nav-logo" src="/dist/bunny.jpg" alt="bunny" />
-            <span class="nav-name">BunnyUI</span>
-        </a>
+        <img src="/dist/bunny.png" alt="bunny" class="logo" />
+        <span class="bny-nav-text">BunnyUI</span>
     </div>
     <!-- 导航栏主体 -->
     <ul class="bny-nav-body">
-        <li class="bny-nav-item">
-            <a href="javascript:;">
-                <i class="icon icon-jingbao nav-icon"></i>
-                <cite>首页</cite>
+        <li>
+            <a href="#">
+                <i class="icon icon-weixin"></i>
+                <span class="bny-nav-name">控制台</span>
             </a>
-        </li>
-        <li class="bny-nav-item">
-            <a href="javascript:;">
-                <i class="icon icon-jingbao nav-icon"></i>
-                <cite>编程</cite>
-            </a>
-            <!-- 导航栏子项 -->
             <ul class="bny-nav-child">
-                <li class="bny-nav-item">
-                    <a href="javascript:;">
-                        <cite>HTML</cite>
-                    </a>
-                </li>
-                <li class="bny-nav-item">
-                    <a href="javascript:;">
-                        <i class="icon icon-jingbao"></i>
-                        <cite>JAVASCRIPT</cite>
-                    </a>
-                    <!-- 导航栏子项 -->
-                    <ul class="bny-nav-child">
-                        <li class="bny-nav-item">
-                            <a href="javascript:;">
-                                <cite>HTMX</cite>
-                            </a>
-                        </li>
-                        <li class="bny-nav-item">
-                            <a href="javascript:;">
-                                <cite>VUE</cite>
-                            </a>
-                        </li>
-                    </ul>
-                </li>
-                <li class="bny-nav-item">
-                    <a href="javascript:;">
-                        <cite>CSS</cite>
-                    </a>
-                </li>
+                <li><a class="bny-nav-name" href="#">控制台</a></li>
             </ul>
         </li>
-        <li class="bny-nav-item">
-            <a href="javascript:;">
-                <i class="icon icon-jingbao nav-icon"></i>
-                <cite>关于我们</cite>
-            </a>
+        <li>
+            <div class="bny-nav-iocn">
+                <a href="#">
+                    <i class="icon icon-weixin"></i>
+                    <span class="bny-nav-name">项目</span>
+                </a>
+                <i class="icon icon-xia2 arrow"></i>
+            </div>
+            <ul class="bny-nav-child">
+                <li><a class="bny-nav-name" href="#">项目</a></li>
+                <li><a href="#">HTML & CSS</a></li>
+                <li><a href="#">JavaScript</a></li>
+            </ul>
         </li>
-        <li class="bny-nav-item">
-            <a href="javascript:;">
-                <i class="icon icon-jingbao nav-icon"></i>
-                <cite>联系我们</cite>
+        <li>
+            <div class="bny-nav-iocn">
+                <a href="#">
+                    <i class="icon icon-weixin"></i>
+                    <span class="bny-nav-name">分类</span>
+                </a>
+                <i class="icon icon-xia2 arrow"></i>
+            </div>
+            <ul class="bny-nav-child">
+                <li><a class="bny-nav-name" href="#">分类</a></li>
+                <li>
+                    <div class="bny-nav-iocn">
+                        <a href="#">
+                            <i class="icon icon-weixin"></i>
+                            <span>网站设置</span>
+                        </a>
+                        <i class="icon icon-xia2 arrow"></i>
+                    </div>
+                    <ul class="bny-nav-child">
+                        <li><a class="bny-nav-name" href="#">网站设置</a></li>
+                        <li><a href="#">网站设置1</a></li>
+                        <li><a href="#">网站设置2</a></li>
+                    </ul>
+                </li>
+                <li><a href="#">登录菜单</a></li>
+                <li><a href="#">卡片</a></li>
+            </ul>
+        </li>
+        <li>
+            <a href="#">
+                <i class="icon icon-weixin"></i>
+                <span class="bny-nav-name">个人信息</span>
             </a>
+            <ul class="bny-nav-child">
+                <li><a class="bny-nav-name" href="#">个人信息</a></li>
+            </ul>
+        </li>
+        <li>
+            <a href="#">
+                <i class="icon icon-weixin"></i>
+                <span class="bny-nav-name">我的信息</span>
+            </a>
+            <ul class="bny-nav-child">
+                <li><a class="bny-nav-name" href="#">我的信息</a></li>
+            </ul>
+        </li>
+        <li>
+            <a href="#">
+                <i class="icon icon-weixin"></i>
+                <span class="bny-nav-name">Setting</span>
+            </a>
+            <ul class="bny-nav-child">
+                <li><a class="bny-nav-name" href="#">Setting</a></li>
+            </ul>
         </li>
     </ul>
 </nav>
 
 ```html
-<!-- 侧边导航栏 -->
-<nav class="bny-nav-lateral nav-toggle" hx-ext="bny-nav-lateral">
-    <!-- 导航栏标题 -->
+<nav class="bny-nav-lateral" hx-ext="bny-nav-lateral">
+    <!-- logo详情 -->
     <div class="bny-nav-title">
-        <a href="javascript:;">
-            <img class="nav-logo" src="/dist/bunny.jpg" alt="bunny" />
-            <span class="nav-name">BunnyUI</span>
-        </a>
+        <img src="/dist/bunny.png" alt="bunny" class="logo" />
+        <span class="bny-nav-text">BunnyUI</span>
     </div>
     <!-- 导航栏主体 -->
     <ul class="bny-nav-body">
-        <li class="bny-nav-item">
-            <a href="javascript:;">
-                <i class="icon icon-jingbao nav-icon"></i>
-                <cite>首页</cite>
+        <li>
+            <a href="#">
+                <i class="icon icon-weixin"></i>
+                <span class="bny-nav-name">控制台</span>
             </a>
-        </li>
-        <li class="bny-nav-item">
-            <a href="javascript:;">
-                <i class="icon icon-jingbao nav-icon"></i>
-                <cite>编程</cite>
-            </a>
-            <!-- 导航栏子项 -->
             <ul class="bny-nav-child">
-                <li class="bny-nav-item">
-                    <a href="javascript:;">
-                        <cite>HTML</cite>
-                    </a>
-                </li>
-                <li class="bny-nav-item">
-                    <a href="javascript:;">
-                        <i class="icon icon-jingbao"></i>
-                        <cite>JAVASCRIPT</cite>
-                    </a>
-                    <!-- 导航栏子项 -->
-                    <ul class="bny-nav-child">
-                        <li class="bny-nav-item">
-                            <a href="javascript:;">
-                                <cite>HTMX</cite>
-                            </a>
-                        </li>
-                        <li class="bny-nav-item">
-                            <a href="javascript:;">
-                                <cite>VUE</cite>
-                            </a>
-                        </li>
-                    </ul>
-                </li>
-                <li class="bny-nav-item">
-                    <a href="javascript:;">
-                        <cite>CSS</cite>
-                    </a>
-                </li>
+                <li><a class="bny-nav-name" href="#">控制台</a></li>
             </ul>
         </li>
-        <li class="bny-nav-item">
-            <a href="javascript:;">
-                <i class="icon icon-jingbao nav-icon"></i>
-                <cite>关于我们</cite>
-            </a>
+        <li>
+            <div class="bny-nav-iocn">
+                <a href="#">
+                    <i class="icon icon-weixin"></i>
+                    <span class="bny-nav-name">项目</span>
+                </a>
+                <i class="icon icon-xia2 arrow"></i>
+            </div>
+            <ul class="bny-nav-child">
+                <li><a class="bny-nav-name" href="#">项目</a></li>
+                <li><a href="#">HTML & CSS</a></li>
+                <li><a href="#">JavaScript</a></li>
+            </ul>
         </li>
-        <li class="bny-nav-item">
-            <a href="javascript:;">
-                <i class="icon icon-jingbao nav-icon"></i>
-                <cite>联系我们</cite>
+        <li>
+            <div class="bny-nav-iocn">
+                <a href="#">
+                    <i class="icon icon-weixin"></i>
+                    <span class="bny-nav-name">分类</span>
+                </a>
+                <i class="icon icon-xia2 arrow"></i>
+            </div>
+            <ul class="bny-nav-child">
+                <li><a class="bny-nav-name" href="#">分类</a></li>
+                <li>
+                    <div class="bny-nav-iocn">
+                        <a href="#">
+                            <i class="icon icon-weixin"></i>
+                            <span>网站设置</span>
+                        </a>
+                        <i class="icon icon-xia2 arrow"></i>
+                    </div>
+                    <ul class="bny-nav-child">
+                        <li><a class="bny-nav-name" href="#">网站设置</a></li>
+                        <li><a href="#">网站设置1</a></li>
+                        <li><a href="#">网站设置2</a></li>
+                    </ul>
+                </li>
+                <li><a href="#">登录菜单</a></li>
+                <li><a href="#">卡片</a></li>
+            </ul>
+        </li>
+        <li>
+            <a href="#">
+                <i class="icon icon-weixin"></i>
+                <span class="bny-nav-name">个人信息</span>
             </a>
+            <ul class="bny-nav-child">
+                <li><a class="bny-nav-name" href="#">个人信息</a></li>
+            </ul>
+        </li>
+        <li>
+            <a href="#">
+                <i class="icon icon-weixin"></i>
+                <span class="bny-nav-name">我的信息</span>
+            </a>
+            <ul class="bny-nav-child">
+                <li><a class="bny-nav-name" href="#">我的信息</a></li>
+            </ul>
+        </li>
+        <li>
+            <a href="#">
+                <i class="icon icon-weixin"></i>
+                <span class="bny-nav-name">Setting</span>
+            </a>
+            <ul class="bny-nav-child">
+                <li><a class="bny-nav-name" href="#">Setting</a></li>
+            </ul>
         </li>
     </ul>
+</nav>
+```
+
+<nav class="bny-nav-lateral close" hx-ext="bny-nav-lateral">
+    <!-- logo详情 -->
+    <div class="bny-nav-title">
+        <img src="/dist/bunny.png" alt="bunny" class="logo" />
+        <span class="bny-nav-text">BunnyUI</span>
+    </div>
+    <!-- 导航栏主体 -->
+    <ul class="bny-nav-body">
+        <li>
+            <a href="#">
+                <i class="icon icon-weixin"></i>
+                <span class="bny-nav-name">控制台</span>
+            </a>
+            <ul class="bny-nav-child">
+                <li><a class="bny-nav-name" href="#">控制台</a></li>
+            </ul>
+        </li>
+        <li>
+            <div class="bny-nav-iocn">
+                <a href="#">
+                    <i class="icon icon-weixin"></i>
+                    <span class="bny-nav-name">项目</span>
+                </a>
+                <i class="icon icon-xia2 arrow"></i>
+            </div>
+            <ul class="bny-nav-child">
+                <li><a class="bny-nav-name" href="#">项目</a></li>
+                <li><a href="#">HTML & CSS</a></li>
+                <li><a href="#">JavaScript</a></li>
+            </ul>
+        </li>
+        <li>
+            <div class="bny-nav-iocn">
+                <a href="#">
+                    <i class="icon icon-weixin"></i>
+                    <span class="bny-nav-name">分类</span>
+                </a>
+                <i class="icon icon-xia2 arrow"></i>
+            </div>
+            <ul class="bny-nav-child">
+                <li><a class="bny-nav-name" href="#">分类</a></li>
+                <li>
+                    <div class="bny-nav-iocn">
+                        <a href="#">
+                            <i class="icon icon-weixin"></i>
+                            <span>网站设置</span>
+                        </a>
+                        <i class="icon icon-xia2 arrow"></i>
+                    </div>
+                    <ul class="bny-nav-child">
+                        <li><a class="bny-nav-name" href="#">网站设置</a></li>
+                        <li><a href="#">网站设置1</a></li>
+                        <li><a href="#">网站设置2</a></li>
+                    </ul>
+                </li>
+                <li><a href="#">登录菜单</a></li>
+                <li><a href="#">卡片</a></li>
+            </ul>
+        </li>
+        <li>
+            <a href="#">
+                <i class="icon icon-weixin"></i>
+                <span class="bny-nav-name">个人信息</span>
+            </a>
+            <ul class="bny-nav-child">
+                <li><a class="bny-nav-name" href="#">个人信息</a></li>
+            </ul>
+        </li>
+        <li>
+            <a href="#">
+                <i class="icon icon-weixin"></i>
+                <span class="bny-nav-name">我的信息</span>
+            </a>
+            <ul class="bny-nav-child">
+                <li><a class="bny-nav-name" href="#">我的信息</a></li>
+            </ul>
+        </li>
+        <li>
+            <a href="#">
+                <i class="icon icon-weixin"></i>
+                <span class="bny-nav-name">Setting</span>
+            </a>
+            <ul class="bny-nav-child">
+                <li><a class="bny-nav-name" href="#">Setting</a></li>
+            </ul>
+        </li>
+    </ul>
+</nav>
+
+```html
+<nav class="bny-nav-lateral close" hx-ext="bny-nav-lateral">
+    ...
 </nav>
 ```
