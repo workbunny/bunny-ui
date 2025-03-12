@@ -1,100 +1,80 @@
-<!-- 侧边导航栏 -->
 <nav class="bny-nav-lateral" hx-ext="bny-nav-lateral">
-    <!-- 导航栏标题 -->
+    <!-- logo详情 -->
     <div class="bny-nav-title">
-        <a href="javascript:;">
-            <img class="nav-logo" src="/assets/bunny/bunny.png" alt="bunny" />
-            <span class="nav-name">BunnyUI</span>
-        </a>
+        <img src="/assets/bunny/bunny.png" alt="bunny" class="logo" />
+        <span class="bny-nav-text">BunnyUI</span>
     </div>
     <!-- 导航栏主体 -->
     <ul class="bny-nav-body">
-        <li class="bny-nav-item">
-            <a href="javascript:;" hx-ext="bny-tab-add" bny-target="#layout-body-tab"
-                bny-data='{"data":{"id":"0","name":"工作台","url":"/view/workbench.html"}}'>
+        <li>
+            <a href="javascript:;" hx-ext="bny-tab-add" bny-target="#layout-body-tab" bny-id="0" bny-name="工作台"
+                bny-url="/view/worked/workbench.html">
                 <i class="icon icon-shuju"></i>
-                <cite>工作台</cite>
+                <span class="bny-nav-name">工作台</span>
             </a>
-        </li>
-        <li class="bny-nav-item">
-            <a href="javascript:;">
-                <i class="icon icon-guanli"></i>
-                <cite>组件</cite>
-            </a>
-            <!-- 导航栏子项 -->
             <ul class="bny-nav-child">
-                <li class="bny-nav-item">
-                    <a href="javascript:;">
-                        <i class="icon icon-jingbao"></i>
-                        <cite>弹性盒子</cite>
-                    </a>
-                    <!-- 导航栏子项 -->
-                    <ul class="bny-nav-child">
-                        <li class="bny-nav-item">
-                            <a href="javascript:;">
-                                <cite>从堆叠到水平排列</cite>
-                            </a>
-                        </li>
-                    </ul>
-                </li>
-                <li class="bny-nav-item">
-                    <a href="javascript:;">
-                        <cite>按钮</cite>
-                    </a>
-                </li>
-                <li class="bny-nav-item">
-                    <a href="javascript:;">
-                        <cite>表单</cite>
-                    </a>
-                </li>
-                <li class="bny-nav-item">
-                    <a href="javascript:;">
-                        <cite>表格</cite>
-                    </a>
-                </li>
-                <li class="bny-nav-item">
-                    <a href="javascript:;">
-                        <cite>弹出框</cite>
-                    </a>
-                </li>
-                <li class="bny-nav-item">
-                    <a href="javascript:;">
-                        <cite>面板</cite>
-                    </a>
-                </li>
+                <li><a class="bny-nav-name" href="javascript:;" hx-ext="bny-tab-add" bny-target="#layout-body-tab"
+                        bny-id="0" bny-name="工作台" bny-url="/view/worked/workbench.html">工作台</a></li>
             </ul>
         </li>
-        <li class="bny-nav-item">
-            <a href="javascript:;">
-                <i class="icon icon-fenlei_6"></i>
-                <cite>页面</cite>
+        <li>
+            <div class="bny-nav-iocn">
+                <a href="javascript:;">
+                    <i class="icon icon-guanli"></i>
+                    <span class="bny-nav-name">组件</span>
+                </a>
+                <i class="icon icon-xia2 arrow"></i>
+            </div>
+            <ul class="bny-nav-child">
+                <li><a class="bny-nav-name" href="javascript:;">组件</a></li>
+                <li>
+                    <div class="bny-nav-iocn">
+                        <a href="#">
+                            <i class="icon icon-jingbao"></i>
+                            <span>弹性盒子</span>
+                        </a>
+                        <i class="icon icon-xia2 arrow"></i>
+                    </div>
+                    <ul class="bny-nav-child">
+                        <li><a class="bny-nav-name" href="#">弹性盒子</a></li>
+                        <li><a href="#">从堆叠到水平排列</a></li>
+                    </ul>
+                </li>
+                <li>
+                    <a href="javascript:;" hx-ext="bny-tab-add" bny-target="#layout-body-tab" bny-id="101" bny-name="按钮"
+                        bny-url="/view/module/button.html" bny-is-delete="true">按钮</a>
+                </li>
+                <li><a href="javascript:;" hx-ext="bny-tab-add" bny-target="#layout-body-tab" bny-id="101" bny-name="按钮"
+                        bny-url="/view/module/form.html" bny-is-delete="true">表单</a></li>
+                <li><a href="#">表格</a></li>
+                <li><a href="#">弹出框</a></li>
+                <li><a href="#">面板</a></li>
+            </ul>
+        </li>
+        <li>
+            <div class="bny-nav-iocn">
+                <a href="#">
+                    <i class="icon icon-weixin"></i>
+                    <span class="bny-nav-name">页面</span>
+                </a>
+                <i class="icon icon-xia2 arrow"></i>
+            </div>
+            <ul class="bny-nav-child">
+                <li><a class="bny-nav-name" href="#">页面</a></li>
+                <li><a href="#">个人主页</a></li>
+                <li><a href="#">通讯录</a></li>
+                <li><a href="#">404页面</a></li>
+                <li><a href="#">出错页</a></li>
+                <li><a href="#">iframe</a></li>
+            </ul>
+        </li>
+        <li>
+            <a href="#">
+                <i class="icon icon-weixin"></i>
+                <span class="bny-nav-name">Setting</span>
             </a>
             <ul class="bny-nav-child">
-                <li class="bny-nav-item">
-                    <a href="javascript:;">
-                        <cite>个人主页</cite>
-                    </a>
-                </li>
-                <li class="bny-nav-item">
-                    <a href="javascript:;">
-                        <cite>通讯录</cite>
-                    </a>
-                </li>
-                <li class="bny-nav-item">
-                    <a href="javascript:;">
-                        <cite>404页面</cite>
-                    </a>
-                </li>
-                <li class="bny-nav-item">
-                    <a href="javascript:;">
-                        <cite>出错页</cite>
-                    </a>
-                </li>
-                <li class="bny-nav-item">
-                    <a href="javascript:;">
-                        <cite>iframe</cite>
-                    </a>
-                </li>
+                <li><a class="bny-nav-name" href="#">Setting</a></li>
             </ul>
         </li>
     </ul>

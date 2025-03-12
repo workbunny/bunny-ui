@@ -149,7 +149,7 @@
 
 /* 左侧菜单伸缩 */
 .mini-menu .bny-layout-side {
-    width: 62px;
+    width: 72px;
     /* overflow: hidden; */
     position: relative;
 }
@@ -163,13 +163,13 @@
 }
 
 .mini-menu .bny-layout-header {
-    width: calc(100% - 62px);
-    margin-left: 62px;
+    width: calc(100% - 72px);
+    margin-left: 72px;
 }
 
 .mini-menu .bny-layout-body {
-    width: calc(100% - 62px);
-    left: 62px;
+    width: calc(100% - 72px);
+    left: 72px;
 }
 
 .mini-menu .bny-logo img {

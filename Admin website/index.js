@@ -174,11 +174,10 @@ htmx.on("#fullScreen", "click", function (e) {
 htmx.on("#left-menu", "click", function (e) {
     const layout = htmx.find(".bny-layout")
     const menu = htmx.find(".bny-layout-side .bny-nav-lateral")
-
     if (window.innerWidth < 768) {
         bunny.page({
             title: false,
-            content: `<nav class="bny-nav-lateral" hx-ext="bny-nav-lateral">${menu.innerHTML}</nav>`,
+            content: `<div hx-get="/components/menu.html" hx-trigger="load"></div>`,
             width: "220px",
             height: "100%",
             offset: "left",
@@ -186,14 +185,14 @@ htmx.on("#left-menu", "click", function (e) {
             shade: true,
         })
         const layer = htmx.find(".bny-layer")
-        // htmx.process(layer)
+        htmx.process(layer)
     } else {
         if (layout.classList.contains("mini-menu")) {
             layout.classList.remove("mini-menu")
-            menu.classList.remove("nav-toggle")
+            menu.classList.remove("close")
         } else {
             layout.classList.add("mini-menu")
-            menu.classList.add("nav-toggle")
+            menu.classList.add("close")
         }
     }
 })
