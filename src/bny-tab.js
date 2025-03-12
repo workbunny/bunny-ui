@@ -210,9 +210,23 @@ import tool from "./tool"
      */
     function StaticAddTab(evt) {
         if (evt.target.getAttribute("hx-get") === null) {
-            const res = JSON.parse(evt.target.getAttribute("bny-data"))
+            const bny_target = evt.target.getAttribute("bny-target")
+            const bny_id = evt.target.getAttribute("bny-id") || ""
+            const bny_name = evt.target.getAttribute("bny-name")
+            const bny_conten = evt.target.getAttribute("bny-conten") || ""
+            const bny_is_delete = evt.target.getAttribute("bny-is-delete")
+            const bny_url = evt.target.getAttribute("bny-url") || ""
+            const res = {
+                data: {
+                    id: bny_id,
+                    name: bny_name,
+                    conten: bny_conten,
+                    isDelete: bny_is_delete,
+                    url: bny_url
+                }
+            }
             htmx.on(evt.target, "click", () => {
-                addTab(evt.target.getAttribute("bny-target"), res)
+                addTab(bny_target, res)
             })
         }
     }

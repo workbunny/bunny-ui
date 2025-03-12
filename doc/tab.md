@@ -105,8 +105,8 @@
 > 添加和删除
 
 <button class="bny-btn" hx-ext="bny-tab-add" hx-get="doc/json/tab/add.json" bny-target="#demo01">追加</button>
-<button class="bny-btn" hx-ext="bny-tab-add" bny-target="#demo01"
-    bny-data='{"data":{"name":"静态追加","conten":"静态数据","isDelete":true}}'>静态追加</button>
+<button class="bny-btn" hx-ext="bny-tab-add" bny-target="#demo01" bny-name="静态追加" bny-conten="静态数据" bny-is-delete="true"
+    bny-id="2">静态追加</button>
 <button class="bny-btn" hx-ext="bny-tab-del" bny-target="#demo01" bny-id="2">删除指定(选项二)</button>
 <button class="bny-btn" hx-ext="bny-tab-del" bny-target="#demo01" bny-id="this">删除当前</button>
 <button class="bny-btn" hx-ext="bny-tab-del" bny-target="#demo01" bny-id="all">删除全部</button>
@@ -150,8 +150,8 @@
 
 ```html
 <button class="bny-btn" hx-ext="bny-tab-add" hx-get="doc/json/tab/add.json" bny-target="#demo01">追加</button>
-<button class="bny-btn" hx-ext="bny-tab-add" bny-target="#demo01"
-    bny-data='{"data":{"name":"静态追加","conten":"静态数据","isDelete":true}}'>静态追加</button>
+<button class="bny-btn" hx-ext="bny-tab-add" bny-target="#demo01" bny-name="静态追加" bny-conten="静态数据"
+    bny-is-delete="true">静态追加</button>
 <button class="bny-btn" hx-ext="bny-tab-del" bny-target="#demo01" bny-id="2">删除指定(选项二)</button>
 <button class="bny-btn" hx-ext="bny-tab-del" bny-target="#demo01" bny-id="this">删除当前</button>
 <button class="bny-btn" hx-ext="bny-tab-del" bny-target="#demo01" bny-id="all">删除全部</button>
