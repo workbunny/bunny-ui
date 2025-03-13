@@ -14,6 +14,36 @@
 <input type="text" class="bny-input" disabled placeholder="文本框 禁用">
 ```
 
+#### 输入框点缀
+
+<div style="width: 400px;padding: 20px;max-width: 100%;">
+    <form action="" class="bny-form">
+        <div class="bny-input-group">
+            <span class="icon icon-yueliang intersp"></span>
+            <input type="text" class="bny-input" placeholder="文本框">
+        </div>
+        <div class="bny-input-group">
+            <input type="text" class="bny-input inline" placeholder="文本框">
+            <span class="icon icon-yueliang intersp"></span>
+        </div>
+    </form>
+</div>
+
+```html
+<form action="" class="bny-form">
+    <!-- 前缀 -->
+    <div class="bny-input-group">
+        <span class="icon icon-yueliang intersp"></span>
+        <input type="text" class="bny-input" placeholder="文本框">
+    </div>
+    <!-- 后缀 -->
+    <div class="bny-input-group">
+        <input type="text" class="bny-input inline" placeholder="文本框">
+        <span class="icon icon-yueliang intersp"></span>
+    </div>
+</form>
+```
+
 #### 多行文本框
 
 <div style="width: 400px;padding: 20px;max-width: 100%;">
@@ -32,7 +62,10 @@
     <form action="" class="bny-form">
         <div class="bny-form-group">
             <label for="bnyInput1">input</label>
-            <input type="text" id="bnyInput1" class="bny-input" placeholder="文本框">
+            <div class="bny-input-group">
+                <span class="icon icon-yueliang intersp"></span>
+                <input type="text" id="bnyInput1" class="bny-input" placeholder="文本框">
+            </div>
         </div>
         <div class="bny-form-group">
             <label for="bnyInput2">textarea</label>
@@ -45,7 +78,10 @@
 <form action="" class="bny-form">
     <div class="bny-form-group">
         <label for="bnyInput1">input</label>
-        <input type="text" id="bnyInput1" class="bny-input" placeholder="文本框">
+        <div class="bny-input-group">
+            <span class="icon icon-yueliang intersp"></span>
+            <input type="text" id="bnyInput1" class="bny-input" placeholder="文本框">
+        </div>
     </div>
     <div class="bny-form-group">
         <label for="bnyInput2">textarea</label>

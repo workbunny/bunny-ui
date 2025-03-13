@@ -551,6 +551,48 @@ button[disabled].bny-btn {
     resize: vertical;
 }
 
+.bny-input-group {
+    position: relative;
+    display: flex;
+    border-collapse: separate;
+    align-items: center;
+}
+
+.bny-input-group .intersp {
+    border: 2px solid var(--primary);
+    height: 38px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 10px;
+}
+
+.bny-input-group .intersp:hover {
+    cursor: pointer;
+}
+
+.bny-input-group .intersp:first-child {
+    border-top-left-radius: var(--border-radius);
+    border-bottom-left-radius: var(--border-radius);
+}
+
+.bny-input-group input:first-child {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+    border-right-width: 0;
+}
+
+.bny-input-group .intersp~input {
+    border-left-width: 0;
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+}
+
+.bny-input-group input~.intersp {
+    border-top-right-radius: var(--border-radius);
+    border-bottom-right-radius: var(--border-radius);
+}
+
 .bny-form-group {
     margin-bottom: 15px;
     clear: both;
