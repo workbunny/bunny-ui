@@ -1,0 +1,28 @@
+<div class="alert-primary">
+    弹出
+</div>
+
+<h5>确认框</h5>
+<button class="bny-btn" hx-get="/demo" hx-trigger="confirmed"
+    onclick="bunny.confirm({text:'你好',yes:()=>{htmx.trigger(this,'confirmed')}})">确认框</button>
+
+<br>
+<h5>消息框</h5>
+<button class="bny-btn" onclick="bunny.msg({text:'你好',fn:()=>{alert('回调了')}})">消息框</button>
+<button class="bny-btn" onclick="bunny.msg({text:'你好,我的样式改变了',style:'bg-success'})">style消息框</button>
+<button class="bny-btn" onclick="bunny.msg({text:'你好,我的时间更久了',time:5000})">时间消息框</button>
+<br>
+<h5>警示框</h5>
+<button class="bny-btn" onclick="bunny.alert({text:'这里发出一个警示！'})">警示框</button>
+<button class="bny-btn" onclick="bunny.alert({text:'这里发出一个警示！(手动取消)',del:true})">警示框(手动)</button>
+<button class="bny-btn" onclick="bunny.alert({text:'这里发出一个警示！(时间更久)',time:5000})">警示框(时间更久)</button>
+<button class="bny-btn" onclick="bunny.alert({text:'这里发出一个警示！(样式)',style:'alert-success'})">警示框(其他样式-和警示组件一样)</button>
+<h5>页面框</h5>
+<button class="bny-btn" onclick="bunny.page({content:'这里发出一个页面框！'})">页面框</button>
+<button class="bny-btn"
+    onclick="bunny.page({title:'这是新标题',width:'300px',height:'300px',content:'这里发出一个页面框！'})">页面框(标题、宽高)</button>
+<button class="bny-btn" onclick="bunny.page({content:'https://workbunny.github.io/bunny-ui/'})">页面框(链接)</button>
+<button class="bny-btn"
+    onclick="bunny.page({title:false,content:'这里发出一个页面框！',height:'100%',offset:'left',shade:true,anim:1})">更多配置</button>
+<button class="bny-btn" hx-ext="bny-page" hx-get="/components/page.html" bny-title="信息" bny-width="300px"
+    bny-height="300px">htmx使用方式</button>
