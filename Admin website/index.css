@@ -138,6 +138,7 @@
 
 .bny-layout .bny-layout-body .bny-tab .bny-tab-body {
     height: 100%;
+    overflow: hidden auto;
 }
 
 .bny-layout .bny-layout-body .bny-tab .bny-tab-body>div {
