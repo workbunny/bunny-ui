@@ -46,3 +46,9 @@
 [HTMX-DOC](https://htmx.docs-hub.com/)
 
 [BUNNYUI-DOC](https://workbunny.github.io/bunny-ui/)
+
+## 模板
+
+后台模板 [Bunny-UI-Admin](https://github.com/KingBes/bunny-ui-admin-template) [在线]()
+
+通用企业站 [Bunny-UI-Firm](https://github.com/KingBes/bunny-ui-firm-template) [在线](http://bnyadmin.kesug.com/)
