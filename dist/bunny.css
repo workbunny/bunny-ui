@@ -1489,41 +1489,74 @@ hr {
 /* 表格 */
 table {
     width: 100%;
-    margin: 10px 0;
-    /* background-color: var(--white); */
-    color: var(--primary);
+    margin: 20px auto;
+    border-collapse: collapse;
+    background-color: var(--white);
     border: 2px solid var(--primary);
-    /* overflow: hidden; */
 }
 
-@media only screen and (max-width: 480px) {
-    table thead tr th {
-        padding: 2%;
-    }
-
-    table tbody tr td {
-        padding: 2%;
-    }
-}
-
-table thead tr th {
-    border-radius: var(--border-radius);
-    border: 1px solid var(--primary);
-    line-height: 1.5;
-    padding: 8px;
+table th,
+table td {
+    padding: 12px 15px;
     text-align: left;
-    vertical-align: bottom;
+    border-bottom: 1px solid var(--muted-40);
 }
 
-table tbody tr td {
-    border: 1px solid var(--primary);
-    line-height: 1.5;
-    padding: 8px;
-    vertical-align: top;
+table th {
+    background-color: var(--primary);
+    color: var(--white);
 }
 
 table tr:hover {
-    background-color: var(--white);
+    background-color: var(--muted-10);
+}
+
+/* 移动端适配 */
+@media screen and (max-width: 750px) {
+    table {
+        border: 0;
+        box-shadow: none;
+        background-color: unset;
+    }
+
+    table col {
+        display: none;
+    }
+
+    table thead {
+        display: none;
+    }
+
+    table tr {
+        display: block;
+        margin-bottom: 15px;
+        border: 1px solid var(--muted-40);
+        border-radius: 4px;
+        background-color: var(--white);
+        border: 2px solid var(--primary);
+    }
+
+    table td {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px;
+        text-align: right;
+        border-bottom: 1px solid var(--muted-40);
+    }
+
+    table td:last-child {
+        border-bottom: 0;
+    }
+
+    table td::before {
+        content: attr(label);
+        float: left;
+        font-weight: bold;
+        text-transform: uppercase;
+        margin-right: 15px;
+        min-width: min-content;
+    }
 }
 
 /* 遮蔽层 */
