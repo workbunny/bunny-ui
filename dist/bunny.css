@@ -1503,7 +1503,7 @@ table td {
 }
 
 table th {
-    background-color: var(--primary);
+    background-color: var(--primary-40);
     color: var(--white);
 }
 
