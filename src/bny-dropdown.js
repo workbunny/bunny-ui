@@ -1,9 +1,9 @@
 import htmx from "./htmx"
 
 (function () {
+    let isOpen = false
 
     function createDropdown(trigger) {
-        let isOpen = false;
         const menu = document.querySelector(`${trigger.getAttribute('hx-target')}`)
         menu.classList.add('bny-dropdown')
 
@@ -85,7 +85,11 @@ import htmx from "./htmx"
         onEvent: function (name, evt) {
             const dropdown = createDropdown(evt.target)
             if (name === "htmx:xhr:loadend") {
-                dropdown.toggle()
+                if (isOpen) {
+                    dropdown.close()
+                } else {
+                    dropdown.open()
+                }
             }
         }
     })
