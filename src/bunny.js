@@ -3,7 +3,7 @@
  */
 class bunny {
     constructor() {
-        this.v = "0.0.4"
+        this.v = "1.0.1"
     }
 
     /**
@@ -29,6 +29,7 @@ class bunny {
             }, 225)
             fn(layer)
         }, time)
+        return layer
     }
 
     /**
@@ -82,6 +83,8 @@ class bunny {
         // 将确认框添加到遮罩层，再将遮罩层添加到body中
         shield.appendChild(confirmBox)
         document.body.appendChild(shield)
+        htmx.process(shield)
+        return shield
     }
 
     /**
@@ -121,6 +124,8 @@ class bunny {
                 }, 225)
             }, time)
         }
+        htmx.process(alert)
+        return alert
     }
 
     /**
@@ -282,6 +287,8 @@ class bunny {
                 e.stopPropagation();
             });
         }
+        htmx.process(page)
+        return page;
     }
 
     #initDrag(header, page) {
