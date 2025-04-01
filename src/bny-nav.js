@@ -8,26 +8,43 @@ import htmx from "./htmx"
         const toggle = nav.querySelector('.toggle')
         const body = nav.querySelector('.bny-nav-body')
         const fullHeight = body.scrollHeight
+
+        // 关闭
+        function close() {
+            body.style.height = fullHeight + 'px'
+            setTimeout(() => {
+                // 关闭导航栏
+                body.style.height = '0px'
+                body.classList.remove('active')
+            }, 220)
+        }
+
+        // 打开
+        function open() {
+            body.style.height = fullHeight + 'px'
+            body.classList.add('active')
+            setTimeout(() => {
+                body.style.height = 'auto'
+            }, 220)
+        }
+
         // 处理切换按钮点击事件
         function handleToggle() {
             if (body.classList.contains('active')) {
-                body.style.height = fullHeight + 'px'
-                setTimeout(() => {
-                    // 关闭导航栏
-                    body.style.height = '0px'
-                    body.classList.remove('active')
-                }, 220)
-
+                // 关闭导航栏
+                close()
             } else {
                 // 打开导航栏
-                body.style.height = fullHeight + 'px'
-                body.classList.add('active')
-                setTimeout(() => {
-                    body.style.height = 'auto'
-                }, 220)
+                open()
             }
         }
         toggle.addEventListener("click", handleToggle)
+        // 点击空白处关闭
+        document.addEventListener("click", (e) => {
+            if (!nav.contains(e.target) && !toggle.contains(e.target)) {
+                close()
+            }
+        })
     }
 
     // 拓展-导航栏-顶部
