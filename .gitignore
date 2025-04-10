@@ -1,5 +1,11 @@
-.idea/
-.vscode/
-node_modules/
-.package-lock.json
-test/
+/runtime
+/.idea
+/.vscode
+/vendor
+*.log
+.env
+/tests/tmp
+/tests/.phpunit.result.cache
+node_modules
+composer.lock
+package-lock.json

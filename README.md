@@ -30,7 +30,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Quick Start - Bunny-ui</title>
-    <link href="./bunny/bunny.css" rel="stylesheet" />
+    <!-- bunny-ui 核心文件 -->
     <link href="./bunny/iconfont/iconfont.css" rel="stylesheet" />
     <script src="./bunny/bunny.js"></script>
 </head>
@@ -45,10 +45,4 @@
 
 [HTMX-DOC](https://htmx.docs-hub.com/)
 
-[BUNNYUI-DOC](https://workbunny.github.io/bunny-ui/)
-
-## 模板
-
-后台模板 [Bunny-UI-Admin](https://github.com/KingBes/bunny-ui-admin-template) [在线](http://bnyadmin.kesug.com/)
-
-通用企业站 [Bunny-UI-Firm](https://github.com/KingBes/bunny-ui-firm-template) [在线](http://kingbes.kesug.com/)
+[BUNNYUI-DOC](http://bnyui.kllxs.top/)

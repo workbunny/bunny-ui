@@ -1,0 +1,77 @@
+<script>
+    // 获取当前请求链接
+    let path = window.location.pathname;
+    if (path === "/") {
+        path = "/index";
+    }
+
+    // 获取app元素
+    const app = htmx.find("#app");
+
+    // 路由
+    function route(path) {
+        htmx.ajax("GET", `/{$base.routeGroup}${path}`, app)
+    }
+
+    // 初始化
+    route(path);
+
+    // 监听路由变化
+    window.addEventListener('popstate', (event) => {
+        if (event.state !== null) {
+            route(event.state.path)
+        } else {
+            route(path)
+        }
+    });
+
+    // 监听链接点击
+    const handleLinkClick = (event) => {
+        const target = event.target;
+        const link = target.closest("a");
+        if (link && link.href.startsWith(window.location.origin)) {
+            let path = link.pathname;
+            if (path === "/") {
+                path = "/index"
+            }
+            history.pushState({ path }, '', path);
+            route(path);
+            event.preventDefault();
+        }
+    }
+    window.addEventListener('click', handleLinkClick);
+
+    // 搜索
+    document.body.addEventListener('click', function (e) {
+        const target = e.target;
+        const path = window.location.pathname
+        if (target.closest(".on-search")) {
+            const alert = bunny.page({
+                title: false,
+                width: "560px",
+                height: "350px",
+                shade: true,
+                content:
+                    `<div class="bny-search">
+                <div class="bny-form">
+                    <div class="bny-input-group">
+                        <span class="icon icon-sousuo_2 intersp"></span>
+                        <input type="search" name="keyword" hx-get="/{$base.routeGroup}/search?path=${path}" 
+                        hx-trigger="input changed delay:500ms, search" 
+                        hx-target="#search-results" 
+                        class="bny-input" placeholder="search markdown">
+                    </div>
+                </div>
+                <div id="search-results"></div>
+            </div>`
+            })
+            htmx.find(alert, "input[name=keyword]").focus();
+            alert.addEventListener('click', handleLinkClick);
+        }
+    })
+</script>
+<!-- webpress -->
+<script src="/assets/webpress/webpress.js"></script>
+</body>
+
+</html>

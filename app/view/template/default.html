@@ -1,0 +1,61 @@
+<style>
+    .row {
+        width: 100%;
+    }
+</style>
+<div class="wp-default">
+    <div class="row row-no-gutters">
+        <div class="hidden-xs col-sm-3" style="height: 100%;">
+            <div class="wp-left">
+                <div class="wp-search-up on-search">
+                    <form action="" class="bny-form">
+                        <!-- 后缀 -->
+                        <div class="bny-input-group">
+                            <input type="text" class="bny-input inline" placeholder="Search `Ctrl+k`">
+                            <span class="icon icon-sousuo_2 intersp"></span>
+                        </div>
+                    </form>
+                </div>
+                <nav class="bny-nav-lateral" hx-ext="bny-nav-lateral">
+                    <ul class="bny-nav-body">
+                        {$sidebar|raw}
+                    </ul>
+                </nav>
+            </div>
+        </div>
+        <div class="wp-body col-xs-12 col-sm-9">
+            <div class="row row-no-gutters">
+                <div class=" col-xs-12 col-sm-8">
+                    <div class="content">
+                        {$__CONTENT__|raw}
+                        <hr>
+                        <div class="page" hx-ext="bny-page">
+                        </div>
+                    </div>
+                </div>
+                <div class="hidden-xs col-sm-4">
+                    <div class="bny-toc" hx-ext="bny-toc" bny-target=".content"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- 手机导航 -->
+    <div class="pe-header">
+        <div class="bny-btn-group">
+            <button class="bny-btn bg-muted" hx-ext="bny-dropdown" hx-get="/assets/component/pe-toc.html"
+                hx-target="#pe-toc">页面导航</button>
+        </div>
+        <div class="bny-btn-group">
+            <button class="bny-btn bg-secondary pe-menu">
+                <i class="icon icon-gengduo1"></i>
+            </button>
+            <button class="bny-btn on-search bg-warning">
+                <i class="icon icon-sousuo_2"></i>
+            </button>
+        </div>
+        <div id="pe-toc"></div>
+    </div>
+</div>
+<script>
+    hljs.highlightAll();
+</script>
