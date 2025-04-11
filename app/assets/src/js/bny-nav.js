@@ -41,7 +41,9 @@ import htmx from "./htmx"
         toggle.addEventListener("click", handleToggle)
         // 点击空白处关闭
         document.addEventListener("click", (e) => {
-            if (!nav.contains(e.target) && !toggle.contains(e.target)) {
+            if (!nav.contains(e.target) &&
+                !toggle.contains(e.target) &&
+                body.classList.contains('active')) {
                 close()
             }
         })
