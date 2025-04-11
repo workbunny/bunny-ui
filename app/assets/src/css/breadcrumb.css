@@ -1,0 +1,37 @@
+/* 面包屑 */
+.bny-breadcrumb {
+    padding: 10px 16px;
+    list-style: none;
+    background-color: var(--white);
+    margin-top: 15px;
+}
+
+.bny-breadcrumb>div {
+    display: inline;
+    font-size: var(--font-size-16);
+}
+
+.bny-breadcrumb>div+div::before {
+    padding: 8px;
+    content: "/\00a0";
+}
+
+.bny-breadcrumb>div a {
+    color: var(--secondary);
+    text-decoration: none;
+}
+
+@media screen and (max-width: 768px) {
+    .bny-breadcrumb {
+        flex-wrap: wrap;
+        padding: 8px 12px;
+    }
+
+    .bny-breadcrumb>div {
+        font-size: var(--font-size);
+    }
+
+    .bny-breadcrumb>div+div::before {
+        padding: 0 4px;
+    }
+}

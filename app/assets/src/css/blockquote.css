@@ -1,0 +1,17 @@
+/* 引用 */
+blockquote {
+    margin: 0;
+    margin-bottom: 10px;
+    padding: 12px;
+    line-height: 1.8;
+    border: 2px solid var(--muted);
+    border-left: 5px solid var(--primary);
+    background-color: var(--muted);
+    color: var(--primary);
+}
+
+blockquote[type="border"] {
+    border: 2px solid var(--primary);
+    border-left-width: 5px;
+    background-color: var(--white);
+}

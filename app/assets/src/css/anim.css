@@ -1,0 +1,155 @@
+/* 动画 */
+.bny-anim-scale {
+    /* 放大 */
+    animation: anim-scale 235ms ease-in-out;
+}
+
+@keyframes anim-scale {
+    from {
+        transform: scale(0.1);
+    }
+
+    to {
+        transform: scale(1);
+    }
+}
+
+.bny-anim-scalesmall {
+    /* 缩小 */
+    animation: anim-scalesmall 235ms ease-in-out;
+}
+
+@keyframes anim-scalesmall {
+    from {
+        transform: scale(1);
+    }
+
+    to {
+        transform: scale(0);
+    }
+}
+
+.bny-anim-rotate {
+    /* 旋转 */
+    animation: anim-spin .8s linear infinite;
+}
+
+.bny-anim-left {
+    /* 左侧滑出 */
+    animation: anim-left 235ms ease-in-out;
+}
+
+@keyframes anim-left {
+    from {
+        transform: translateX(-100%);
+    }
+
+    to {
+        transform: translateX(0);
+    }
+}
+
+.bny-anim-leftOut {
+    /* 退出到左侧 */
+    animation: anim-leftOut 235ms ease-in-out;
+}
+
+@keyframes anim-leftOut {
+    from {
+        transform: translateX(0);
+    }
+
+    to {
+        transform: translateX(-100%);
+    }
+}
+
+.bny-anim-right {
+    /* 右侧滑出 */
+    animation: anim-right 235ms ease-in-out;
+}
+
+@keyframes anim-right {
+    from {
+        transform: translateX(100%);
+    }
+
+    to {
+        transform: translateX(0);
+    }
+}
+
+.bny-anim-rightOut {
+    /* 退出到右侧 */
+    animation: anim-rightOut 235ms ease-in-out;
+}
+
+@keyframes anim-rightOut {
+    from {
+        transform: translateX(0);
+    }
+
+    to {
+        transform: translateX(100%);
+    }
+}
+
+.bny-anim-up {
+    /* 顶部滑出 */
+    animation: anim-up 235ms ease-in-out;
+}
+
+@keyframes anim-up {
+    from {
+        transform: translateY(-100%);
+    }
+
+    to {
+        transform: translateY(0);
+    }
+}
+
+.bny-anim-upOut {
+    /* 退出到顶部 */
+    animation: anim-upOut 235ms ease-in-out;
+}
+
+@keyframes anim-upOut {
+    from {
+        transform: translateY(0);
+    }
+
+    to {
+        transform: translateY(-100%);
+    }
+}
+
+.bny-anim-down {
+    /* 底部滑出 */
+    animation: anim-down 235ms ease-in-out;
+}
+
+@keyframes anim-down {
+    from {
+        transform: translateY(100%);
+    }
+
+    to {
+        transform: translateY(0);
+    }
+}
+
+.bny-anim-downOut {
+    /* 退出到底部 */
+    animation: anim-downOut 235ms ease-in-out;
+}
+
+@keyframes anim-downOut {
+    from {
+        transform: translateY(0);
+    }
+
+    to {
+        transform: translateY(100%);
+    }
+}

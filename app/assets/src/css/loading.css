@@ -1,0 +1,29 @@
+/* 加载 */
+.bny-loading {
+    border: 5px solid var(--muted-40);
+    border-top: 5px solid var(--primary);
+    border-radius: 50%;
+    width: 2.5em;
+    height: 2.5em;
+    animation: anim-spin .8s linear infinite;
+}
+
+.bny-loading[size="small"] {
+    width: 1.5em;
+    height: 1.5em;
+}
+
+.bny-loading[size="large"] {
+    width: 4.5em;
+    height: 4.5em;
+}
+
+@keyframes anim-spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}

@@ -1,0 +1,12 @@
+/* 水平线 */
+hr {
+    height: 0;
+    line-height: 0;
+    margin: 10px 0;
+    padding: 0;
+    border: none;
+    border-bottom: 1px solid var(--primary);
+    clear: both;
+    overflow: hidden;
+    background: 0 0;
+}
