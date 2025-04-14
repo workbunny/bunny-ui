@@ -61,7 +61,7 @@
 }
 
 .bny-loader div:nth-child(3) {
-    background-color: var(--muted-10);
+    background-color: var(--muted);
     animation-delay: 0.5s;
 }
 
