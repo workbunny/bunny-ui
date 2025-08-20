@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="../src/bunny.css">
+    <script src="../src/bunny.js"></script>
+</head>
+
+<body>
+    <demo-ui></demo-ui>
+    <script>
+        customElements.define('demo-ui', class extends Bunny {
+            constructor() {
+                super();
+                // 定义动态数据
+                this.data = this.state({
+                    count: 0
+                })
+            }
+            // 增加
+            increment() {
+                this.data.count++;
+            }
+            // 减少
+            decrement() {
+                this.data.count--;
+            }
+            // 重置
+            reset() {
+                this.data.count = 0;
+
+            }
+            // 渲染
+            render() {
+                return `
+                <div class="counter">
+                    <button @click="decrement">-</button>
+                    <span>Count: ${this.data.count}</span>
+                    <button @click="increment">+</button>
+                </div>
+                <button @click="reset">Reset</button>
+                `;
+            }
+        });
+    </script>
+</body>
+
+</html>

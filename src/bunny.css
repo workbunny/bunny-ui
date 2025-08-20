@@ -1,0 +1,100 @@
+html {
+    /* 颜色 */
+
+    /* 默认 */
+    --default: #3e3b3b;
+    --default-middle: #4e4c4b;
+    --default-shallow: #727171;
+
+    /* 绿色 */
+    --green: #86a361;
+    --green-middle: #a0b387;
+    --green-shallow: #b6c0aa;
+
+    /* 蓝色 */
+    --blue: #0b74d5;
+    --blue-middle: #2266a5;
+    --blue-shallow: #5394d1;
+
+    /* 黄色 */
+    --yellow: #E6A23C;
+    --yellow-middle: #c4944e;
+    --yellow-shallow: #e4b671;
+
+    /* 红色 */
+    --red: #F56C6C;
+    --red-middle: #d17373;
+    --red-shallow: #f3a4a4;
+
+    /* 灰色 */
+    --gray: #909399;
+    --gray-middle: #a8aab2;
+    --gray-shallow: #c0c4cc;
+
+    /* 白色 */
+    --white: #ecebeb;
+
+    /* 黑色 */
+    --black: #0f0d0d;
+
+    /* 常白色 */
+    --white-common: #ecebeb;
+
+    /* 常黑色 */
+    --black-common: #0f0d0d;
+
+    /* 字体大小 */
+    --font-size: 14px;
+    --font-size-16: 16px;
+    --font-size-18: 18px;
+    --font-size-20: 20px;
+    --font-size-24: 24px;
+    --font-size-32: 32px;
+
+    /* 圆角 */
+    --border-radius: 4px;
+    --border-radius-8: 8px;
+    --border-radius-15: 15px;
+
+    /* 动态 */
+    --transition: all 235ms ease 0s;
+
+    --transform3d-200: translate3d(2px, 0, 0);
+    --transform3d-500: translate3d(5px, 0, 0);
+
+    --transform3d-020: translate3d(0, 2px, 0);
+    --transform3d-050: translate3d(0, 5px, 0);
+
+    --transform3d-002: translate3d(0, 0, 2px);
+    --transform3d-005: translate3d(0, 0, 5px);
+
+    /* 影子 */
+    --box-shadow-005: 0 0 5px rgba(0, 0, 0, 0.4);
+    --box-shadow-055: 0 5px 5px rgba(0, 0, 0, 0.5);
+
+    --box-shadow-hover-005: 0 0 1px rgba(0, 0, 0, 0.6);
+    --box-shadow-hover-055: 0 1px 1px rgba(0, 0, 0, 0.6);
+}
+
+html.dark {
+    --white: #0f0d0d;
+    --black: #ecebeb;
+}
+
+html,
+body {
+    font-size: var(--font-size);
+    background-color: var(--white);
+    color: var(--black);
+    min-height: 100%;
+    margin: 0 auto;
+}
+
+*:before,
+*:after {
+    box-sizing: inherit;
+}
+
+* {
+    box-sizing: border-box;
+}
