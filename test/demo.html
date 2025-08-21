@@ -14,13 +14,12 @@
     <demo-ui></demo-ui>
     <script>
         customElements.define('demo-ui', class extends Bunny {
-            constructor() {
-                super();
-                // 定义动态数据
-                this.data = this.state({
-                    count: 0
-                })
-            }
+
+            // 定义动态数据
+            data = this.state({
+                count: 0
+            })
+
             // 增加
             increment() {
                 this.data.count++;
@@ -39,7 +38,7 @@
                 return `
                 <div class="counter">
                     <button @click="decrement">-</button>
-                    <span>Count: ${this.data.count}</span>
+                    <span>Count: {{data.count}}</span>
                     <button @click="increment">+</button>
                 </div>
                 <button @click="reset">Reset</button>
