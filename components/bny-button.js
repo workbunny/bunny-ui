@@ -14,7 +14,7 @@ customElements.define('bny-button', class extends Bunny {
     // 渲染
     render() {
         return `
-    <button color="${this.attr.color}" ${this.attr.disabled ? 'disabled' : ''}>
+    <button color="{{attr.color}}" {{attr.disabled ? 'disabled' : ''}}>
         <slot name="bny-text">默认</slot>
     </button>
 `;
@@ -33,7 +33,6 @@ customElements.define('bny-button', class extends Bunny {
     // 定义样式
     css() {
         return `
-
     button {
       padding: 4px 11px;
       border-radius: var(--border-radius);

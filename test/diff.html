@@ -1,0 +1,832 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DOM内容对比工具</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            color: #333;
+            line-height: 1.6;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        
+        header {
+            background: #2c3e50;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+        
+        .description {
+            font-size: 16px;
+            opacity: 0.8;
+        }
+        
+        .controls {
+            display: flex;
+            padding: 20px;
+            background: #f8f9fa;
+            border-bottom: 1px solid #e9ecef;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .control-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        label {
+            font-weight: 600;
+            color: #495057;
+        }
+        
+        select, button {
+            padding: 10px 15px;
+            border: 1px solid #ced4da;
+            border-radius: 6px;
+            background: white;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        select:focus, button:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+        }
+        
+        button {
+            background: #3498db;
+            color: white;
+            border: none;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        button:hover {
+            background: #2980b9;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        button.secondary {
+            background: #6c757d;
+        }
+        
+        button.secondary:hover {
+            background: #5a6268;
+        }
+        
+        .comparison-view {
+            display: flex;
+            height: 500px;
+            border-bottom: 1px solid #e9ecef;
+        }
+        
+        .pane {
+            flex: 1;
+            padding: 20px;
+            overflow: auto;
+            position: relative;
+        }
+        
+        .pane-left {
+            border-right: 1px solid #e9ecef;
+            background: #fafafa;
+        }
+        
+        .pane-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #e9ecef;
+        }
+        
+        .pane-title {
+            font-size: 18px;
+            color: #2c3e50;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .dom-tree {
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+        
+        .node {
+            margin-left: 20px;
+            position: relative;
+        }
+        
+        .node-header {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            padding: 2px 5px;
+            border-radius: 4px;
+            margin: 2px 0;
+        }
+        
+        .node-header:hover {
+            background: #f1f3f5;
+        }
+        
+        .toggle {
+            width: 16px;
+            height: 16px;
+            margin-right: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            user-select: none;
+        }
+        
+        .tag {
+            color: #e91e63;
+            font-weight: 600;
+        }
+        
+        .attribute {
+            color: #22863a;
+        }
+        
+        .value {
+            color: #005cc5;
+        }
+        
+        .text-node {
+            color: #6a737d;
+            margin-left: 24px;
+        }
+        
+        .comment-node {
+            color: #6a737d;
+            font-style: italic;
+            margin-left: 24px;
+        }
+        
+        .added {
+            background-color: rgba(46, 160, 67, 0.15);
+            border-left: 3px solid #2ea043;
+        }
+        
+        .removed {
+            background-color: rgba(248, 81, 73, 0.15);
+            border-left: 3px solid #f85149;
+            text-decoration: line-through;
+        }
+        
+        .modified {
+            background-color: rgba(255, 211, 0, 0.15);
+            border-left: 3px solid #ffd300;
+        }
+        
+        .stats {
+            display: flex;
+            gap: 20px;
+            padding: 15px 20px;
+            background: #e9ecef;
+            border-top: 1px solid #dee2e6;
+        }
+        
+        .stat-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .stat-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: #2c3e50;
+        }
+        
+        .stat-label {
+            font-size: 14px;
+            color: #6c757d;
+        }
+        
+        .legend {
+            display: flex;
+            gap: 20px;
+            padding: 15px 20px;
+            background: #f8f9fa;
+            border-top: 1px solid #e9ecef;
+            justify-content: center;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 3px;
+        }
+        
+        .resizer {
+            width: 10px;
+            background: #e9ecef;
+            cursor: col-resize;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+        
+        .resizer::after {
+            content: "";
+            width: 2px;
+            height: 30px;
+            background: #adb5bd;
+            border-radius: 1px;
+        }
+        
+        .resizer:hover::after {
+            background: #3498db;
+        }
+        
+        @media (max-width: 768px) {
+            .comparison-view {
+                flex-direction: column;
+                height: auto;
+            }
+            
+            .pane-left {
+                border-right: none;
+                border-bottom: 1px solid #e9ecef;
+            }
+            
+            .resizer {
+                width: 100%;
+                height: 10px;
+                cursor: row-resize;
+            }
+            
+            .resizer::after {
+                width: 30px;
+                height: 2px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>DOM内容对比工具</h1>
+            <p class="description">可视化比较两个DOM结构的差异</p>
+        </header>
+        
+        <div class="controls">
+            <div class="control-group">
+                <label for="view-mode">显示模式:</label>
+                <select id="view-mode">
+                    <option value="split">分屏对比</option>
+                    <option value="unified">合并视图</option>
+                </select>
+            </div>
+            
+            <button id="compare-btn">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                    <path d="M6 3.5A1.5 1.5 0 0 1 7.5 2h1A1.5 1.5 0 0 1 10 3.5v1A1.5 1.5 0 0 1 8.5 6v4.5a.5.5 0 0 1-1 0V6A1.5 1.5 0 0 1 6 4.5v-1zM4 4.5A1.5 1.5 0 0 1 5.5 3h1A1.5 1.5 0 0 1 8 4.5v1A1.5 1.5 0 0 1 6.5 7h-1A1.5 1.5 0 0 1 4 5.5v-1z"/>
+                    <path d="M0 2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2zm15 0a1 1 0 0 0-1-1H2a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V2z"/>
+                </svg>
+                比较DOM
+            </button>
+            
+            <button id="swap-btn" class="secondary">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                    <path d="M11.5 15a.5.5 0 0 0 .5-.5V2.707l3.146 3.147a.5.5 0 0 0 .708-.708l-4-4a.5.5 0 0 0-.708 0l-4 4a.5.5 0 1 0 .708.708L11 2.707V14.5a.5.5 0 0 0 .5.5zm-7-14a.5.5 0 0 0-.5.5v11.793l-3.146-3.147a.5.5 0 0 0-.708.708l4 4a.5.5 0 0 0 .708 0l4-4a.5.5 0 0 0-.708-.708L5 13.293V1.5a.5.5 0 0 0-.5-.5z"/>
+                </svg>
+                交换内容
+            </button>
+            
+            <button id="expand-btn" class="secondary">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                    <path d="M4.5 1a.5.5 0 0 1 .5.5v13a.5.5 0 0 1-1 0v-13a.5.5 0 0 1 .5-.5zm3 0a.5.5 0 0 1 .5.5v13a.5.5 0 0 1-1 0v-13a.5.5 0 0 1 .5-.5zm3 0a.5.5 0 0 1 .5.5v13a.5.5 0 0 1-1 0v-13a.5.5 0 0 1 .5-.5z"/>
+                </svg>
+                全部展开
+            </button>
+            
+            <button id="collapse-btn" class="secondary">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                    <path d="M4.5 1a.5.5 0 0 1 .5.5v13a.5.5 0 0 1-1 0v-13a.5.5 0 0 1 .5-.5zm3 0a.5.5 0 0 1 .5.5v13a.5.5 0 0 1-1 0v-13a.5.5 0 0 1 .5-.5z"/>
+                </svg>
+                全部折叠
+            </button>
+        </div>
+        
+        <div class="comparison-view">
+            <div class="pane pane-left">
+                <div class="pane-header">
+                    <h3 class="pane-title">原始DOM结构</h3>
+                    <span class="node-count">12个节点</span>
+                </div>
+                <div class="dom-tree" id="original-dom">
+                    <!-- DOM树将在这里动态生成 -->
+                </div>
+            </div>
+            
+            <div class="resizer" id="resizer"></div>
+            
+            <div class="pane pane-right">
+                <div class="pane-header">
+                    <h3 class="pane-title">修改后的DOM结构</h3>
+                    <span class="node-count">14个节点</span>
+                </div>
+                <div class="dom-tree" id="modified-dom">
+                    <!-- DOM树将在这里动态生成 -->
+                </div>
+            </div>
+        </div>
+        
+        <div class="stats">
+            <div class="stat-item">
+                <span class="stat-value" id="added-count">2</span>
+                <span class="stat-label">新增节点</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-value" id="removed-count">1</span>
+                <span class="stat-label">删除节点</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-value" id="modified-count">3</span>
+                <span class="stat-label">修改节点</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-value" id="similarity">76%</span>
+                <span class="stat-label">结构相似度</span>
+            </div>
+        </div>
+        
+        <div class="legend">
+            <div class="legend-item">
+                <div class="legend-color" style="background-color: rgba(46, 160, 67, 0.15); border-left: 3px solid #2ea043;"></div>
+                <span>新增节点/属性</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background-color: rgba(248, 81, 73, 0.15); border-left: 3px solid #f85149;"></div>
+                <span>删除节点/属性</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background-color: rgba(255, 211, 0, 0.15); border-left: 3px solid #ffd300;"></div>
+                <span>修改内容</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 示例DOM数据
+        const originalDomData = {
+            type: 'div',
+            attributes: { id: 'container', class: 'main' },
+            children: [
+                {
+                    type: 'h1',
+                    attributes: { class: 'title' },
+                    children: [
+                        { type: 'text', content: 'DOM对比工具' }
+                    ]
+                },
+                {
+                    type: 'p',
+                    attributes: { class: 'description' },
+                    children: [
+                        { type: 'text', content: '这是一个用于比较DOM结构的工具。' }
+                    ]
+                },
+                {
+                    type: 'ul',
+                    attributes: { class: 'list' },
+                    children: [
+                        {
+                            type: 'li',
+                            attributes: { class: 'item' },
+                            children: [
+                                { type: 'text', content: '列表项1' }
+                            ]
+                        },
+                        {
+                            type: 'li',
+                            attributes: { class: 'item' },
+                            children: [
+                                { type: 'text', content: '列表项2' }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        };
+
+        const modifiedDomData = {
+            type: 'div',
+            attributes: { id: 'container', class: 'main updated' },
+            children: [
+                {
+                    type: 'h1',
+                    attributes: { class: 'title' },
+                    children: [
+                        { type: 'text', content: 'DOM对比工具' }
+                    ]
+                },
+                {
+                    type: 'p',
+                    attributes: { class: 'description' },
+                    children: [
+                        { type: 'text', content: '这是一个用于比较DOM结构差异的强大工具。' }
+                    ]
+                },
+                {
+                    type: 'div',
+                    attributes: { class: 'new-section' },
+                    children: [
+                        { type: 'text', content: '新增的内容区域' }
+                    ]
+                },
+                {
+                    type: 'ul',
+                    attributes: { class: 'list' },
+                    children: [
+                        {
+                            type: 'li',
+                            attributes: { class: 'item' },
+                            children: [
+                                { type: 'text', content: '列表项1' }
+                            ]
+                        },
+                        {
+                            type: 'li',
+                            attributes: { class: 'item important' },
+                            children: [
+                                { type: 'text', content: '列表项2（已修改）' }
+                            ]
+                        },
+                        {
+                            type: 'li',
+                            attributes: { class: 'item' },
+                            children: [
+                                { type: 'text', content: '列表项3' }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        };
+
+        // DOM差异比较函数
+        function diffDOM(original, modified) {
+            // 这是一个简化的DOM比较算法
+            // 实际实现会更复杂，会使用树遍历和哈希比较等
+            
+            const changes = [];
+            
+            // 比较节点类型
+            if (original.type !== modified.type) {
+                changes.push({
+                    type: 'REPLACE',
+                    original,
+                    modified
+                });
+                return changes;
+            }
+            
+            // 比较属性
+            const attrChanges = [];
+            const allAttrs = new Set([...Object.keys(original.attributes || {}), ...Object.keys(modified.attributes || {})]);
+            
+            for (const attr of allAttrs) {
+                if (!(attr in original.attributes)) {
+                    attrChanges.push({
+                        type: 'ADD_ATTRIBUTE',
+                        attribute: attr,
+                        value: modified.attributes[attr]
+                    });
+                } else if (!(attr in modified.attributes)) {
+                    attrChanges.push({
+                        type: 'REMOVE_ATTRIBUTE',
+                        attribute: attr,
+                        value: original.attributes[attr]
+                    });
+                } else if (original.attributes[attr] !== modified.attributes[attr]) {
+                    attrChanges.push({
+                        type: 'UPDATE_ATTRIBUTE',
+                        attribute: attr,
+                        oldValue: original.attributes[attr],
+                        newValue: modified.attributes[attr]
+                    });
+                }
+            }
+            
+            if (attrChanges.length > 0) {
+                changes.push({
+                    type: 'UPDATE_ATTRIBUTES',
+                    attributes: attrChanges,
+                    node: original
+                });
+            }
+            
+            // 文本节点比较
+            if (original.type === 'text' && modified.type === 'text') {
+                if (original.content !== modified.content) {
+                    changes.push({
+                        type: 'UPDATE_TEXT',
+                        original,
+                        modified
+                    });
+                }
+                return changes;
+            }
+            
+            // 比较子节点
+            const childChanges = [];
+            const maxLen = Math.max(original.children.length, modified.children.length);
+            
+            for (let i = 0; i < maxLen; i++) {
+                if (i >= original.children.length) {
+                    // 新增节点
+                    childChanges.push({
+                        type: 'ADD_NODE',
+                        node: modified.children[i],
+                        index: i
+                    });
+                } else if (i >= modified.children.length) {
+                    // 删除节点
+                    childChanges.push({
+                        type: 'REMOVE_NODE',
+                        node: original.children[i],
+                        index: i
+                    });
+                } else {
+                    // 递归比较子节点
+                    const childDiff = diffDOM(original.children[i], modified.children[i]);
+                    if (childDiff.length > 0) {
+                        childChanges.push({
+                            type: 'UPDATE_NODE',
+                            index: i,
+                            changes: childDiff
+                        });
+                    }
+                }
+            }
+            
+            if (childChanges.length > 0) {
+                changes.push({
+                    type: 'UPDATE_CHILDREN',
+                    changes: childChanges
+                });
+            }
+            
+            return changes;
+        }
+
+        // 渲染DOM树
+        function renderDOM(domData, container, changes = []) {
+            container.innerHTML = '';
+            
+            function createNodeElement(node, changes = [], level = 0) {
+                const nodeEl = document.createElement('div');
+                nodeEl.className = 'node';
+                nodeEl.style.marginLeft = `${level * 20}px`;
+                
+                if (node.type === 'text') {
+                    const textEl = document.createElement('div');
+                    textEl.className = 'text-node';
+                    textEl.textContent = `"${node.content}"`;
+                    
+                    // 检查是否有文本更改
+                    const textChange = changes.find(c => 
+                        c.type === 'UPDATE_TEXT' && 
+                        (c.original === node || c.modified === node)
+                    );
+                    
+                    if (textChange) {
+                        textEl.classList.add('modified');
+                    }
+                    
+                    nodeEl.appendChild(textEl);
+                    return nodeEl;
+                }
+                
+                if (node.type === 'comment') {
+                    const commentEl = document.createElement('div');
+                    commentEl.className = 'comment-node';
+                    commentEl.textContent = `<!-- ${node.content} -->`;
+                    nodeEl.appendChild(commentEl);
+                    return nodeEl;
+                }
+                
+                const headerEl = document.createElement('div');
+                headerEl.className = 'node-header';
+                
+                // 如果有子节点，添加展开/折叠按钮
+                if (node.children && node.children.length > 0) {
+                    const toggle = document.createElement('span');
+                    toggle.className = 'toggle';
+                    toggle.textContent = '▼';
+                    toggle.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        contentEl.style.display = contentEl.style.display === 'none' ? 'block' : 'none';
+                        toggle.textContent = contentEl.style.display === 'none' ? '►' : '▼';
+                    });
+                    headerEl.appendChild(toggle);
+                }
+                
+                // 标签名
+                const tagEl = document.createElement('span');
+                tagEl.className = 'tag';
+                tagEl.textContent = `<${node.type}`;
+                headerEl.appendChild(tagEl);
+                
+                // 属性
+                if (node.attributes) {
+                    for (const [key, value] of Object.entries(node.attributes)) {
+                        const attrSpace = document.createTextNode(' ');
+                        headerEl.appendChild(attrSpace);
+                        
+                        const attrEl = document.createElement('span');
+                        attrEl.className = 'attribute';
+                        attrEl.textContent = key;
+                        headerEl.appendChild(attrEl);
+                        
+                        const equals = document.createTextNode('=');
+                        headerEl.appendChild(equals);
+                        
+                        const valueEl = document.createElement('span');
+                        valueEl.className = 'value';
+                        valueEl.textContent = `"${value}"`;
+                        headerEl.appendChild(valueEl);
+                    }
+                }
+                
+                // 闭合标签
+                const closingTag = document.createTextNode('>');
+                headerEl.appendChild(closingTag);
+                
+                nodeEl.appendChild(headerEl);
+                
+                // 内容区域
+                const contentEl = document.createElement('div');
+                contentEl.className = 'node-content';
+                
+                if (node.children && node.children.length > 0) {
+                    for (const child of node.children) {
+                        const childEl = createNodeElement(child, changes, level + 1);
+                        contentEl.appendChild(childEl);
+                    }
+                }
+                
+                nodeEl.appendChild(contentEl);
+                
+                // 检查此节点是否有更改
+                const nodeChange = changes.find(c => {
+                    if (c.type === 'REPLACE') {
+                        return c.original === node || c.modified === node;
+                    }
+                    if (c.type === 'UPDATE_ATTRIBUTES') {
+                        return c.node === node;
+                    }
+                    return false;
+                });
+                
+                if (nodeChange) {
+                    if (nodeChange.type === 'REPLACE' && nodeChange.original === node) {
+                        headerEl.classList.add('removed');
+                    } else if (nodeChange.type === 'REPLACE' && nodeChange.modified === node) {
+                        headerEl.classList.add('added');
+                    } else {
+                        headerEl.classList.add('modified');
+                    // 高亮显示具体更改的属性
+                        if (nodeChange.type === 'UPDATE_ATTRIBUTES') {
+                        for (const attrChange of nodeChange.attributes) {
+                            // 这里可以进一步高亮显示具体更改的属性
+                        }
+                    }
+                    }
+                }
+                
+                return nodeEl;
+            }
+            
+            const rootEl = createNodeElement(domData, changes, 0);
+            container.appendChild(rootEl);
+        }
+
+        // 初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            // 渲染初始DOM
+            renderDOM(originalDomData, document.getElementById('original-dom'));
+            renderDOM(modifiedDomData, document.getElementById('modified-dom'));
+            
+            // 计算差异
+            const changes = diffDOM(originalDomData, modifiedDomData);
+            
+            // 重新渲染带差异高亮的DOM
+            renderDOM(originalDomData, document.getElementById('original-dom'), changes);
+            renderDOM(modifiedDomData, document.getElementById('modified-dom'), changes);
+            
+            // 添加事件监听器
+            document.getElementById('compare-btn').addEventListener('click', function() {
+                // 重新比较
+                const changes = diffDOM(originalDomData, modifiedDomData);
+                renderDOM(originalDomData, document.getElementById('original-dom'), changes);
+                renderDOM(modifiedDomData, document.getElementById('modified-dom'), changes);
+                
+                // 更新统计信息
+                updateStats(changes);
+            });
+            
+            document.getElementById('expand-btn').addEventListener('click', function() {
+                document.querySelectorAll('.node-content').forEach(el => {
+                    el.style.display = 'block';
+                });
+                document.querySelectorAll('.toggle').forEach(el => {
+                    el.textContent = '▼';
+                });
+            });
+            
+            document.getElementById('collapse-btn').addEventListener('click', function() {
+                document.querySelectorAll('.node-content').forEach(el => {
+                    el.style.display = 'none';
+                });
+                document.querySelectorAll('.toggle').forEach(el => {
+                    el.textContent = '►';
+                });
+            });
+            
+            // 分割线拖动功能
+            const resizer = document.getElementById('resizer');
+            const leftPane = document.querySelector('.pane-left');
+            const rightPane = document.querySelector('.pane-right');
+            
+            resizer.addEventListener('mousedown', function(e) {
+                e.preventDefault();
+                
+                document.addEventListener('mousemove', resize);
+                document.addEventListener('mouseup', stopResize);
+                
+                function resize(e) {
+                    const containerRect = document.querySelector('.comparison-view').getBoundingClientRect();
+                    const percent = (e.clientX - containerRect.left) / containerRect.width * 100;
+                    
+                    if (percent > 10 && percent < 90) {
+                        leftPane.style.flex = `0 0 ${percent}%`;
+                        rightPane.style.flex = `0 0 ${100 - percent}%`;
+                    }
+                }
+                
+                function stopResize() {
+                    document.removeEventListener('mousemove', resize);
+                    document.removeEventListener('mouseup', stopResize);
+                }
+            });
+        });
+
+        // 更新统计信息
+        function updateStats(changes) {
+            // 这里只是示例，实际应根据changes计算准确的统计信息
+            document.getElementById('added-count').textContent = '2';
+            document.getElementById('removed-count').textContent = '1';
+            document.getElementById('modified-count').textContent = '3';
+            document.getElementById('similarity').textContent = '76%';
+        }
+    </script>
+</body>
+</html>

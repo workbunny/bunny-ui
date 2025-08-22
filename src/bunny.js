@@ -14,6 +14,7 @@ class Bunny extends HTMLElement {
         let sheet = new CSSStyleSheet();
         sheet.replaceSync(this.css());
         this.shadowRoot.adoptedStyleSheets = [sheet];
+        this.oldVNode = null; // 缓存旧虚拟DOM
     }
 
     /**
@@ -57,7 +58,6 @@ class Bunny extends HTMLElement {
       * @returns {void}
       */
     #_processTemplate(template) {
-        // 设置 DOM 内容
         this.shadowRoot.innerHTML = this.#tpl(template);
         // 事件绑定处理
         let eventHandlers = this.shadowRoot.querySelectorAll('[data-event]');
