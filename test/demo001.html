@@ -1,13 +1,36 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
-<body>
-    <script>
-        
-    </script>
-</body>
-</html>
+<template>
+    <div class="counter">
+        <button @click="decrement">-</button>
+        <span>Count: {{data.count}}</span>
+        <button @click="increment">+</button>
+    </div>
+    <button @click="reset">Reset</button>
+</template>
+<script>
+    customElements.define('demo-ui', class extends Bunny {
+        // 定义动态数据
+        data = this.state({
+            count: 0
+        })
+        // 增加
+        increment() {
+            this.data.count++;
+            console.log(this.data.count)
+        }
+        // 减少
+        decrement() {
+            this.data.count--;
+            console.log(this.data.count)
+        }
+        // 重置
+        reset() {
+            this.data.count = 0;
+            console.log(this.data.count)
+        }
+    });
+</script>
+<style>
+    h1 {
+        color: blue;
+    }
+</style>
