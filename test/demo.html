@@ -7,12 +7,16 @@
     <title>Document</title>
     <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
     <link rel="stylesheet" href="../src/bunny.css">
-    <script src="../src/bunny.js"></script>
+    <!-- <script src="../src/bunny.js"></script> -->
 </head>
 
 <body>
     <demo-ui></demo-ui>
-    <script>
+    <script type="module">
+        import Bunny from '../src/bunny.js';
+        import './bny-demo.js';
+        import 'http://127.0.0.1:8787/';
+        // console.log(demo());
         customElements.define('demo-ui', class extends Bunny {
 
             // 定义动态数据

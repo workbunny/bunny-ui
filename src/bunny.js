@@ -1,7 +1,7 @@
 /**
  * 自定义组件
  */
-class Bunny extends HTMLElement {
+export default class Bunny extends HTMLElement {
     /**
      * 自定义元素的构造函数
      */
@@ -125,6 +125,7 @@ class Bunny extends HTMLElement {
             return bny_tpl;`
         try {
             const args = Object.keys(this);
+            args.push('bnyHtml');
             const fn = new Function(...args, str);
             return fn(...args.map(key => this[key]));
         } catch (e) {
@@ -132,50 +133,50 @@ class Bunny extends HTMLElement {
         }
     }
 
+    /**
+     * 转义HTML特殊字符
+     * 
+     * @param {any} input - 输入字符串
+     * @param {boolean} is - 是否转义
+     * 
+     * @returns {string} 转义后的字符串
+     */
+    bnyHtml(input, is = true) {
+        // 处理空值和函数
+        if (input == null) return '';
+        if (typeof input === 'function') return bnyHtml(input());
+        // 处理数组
+        if (Array.isArray(input)) {
+            const len = input.length;
+            // 预初始化数组避免push开销
+            const escaped = new Array(len);
+            for (let i = 0; i < len; i++) {
+                escaped[i] = bnyHtml(input[i]);
+            }
+            return escaped.join(',');
+        }
+        // 转换非字符串为字符串
+        const str = String(input);
+        if (!is) return str;
+        // 转义HTML特殊字符
+        const escapeMap = {
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            '"': '&quot;',
+            "'": '&#039;'
+        };
+        const escapePattern = /[&<>"']/g;
+        // 快速检查是否需要转义
+        if (!escapePattern.test(str)) return str;
+        return str.replace(escapePattern, char => escapeMap[char]);
+    }
+
     css() { return ''; } // 定义样式
     render() { return ''; } // 渲染模板
     disconnectedCallback() { } // 自定义元素从页面中移除时调用
     adoptedCallback() { } // 自定义元素移动至新页面时调用
     attributeChangedCallback(name, oldValue, newValue) { } // 自定义元素的属性变更时调用
-}
-
-/**
- * 转义HTML特殊字符
- * 
- * @param {any} input - 输入字符串
- * @param {boolean} is - 是否转义
- * 
- * @returns {string} 转义后的字符串
- */
-function bnyHtml(input, is = true) {
-    // 处理空值和函数
-    if (input == null) return '';
-    if (typeof input === 'function') return bnyHtml(input());
-    // 处理数组
-    if (Array.isArray(input)) {
-        const len = input.length;
-        // 预初始化数组避免push开销
-        const escaped = new Array(len);
-        for (let i = 0; i < len; i++) {
-            escaped[i] = bnyHtml(input[i]);
-        }
-        return escaped.join(',');
-    }
-    // 转换非字符串为字符串
-    const str = String(input);
-    if (!is) return str;
-    // 转义HTML特殊字符
-    const escapeMap = {
-        '&': '&amp;',
-        '<': '&lt;',
-        '>': '&gt;',
-        '"': '&quot;',
-        "'": '&#039;'
-    };
-    const escapePattern = /[&<>"']/g;
-    // 快速检查是否需要转义
-    if (!escapePattern.test(str)) return str;
-    return str.replace(escapePattern, char => escapeMap[char]);
 }
 
 /**
