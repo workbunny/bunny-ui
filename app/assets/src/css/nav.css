@@ -1,0 +1,332 @@
+/* 导航栏 */
+.bny-nav {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    flex-wrap: nowrap;
+    box-shadow: var(--box-shadow-small);
+    background-color: var(--white);
+    height: 60px;
+}
+
+.bny-nav .bny-nav-title {
+    /* 导航栏标题 */
+    width: 180px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: var(--font-size-20);
+    height: 100%;
+}
+
+.bny-nav .bny-nav-title a {
+    width: 100%;
+    height: 100%;
+    padding: 0 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.bny-nav .bny-nav-title * {
+    max-width: 100%;
+    max-height: 100%;
+    font-size: var(--font-size-20);
+}
+
+.bny-nav .bny-nav-body {
+    margin: 0;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    height: 100%;
+}
+
+.bny-nav .bny-nav-body .bny-nav-item {
+    text-indent: 0;
+    height: 100%;
+}
+
+.bny-nav .bny-nav-body .bny-nav-item a {
+    display: flex;
+    align-items: center;
+    height: 100%;
+    justify-content: center;
+    padding: 0 10px;
+    text-decoration: none;
+    font-size: var(--font-size-16);
+}
+
+.bny-nav .bny-nav-body .bny-nav-item a:hover {
+    text-decoration: underline;
+    text-decoration-style: wavy;
+    text-decoration-color: var(--secondary);
+}
+
+.bny-nav .bny-nav-body .bny-nav-item.active a {
+    text-decoration: underline;
+    text-decoration-style: wavy;
+    text-decoration-color: var(--danger);
+}
+
+.bny-nav .bny-nav-body .bny-nav-item::before {
+    display: none;
+}
+
+.bny-nav .bny-nav-body .bny-nav-item cite {
+    font-style: normal;
+}
+
+.bny-nav .bny-nav-title .toggle {
+    font-size: var(--font-size-20);
+    display: none;
+}
+
+@media screen and (max-width: 768px) {
+    .bny-nav {
+        flex-wrap: wrap;
+        height: auto;
+    }
+
+    .bny-nav .bny-nav-title {
+        width: 100%;
+        height: 60px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 16px;
+    }
+
+    .bny-nav .bny-nav-title .toggle {
+        display: block;
+        margin: 0;
+    }
+
+    .bny-nav .bny-nav-body {
+        display: block;
+        width: 100%;
+        border-top: 1px solid var(--primary);
+        flex-direction: column;
+        transition: var(--transition);
+        overflow: hidden;
+        height: 0;
+    }
+
+    .bny-nav .bny-nav-body .bny-nav-item {
+        width: 100%;
+        height: auto;
+    }
+
+    .bny-nav .bny-nav-body .bny-nav-item a {
+        width: 100%;
+        justify-content: flex-start;
+        padding: 16px;
+    }
+}
+
+/* 侧边导航 */
+.bny-nav-lateral {
+    height: 100%;
+    width: 220px;
+    z-index: 100;
+    transition: var(--transition);
+    box-shadow: var(--box-shadow-small);
+    background-color: var(--white);
+}
+
+.bny-nav-lateral ul {
+    padding: 0;
+    margin: 0;
+}
+
+.bny-nav-lateral ul li {
+    text-indent: 0;
+}
+
+.bny-nav-lateral ul li::before {
+    display: none;
+}
+
+.bny-nav-lateral.close {
+    width: 70px;
+}
+
+.bny-nav-lateral .bny-nav-title {
+    height: 60px;
+    width: 100%;
+    display: flex;
+    align-items: center;
+}
+
+.bny-nav-lateral .bny-nav-title i {
+    font-size: 30px;
+    min-width: 70px;
+    text-align: center;
+    line-height: 50px;
+}
+
+.bny-nav-lateral .bny-nav-title .logo {
+    max-height: 50px;
+    max-width: 78px;
+    margin: 0 10px;
+}
+
+.bny-nav-lateral .bny-nav-title .bny-nav-text {
+    font-size: 22px;
+    font-weight: 600;
+    transition: 0.3s ease;
+    transition-delay: 0.1s;
+}
+
+.bny-nav-lateral.close .bny-nav-title .bny-nav-text {
+    transition-delay: 0s;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.bny-nav-lateral .bny-nav-body {
+    height: 100%;
+    padding: 30px 0 150px 0;
+    overflow: auto;
+}
+
+.bny-nav-lateral.close .bny-nav-body {
+    overflow: visible;
+}
+
+.bny-nav-lateral .bny-nav-body::-webkit-scrollbar {
+    display: none;
+}
+
+.bny-nav-lateral .bny-nav-body li {
+    position: relative;
+    list-style: none;
+    transition: var(--transition);
+}
+
+.bny-nav-lateral .bny-nav-body .bny-nav-child>li:hover {
+    background: var(--muted-10);
+}
+
+.bny-nav-lateral .bny-nav-body li .bny-nav-iocn {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 50px;
+}
+
+.bny-nav-lateral .bny-nav-body .bny-nav-child>li .bny-nav-iocn {
+    height: auto;
+}
+
+.bny-nav-lateral.close .bny-nav-body li .bny-nav-iocn {
+    display: block
+}
+
+.bny-nav-lateral .bny-nav-body li i {
+    min-width: 55px;
+    font-size: var(--font-size-20);
+    cursor: pointer;
+    transition: var(--transition);
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.bny-nav-lateral .bny-nav-body li.showMenu>.bny-nav-iocn>i.arrow {
+    transform: rotate(-180deg);
+}
+
+.bny-nav-lateral.close .bny-nav-body i.arrow {
+    display: none;
+}
+
+.bny-nav-lateral .bny-nav-body li a {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    height: 50px;
+    padding: 0 10px;
+}
+
+.bny-nav-lateral .bny-nav-body li a .bny-nav-name {
+    font-size: 18px;
+    font-weight: 400;
+    transition: var(--transition);
+}
+
+.bny-nav-lateral.close .bny-nav-body li a .bny-nav-name {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.bny-nav-lateral .bny-nav-body li .bny-nav-child {
+    background: var(--muted-40);
+    display: none;
+}
+
+.bny-nav-lateral .bny-nav-body li.showMenu>.bny-nav-child {
+    display: block;
+}
+
+.bny-nav-lateral .bny-nav-body li .bny-nav-child a {
+    font-size: var(--font-size-16);
+    white-space: nowrap;
+    transition: var(--transition);
+    color: var(--primary);
+}
+
+.bny-nav-lateral .bny-nav-body li .bny-nav-child a:hover {
+    color: var(--primary);
+}
+
+.bny-nav-lateral.close .bny-nav-body li .bny-nav-child {
+    position: absolute;
+    left: 100%;
+    top: -10px;
+    margin-top: 0;
+    padding: 0;
+    border-radius: 0 6px 6px 0;
+    opacity: 0;
+    display: block;
+    pointer-events: none;
+    transition: 0s;
+    background-color: var(--white);
+}
+
+.bny-nav-lateral.close .bny-nav-body li .bny-nav-child li {
+    padding: 10px;
+}
+
+.bny-nav-lateral.close .bny-nav-body li:hover .bny-nav-child {
+    top: 0;
+    opacity: 1;
+    pointer-events: auto;
+    transition: var(--transition);
+    box-shadow: var(--box-shadow-small);
+}
+
+.bny-nav-lateral.close .bny-nav-body li:hover .bny-nav-child a {
+    height: auto;
+}
+
+.bny-nav-lateral.close .bny-nav-body li:hover .bny-nav-child a i {
+    min-width: 40px;
+    width: 40px;
+}
+
+.bny-nav-lateral.close .bny-nav-body li:hover .bny-nav-child>.bny-nav-name {
+    border-bottom: 1px solid var(--primary);
+}
+
+.bny-nav-lateral .bny-nav-body li .bny-nav-child .bny-nav-name {
+    display: none;
+}
+
+.bny-nav-lateral.close .bny-nav-body li .bny-nav-child .bny-nav-name {
+    font-size: 18px;
+    opacity: 1;
+    display: block;
+}

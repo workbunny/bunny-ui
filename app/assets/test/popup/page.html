@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quick Start - Bunny-ui</title>
+    <!-- bunny-ui 核心文件 -->
+    <link href="/assets/dist/iconfont/iconfont.css" rel="stylesheet" />
+    <script src="/assets/dist/bunny.js"></script>
+</head>
+
+<body style="padding: 10px;">
+    <button class="bny-btn" onclick="bunny.page({content:'这里发出一个页面框！'})">页面框</button>
+    <button class="bny-btn"
+        onclick="bunny.page({title:'这是新标题',width:'300px',height:'300px',content:'这里发出一个页面框！'})">页面框(标题、宽高)</button>
+    <button class="bny-btn" onclick="bunny.page({content:'https://cn.bing.com/?mkt=zh-CN'})">页面框(链接)</button>
+    <button class="bny-btn"
+        onclick="bunny.page({title:false,content:'这里发出一个页面框！',height:'100%',offset:'left',shade:true,anim:1})">更多配置</button>
+
+    <button class="bny-btn" hx-ext="bny-page" hx-get="/assets/test/popup/page.html" bny-title="信息" bny-width="300px"
+        bny-height="300px">htmx使用方式</button>
+</body>
+
+</html>

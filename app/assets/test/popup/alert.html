@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quick Start - Bunny-ui</title>
+    <!-- bunny-ui 核心文件 -->
+    <link href="/assets/dist/iconfont/iconfont.css" rel="stylesheet" />
+    <script src="/assets/dist/bunny.js"></script>
+</head>
+
+<body style="padding: 10px;">
+    <button class="bny-btn" onclick="bunny.alert({text:'这里发出一个警示！'})">警示框</button>
+    <button class="bny-btn" onclick="bunny.alert({text:'这里发出一个警示！(手动取消)',del:true})">警示框(手动)</button>
+    <button class="bny-btn" onclick="bunny.alert({text:'这里发出一个警示！(时间更久)',time:5000})">警示框(时间更久)</button>
+    <button class="bny-btn"
+        onclick="bunny.alert({text:'这里发出一个警示！(样式)',style:'alert-success'})">警示框(其他样式-和警示组件一样)</button>
+</body>
+
+</html>

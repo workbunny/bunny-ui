@@ -1,0 +1,13 @@
+/* 徽章 */
+.bny-badge {
+    position: relative;
+    display: inline-block;
+    padding: 0 .2em;
+    font-size: 75%;
+    text-align: center;
+    border-radius: 2px;
+    background-color: var(--muted);
+    color: var(--white);
+    left: 2px;
+    top: -2px;
+}

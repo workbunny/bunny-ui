@@ -1,0 +1,555 @@
+#app {
+    padding-top: 65px;
+    position: relative;
+}
+
+/* 导航栏 */
+.wp-nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 10;
+}
+
+.wp-nav .bny-nav {
+    justify-content: space-between;
+}
+
+.wp-nav .bny-nav .bny-nav-title a {
+    line-height: 50px !important;
+}
+
+.wp-nav .bny-nav .bny-nav-title img {
+    max-height: 30px !important;
+    margin-right: 10px;
+}
+
+.wp-nav .bny-nav .bny-nav-body .bny-nav-item {
+    position: relative;
+    white-space: nowrap;
+}
+
+.wp-nav .bny-nav .bny-nav-body .bny-nav-sub {
+    box-shadow: var(--box-shadow-small);
+    padding: 0;
+    background-color: var(--white);
+    position: absolute;
+    display: none;
+}
+
+.wp-nav .bny-nav .bny-nav-body .bny-nav-sub .bny-nav-item {
+    padding: 8px 8px;
+}
+
+.wp-nav .bny-nav .bny-nav-body .bny-nav-sub .bny-nav-sub {
+    top: 0;
+    left: 100%;
+    min-width: min-content;
+}
+
+.wp-nav .bny-nav-sub a {
+    justify-content: space-between !important;
+}
+
+.wp-nav .bny-nav .bny-nav-body .bny-nav-item:hover>.bny-nav-sub {
+    display: block;
+}
+
+.wp-nav .bny-nav .bny-nav-body .bny-nav-item:hover>a .arrow {
+    transform: rotate(90deg);
+    transition: var(--transition);
+}
+
+@media screen and (max-width: 768px) {
+    .wp-nav .bny-nav-item a {
+        justify-content: space-between !important;
+    }
+
+    .wp-nav .bny-nav .bny-nav-body .bny-nav-sub {
+        box-shadow: none;
+        position: relative;
+        background-color: var(--muted-40);
+    }
+
+    .wp-nav .bny-nav .bny-nav-body .bny-nav-sub .bny-nav-sub {
+        left: 0;
+    }
+
+    .wp-nav .bny-nav .bny-nav-body .bny-nav-sub .bny-nav-item {
+        padding: 0;
+    }
+}
+
+.wp-nav .socialLinks {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 0 10px;
+}
+
+.wp-nav .socialLinks::before {
+    display: block !important;
+    width: 1px;
+    height: 22px;
+    background-color: var(--primary-40);
+    content: "";
+}
+
+.wp-nav .socialLinks a {
+    padding: 0 !important;
+}
+
+.wp-nav .socialLinks i {
+    font-size: 26px;
+}
+
+.wp-nav .socialLinks img {
+    width: 26px;
+}
+
+.wp-nav .theme {
+    display: flex;
+    padding: 0 10px;
+    padding-right: 0;
+    align-items: center;
+    justify-content: center;
+}
+
+.wp-nav .theme cite {
+    display: none;
+}
+
+.wp-nav .theme::before {
+    display: block !important;
+    width: 1px;
+    height: 26px;
+    background-color: var(--primary-40);
+    content: "";
+}
+
+.wp-nav .theme a {
+    padding: 0 !important;
+    margin: 0;
+    height: auto !important;
+    width: auto !important;
+}
+
+.wp-nav .theme i {
+    font-size: 22px;
+}
+
+@media screen and (max-width: 768px) {
+    .wp-nav .theme {
+        padding: 16px;
+        gap: 16px;
+        background-color: var(--muted-40);
+    }
+
+    .wp-nav .theme cite {
+        display: block;
+    }
+
+    .wp-nav .theme::before {
+        display: none !important;
+    }
+
+    .wp-nav .socialLinks::before {
+        display: none !important;
+    }
+
+    .wp-nav .socialLinks {
+        padding: 8px 0;
+    }
+
+    .wp-nav .socialLinks a {
+        width: auto !important;
+    }
+}
+
+/* 页脚样式 */
+footer {
+    text-align: center;
+    padding: 2rem 0;
+    color: var(--primary);
+}
+
+footer p {
+    line-height: 24px;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+footer a {
+    color: var(--primary);
+}
+
+/* home模板样式 */
+
+.wp-home .header {
+    padding: 4rem 0 2rem;
+    text-align: center;
+}
+
+.wp-home .logo span {
+    font-size: 3.5rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    /* 新增渐变效果 */
+    background: linear-gradient(120deg, #c242fd 30%, #4fcef8);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    /* 添加动画效果 */
+    position: relative;
+    display: inline-block;
+}
+
+.wp-home .subtitle {
+    color: var(--primary);
+    font-size: 3.5rem;
+    margin-bottom: 1.5rem;
+    font-weight: 700;
+}
+
+.wp-home .bny-btn {
+    padding: 0.8rem 1.5rem;
+}
+
+/* 主要内容区域 */
+.wp-home .hero {
+    text-align: center;
+    padding: 3rem 0;
+    line-height: 36px;
+    font-size: 24px;
+}
+
+.wp-home .description {
+    color: var(--muted-10);
+}
+
+/* 功能模块网格 */
+.wp-home .features {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
+    gap: 1rem;
+    padding: 3rem 0;
+}
+
+.wp-home .feature-card {
+    padding: 2rem;
+    border-radius: 8px;
+    transition: var(--transition);
+    background-color: var(--white);
+    box-shadow: var(--box-shadow-small);
+}
+
+.wp-home .feature-card:hover {
+    transform: translateY(-5px);
+}
+
+.wp-home .feature-card h3 {
+    margin-bottom: 1rem;
+    font-size: var(--font-size-16);
+    font-weight: 600;
+    line-height: 24px;
+}
+
+.wp-home .feature-card p {
+    color: var(--muted);
+    font-size: var(--font-size);
+    flex-grow: 1;
+    padding-top: 8px;
+    line-height: 24px;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.wp-home .icon {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 20px;
+    border-radius: 6px;
+    width: 48px;
+    height: 48px;
+    font-size: 24px;
+    border: 1px solid var(--primary);
+}
+
+@media screen and (max-width: 768px) {
+    .wp-home .logo span {
+        font-size: 2.5rem;
+    }
+
+    .wp-home .subtitle {
+        font-size: 1.5rem;
+    }
+
+    .wp-home .hero {
+        padding: 1rem 0;
+    }
+
+    .wp-home .description {
+        margin: 0;
+        font-size: 18px;
+        padding: 0 1rem;
+    }
+}
+
+/* default模板 */
+.wp-default {
+    height: calc(100vh - 60px);
+    position: relative;
+    display: flex;
+    flex-wrap: nowrap;
+    /* padding-right: 15px;
+    padding-left: 15px; */
+    margin-right: auto;
+    margin-left: auto;
+    width: 100%;
+    max-width: 100%;
+    overflow: hidden;
+}
+
+.wp-default .bny-nav-lateral {
+    background-color: unset !important;
+    box-shadow: unset !important;
+    height: 100%;
+    overflow: hidden auto;
+    background-color: var(--white);
+    /* float: right; */
+}
+
+.wp-default .bny-nav-lateral .bny-nav-body li .bny-nav-child {
+    background: unset !important;
+    padding-left: 10px;
+}
+
+.wp-default .bny-nav-lateral .bny-nav-body li .bny-nav-iocn {
+    border-bottom: 1px solid var(--muted-40);
+}
+
+.wp-default .bny-nav-lateral .bny-nav-iocn>a {
+    font-weight: 600;
+    font-size: var(--font-size-16);
+}
+
+.wp-default .bny-nav-lateral .bny-nav-body .bny-nav-child>li:hover {
+    background: unset !important;
+}
+
+.wp-default .bny-nav-lateral .bny-nav-body {
+    padding: 1.5rem 0;
+}
+
+.wp-default .wp-left {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    padding-right: 20px;
+    height: 100%;
+    overflow: hidden;
+}
+
+.wp-default .wp-body {
+    padding: 1.5rem;
+    overflow: hidden auto;
+    height: 100%;
+}
+
+.wp-default .wp-body .content {
+    max-width: 100%;
+}
+
+.wp-default .wp-body .content iframe {
+    width: 100%;
+    border: 0;
+}
+
+.wp-default .wp-body .content h1,
+.wp-default .wp-body .content h2,
+.wp-default .wp-body .content h3,
+.wp-default .wp-body .content h4,
+.wp-default .wp-body .content h5,
+.wp-default .wp-body .content h6 {
+    margin-top: 18px;
+}
+
+.wp-default .wp-body .content p {
+    line-height: 32px;
+    font-size: var(--font-size-16);
+    /* margin: 16px 0; */
+}
+
+.wp-default .wp-body .content li {
+    font-size: var(--font-size-16);
+    line-height: 32px;
+}
+
+.wp-default blockquote p {
+    margin: 0 !important;
+}
+
+.wp-default .bny-toc {
+    width: 250px;
+    overflow: hidden auto;
+    margin: 1.5rem 0;
+    padding-left: 16px;
+    border-left: 1px solid var(--muted-40);
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    top: 70px;
+    margin-left: 20px;
+    min-width: min-content;
+}
+
+.wp-default .bny-toc p {
+    font-size: var(--font-size);
+    line-height: 32px;
+    white-space: nowrap;
+}
+
+.wp-default .bny-toc>p:hover {
+    cursor: pointer;
+}
+
+.wp-default .bny-toc p:first-child {
+    font-size: var(--font-size-16);
+    font-weight: 600;
+}
+
+.wp-default .wp-search-up {
+    /* float: right; */
+    padding-top: 1.5rem;
+}
+
+.wp-default .bny-nav-lateral .bny-nav-body {
+    padding-top: 0;
+    overflow: unset;
+}
+
+/* 分页 */
+.wp-default .page {
+    padding-top: 24px;
+    padding-bottom: 100px;
+    width: 100%;
+}
+
+.wp-default .page a {
+    padding: 11px 16px 13px;
+    border-radius: 6px;
+    width: 330px;
+    max-width: 100%;
+}
+
+.wp-default .page a span {
+    display: block;
+    line-height: 20px;
+}
+
+.wp-default .page a span:first-child {
+    font-size: 12px;
+}
+
+.wp-default .page a:first-child {
+    float: left;
+    text-align: left;
+}
+
+.wp-default .page a:last-child {
+    float: right;
+    text-align: right;
+}
+
+.wp-default .pe-header {
+    display: none;
+}
+
+@media screen and (max-width: 768px) {
+    .wp-default .pe-header {
+        display: flex;
+        position: fixed;
+        top: 65px;
+        left: 0;
+        z-index: 9;
+        padding: 0 10px;
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    .wp-default .content {
+        padding-top: 10px;
+    }
+}
+
+.bny-page .bny-page-content {
+    height: 100%;
+}
+
+#pe-toc .bny-toc {
+    width: auto;
+    position: unset;
+    margin: 0;
+    padding: 0 10px;
+}
+
+#pe-toc .bny-toc p {
+    font-size: 14px;
+}
+
+.bny-layer .bny-nav-lateral .bny-nav-body {
+    padding-top: 10px;
+}
+
+/* 搜索 */
+.bny-search {
+    padding: 10px;
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+.bny-search .bny-form {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    padding: 10px;
+    background-color: var(--white);
+    z-index: 9;
+}
+
+.bny-search #search-results {
+    width: 100%;
+    height: 100%;
+    padding-top: 60px;
+}
+
+.bny-search .bny-search-result {
+    overflow: hidden auto;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+    gap: 10px;
+    padding: 0 10px;
+}
+
+.bny-search .bny-search-result .bny-search-item {
+    border: 2px solid var(--primary);
+    padding: 10px;
+}
+
+.bny-search .bny-search-result .bny-search-item h3 {
+    font-size: var(--font-size-20);
+    padding-bottom: 8px;
+}
+
+.bny-search .bny-search-result .bny-search-item p {
+    font-size: var(--font-size);
+}

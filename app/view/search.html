@@ -1,0 +1,10 @@
+<div class="bny-search-result">
+    {foreach $data as $k=>$v}
+    <div class="bny-search-item">
+        <a href="{$v.link}">
+            <h3>{$v.text}</h3>
+            <p>{$v.content}</p>
+        </a>
+    </div>
+    {/foreach}
+</div>

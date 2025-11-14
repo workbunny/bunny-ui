@@ -1,0 +1,60 @@
+/* 卡片 */
+.bny-card {
+    border: 2px solid var(--primary-10);
+    transition: var(--transition);
+    box-shadow: var(--box-shadow);
+    box-sizing: border-box;
+    color: var(--primary);
+}
+
+.bny-card:hover {
+    transform: var(--transform-3d-010);
+    box-shadow: var(--box-shadow-hover);
+}
+
+.bny-card .bny-card-body {
+    flex: 1 1 auto;
+    padding: 1rem;
+}
+
+.bny-card .bny-card-body .bny-card-title {
+    margin-bottom: 0.5rem;
+    margin-top: 0;
+}
+
+.bny-card .bny-card-body .bny-card-subtitle {
+    color: var(--secondary-10);
+    margin-bottom: 0.5rem;
+    margin-top: 0;
+}
+
+.bny-card .bny-card-body .bny-card-text {
+    margin-bottom: 1rem;
+    margin-top: 0;
+}
+
+.bny-card img {
+    max-width: 100%;
+}
+
+.bny-card .bny-card-body .bny-card-link {
+    color: var(--secondary);
+}
+
+.bny-card .bny-card-body .bny-card-link+.bny-card-link {
+    margin-left: 1rem;
+}
+
+.bny-card .bny-card-header,
+.bny-card .bny-card-footer {
+    padding: 0.75rem 1.25rem;
+    background-color: var(--white);
+}
+
+.bny-card .bny-card-header {
+    border-bottom: 2px solid var(--primary-10);
+}
+
+.bny-card .bny-card-footer {
+    border-top: 2px solid var(--primary-10);
+}

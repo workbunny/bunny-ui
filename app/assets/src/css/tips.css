@@ -1,0 +1,66 @@
+/* 提示tips */
+[tips-top],
+[tips-bottom],
+[tips-left],
+[tips-right] {
+    position: relative;
+    cursor: pointer;
+}
+
+[tips-top]::before,
+[tips-bottom]::before,
+[tips-left]::before,
+[tips-right]::before {
+    content: "";
+    position: absolute;
+    background-color: var(--muted);
+    color: var(--white-light);
+    border-radius: var(--border-radius);
+    white-space: nowrap;
+    z-index: 999;
+    font-family: inherit;
+    font-size: 0.875em;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.2s ease;
+    pointer-events: none;
+}
+
+/* 悬停时通用样式 */
+[tips-top]:hover::before,
+[tips-bottom]:hover::before,
+[tips-left]:hover::before,
+[tips-right]:hover::before {
+    opacity: 1;
+    visibility: visible;
+    padding: 5px 10px;
+}
+
+/* 方向定位 */
+[tips-top]:hover::before {
+    content: attr(tips-top);
+    bottom: 125%;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+[tips-bottom]:hover::before {
+    content: attr(tips-bottom);
+    top: 125%;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+[tips-left]:hover::before {
+    content: attr(tips-left);
+    top: 50%;
+    right: 110%;
+    transform: translateY(-50%);
+}
+
+[tips-right]:hover::before {
+    content: attr(tips-right);
+    top: 50%;
+    left: 110%;
+    transform: translateY(-50%);
+}

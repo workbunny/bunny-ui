@@ -1,0 +1,78 @@
+/* 警示alert */
+.alert-primary {
+    /* 主要的 */
+    margin-bottom: 20px;
+    padding: 15px;
+    width: 100%;
+    border-style: solid;
+    border-width: 2px;
+    border-color: var(--primary-40);
+    background-color: var(--muted-40);
+    color: var(--primary);
+}
+
+.alert-secondary {
+    /* 通用的 */
+    margin-bottom: 20px;
+    padding: 15px;
+    width: 100%;
+    border-style: solid;
+    border-width: 2px;
+    border-color: var(--secondary);
+    background-color: var(--white);
+    color: var(--secondary);
+}
+
+.alert-success {
+    /* 成功的 */
+    margin-bottom: 20px;
+    padding: 15px;
+    width: 100%;
+    border-style: solid;
+    border-width: 2px;
+    border-color: var(--success);
+    background-color: var(--white);
+    color: var(--success);
+}
+
+.alert-warning {
+    /* 警告的 */
+    margin-bottom: 20px;
+    padding: 15px;
+    width: 100%;
+    border-style: solid;
+    border-width: 2px;
+    border-color: var(--warning);
+    background-color: var(--white);
+    color: var(--warning);
+}
+
+.alert-danger {
+    /* 危险的 */
+    margin-bottom: 20px;
+    padding: 15px;
+    width: 100%;
+    border-style: solid;
+    border-width: 2px;
+    border-color: var(--danger);
+    background-color: var(--white);
+    color: var(--danger);
+}
+
+.alert-primary,
+.alert-secondary,
+.alert-success,
+.alert-warning,
+.alert-danger {
+    transition: all 235ms ease-in-out 0s;
+    opacity: 1;
+}
+
+.alert-del {
+    float: right;
+    margin-left: 10px;
+}
+
+.alert-del:hover {
+    cursor: pointer;
+}
