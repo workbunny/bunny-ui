@@ -1,38 +1,34 @@
 customElements.define('bny-button', class extends Bunny {
-    // 定义监听的属性
-    static observedAttributes = ['color', 'disabled']
+  // 定义监听的属性
+  static observedAttributes = ['color']
 
-    constructor() {
-        super();
-        // 默认属性
-        this.attr = this.state({
-            color: "default",
-            disabled: false
-        })
-    }
+  constructor() {
+    super();
+    // 默认属性
+    this.attr = this.state({
+      color: "default"
+    })
+  }
 
-    // 渲染
-    render() {
-        return `
-    <button color="${this.attr.color}" ${this.attr.disabled ? 'disabled' : ''}>
+  // 渲染
+  render() {
+    return `
+    <button color="${this.attr.color}">
         <slot name="bny-text">默认</slot>
     </button>
 `;
-    }
+  }
 
-    // 监听属性
-    attributeChangedCallback(name, oldValue, newValue) {
-        if (name === 'color') {
-            this.attr.color = newValue
-        }
-        if (name === 'disabled') {
-            this.attr.disabled = true
-        }
+  // 监听属性
+  attributeChangedCallback(name, oldValue, newValue) {
+    if (name === 'color') {
+      this.attr.color = newValue
     }
+  }
 
-    // 定义样式
-    css() {
-        return `
+  // 定义样式
+  css() {
+    return `
 
     button {
       padding: 4px 11px;
@@ -128,15 +124,7 @@ customElements.define('bny-button', class extends Bunny {
         border-color: var(--red-shallow);
         border: 2px solid var(--red-shallow);
     }
-
-    [disabled] {
-        opacity: 0.5;
-    }
-    [disabled]:hover {
-        cursor: not-allowed;
-    }
-
 `;
-    }
+  }
 
 });
