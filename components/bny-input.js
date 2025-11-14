@@ -24,7 +24,7 @@ customElements.define('bny-input', class extends Bunny {
     // 渲染
     render() {
         return `
-            <input type="{{attr.type}}" name="{{attr.name}}" value="{{value}}" placeholder="{{attr.placeholder}}" {{attr.disabled ? 'disabled' : ''}} {{attr.required ? 'required' : ''}} @input="handleInputChange" />
+            <input type="${this.attr.type}" name="${this.attr.name}" value="${this.value}" placeholder="${this.attr.placeholder}" ${this.attr.disabled ? 'disabled' : ''} ${this.attr.required ? 'required' : ''} @input="handleInputChange" />
         `;
     }
 
@@ -61,6 +61,7 @@ customElements.define('bny-input', class extends Bunny {
             input:focus {
                 border-color: var(--black);
             }
+
         `
     }
 })
