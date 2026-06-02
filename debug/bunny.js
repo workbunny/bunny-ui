@@ -4327,11 +4327,18 @@
         target.style.left = left === "auto" ? "auto" : `${left}px`;
         target.style.right = right === "auto" ? "auto" : `${right}px`;
       }
+      function add(target) {
+        let dropdown = bny.queryChild(target, ".bny-dropdown");
+        if (!dropdown) {
+          dropdown = document.createElement("div");
+          dropdown.classList.add("bny-dropdown");
+          target.appendChild(dropdown);
+        }
+        return dropdown;
+      }
       if (name === "htmx:afterProcessNode") {
         if (bny.hasExtName(evt.target, "bny-dropdown")) {
-          const dropdown = document.createElement("div");
-          dropdown.classList.add("bny-dropdown");
-          evt.target.appendChild(dropdown);
+          const dropdown = add(evt.target);
           evt.target.addEventListener("click", (e) => {
             if (e.target.closest(".bny-dropdown")) {
               open(evt.target, dropdown);

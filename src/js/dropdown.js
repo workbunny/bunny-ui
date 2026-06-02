@@ -96,12 +96,20 @@ htmx.defineExtension('bny-dropdown', {
             target.style.right = right === 'auto' ? 'auto' : `${right}px`;
         }
 
+        function add(target) {
+            let dropdown = bny.queryChild(target, '.bny-dropdown')
+            if (!dropdown) {
+                dropdown = document.createElement('div')
+                dropdown.classList.add('bny-dropdown')
+                target.appendChild(dropdown)
+            }
+            return dropdown
+        }
+
         // 在htmx初始化节点后触发
         if (name === 'htmx:afterProcessNode') {
             if (bny.hasExtName(evt.target, 'bny-dropdown')) {
-                const dropdown = document.createElement('div')
-                dropdown.classList.add('bny-dropdown')
-                evt.target.appendChild(dropdown)
+                const dropdown = add(evt.target)
                 // 点击事件
                 evt.target.addEventListener("click", (e) => {
                     // 点击下拉菜单区域时，不关闭菜单

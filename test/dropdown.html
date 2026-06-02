@@ -19,6 +19,13 @@
                                     class="bny-btn">下拉菜单</button>
                                 <button hx-ext="bny-dropdown" hx-get="/test/data/dropdown2.html" hx-trigger="click"
                                     class="bny-btn">下拉菜单2</button>
+                                <button hx-ext="bny-dropdown" class="bny-btn">下拉菜单3
+                                    <div class="bny-dropdown">
+                                        <div hx-ext="bny-menu" hx-get="/test/data/menu.json" hx-trigger="load"
+                                            hx-headers='{"Accept": "application/json"}'>
+                                        </div>
+                                    </div>
+                                </button>
                                 <br>
                                 <br>
                                 <br>
