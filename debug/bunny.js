@@ -4264,19 +4264,79 @@
   htmx.defineExtension("bny-dropdown", {
     // 事件
     onEvent: function(name, evt) {
+      function open(parent, target) {
+        clean(target);
+        target.style.visibility = "hidden";
+        target.style.opacity = 0;
+        target.classList.add("show");
+        position(parent, target);
+        target.style.visibility = "visible";
+        target.style.opacity = 1;
+      }
+      function close(target) {
+        const isShow = target.classList.contains("show");
+        const isUp = target.classList.contains("up");
+        if (isShow || isUp) {
+          target.classList.remove("show", "up");
+        }
+        target.style.visibility = "hidden";
+        target.style.opacity = 0;
+      }
+      function clean(target) {
+        target.style.top = "";
+        target.style.left = "";
+        target.style.right = "";
+        target.style.bottom = "";
+      }
+      function toggle(parent, target) {
+        const isShow = target.classList.contains("show");
+        const isUp = target.classList.contains("up");
+        if (isShow || isUp) {
+          close(target);
+        } else {
+          open(parent, target);
+        }
+      }
+      function position(parent, target) {
+        const parentRect = parent.getBoundingClientRect();
+        const targetRect = target.getBoundingClientRect();
+        const viewportWidth = window.innerWidth;
+        const viewportHeight = window.innerHeight;
+        const gap = 8;
+        target.classList.remove("up");
+        let top, bottom;
+        if (parentRect.top + parentRect.bottom < viewportHeight) {
+          top = parentRect.bottom + gap;
+          bottom = "auto";
+        } else {
+          top = "auto";
+          bottom = viewportHeight - parentRect.top + gap;
+          target.classList.add("up");
+        }
+        let left = parentRect.left;
+        let right = "auto";
+        if (left + targetRect.width > viewportWidth - gap) {
+          left = "auto";
+          right = viewportWidth - parentRect.right;
+        }
+        if (left !== "auto" && right < gap) {
+          left = gap;
+        }
+        target.style.top = top === "auto" ? "auto" : `${top}px`;
+        target.style.bottom = bottom === "auto" ? "auto" : `${bottom}px`;
+        target.style.left = left === "auto" ? "auto" : `${left}px`;
+        target.style.right = right === "auto" ? "auto" : `${right}px`;
+      }
       if (name === "htmx:afterProcessNode") {
         if (bny.hasExtName(evt.target, "bny-dropdown")) {
           const dropdown = document.createElement("div");
           dropdown.classList.add("bny-dropdown");
-          const content = document.createElement("div");
-          content.classList.add("content");
-          dropdown.appendChild(content);
           evt.target.appendChild(dropdown);
           evt.target.addEventListener("click", (e) => {
             if (e.target.closest(".bny-dropdown")) {
-              htmx.addClass(dropdown, "show");
+              open(evt.target, dropdown);
             } else {
-              htmx.toggleClass(dropdown, "show");
+              toggle(evt.target, dropdown);
             }
           });
           return false;
@@ -4286,10 +4346,9 @@
       if (name === "htmx:beforeSwap") {
         if (bny.hasExtName(evt.target, "bny-dropdown")) {
           const dropdown = bny.queryChild(evt.target, ".bny-dropdown");
-          const content = bny.queryChild(dropdown, ".content");
-          if (!bny.hasClass(dropdown, "show") || content.innerHTML.trim() === "") {
+          if (!bny.hasClass(dropdown, "show") || dropdown.innerHTML.trim() === "") {
             htmx.swap(
-              content,
+              dropdown,
               evt.detail.xhr.responseText,
               { swapStyle: "innerHTML" }
             );

@@ -3139,7 +3139,7 @@ p {
     }
 
     &:active {
-        transform: var(--transform3d-020);
+        /* transform: var(--transform3d-020); */
         background-color: var(--default-shallow);
         border-color: var(--default-shallow);
     }
@@ -3501,32 +3501,30 @@ p {
         color: var(--blue);
     }
 }.bny-dropdown {
-    position: relative;
-    width: 100%;
-    top: 0;
-    left: 0;
+    position: fixed;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-8px);
+    transition: var(--transition);
+    z-index: 1000;
+    background: none;
+    color: var(--default);
 
-    &>.content {
-        position: absolute;
-        opacity: 0;
-        visibility: hidden;
-        transform: translateY(14px);
-        transition: var(--transition);
-        background: var(--white);
-        color: var(--black);
-        border-radius: var(--border-radius);
-        pointer-events: none;
-        z-index: 9999;
-        top: 0;
-        left: 0;
+    &.up {
+        transform: translateY(8px); 
     }
 
-    &.show>.content {
+    &.show {
         opacity: 1;
         visibility: visible;
-        transform: translateY(4px);
-        pointer-events: auto;
+        transform: translateY(0);
+
+        &.up {
+            transform: translateY(0);
+        }
     }
+
+
 }.bny-confirm-shield {
     position: fixed;
     top: 0;

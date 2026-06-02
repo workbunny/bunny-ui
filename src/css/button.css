@@ -20,7 +20,7 @@
     }
 
     &:active {
-        transform: var(--transform3d-020);
+        /* transform: var(--transform3d-020); */
         background-color: var(--default-shallow);
         border-color: var(--default-shallow);
     }
