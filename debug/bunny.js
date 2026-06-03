@@ -4528,7 +4528,7 @@
       function addMoveBtn(target) {
         const head = bny.queryChild(target, ".head");
         head.classList.add("scrollbar");
-        head.style.cssText = "padding: 0px 40px;";
+        head.style.cssText = "padding: 0px 64px 0 32px;";
         const leftBtn = document.createElement("div");
         leftBtn.className = "btn-left";
         leftBtn.innerHTML = `<i class="bny-icon icon-doubleleft"></i>`;
@@ -4537,6 +4537,31 @@
         rightBtn.className = "btn-right";
         rightBtn.innerHTML = `<i class="bny-icon icon-doubleright"></i>`;
         target.appendChild(rightBtn);
+        const moreBtn = document.createElement("div");
+        moreBtn.className = "btn-more";
+        moreBtn.setAttribute("hx-ext", "bny-dropdown");
+        moreBtn.innerHTML = `<i class="bny-icon icon-down"></i>
+            <div class="bny-dropdown">
+                <div hx-ext="bny-menu" mode="vertical">
+                    <div class="item">
+                        <div class="trigger">
+                            <span>关闭当前</span>
+                        </div>
+                    </div>
+                    <div class="item">
+                        <div class="trigger">
+                            <span>关闭其他</span>
+                        </div>
+                    </div>
+                    <div class="item">
+                        <div class="trigger">
+                            <span>关闭全部</span>
+                        </div>
+                    </div>
+                </div>
+            </div>`;
+        target.appendChild(moreBtn);
+        htmx.process(moreBtn);
       }
       function addCloseBtn(target) {
         const closeBtn = document.createElement("i");

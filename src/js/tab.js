@@ -1,6 +1,6 @@
 htmx.defineExtension('bny-tab', {
     onEvent: function (name, evt) {
-        
+
         /**
          * 添加移动按钮
          * @param {HTMLElement} target 头元素
@@ -10,7 +10,7 @@ htmx.defineExtension('bny-tab', {
             // 添加滚动条
             const head = bny.queryChild(target, ".head")
             head.classList.add("scrollbar")
-            head.style.cssText = "padding: 0px 40px;"
+            head.style.cssText = "padding: 0px 64px 0 32px;"
             // 左移动按钮
             const leftBtn = document.createElement("div")
             leftBtn.className = "btn-left"
@@ -21,6 +21,32 @@ htmx.defineExtension('bny-tab', {
             rightBtn.className = "btn-right"
             rightBtn.innerHTML = `<i class="bny-icon icon-doubleright"></i>`
             target.appendChild(rightBtn)
+            // 更多按钮
+            const moreBtn = document.createElement("div")
+            moreBtn.className = "btn-more"
+            moreBtn.setAttribute("hx-ext", "bny-dropdown")
+            moreBtn.innerHTML = `<i class="bny-icon icon-down"></i>
+            <div class="bny-dropdown">
+                <div hx-ext="bny-menu" mode="vertical">
+                    <div class="item">
+                        <div class="trigger btn-close-this">
+                            <span>关闭当前</span>
+                        </div>
+                    </div>
+                    <div class="item">
+                        <div class="trigger btn-close-other">
+                            <span>关闭其他</span>
+                        </div>
+                    </div>
+                    <div class="item">
+                        <div class="trigger btn-close-all">
+                            <span>关闭全部</span>
+                        </div>
+                    </div>
+                </div>
+            </div>`
+            target.appendChild(moreBtn)
+            htmx.process(moreBtn)
         }
 
         /**

@@ -4274,44 +4274,62 @@ hr {
     position: relative;
 
     &>.btn-left,
-    &>.btn-right {
+    &>.btn-right,
+    &>.btn-more {
         position: absolute;
         top: 0;
         bottom: 0;
         display: flex;
         align-items: center;
         justify-content: center;
-        width: 40px;
-        height: 40px;
+        width: 32px;
+        height: 32px;
         z-index: 1;
         background-color: var(--white-shallow);
         border: 1px solid var(--default-shallow);
         border-radius: var(--border-radius);
-        box-shadow: var(--box-shadow-005);
+        cursor: pointer;
+        user-select: none;
+        transition: background-color var(--transition),
+            border-color var(--transition),
+            box-shadow var(--transition);
 
         & i {
             font-size: var(--font-size-24);
+            color: var(--black-shallow);
             transition: var(--transition);
         }
 
         &:hover {
-            cursor: pointer;
+            background-color: var(--white);
+            border-color: var(--default);
+
+            & i {
+                color: var(--default);
+            }
+        }
+
+        &:active i {
+            transform: scale(0.8);
         }
     }
 
     &>.btn-left {
         left: 0;
-        box-shadow: rgba(0, 0, 0, 0.06) 2px 0px 5px 0px;
     }
 
     &>.btn-right {
-        right: 0;
-        box-shadow: rgba(0, 0, 0, 0.06) -2px 0px 5px 0px;
+        right: 32px;
+        border-right-width: 0;
+        border-top-right-radius: 0;
+        border-bottom-right-radius: 0;
     }
 
-    &>.btn-left:active i,
-    &>.btn-right:active i {
-        transform: scale(0.8);
+    &>.btn-more {
+        border-left-width: 0;
+        border-top-left-radius: 0;
+        border-bottom-left-radius: 0;
+        right: 0;
     }
 
     &>.head {
@@ -4320,53 +4338,67 @@ hr {
         white-space: nowrap;
         align-items: center;
         justify-content: flex-start;
-        border-radius: var(--border-radius);
-        height: 40px;
+        height: 32px;
         position: relative;
+        border-bottom: 1px solid var(--gray-shallow);
 
         &.scrollbar::-webkit-scrollbar {
             height: 0;
         }
 
-        & li {
-            display: flex;
-            padding: 0px 12px;
+        &>li {
+            display: inline-flex;
+            padding: 0 16px;
             align-items: center;
             justify-content: center;
             height: 100%;
-            transition: var(--transition);
+            font-size: var(--font-size);
+            color: var(--black-shallow);
+            cursor: pointer;
+            user-select: none;
+            position: relative;
+            border-radius: var(--border-radius) var(--border-radius) 0 0;
+            transition: color var(--transition),
+                background-color var(--transition);
+
+            &::after {
+                content: "";
+                position: absolute;
+                left: 50%;
+                bottom: -1px;
+                height: 2px;
+                width: 0;
+                background-color: var(--default);
+                transform: translateX(-50%);
+                transition: width var(--transition);
+            }
+
+            &:hover {
+                color: var(--default);
+                background-color: var(--white-shallow);
+            }
 
             &.this {
-                position: relative;
+                color: var(--default);
 
                 &::after {
-                    content: "";
-                    position: absolute;
-                    left: 0;
-                    bottom: 0;
-                    height: 3px;
                     width: 100%;
-                    background-color: var(--default);
                 }
             }
 
-            & i {
-                margin-left: 8px;
-                padding: 1px;
-                transition: var(--transition);
+            &>i {
+                margin-left: 6px;
+                font-size: 12px;
+                padding: 2px;
                 border-radius: 50%;
+                color: var(--black-shallow);
+                transition: var(--transition);
 
                 &:hover {
-                    cursor: pointer;
                     background-color: var(--red);
                     color: var(--white-common);
                 }
             }
-        }
-
-        & li:hover {
-            cursor: pointer;
-            color: var(--default);
         }
     }
 
