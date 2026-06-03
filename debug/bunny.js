@@ -4346,6 +4346,12 @@
               toggle(evt.target, dropdown);
             }
           });
+          document.addEventListener("click", (e) => {
+            if (!e.target.closest(".bny-dropdown")) {
+              console.log("close");
+              close(dropdown);
+            }
+          });
           return false;
         }
         return true;
