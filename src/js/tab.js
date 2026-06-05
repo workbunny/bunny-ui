@@ -88,7 +88,11 @@ htmx.defineExtension('bny-tab', {
                 // console.log(e.target)
                 const li = e.target.closest(".head>li")
                 switchTab(li)
-                e.stopPropagation()
+                const more = e.target.closest(".btn-more")
+                if (li !== null || more !== null) {
+                    e.stopPropagation()
+                }
+
             })
         }
 
