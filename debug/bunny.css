@@ -3250,9 +3250,9 @@ p {
     box-shadow: var(--box-shadow-005);
     border-radius: var(--border-radius);
 
-    &:active {
+    /* &:active {
         transform: var(--transform3d-020);
-    }
+    } */
 
     & .bny-btn {
         box-shadow: none;

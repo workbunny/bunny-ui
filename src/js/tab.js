@@ -128,6 +128,42 @@ htmx.defineExtension('bny-tab', {
                     const head = bny.queryChild(target, ".head")
                     head.scrollBy({ left: 100, behavior: "smooth" })
                 }
+                // 点击关闭当前
+                const closeThisBtn = e.target.closest("div.btn-close-this")
+                if (closeThisBtn) {
+                    const thisLi = bny.queryChild(target, ".head>li.this")
+                    if (thisLi) {
+                        const thisLiClose = bny.queryChild(thisLi, "i.icon-close")
+                        if (thisLiClose) {
+                            thisLiClose.click()
+                        }
+                    }
+                }
+                // 点击关闭其他
+                const closeOtherBtn = e.target.closest("div.btn-close-other")
+                if (closeOtherBtn) {
+                    const lis = bny.queryChildAll(target, ".head>li")
+                    const thisLi = bny.queryChild(target, ".head>li.this")
+                    for (let i = 0; i < lis.length; i++) {
+                        if (lis[i] !== thisLi) {
+                            const closeBtn = bny.queryChild(lis[i], "i.icon-close")
+                            if (closeBtn) {
+                                closeBtn.click()
+                            }
+                        }
+                    }
+                }
+                // 点击关闭全部
+                const closeAllBtn = e.target.closest("div.btn-close-all")
+                if (closeAllBtn) {
+                    const lis = bny.queryChildAll(target, ".head>li")
+                    for (let i = 0; i < lis.length; i++) {
+                        const closeBtn = bny.queryChild(lis[i], "i.icon-close")
+                        if (closeBtn) {
+                            closeBtn.click()
+                        }
+                    }
+                }
             })
         }
 

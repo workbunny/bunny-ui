@@ -4544,17 +4544,17 @@
             <div class="bny-dropdown">
                 <div hx-ext="bny-menu" mode="vertical">
                     <div class="item">
-                        <div class="trigger">
+                        <div class="trigger btn-close-this">
                             <span>关闭当前</span>
                         </div>
                     </div>
                     <div class="item">
-                        <div class="trigger">
+                        <div class="trigger btn-close-other">
                             <span>关闭其他</span>
                         </div>
                     </div>
                     <div class="item">
-                        <div class="trigger">
+                        <div class="trigger btn-close-all">
                             <span>关闭全部</span>
                         </div>
                     </div>
@@ -4615,6 +4615,39 @@
           if (rightBtn) {
             const head = bny.queryChild(target, ".head");
             head.scrollBy({ left: 100, behavior: "smooth" });
+          }
+          const closeThisBtn = e.target.closest("div.btn-close-this");
+          if (closeThisBtn) {
+            const thisLi = bny.queryChild(target, ".head>li.this");
+            if (thisLi) {
+              const thisLiClose = bny.queryChild(thisLi, "i.icon-close");
+              if (thisLiClose) {
+                thisLiClose.click();
+              }
+            }
+          }
+          const closeOtherBtn = e.target.closest("div.btn-close-other");
+          if (closeOtherBtn) {
+            const lis = bny.queryChildAll(target, ".head>li");
+            const thisLi = bny.queryChild(target, ".head>li.this");
+            for (let i = 0; i < lis.length; i++) {
+              if (lis[i] !== thisLi) {
+                const closeBtn2 = bny.queryChild(lis[i], "i.icon-close");
+                if (closeBtn2) {
+                  closeBtn2.click();
+                }
+              }
+            }
+          }
+          const closeAllBtn = e.target.closest("div.btn-close-all");
+          if (closeAllBtn) {
+            const lis = bny.queryChildAll(target, ".head>li");
+            for (let i = 0; i < lis.length; i++) {
+              const closeBtn2 = bny.queryChild(lis[i], "i.icon-close");
+              if (closeBtn2) {
+                closeBtn2.click();
+              }
+            }
           }
         });
       }
