@@ -7,44 +7,51 @@
     position: relative;
     box-shadow: var(--box-shadow-005);
     justify-content: space-between;
+    z-index: 100;
 
-    &>.head {
-        padding: 16px 20px;
+    & > .head {
+        padding: 14px 20px;
         width: 200px;
 
-        &>.toggle-btn {
+        & > .toggle-btn {
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            border-radius: var(--border-radius-8);
-            background: var(--white-common);
-            box-shadow: var(--box-shadow-005);
+            border-radius: var(--border-radius);
+            background: rgba(255, 255, 255, 0.12);
+            transition: var(--transition);
+            backdrop-filter: blur(8px);
 
             & i {
-                color: var(--black-common);
+                color: var(--white-common);
                 transition: var(--transition);
+            }
+
+            &:hover {
+                background: rgba(255, 255, 255, 0.2);
             }
         }
 
-        &>.logo-box {
+        & > .logo-box {
             width: 100%;
             height: 100%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: var(--font-size-24);
-            font-weight: 600;
+            font-size: var(--font-size-20);
+            font-weight: var(--font-weight-semibold);
             white-space: nowrap;
             transition: var(--transition);
             gap: 10px;
             color: var(--white-common);
 
-            &>.logo {
+            & > .logo {
                 width: 36px;
                 height: 36px;
-                border-radius: var(--border-radius-8);
+                border-radius: var(--border-radius);
                 overflow: hidden;
                 background: var(--white-common);
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 
                 & img {
                     width: 100%;
@@ -59,23 +66,27 @@
     & li {
         position: relative;
 
-        &>.trigger {
+        & > .trigger {
             position: relative;
             cursor: pointer;
             transition: var(--transition);
             white-space: nowrap;
-            color: var(--white-common);
-            padding: 14px 20px;
+            color: rgba(255, 255, 255, 0.85);
+            padding: 12px 20px;
             display: flex;
             align-items: center;
+            gap: 6px;
+            font-size: var(--font-size);
 
-            &>i:first-child {
-                margin-right: 0px;
+            & > i:first-child {
+                margin-right: 4px;
+                font-size: var(--font-size-16);
             }
 
-            &>i:last-child {
+            & > i:last-child {
                 margin-left: auto;
                 transition: var(--transition);
+                font-size: 12px;
             }
 
             &::before {
@@ -85,105 +96,135 @@
                 top: 50%;
                 width: 2px;
                 height: 0%;
-                background: var(--default-shallow);
+                background: rgba(255, 255, 255, 0.5);
+                border-radius: var(--border-radius-full);
                 transition: var(--transition);
             }
 
-            &:hover::before {
-                top: 0;
-                height: 100%;
+            &:hover {
+                color: var(--white-common);
+                background: rgba(255, 255, 255, 0.08);
+
+                &::before {
+                    top: 6px;
+                    height: calc(100% - 12px);
+                }
             }
 
-            &.active::before {
-                top: 0;
-                height: 100%;
-                width: 5px;
+            &.active {
+                color: var(--white-common);
+
+                &::before {
+                    top: 6px;
+                    height: calc(100% - 12px);
+                    width: 3px;
+                    background: var(--white-common);
+                }
             }
         }
 
         &.show {
-            &>.sub-menu {
+            & > .sub-menu {
                 height: auto;
                 overflow: unset;
-                transform: translateY(0px);
+                opacity: 1;
+                visibility: visible;
+                transform: translateY(0);
             }
 
-            &>.trigger>i:last-child {
+            & > .trigger > i:last-child {
                 transform: rotate(90deg);
             }
         }
     }
 
-    &>.menu {
+    & > .menu {
         display: flex;
-        gap: 5px;
+        gap: 2px;
+        padding: 0 8px;
     }
 
     & .sub-menu {
         height: 0;
+        opacity: 0;
+        visibility: hidden;
         overflow: hidden;
         transition: var(--transition);
         position: absolute;
-        top: calc(100% + 14px);
+        top: calc(100% + 8px);
         left: 0;
         background: var(--default);
         z-index: 9999;
-        box-shadow: var(--box-shadow-005);
-        transform: translateY(15px);
+        box-shadow: var(--box-shadow-055);
+        border-radius: var(--border-radius);
+        transform: translateY(8px);
+        min-width: 160px;
 
         & .sub-menu {
-            top: 50%;
+            top: 0;
             left: calc(100% + 4px);
+        }
+
+        & li > .trigger {
+            border-radius: var(--border-radius-sm);
+            padding: 10px 16px;
         }
     }
 
-    /* 颜色 */
+    /* ========== 颜色变体 ========== */
+
     /* 白色 */
     &[color="white"] {
-        background: var(--white-middle);
+        background: var(--white);
         color: var(--black-middle);
+        border-bottom: 1px solid var(--gray-shallow);
 
         & .logo-box {
             color: var(--default);
         }
 
         & .toggle-btn {
-            background: var(--white-middle) !important;
+            background: var(--white-shallow) !important;
 
             & i {
                 color: var(--black-middle) !important;
             }
+
+            &:hover {
+                background: var(--gray-middle) !important;
+            }
         }
 
-        & li>.trigger {
+        & li > .trigger {
             color: var(--black-middle);
 
             &::before {
                 background: var(--default) !important;
             }
+
+            &:hover {
+                background: var(--white-shallow);
+                color: var(--black);
+            }
+
+            &.active {
+                color: var(--default);
+            }
         }
 
         & .sub-menu {
-            background: var(--white-middle) !important;
+            background: var(--white);
+            border: 1px solid var(--gray-shallow);
         }
 
         &:not([side]) {
-            & .sub-menu {
-                background: var(--white-middle) !important;
-            }
-
-            &[collapsed] {
-                & .sub-menu {
-                    background: rgba(0, 0, 0, 0.045) !important;
-                }
+            &[collapsed] .sub-menu {
+                background: var(--white-shallow) !important;
             }
         }
 
-        &[side] {
-
-            & .sub-menu {
-                background: rgba(0, 0, 0, 0.045) !important;
-            }
+        &[side] .sub-menu {
+            background: var(--white-shallow) !important;
         }
     }
 
@@ -191,20 +232,12 @@
     &[color="green"] {
         background: var(--green);
 
-        & .toggle-btn {
+        & li > .trigger::before {
+            background: var(--green-shallow) !important;
+        }
+
+        &[collapsed] .sub-menu {
             background: var(--green) !important;
-        }
-
-        & li>.trigger {
-            &::before {
-                background: var(--green-shallow) !important;
-            }
-        }
-
-        &[collapsed] {
-            & .sub-menu {
-                background: var(--green) !important;
-            }
         }
 
         &:not([side]) {
@@ -212,10 +245,8 @@
                 background: var(--green) !important;
             }
 
-            &[collapsed] {
-                & .sub-menu {
-                    background: rgba(0, 0, 0, 0.25) !important;
-                }
+            &[collapsed] .sub-menu {
+                background: rgba(0, 0, 0, 0.2) !important;
             }
         }
     }
@@ -224,20 +255,12 @@
     &[color="yellow"] {
         background: var(--yellow);
 
-        & .toggle-btn {
+        & li > .trigger::before {
+            background: var(--yellow-shallow) !important;
+        }
+
+        &[collapsed] .sub-menu {
             background: var(--yellow) !important;
-        }
-
-        & li>.trigger {
-            &::before {
-                background: var(--yellow-shallow) !important;
-            }
-        }
-
-        &[collapsed] {
-            & .sub-menu {
-                background: var(--yellow) !important;
-            }
         }
 
         &:not([side]) {
@@ -245,10 +268,8 @@
                 background: var(--yellow) !important;
             }
 
-            &[collapsed] {
-                & .sub-menu {
-                    background: rgba(0, 0, 0, 0.25) !important;
-                }
+            &[collapsed] .sub-menu {
+                background: rgba(0, 0, 0, 0.2) !important;
             }
         }
     }
@@ -257,20 +278,12 @@
     &[color="red"] {
         background: var(--red);
 
-        & .toggle-btn {
+        & li > .trigger::before {
+            background: var(--red-shallow) !important;
+        }
+
+        &[collapsed] .sub-menu {
             background: var(--red) !important;
-        }
-
-        & li>.trigger {
-            &::before {
-                background: var(--red-shallow) !important;
-            }
-        }
-
-        &[collapsed] {
-            & .sub-menu {
-                background: var(--red) !important;
-            }
         }
 
         &:not([side]) {
@@ -278,10 +291,8 @@
                 background: var(--red) !important;
             }
 
-            &[collapsed] {
-                & .sub-menu {
-                    background: rgba(0, 0, 0, 0.25) !important;
-                }
+            &[collapsed] .sub-menu {
+                background: rgba(0, 0, 0, 0.2) !important;
             }
         }
     }
@@ -290,20 +301,12 @@
     &[color="blue"] {
         background: var(--blue);
 
-        & .toggle-btn {
+        & li > .trigger::before {
+            background: var(--blue-shallow) !important;
+        }
+
+        &[collapsed] .sub-menu {
             background: var(--blue) !important;
-        }
-
-        & li>.trigger {
-            &::before {
-                background: var(--blue-shallow) !important;
-            }
-        }
-
-        &[collapsed] {
-            & .sub-menu {
-                background: var(--blue) !important;
-            }
         }
 
         &:not([side]) {
@@ -311,135 +314,137 @@
                 background: var(--blue) !important;
             }
 
-            &[collapsed] {
-                & .sub-menu {
-                    background: rgba(0, 0, 0, 0.25) !important;
-                }
+            &[collapsed] .sub-menu {
+                background: rgba(0, 0, 0, 0.2) !important;
             }
         }
     }
 }
 
+/* ========== 顶部导航（非侧边） ========== */
 [hx-ext~="bny-nav"]:not([side]) {
-    &>.head {
-        &>.toggle-btn {
-            display: none;
-        }
+    & > .head > .toggle-btn {
+        display: none;
     }
 
-    & li>.trigger {
+    & li > .trigger {
         &::before {
             top: 100%;
             left: 50%;
             width: 0%;
             height: 2px;
+            border-radius: var(--border-radius-full);
         }
 
         &:hover::before {
-            left: 0;
-            width: 100%;
+            left: 10%;
+            width: 80%;
+            height: 2px;
         }
 
         &.active::before {
-            left: 0;
-            width: 100%;
+            left: 10%;
+            width: 80%;
+            height: 2px;
+            top: 100%;
         }
     }
 }
 
+/* ========== 移动端响应式 ========== */
 @media screen and (max-width: 768px) {
     [hx-ext~="bny-nav"]:not([side]) {
         flex-direction: column;
         overflow: hidden;
-        transition: var(--transition);
 
-        &>.head {
+        & > .head {
             width: 100%;
             display: flex;
             align-items: center;
-            flex-wrap: nowrap;
             justify-content: space-between;
 
             & .logo-box {
                 width: auto;
             }
 
-            &>.toggle-btn {
+            & > .toggle-btn {
                 display: flex;
-                width: 35px;
-                height: 35px;
-                transform: rotate(270deg);
+                width: 36px;
+                height: 36px;
             }
         }
 
-        &>.menu {
+        & > .menu {
             height: 0;
             opacity: 0;
             visibility: hidden;
             transition: var(--transition);
             pointer-events: none;
             overflow: hidden;
-            transform: translateY(-15px);
+            transform: translateY(-8px);
             flex-direction: column;
             width: 100%;
         }
 
         &[collapsed] {
-            &>.head {
-                border-bottom: 1px solid var(--black-shallow);
+            & > .head {
+                border-bottom: 1px solid rgba(255, 255, 255, 0.15);
 
-                &>.toggle-btn {
-                    & i {
-                        transform: rotate(180deg);
-                    }
+                & > .toggle-btn i {
+                    transform: rotate(180deg);
                 }
             }
 
-            &>.menu {
+            & > .menu {
                 height: auto;
                 opacity: 1;
                 visibility: visible;
                 pointer-events: auto;
                 overflow: unset;
-                transform: translateY(0px);
+                transform: translateY(0);
 
                 & .sub-menu {
                     position: unset;
                     box-shadow: none;
-                    background: rgba(0, 0, 0, 0.25);
+                    background: rgba(0, 0, 0, 0.15);
                     transform: none;
+                    border-radius: 0;
                 }
             }
         }
     }
 }
 
-/* 侧边导航 */
+/* ========== 侧边导航 ========== */
 [hx-ext~="bny-nav"][side] {
-    display: block;
+    display: flex;
+    flex-direction: column;
     width: 240px;
+    min-height: 100vh;
+    justify-content: flex-start;
 
-    &>.head {
+    & > .head {
         display: flex;
         align-items: center;
         justify-content: space-between;
         width: 100%;
-        border-bottom: 1px solid var(--black-shallow);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.12);
 
-        &>.toggle-btn {
+        & > .toggle-btn {
             display: flex;
             position: absolute;
             right: -12px;
             top: calc(50% - 12px);
             width: 24px;
             height: 24px;
-            border-radius: var(--border-radius-8);
+            border-radius: var(--border-radius-sm);
             background: var(--default);
             box-shadow: var(--box-shadow-005);
             z-index: 9999;
 
             & i {
                 color: var(--white-common);
+                font-size: 12px;
             }
 
             &:hover i {
@@ -448,80 +453,77 @@
         }
     }
 
-    &>.menu {
-        display: block;
+    & > .menu {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        padding: 8px 0;
     }
 
-    & li {
-        &>.trigger {
-            display: flex;
-            align-items: center;
-
-            &>i:first-child {
-                margin-right: 10px;
-            }
-
-            &>i:last-child {
-                margin-left: auto;
-                transition: var(--transition);
-            }
+    & li > .trigger {
+        & > i:first-child {
+            margin-right: 10px;
         }
 
-        &.show {
-            &>.sub-menu {
-                height: auto;
-                transform: none;
-            }
+        & > i:last-child {
+            margin-left: auto;
+        }
+    }
 
-            &>.trigger>i:last-child {
-                transform: rotate(90deg);
-            }
+    & li.show {
+        & > .sub-menu {
+            height: auto;
+            transform: none;
+            opacity: 1;
+            visibility: visible;
+        }
+
+        & > .trigger > i:last-child {
+            transform: rotate(90deg);
         }
     }
 
     & .sub-menu {
         position: unset;
-        background: rgba(0, 0, 0, 0.25);
+        background: rgba(0, 0, 0, 0.15);
         box-shadow: none;
         transform: none;
+        border-radius: 0;
     }
 
     &[collapsed] {
         width: 80px;
 
-        &>.head {
+        & > .head {
             & .logo-box {
                 justify-content: center;
 
-                &>span {
+                & > span {
                     display: none;
                 }
             }
 
-            & .toggle-btn {
-                & i {
-                    transform: rotate(180deg);
-                }
+            & .toggle-btn i {
+                transform: rotate(180deg);
             }
         }
 
-        &>.menu {
-            &>li {
-                &>.trigger {
-                    justify-content: center;
+        & > .menu {
+            & > li > .trigger {
+                justify-content: center;
+                padding: 14px 12px;
 
-                    &>i:first-child {
-                        font-size: var(--font-size-24);
-                        margin-right: 0;
-                    }
+                & > i:first-child {
+                    font-size: var(--font-size-24);
+                    margin-right: 0;
+                }
 
-                    &>i:last-child {
-                        display: none;
-                    }
+                & > i:last-child {
+                    display: none;
+                }
 
-                    &>span {
-                        display: none;
-                    }
+                & > span {
+                    display: none;
                 }
             }
 
@@ -534,11 +536,10 @@
                 position: absolute;
                 top: 0;
                 left: calc(100% + 4px);
-                height: auto;
                 background: var(--default);
-                overflow: unset;
-                box-shadow: var(--box-shadow-005);
-                transform: translateY(-15px);
+                box-shadow: var(--box-shadow-055);
+                border-radius: var(--border-radius);
+                transform: translateY(0);
 
                 & .sub-menu {
                     top: 50%;
@@ -548,17 +549,23 @@
             & li {
                 position: relative;
 
-                &.show {
-                    &>.sub-menu {
-                        height: auto;
-                        opacity: 1;
-                        visibility: visible;
-                        pointer-events: auto;
-                        overflow: unset;
-                        transform: translateY(0);
-                    }
+                &.show > .sub-menu {
+                    height: auto;
+                    opacity: 1;
+                    visibility: visible;
+                    pointer-events: auto;
+                    overflow: unset;
                 }
             }
         }
+    }
+
+    /* 侧边栏颜色变体下的 sub-menu */
+    &[color="white"] .sub-menu {
+        background: var(--white-shallow) !important;
+    }
+
+    &[color="white"][collapsed] .sub-menu {
+        background: var(--white) !important;
     }
 }

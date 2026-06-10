@@ -1,28 +1,27 @@
 .bny-dropdown {
-    position: relative;
-    width: 100%;
-    top: 0;
-    left: 0;
+    position: fixed;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-6px);
+    transition: var(--transition);
+    z-index: 1000;
+    background: none;
+    color: var(--black);
+    box-shadow: var(--box-shadow-055);
+    border-radius: var(--border-radius);
+    border: 1px solid var(--gray-shallow);
 
-    &>.content {
-        position: absolute;
-        opacity: 0;
-        visibility: hidden;
-        transform: translateY(14px);
-        transition: var(--transition);
-        background: var(--white);
-        color: var(--black);
-        border-radius: var(--border-radius);
-        pointer-events: none;
-        z-index: 9999;
-        top: 0;
-        left: 0;
+    &.up {
+        transform: translateY(6px);
     }
 
-    &.show>.content {
+    &.show {
         opacity: 1;
         visibility: visible;
-        transform: translateY(4px);
-        pointer-events: auto;
+        transform: translateY(0);
+
+        &.up {
+            transform: translateY(0);
+        }
     }
 }

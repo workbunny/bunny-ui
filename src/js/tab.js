@@ -1,6 +1,6 @@
 htmx.defineExtension('bny-tab', {
     onEvent: function (name, evt) {
-        
+
         /**
          * 添加移动按钮
          * @param {HTMLElement} target 头元素
@@ -10,7 +10,7 @@ htmx.defineExtension('bny-tab', {
             // 添加滚动条
             const head = bny.queryChild(target, ".head")
             head.classList.add("scrollbar")
-            head.style.cssText = "padding: 0px 40px;"
+            head.style.cssText = "padding: 0px 64px 0 32px;"
             // 左移动按钮
             const leftBtn = document.createElement("div")
             leftBtn.className = "btn-left"
@@ -21,6 +21,32 @@ htmx.defineExtension('bny-tab', {
             rightBtn.className = "btn-right"
             rightBtn.innerHTML = `<i class="bny-icon icon-doubleright"></i>`
             target.appendChild(rightBtn)
+            // 更多按钮
+            const moreBtn = document.createElement("div")
+            moreBtn.className = "btn-more"
+            moreBtn.setAttribute("hx-ext", "bny-dropdown")
+            moreBtn.innerHTML = `<i class="bny-icon icon-down"></i>
+            <div class="bny-dropdown">
+                <div hx-ext="bny-menu" mode="vertical">
+                    <div class="item">
+                        <div class="trigger btn-close-this">
+                            <span>关闭当前</span>
+                        </div>
+                    </div>
+                    <div class="item">
+                        <div class="trigger btn-close-other">
+                            <span>关闭其他</span>
+                        </div>
+                    </div>
+                    <div class="item">
+                        <div class="trigger btn-close-all">
+                            <span>关闭全部</span>
+                        </div>
+                    </div>
+                </div>
+            </div>`
+            target.appendChild(moreBtn)
+            htmx.process(moreBtn)
         }
 
         /**
@@ -62,7 +88,11 @@ htmx.defineExtension('bny-tab', {
                 // console.log(e.target)
                 const li = e.target.closest(".head>li")
                 switchTab(li)
-                e.stopPropagation()
+                const more = e.target.closest(".btn-more")
+                if (li !== null || more !== null) {
+                    e.stopPropagation()
+                }
+
             })
         }
 
@@ -101,6 +131,42 @@ htmx.defineExtension('bny-tab', {
                 if (rightBtn) {
                     const head = bny.queryChild(target, ".head")
                     head.scrollBy({ left: 100, behavior: "smooth" })
+                }
+                // 点击关闭当前
+                const closeThisBtn = e.target.closest("div.btn-close-this")
+                if (closeThisBtn) {
+                    const thisLi = bny.queryChild(target, ".head>li.this")
+                    if (thisLi) {
+                        const thisLiClose = bny.queryChild(thisLi, "i.icon-close")
+                        if (thisLiClose) {
+                            thisLiClose.click()
+                        }
+                    }
+                }
+                // 点击关闭其他
+                const closeOtherBtn = e.target.closest("div.btn-close-other")
+                if (closeOtherBtn) {
+                    const lis = bny.queryChildAll(target, ".head>li")
+                    const thisLi = bny.queryChild(target, ".head>li.this")
+                    for (let i = 0; i < lis.length; i++) {
+                        if (lis[i] !== thisLi) {
+                            const closeBtn = bny.queryChild(lis[i], "i.icon-close")
+                            if (closeBtn) {
+                                closeBtn.click()
+                            }
+                        }
+                    }
+                }
+                // 点击关闭全部
+                const closeAllBtn = e.target.closest("div.btn-close-all")
+                if (closeAllBtn) {
+                    const lis = bny.queryChildAll(target, ".head>li")
+                    for (let i = 0; i < lis.length; i++) {
+                        const closeBtn = bny.queryChild(lis[i], "i.icon-close")
+                        if (closeBtn) {
+                            closeBtn.click()
+                        }
+                    }
                 }
             })
         }

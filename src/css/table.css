@@ -1,17 +1,21 @@
+/* ========== 表格 ========== */
 table[hx-ext~="bny-table"] {
     width: 100%;
     border-collapse: collapse;
     box-shadow: var(--box-shadow-005);
     border-radius: var(--border-radius);
     overflow: hidden;
+    border: 1px solid var(--gray-shallow);
 
     & th {
         background-color: var(--default);
         color: var(--white-common);
-        padding: 16px 12px;
-        font-weight: 500;
-        font-size: 14px;
+        padding: 14px 16px;
+        font-weight: var(--font-weight-semibold);
+        font-size: var(--font-size-sm);
         white-space: nowrap;
+        text-align: left;
+        letter-spacing: 0.02em;
     }
 
     &[color="green"] th {
@@ -31,9 +35,8 @@ table[hx-ext~="bny-table"] {
     }
 
     & td {
-        padding: 14px 12px;
-        border-bottom: 1px solid var(--gray-shallow);
-        font-size: 13px;
+        padding: 12px 16px;
+        font-size: var(--font-size);
         color: var(--black);
     }
 
@@ -41,18 +44,29 @@ table[hx-ext~="bny-table"] {
         border-bottom: none;
     }
 
+    & tbody tr {
+        transition: background-color var(--transition-fast);
+    }
+
     & tbody tr:hover {
-        background-color: var(--white-middle) !important;
-        color: var(--black-middle) !important;
-        cursor: default;
+        background-color: var(--white-shallow);
+    }
+
+    & tbody tr:nth-child(even) {
+        background-color: rgba(0, 0, 0, 0.015);
+    }
+
+    & tbody tr:nth-child(even):hover {
+        background-color: var(--white-shallow);
     }
 }
 
+/* ========== 移动端响应式表格 ========== */
 @media screen and (max-width: 767px) {
     table[hx-ext~="bny-table"] {
-
         box-shadow: none;
         border-radius: 0;
+        border: none;
 
         & thead,
         & colgroup {
@@ -61,38 +75,42 @@ table[hx-ext~="bny-table"] {
 
         & tr {
             display: block;
-            margin: 14px;
+            margin: 12px 14px;
             border: none;
-            background-color: var(--white-shallow);
+            background-color: var(--white);
             box-shadow: var(--box-shadow-005);
             border-radius: var(--border-radius);
             overflow: hidden;
+            border: 1px solid var(--gray-shallow);
         }
 
         & td {
             width: 100%;
             display: flex;
-            border-bottom: none;
             position: relative;
             align-items: center;
-            padding: 0;
-            padding-right: 15px;
-            color: var(--black);
+            padding: 0 15px 0 0;
+
+            &:last-child {
+                border-bottom: none;
+            }
 
             &::before {
                 padding: 12px 15px;
                 content: attr(label);
-                font-weight: bold;
+                font-weight: var(--font-weight-semibold);
+                font-size: var(--font-size-sm);
                 color: var(--white-common);
-                display: block;
+                display: flex;
+                align-items: center;
                 flex: 0 0 90px;
                 text-align: left;
                 white-space: nowrap;
                 overflow: hidden;
                 text-overflow: ellipsis;
                 background-color: var(--default);
-                height: stretch;
-                margin-right: 12px;
+                margin-right: 14px;
+                min-height: 42px;
             }
         }
 
@@ -110,10 +128,6 @@ table[hx-ext~="bny-table"] {
 
         &[color="blue"] td::before {
             background-color: var(--blue);
-        }
-
-        & tbody tr:hover td {
-            color: var(--black);
         }
     }
 }

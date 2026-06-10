@@ -1,13 +1,15 @@
-/* 引用 */
+/* ========== 引用块 ========== */
 .bny-blockquote {
-    margin-bottom: 10px;
-    padding: 15px;
-    line-height: 1.8;
-    border: 1px solid var(--default);
-    border-radius: 0 2px 2px 0;
-    border-left-width: 5px;
+    margin-bottom: 12px;
+    padding: 16px 20px;
+    line-height: var(--line-height);
+    border: 1.5px solid var(--default);
+    border-radius: 0 var(--border-radius-sm) var(--border-radius-sm) 0;
+    border-left-width: 4px;
     box-shadow: var(--box-shadow-005);
-    background-color: var(--white-shallow);
+    background-color: var(--white);
+    color: var(--black-middle);
+    font-style: italic;
 
     &[color="green"] {
         border-color: var(--green);
@@ -26,54 +28,53 @@
     }
 }
 
-/* 字段集 */
-
+/* ========== 字段集 ========== */
 .bny-fieldset {
-    border-color: var(--default-shallow);
-    margin-bottom: 10px;
+    border: 1.5px solid var(--gray-middle);
+    border-radius: var(--border-radius);
+    margin-bottom: 14px;
     padding: 0;
-    border-width: 1px;
-    border-style: solid;
 
-    &>legend {
+    & > legend {
         margin-left: 20px;
-        padding: 0 10px;
-        font-size: var(--font-size-16);
+        padding: 0 12px;
+        font-size: var(--font-size);
+        font-weight: var(--font-weight-semibold);
         color: var(--default);
         line-height: 1.8;
     }
 
-    &>.box {
-        padding: 12px;
+    & > .box {
+        padding: 16px;
     }
 }
 
 .bny-fieldset-title {
-    margin: 12px 0;
+    margin: 14px 0;
     border-width: 0;
-    border-top-width: 1px;
-    border-color: var(--default-shallow);
+    border-top: 1.5px solid var(--gray-middle);
 
-    &>legend {
+    & > legend {
         margin-left: 20px;
-        padding: 0 10px;
-        font-size: var(--font-size-16);
+        padding: 0 12px;
+        font-size: var(--font-size);
+        font-weight: var(--font-weight-semibold);
         color: var(--default);
         line-height: 1.8;
     }
 }
 
-/* 分割线 */
+/* ========== 分割线 ========== */
 hr {
     height: 0;
     line-height: 0;
-    margin: 8px 0;
+    margin: 14px 0;
     padding: 0;
     border: none;
-    border-bottom: 1px solid var(--default-shallow);
+    border-bottom: 1.5px solid var(--gray-shallow);
     clear: both;
     overflow: hidden;
-    background: 0 0;
+    background: none;
 
     &[color="green"] {
         border-color: var(--green-middle);

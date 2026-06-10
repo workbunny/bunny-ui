@@ -30,7 +30,7 @@
         right: 0;
         z-index: 9999;
         width: 100%;
-        background: var(--white-middle);
+        background: var(--white);
         box-shadow: var(--box-shadow-005);
 
         & [hx-ext~="bny-nav"] {
@@ -50,15 +50,24 @@
         left: 0;
         right: 0;
         width: 100%;
-        background: var(--white-middle);
-        height: 80px;
+        background: rgba(249, 250, 251, 0.72);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border-top: 1px solid var(--gray-shallow);
+        height: 64px;
         display: flex;
         justify-content: center;
         align-items: center;
 
         & * {
-            color: var(--black-middle);
+            color: var(--black-shallow);
+            font-size: var(--font-size-sm);
         }
+    }
+
+    html.dark footer {
+        background: rgba(26, 26, 26, 0.72);
+        border-top-color: rgba(255, 255, 255, 0.06);
     }
 
     #tab-load {

@@ -4264,20 +4264,96 @@
   htmx.defineExtension("bny-dropdown", {
     // 事件
     onEvent: function(name, evt) {
+      function open(parent, target) {
+        clean(target);
+        target.style.visibility = "hidden";
+        target.style.opacity = 0;
+        target.classList.add("show");
+        position(parent, target);
+        target.style.visibility = "visible";
+        target.style.opacity = 1;
+      }
+      function close(target) {
+        const isShow = target.classList.contains("show");
+        const isUp = target.classList.contains("up");
+        if (isShow || isUp) {
+          target.classList.remove("show", "up");
+        }
+        target.style.visibility = "hidden";
+        target.style.opacity = 0;
+      }
+      function clean(target) {
+        target.style.top = "";
+        target.style.left = "";
+        target.style.right = "";
+        target.style.bottom = "";
+      }
+      function toggle(parent, target) {
+        const isShow = target.classList.contains("show");
+        const isUp = target.classList.contains("up");
+        if (isShow || isUp) {
+          close(target);
+        } else {
+          open(parent, target);
+        }
+      }
+      function position(parent, target) {
+        const parentRect = parent.getBoundingClientRect();
+        const targetRect = target.getBoundingClientRect();
+        const viewportWidth = window.innerWidth;
+        const viewportHeight = window.innerHeight;
+        const gap = 8;
+        target.classList.remove("up");
+        let top, bottom;
+        if (parentRect.top + parentRect.bottom < viewportHeight) {
+          top = parentRect.bottom + gap;
+          bottom = "auto";
+        } else {
+          top = "auto";
+          bottom = viewportHeight - parentRect.top + gap;
+          target.classList.add("up");
+        }
+        let left = parentRect.left;
+        let right = "auto";
+        if (left + targetRect.width > viewportWidth - gap) {
+          left = "auto";
+          right = viewportWidth - parentRect.right;
+        }
+        if (left !== "auto" && right < gap) {
+          left = gap;
+        }
+        target.style.top = top === "auto" ? "auto" : `${top}px`;
+        target.style.bottom = bottom === "auto" ? "auto" : `${bottom}px`;
+        target.style.left = left === "auto" ? "auto" : `${left}px`;
+        target.style.right = right === "auto" ? "auto" : `${right}px`;
+      }
+      function add(target) {
+        let dropdown = bny.queryChild(target, ".bny-dropdown");
+        if (!dropdown) {
+          dropdown = document.createElement("div");
+          dropdown.classList.add("bny-dropdown");
+          target.appendChild(dropdown);
+        }
+        return dropdown;
+      }
       if (name === "htmx:afterProcessNode") {
         if (bny.hasExtName(evt.target, "bny-dropdown")) {
-          const dropdown = document.createElement("div");
-          dropdown.classList.add("bny-dropdown");
-          const content = document.createElement("div");
-          content.classList.add("content");
-          dropdown.appendChild(content);
-          evt.target.appendChild(dropdown);
+          const dropdown = add(evt.target);
           evt.target.addEventListener("click", (e) => {
             if (e.target.closest(".bny-dropdown")) {
-              htmx.addClass(dropdown, "show");
-            } else {
-              htmx.toggleClass(dropdown, "show");
+              return;
             }
+            e.stopPropagation();
+            toggle(evt.target, dropdown);
+          });
+          document.addEventListener("click", (e) => {
+            if (e.target.closest(".bny-dropdown")) {
+              return;
+            }
+            if (evt.target.contains(e.target)) {
+              return;
+            }
+            close(dropdown);
           });
           return false;
         }
@@ -4286,13 +4362,13 @@
       if (name === "htmx:beforeSwap") {
         if (bny.hasExtName(evt.target, "bny-dropdown")) {
           const dropdown = bny.queryChild(evt.target, ".bny-dropdown");
-          const content = bny.queryChild(dropdown, ".content");
-          if (!bny.hasClass(dropdown, "show") || content.innerHTML.trim() === "") {
+          if (!bny.hasClass(dropdown, "show") || dropdown.innerHTML.trim() === "") {
             htmx.swap(
-              content,
+              dropdown,
               evt.detail.xhr.responseText,
               { swapStyle: "innerHTML" }
             );
+            open(evt.target, dropdown);
           }
           return false;
         }
@@ -4456,7 +4532,7 @@
       function addMoveBtn(target) {
         const head = bny.queryChild(target, ".head");
         head.classList.add("scrollbar");
-        head.style.cssText = "padding: 0px 40px;";
+        head.style.cssText = "padding: 0px 64px 0 32px;";
         const leftBtn = document.createElement("div");
         leftBtn.className = "btn-left";
         leftBtn.innerHTML = `<i class="bny-icon icon-doubleleft"></i>`;
@@ -4465,6 +4541,31 @@
         rightBtn.className = "btn-right";
         rightBtn.innerHTML = `<i class="bny-icon icon-doubleright"></i>`;
         target.appendChild(rightBtn);
+        const moreBtn = document.createElement("div");
+        moreBtn.className = "btn-more";
+        moreBtn.setAttribute("hx-ext", "bny-dropdown");
+        moreBtn.innerHTML = `<i class="bny-icon icon-down"></i>
+            <div class="bny-dropdown">
+                <div hx-ext="bny-menu" mode="vertical">
+                    <div class="item">
+                        <div class="trigger btn-close-this">
+                            <span>关闭当前</span>
+                        </div>
+                    </div>
+                    <div class="item">
+                        <div class="trigger btn-close-other">
+                            <span>关闭其他</span>
+                        </div>
+                    </div>
+                    <div class="item">
+                        <div class="trigger btn-close-all">
+                            <span>关闭全部</span>
+                        </div>
+                    </div>
+                </div>
+            </div>`;
+        target.appendChild(moreBtn);
+        htmx.process(moreBtn);
       }
       function addCloseBtn(target) {
         const closeBtn = document.createElement("i");
@@ -4486,7 +4587,10 @@
         target.addEventListener(trigger, function(e) {
           const li = e.target.closest(".head>li");
           switchTab(li);
-          e.stopPropagation();
+          const more = e.target.closest(".btn-more");
+          if (li !== null || more !== null) {
+            e.stopPropagation();
+          }
         });
       }
       function onClicks(target) {
@@ -4518,6 +4622,39 @@
           if (rightBtn) {
             const head = bny.queryChild(target, ".head");
             head.scrollBy({ left: 100, behavior: "smooth" });
+          }
+          const closeThisBtn = e.target.closest("div.btn-close-this");
+          if (closeThisBtn) {
+            const thisLi = bny.queryChild(target, ".head>li.this");
+            if (thisLi) {
+              const thisLiClose = bny.queryChild(thisLi, "i.icon-close");
+              if (thisLiClose) {
+                thisLiClose.click();
+              }
+            }
+          }
+          const closeOtherBtn = e.target.closest("div.btn-close-other");
+          if (closeOtherBtn) {
+            const lis = bny.queryChildAll(target, ".head>li");
+            const thisLi = bny.queryChild(target, ".head>li.this");
+            for (let i = 0; i < lis.length; i++) {
+              if (lis[i] !== thisLi) {
+                const closeBtn2 = bny.queryChild(lis[i], "i.icon-close");
+                if (closeBtn2) {
+                  closeBtn2.click();
+                }
+              }
+            }
+          }
+          const closeAllBtn = e.target.closest("div.btn-close-all");
+          if (closeAllBtn) {
+            const lis = bny.queryChildAll(target, ".head>li");
+            for (let i = 0; i < lis.length; i++) {
+              const closeBtn2 = bny.queryChild(lis[i], "i.icon-close");
+              if (closeBtn2) {
+                closeBtn2.click();
+              }
+            }
           }
         });
       }

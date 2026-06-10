@@ -1,80 +1,114 @@
-/* 输入框 */
+/* ========== 输入框 ========== */
 [hx-ext="bny-input"],
 .bny-input {
     max-width: 100%;
     width: 100%;
     display: block;
-    padding: 0 10px;
-    height: 34px;
-    line-height: 1.3;
-    background-color: var(--white-shallow);
+    padding: 0 12px;
+    height: 38px;
+    line-height: 1.5;
+    font-size: var(--font-size);
+    background-color: var(--white);
     color: var(--black);
-    border: 1px solid var(--default-shallow);
+    border: 1.5px solid var(--gray-middle);
     border-radius: var(--border-radius);
     transition: var(--transition);
 
     &::placeholder {
-        color: var(--default-shallow);
+        color: var(--gray);
+        font-size: var(--font-size-sm);
+    }
+
+    &:hover {
+        border-color: var(--gray);
     }
 
     &:focus {
         border-color: var(--default);
-        box-shadow: var(--box-shadow-005);
+        box-shadow: var(--focus-ring);
+    }
+
+    &:disabled {
+        background-color: var(--white-shallow);
+        color: var(--black-shallow);
+        cursor: not-allowed;
+        opacity: 0.6;
     }
 }
 
-/* 多行文本框 */
+/* ========== 多行文本框 ========== */
 [hx-ext="bny-textarea"],
 .bny-textarea {
     max-width: 100%;
     width: 100%;
     display: block;
-    line-height: 1.3;
-    position: relative;
+    line-height: 1.6;
     min-height: 100px;
     height: auto;
     resize: vertical;
-    padding: 6px 10px;
-    background-color: var(--white-shallow);
+    padding: 10px 12px;
+    font-size: var(--font-size);
+    background-color: var(--white);
     color: var(--black);
-    border: 1px solid var(--default-shallow);
+    border: 1.5px solid var(--gray-middle);
     border-radius: var(--border-radius);
     transition: var(--transition);
 
     &::placeholder {
-        color: var(--default-shallow);
+        color: var(--gray);
+        font-size: var(--font-size-sm);
+    }
+
+    &:hover {
+        border-color: var(--gray);
     }
 
     &:focus {
         border-color: var(--default);
-        box-shadow: var(--box-shadow-005);
+        box-shadow: var(--focus-ring);
+    }
+
+    &:disabled {
+        background-color: var(--white-shallow);
+        color: var(--black-shallow);
+        cursor: not-allowed;
+        opacity: 0.6;
     }
 }
 
-/* 选择框 */
+/* ========== 选择框 ========== */
 [hx-ext="bny-select"],
 .bny-select {
     max-width: 100%;
     width: 100%;
     display: block;
-    height: 34px;
-    line-height: 1.3;
-    padding: 0 10px;
-    background-color: var(--white-shallow);
+    height: 38px;
+    line-height: 1.5;
+    padding: 0 12px;
+    font-size: var(--font-size);
+    background-color: var(--white);
     color: var(--black);
-    border: 1px solid var(--default-shallow);
+    border: 1.5px solid var(--gray-middle);
     border-radius: var(--border-radius);
     transition: var(--transition);
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%236B7280' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    padding-right: 32px;
 
-    & option {
-        &:disabled {
-            color: var(--gray-middle);
-        }
+    & option:disabled {
+        color: var(--gray-middle);
+    }
+
+    &:hover {
+        border-color: var(--gray);
     }
 
     &:focus {
         border-color: var(--default);
-        box-shadow: var(--box-shadow-005);
+        box-shadow: var(--focus-ring);
     }
 
     &:focus-visible {
@@ -84,196 +118,206 @@
     &:disabled {
         opacity: 0.6;
         cursor: not-allowed;
+        background-color: var(--white-shallow);
     }
 }
 
-/* 单选框 */
+/* ========== 单选框 ========== */
 [hx-ext="bny-radio"],
 .bny-radio {
     width: 18px;
     height: 18px;
     display: inline-block;
     vertical-align: middle;
-    border: 1px solid var(--default-shallow);
+    border: 1.5px solid var(--gray-middle);
     border-radius: 50%;
-    transition: var(--transition);
+    transition: var(--transition-fast);
     accent-color: var(--default);
+    cursor: pointer;
 
-    /* 选中状态 */
     &:checked {
         background-color: var(--default);
         border-color: var(--default);
     }
 
-    /* 禁用状态 */
     &:disabled {
-        opacity: 0.6;
+        opacity: 0.5;
         cursor: not-allowed;
     }
 
-    /* 鼠标悬停状态 */
-    &:hover {
-        border-color: var(--default-shallow);
+    &:hover:not(:disabled) {
+        border-color: var(--default);
+    }
+
+    &:focus-visible {
+        outline: 2px solid var(--default-alpha-20);
+        outline-offset: 2px;
     }
 }
 
-/* 复选框 */
+/* ========== 复选框 ========== */
 [hx-ext="bny-checkbox"],
 .bny-checkbox {
     width: 18px;
     height: 18px;
     display: inline-block;
     vertical-align: middle;
-    border: 1px solid var(--default-shallow);
-    border-radius: var(--border-radius);
-    transition: var(--transition);
+    border: 1.5px solid var(--gray-middle);
+    border-radius: var(--border-radius-sm);
+    transition: var(--transition-fast);
     accent-color: var(--default);
+    cursor: pointer;
 
-    /* 选中状态 */
     &:checked {
         background-color: var(--default);
         border-color: var(--default);
     }
 
-    /* 禁用状态 */
     &:disabled {
-        opacity: 0.6;
+        opacity: 0.5;
         cursor: not-allowed;
     }
 
-    /* 鼠标悬停状态 */
-    &:hover {
+    &:hover:not(:disabled) {
         border-color: var(--default);
+    }
+
+    &:focus-visible {
+        outline: 2px solid var(--default-alpha-20);
+        outline-offset: 2px;
     }
 }
 
-/* 开关框 */
+/* ========== 开关 ========== */
 [hx-ext="bny-switch"],
 .bny-switch {
-    width: 50px;
-    height: 22px;
+    width: 48px;
+    height: 26px;
     display: inline-block;
     vertical-align: middle;
     appearance: none;
-    border: 1px solid var(--default-shallow);
-    border-radius: var(--border-radius);
+    border: 2px solid var(--gray-middle);
+    border-radius: 26px;
     transition: var(--transition);
     position: relative;
-    border-radius: 22px;
+    background-color: var(--gray-middle);
+    cursor: pointer;
 
     &::after {
         content: "";
         position: absolute;
         top: 2px;
         left: 2px;
-        width: 16px;
-        height: 16px;
-        background-color: var(--default-shallow);
+        width: 18px;
+        height: 18px;
+        background-color: var(--white);
         border-radius: 50%;
         transition: var(--transition);
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
     }
 
-    /* 选中状态 */
     &:checked {
-        background-color: var(--default-shallow);
-    }
-
-    &:checked::after {
-        transform: translateX(28px);
         background-color: var(--default);
-    }
-
-    &:hover {
-        cursor: pointer;
         border-color: var(--default);
     }
 
-    /* 禁用状态 */
+    &:checked::after {
+        transform: translateX(22px);
+    }
+
+    &:hover:not(:disabled) {
+        border-color: var(--default);
+    }
+
+    &:focus-visible {
+        box-shadow: var(--focus-ring);
+    }
+
     &:disabled {
-        opacity: 0.6;
+        opacity: 0.5;
         cursor: not-allowed;
     }
 }
 
-/* 滑块 */
+/* ========== 滑块 ========== */
 [hx-ext="bny-slider"],
 .bny-slider {
     -webkit-appearance: none;
     appearance: none;
-    background: var(--default-shallow);
+    background: var(--gray-middle);
     border: none;
     height: 6px;
-    border-radius: var(--border-radius);
+    border-radius: var(--border-radius-full);
     cursor: pointer;
+    outline: none;
 
     &::-webkit-slider-thumb {
         -webkit-appearance: none;
         appearance: none;
-        border: none;
-        background: var(--default);
+        border: 2px solid var(--default);
+        background: var(--white);
         border-radius: 50%;
-        border: none;
-        transition: var(--transition);
-        width: 14px;
-        height: 14px;
+        width: 18px;
+        height: 18px;
+        transition: var(--transition-fast);
         box-shadow: var(--box-shadow-005);
+        cursor: pointer;
     }
 
     &::-webkit-slider-thumb:hover {
-        transform: scale(1.1);
+        transform: scale(1.15);
+        border-color: var(--default-middle);
     }
 
     &::-moz-range-track {
-        background: var(--default-shallow);
+        background: var(--gray-middle);
         border: none;
         height: 6px;
-        border-radius: var(--border-radius);
+        border-radius: var(--border-radius-full);
     }
 
     &::-moz-range-thumb {
-        border: none;
-        background: var(--default);
+        border: 2px solid var(--default);
+        background: var(--white);
         border-radius: 50%;
-        border: none;
-        transition: var(--transition);
-        width: 14px;
-        height: 14px;
+        width: 18px;
+        height: 18px;
+        transition: var(--transition-fast);
         box-shadow: var(--box-shadow-005);
+        cursor: pointer;
     }
 
     &::-moz-range-thumb:hover {
-        transform: scale(1.1);
-    }
-
-    &::-moz-range-thumb:active {
-        transform: scale(1.05);
+        transform: scale(1.15);
+        border-color: var(--default-middle);
     }
 
     &:disabled {
-        opacity: 0.6;
+        opacity: 0.5;
         cursor: not-allowed;
     }
 
+    &:disabled::-webkit-slider-thumb,
     &:disabled::-moz-range-thumb {
-        background-color: var(--default-shallow);
-        box-shadow: none;
-        transform: none;
         cursor: not-allowed;
+        transform: none;
+        border-color: var(--gray);
     }
 }
 
-/* 表单 */
+/* ========== 表单布局 ========== */
 [hx-ext~="bny-form"] {
     & .form-item {
         position: relative;
-        margin-bottom: 15px;
-        clear: both;
+        margin-bottom: 18px;
 
         & label {
             display: block;
-            box-sizing: border-box;
             text-align: left;
-            padding-bottom: 8px;
+            padding-bottom: 6px;
+            font-size: var(--font-size-sm);
+            font-weight: var(--font-weight-medium);
+            color: var(--black-middle);
         }
 
         & .input-group {
@@ -281,7 +325,7 @@
             gap: 10px;
             align-items: center;
 
-            &>* {
+            & > * {
                 white-space: nowrap;
             }
         }

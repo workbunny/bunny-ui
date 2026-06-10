@@ -1,28 +1,39 @@
 .bny-btn {
-    padding: 4px 11px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 8px 18px;
     border-radius: var(--border-radius);
     text-align: center;
     text-decoration: none;
+    font-size: var(--font-size);
+    font-weight: var(--font-weight-medium);
+    line-height: 1.2;
+    white-space: nowrap;
+    cursor: pointer;
+    /* user-select: none; */
     transition: var(--transition);
     color: var(--white-common);
     background-color: var(--default);
-    border: 2px solid var(--default);
+    border: 1.5px solid var(--default);
     box-shadow: var(--box-shadow-005);
-    transition: var(--transition);
-    display: inline-block;
-    align-items: center;
-    white-space: nowrap;
+    outline: none;
 
     &:hover {
-        cursor: pointer;
         background-color: var(--default-middle);
         border-color: var(--default-middle);
+        box-shadow: var(--box-shadow-hover-005);
     }
 
     &:active {
-        transform: var(--transform3d-020);
-        background-color: var(--default-shallow);
-        border-color: var(--default-shallow);
+        background-color: var(--default);
+        border-color: var(--default);
+        box-shadow: none;
+    }
+
+    &:focus-visible {
+        box-shadow: var(--focus-ring);
     }
 
     /* 绿色 */
@@ -37,8 +48,8 @@
     }
 
     &[color="green"]:active {
-        background-color: var(--green-shallow);
-        border-color: var(--green-shallow);
+        background-color: var(--green);
+        border-color: var(--green);
     }
 
     /* 蓝色 */
@@ -53,8 +64,8 @@
     }
 
     &[color="blue"]:active {
-        background-color: var(--blue-shallow);
-        border-color: var(--blue-shallow);
+        background-color: var(--blue);
+        border-color: var(--blue);
     }
 
     /* 黄色 */
@@ -69,8 +80,8 @@
     }
 
     &[color="yellow"]:active {
-        background-color: var(--yellow-shallow);
-        border-color: var(--yellow-shallow);
+        background-color: var(--yellow);
+        border-color: var(--yellow);
     }
 
     /* 红色 */
@@ -85,117 +96,138 @@
     }
 
     &[color="red"]:active {
-        background-color: var(--red-shallow);
-        border-color: var(--red-shallow);
+        background-color: var(--red);
+        border-color: var(--red);
     }
 
-    /* 边框 */
+    /* 边框样式 — ghost/outline */
     &[model~="border"] {
         background-color: transparent;
         color: var(--black);
+        box-shadow: none;
     }
 
     &[model~="border"]:hover {
-        background-color: transparent;
-        color: var(--black-middle);
+        background-color: var(--default-alpha-10);
+        color: var(--default);
+        box-shadow: none;
     }
 
     &[model~="border"]:active {
-        background-color: transparent;
-        color: var(--black-shallow);
+        background-color: var(--default-alpha-20);
+        color: var(--default);
+    }
+
+    &[model~="border"][color="green"] {
+        color: var(--green);
+        border-color: var(--green);
+    }
+
+    &[model~="border"][color="green"]:hover {
+        background-color: rgba(5, 150, 105, 0.1);
+        color: var(--green);
+    }
+
+    &[model~="border"][color="blue"] {
+        color: var(--blue);
+        border-color: var(--blue);
+    }
+
+    &[model~="border"][color="blue"]:hover {
+        background-color: rgba(2, 132, 199, 0.1);
+        color: var(--blue);
+    }
+
+    &[model~="border"][color="yellow"] {
+        color: var(--yellow);
+        border-color: var(--yellow);
+    }
+
+    &[model~="border"][color="yellow"]:hover {
+        background-color: rgba(217, 119, 6, 0.1);
+        color: var(--yellow);
+    }
+
+    &[model~="border"][color="red"] {
+        color: var(--red);
+        border-color: var(--red);
+    }
+
+    &[model~="border"][color="red"]:hover {
+        background-color: rgba(225, 29, 72, 0.1);
+        color: var(--red);
     }
 
     /* 圆形 */
     &[model~="circle"] {
-        border-radius: 50%;
-        padding: 4px;
-        width: 32px;
-        height: 32px;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
+        border-radius: var(--border-radius-full);
+        padding: 8px;
+        width: 36px;
+        height: 36px;
+    }
+
+    /* 大小 */
+    &[size="sm"] {
+        padding: 5px 12px;
+        font-size: var(--font-size-sm);
+        border-radius: var(--border-radius-sm);
+    }
+
+    &[size="lg"] {
+        padding: 12px 24px;
+        font-size: var(--font-size-16);
+        border-radius: var(--border-radius-8);
     }
 
     /* 禁用 */
     &[disabled] {
         cursor: not-allowed;
-        opacity: 0.5;
+        opacity: 0.45;
+        transform: none !important;
+        box-shadow: none !important;
+
+        &:hover {
+            transform: none !important;
+            box-shadow: none !important;
+        }
     }
 }
 
 .bny-btn-group {
     display: inline-flex;
     vertical-align: middle;
-    font-size: 0;
-    transition: var(--transition);
-    box-shadow: var(--box-shadow-005);
     border-radius: var(--border-radius);
-
-    &:active {
-        transform: var(--transform3d-020);
-    }
+    box-shadow: var(--box-shadow-005);
+    overflow: hidden;
 
     & .bny-btn {
         box-shadow: none;
-        transform: none;
-        position: relative;
-    }
-
-    & .bny-btn:first-child {
-        border-top-right-radius: 0;
-        border-bottom-right-radius: 0;
-        border-right-width: 0;
-
-        &::after {
-            content: "";
-            position: absolute;
-            width: 1px;
-            height: 100%;
-            top: 0;
-            right: 0;
-            background-color: var(--gray-middle);
-        }
-    }
-
-    & .bny-btn:not(:first-child):not(:last-child) {
         border-radius: 0;
-        border-left-width: 0px;
-        border-right-width: 0px;
+        transform: none !important;
 
-        &::before {
-            content: "";
-            position: absolute;
-            width: 1px;
-            height: 100%;
-            top: 0;
-            left: 0;
-            background-color: var(--gray-middle);
+        &:not(:last-child) {
+            border-right: 1px solid rgba(255, 255, 255, 0.15);
         }
 
-        &::after {
-            content: "";
-            position: absolute;
-            width: 1px;
-            height: 100%;
-            top: 0;
-            right: 0;
-            background-color: var(--gray-middle);
+        &:first-child {
+            border-radius: var(--border-radius) 0 0 var(--border-radius);
         }
-    }
 
-    & .bny-btn:last-child {
-        border-top-left-radius: 0;
-        border-bottom-left-radius: 0;
-        border-left-width: 0px;
+        &:last-child {
+            border-radius: 0 var(--border-radius) var(--border-radius) 0;
+        }
 
-        &::before {
-            content: "";
-            position: absolute;
-            width: 1px;
-            height: 100%;
-            top: 0;
-            left: 0;
-            background-color: var(--gray-middle);
+        &:hover {
+            filter: brightness(1.1);
+            transform: none !important;
+        }
+
+        &:active {
+            filter: brightness(0.95);
+        }
+
+        &[model~="border"]:not(:last-child) {
+            border-right-color: var(--gray-middle);
         }
     }
 }
