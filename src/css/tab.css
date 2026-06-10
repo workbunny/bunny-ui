@@ -2,9 +2,9 @@
     width: 100%;
     position: relative;
 
-    &>.btn-left,
-    &>.btn-right,
-    &>.btn-more {
+    & > .btn-left,
+    & > .btn-right,
+    & > .btn-more {
         position: absolute;
         top: 0;
         bottom: 0;
@@ -14,24 +14,23 @@
         width: 32px;
         height: 32px;
         z-index: 1;
-        background-color: var(--white-shallow);
-        border: 1px solid var(--default-shallow);
+        background-color: var(--white);
+        border: 1px solid var(--gray-middle);
         border-radius: var(--border-radius);
         cursor: pointer;
         user-select: none;
-        transition: background-color var(--transition),
-            border-color var(--transition),
-            box-shadow var(--transition);
+        transition: var(--transition-fast);
 
         & i {
-            font-size: var(--font-size-24);
+            font-size: var(--font-size-18);
             color: var(--black-shallow);
-            transition: var(--transition);
+            transition: var(--transition-fast);
         }
 
         &:hover {
-            background-color: var(--white);
+            background-color: var(--white-shallow);
             border-color: var(--default);
+            box-shadow: var(--box-shadow-005);
 
             & i {
                 color: var(--default);
@@ -39,65 +38,68 @@
         }
 
         &:active i {
-            transform: scale(0.8);
+            transform: scale(0.9);
         }
     }
 
-    &>.btn-left {
+    & > .btn-left {
         left: 0;
     }
 
-    &>.btn-right {
+    & > .btn-right {
         right: 32px;
         border-right-width: 0;
         border-top-right-radius: 0;
         border-bottom-right-radius: 0;
     }
 
-    &>.btn-more {
+    & > .btn-more {
         border-left-width: 0;
         border-top-left-radius: 0;
         border-bottom-left-radius: 0;
         right: 0;
     }
 
-    &>.head {
+    & > .head {
         overflow: auto hidden;
         display: flex;
         white-space: nowrap;
         align-items: center;
         justify-content: flex-start;
-        height: 32px;
+        height: 34px;
         position: relative;
-        border-bottom: 1px solid var(--gray-shallow);
+        border-bottom: 2px solid var(--gray-shallow);
+        gap: 2px;
 
         &.scrollbar::-webkit-scrollbar {
             height: 0;
         }
 
-        &>li {
+        & > li {
             display: inline-flex;
-            padding: 0 16px;
             align-items: center;
             justify-content: center;
+            padding: 0 18px;
             height: 100%;
             font-size: var(--font-size);
+            font-weight: var(--font-weight-medium);
             color: var(--black-shallow);
             cursor: pointer;
             user-select: none;
             position: relative;
             border-radius: var(--border-radius) var(--border-radius) 0 0;
-            transition: color var(--transition),
-                background-color var(--transition);
+            transition: color var(--transition-fast), background-color var(--transition-fast);
+            gap: 6px;
 
             &::after {
                 content: "";
                 position: absolute;
                 left: 50%;
-                bottom: -1px;
+                bottom: -2px;
                 height: 2px;
                 width: 0;
                 background-color: var(--default);
+                border-radius: var(--border-radius-full);
                 transform: translateX(-50%);
                 transition: width var(--transition);
             }
@@ -111,17 +113,21 @@
                 color: var(--default);
 
                 &::after {
-                    width: 100%;
+                    width: 70%;
                 }
             }
 
-            &>i {
-                margin-left: 6px;
+            & > i {
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                width: 20px;
+                height: 20px;
                 font-size: 12px;
-                padding: 2px;
                 border-radius: 50%;
                 color: var(--black-shallow);
-                transition: var(--transition);
+                transition: var(--transition-fast);
+                flex-shrink: 0;
 
                 &:hover {
                     background-color: var(--red);
@@ -131,19 +137,20 @@
         }
     }
 
-    &>.body {
+    & > .body {
         position: relative;
+        padding-top: 4px;
 
-        &>div {
+        & > div {
             height: 0;
             opacity: 0;
             visibility: hidden;
-            transition: var(--transition);
+            transition: opacity var(--transition-fast);
             pointer-events: none;
             overflow: hidden;
         }
 
-        &>div.show {
+        & > div.show {
             height: auto;
             opacity: 1;
             visibility: visible;

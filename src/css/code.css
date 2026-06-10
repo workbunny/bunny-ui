@@ -1,50 +1,67 @@
 [hx-ext~="bny-code"] {
     border-radius: var(--border-radius);
     overflow: auto;
-    padding: var(--font-size);
+    padding: 18px;
     position: relative;
     white-space: unset;
     background-color: var(--white-shallow);
+    border: 1px solid var(--gray-shallow);
+    font-size: var(--font-size-sm);
 
-    &>code {
-        line-height: 1.5;
+    & > code {
+        line-height: 1.6;
         white-space: pre-wrap;
         overflow: auto;
         padding: 0;
         margin: 0;
         background: none;
+        color: var(--black);
     }
 
-    &>.copy-btn {
+    & > .copy-btn {
         position: absolute;
-        right: 4px;
-        top: 4px;
+        right: 8px;
+        top: 8px;
         line-height: normal;
         display: none;
         align-items: center;
         justify-content: center;
-        background-color: var(--gray-shallow);
+        width: 32px;
+        height: 32px;
+        background-color: var(--white);
+        border: 1px solid var(--gray-middle);
+        border-radius: var(--border-radius-sm);
+        transition: var(--transition-fast);
+        cursor: pointer;
 
         &:hover {
-            cursor: pointer;
+            background-color: var(--white-shallow);
+            border-color: var(--default);
         }
 
-        &>i {
-            font-size: var(--font-size-20);
-            color: var(--black-common);
+        & > i {
+            font-size: var(--font-size-16);
+            color: var(--black-shallow);
+            transition: var(--transition-fast);
+        }
+
+        &:hover > i {
+            color: var(--default);
         }
     }
 
-    &:hover>.copy-btn {
+    &:hover > .copy-btn {
         display: flex;
     }
 }
 
 code {
-    font-family: "Courier New", Consolas, "Lucida Console";
-    margin: 0px 2px;
-    padding: 2px 4px;
-    border-radius: var(--border-radius);
-    transition: var(--transition);
-    background-color: var(--white-middle);
+    font-family: "JetBrains Mono", "Fira Code", "Courier New", Consolas, monospace;
+    font-size: 0.9em;
+    margin: 0 2px;
+    padding: 2px 6px;
+    border-radius: var(--border-radius-sm);
+    background-color: var(--white-shallow);
+    color: var(--red);
+    border: 1px solid var(--gray-shallow);
 }

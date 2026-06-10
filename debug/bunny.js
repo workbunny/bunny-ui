@@ -4341,16 +4341,19 @@
           const dropdown = add(evt.target);
           evt.target.addEventListener("click", (e) => {
             if (e.target.closest(".bny-dropdown")) {
-              open(evt.target, dropdown);
-            } else {
-              toggle(evt.target, dropdown);
+              return;
             }
+            e.stopPropagation();
+            toggle(evt.target, dropdown);
           });
           document.addEventListener("click", (e) => {
-            if (!e.target.closest(".bny-dropdown")) {
-              console.log("close");
-              close(dropdown);
+            if (e.target.closest(".bny-dropdown")) {
+              return;
             }
+            if (evt.target.contains(e.target)) {
+              return;
+            }
+            close(dropdown);
           });
           return false;
         }
@@ -4365,6 +4368,7 @@
               evt.detail.xhr.responseText,
               { swapStyle: "innerHTML" }
             );
+            open(evt.target, dropdown);
           }
           return false;
         }

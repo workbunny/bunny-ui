@@ -1,9 +1,9 @@
-/* 水平/默认菜单 */
+/* ========== 水平/默认菜单 ========== */
 [hx-ext~="bny-menu"] {
     display: flex;
     flex-direction: row;
     align-items: flex-start;
-    padding: 4px;
+    padding: 6px;
     background-color: var(--default);
     border-radius: var(--border-radius);
     box-shadow: var(--box-shadow-005);
@@ -22,20 +22,23 @@
         & .trigger {
             display: flex;
             justify-content: space-between;
+            align-items: center;
             flex-direction: row;
             width: 100%;
             padding: 8px 16px;
-            align-items: center;
-            border-radius: 4px;
+            border-radius: var(--border-radius-sm);
             transition: var(--transition);
+            gap: 8px;
+            font-size: var(--font-size);
+            font-weight: var(--font-weight-medium);
 
             & i {
                 transition: var(--transition);
+                font-size: var(--font-size-16);
             }
 
             &:hover {
-                background-color: var(--default-shallow);
-                transition: var(--transition);
+                background-color: rgba(255, 255, 255, 0.12);
             }
         }
 
@@ -43,119 +46,117 @@
             opacity: 0;
             visibility: hidden;
             position: absolute;
-            top: 100%;
+            top: calc(100% + 6px);
             left: 0;
             z-index: 100;
-            transform: translateY(15px);
+            transform: translateY(8px);
             background-color: var(--default);
             border-radius: var(--border-radius);
-            box-shadow: var(--box-shadow-005);
+            box-shadow: var(--box-shadow-055);
             transition: var(--transition);
-            padding: 4px;
+            padding: 6px;
             color: var(--white-common);
+            min-width: 160px;
 
             & .sub-menu {
-                top: 0;
-                left: calc(100% + 10px);
+                top: -6px;
+                left: calc(100% + 6px);
             }
         }
     }
 
     & .item.show {
-
-        &>.trigger {
-
-            & i {
-                transform: rotate(90deg);
-            }
+        & > .trigger i {
+            transform: rotate(90deg);
         }
 
-        &>.sub-menu {
+        & > .sub-menu {
             opacity: 1;
             visibility: visible;
-            transform: translateY(10px);
+            transform: translateY(0);
         }
     }
 
     /* 白色菜单 */
     &[color="white"] {
-        background-color: var(--white-shallow);
+        background-color: var(--white);
         color: var(--black);
+        border: 1px solid var(--gray-shallow);
 
         & .sub-menu {
-            background-color: var(--white-shallow);
+            background-color: var(--white);
             color: var(--black);
+            border: 1px solid var(--gray-shallow);
+        }
+
+        & .item .trigger:hover {
+            background-color: var(--white-shallow);
         }
     }
 
     /* 绿色菜单 */
     &[color="green"] {
         background-color: var(--green);
-        color: var(--white-common);
 
         & .sub-menu {
             background-color: var(--green);
         }
 
         & .trigger:hover {
-            background-color: var(--green-shallow);
+            background-color: var(--green-middle);
         }
     }
 
     /* 黄色菜单 */
     &[color="yellow"] {
         background-color: var(--yellow);
-        color: var(--white-common);
 
         & .sub-menu {
             background-color: var(--yellow);
         }
 
         & .trigger:hover {
-            background-color: var(--yellow-shallow);
+            background-color: var(--yellow-middle);
         }
     }
 
     /* 红色菜单 */
     &[color="red"] {
         background-color: var(--red);
-        color: var(--white-common);
 
         & .sub-menu {
             background-color: var(--red);
         }
 
         & .trigger:hover {
-            background-color: var(--red-shallow);
+            background-color: var(--red-middle);
         }
     }
 
     /* 蓝色菜单 */
     &[color="blue"] {
         background-color: var(--blue);
-        color: var(--white-common);
 
         & .sub-menu {
             background-color: var(--blue);
         }
 
         & .trigger:hover {
-            background-color: var(--blue-shallow);
+            background-color: var(--blue-middle);
         }
     }
-
 }
 
-/* 垂直菜单 */
+/* ========== 垂直菜单 ========== */
 [hx-ext~="bny-menu"][mode="vertical"] {
     flex-direction: column;
     width: 100%;
-    padding: 4px 0;
+    padding: 6px 0;
 
     & .item {
         width: 100%;
         flex-direction: column;
-        padding: 0 4px;
+        padding: 0 6px;
 
         & .sub-menu {
             position: relative;
@@ -163,13 +164,15 @@
             width: 100%;
             padding: 0;
             box-shadow: none;
+            border-radius: 0;
             opacity: 1;
             visibility: visible;
             max-height: 0;
             overflow: hidden;
+            background: rgba(0, 0, 0, 0.1);
 
             & .item {
-                padding: 0 0 0 12px;
+                padding: 0 0 0 14px;
             }
 
             & .sub-menu {
@@ -178,12 +181,13 @@
         }
     }
 
-    & .item.show {
+    & .item.show > .sub-menu {
+        height: auto;
+        max-height: 2000px;
+        visibility: visible;
+    }
 
-        &>.sub-menu {
-            height: auto;
-            max-height: 1000px;
-            visibility: visible;
-        }
+    &[color="white"] .sub-menu {
+        background: var(--white-shallow);
     }
 }

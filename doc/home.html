@@ -1,97 +1,222 @@
 <style>
     .home-page {
-        & main {
-            &>h1 {
-                padding-top: 58px;
-                font-weight: 500;
-                font-size: 68px;
+        /* ========== Hero ========== */
+        & .hero {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 130px 24px 110px;
+            background: linear-gradient(180deg, var(--white-middle) 0%, var(--white) 100%);
 
-                &>span {
-                    background: linear-gradient(45deg, var(--default), var(--default-shallow), var(--default-middle));
+            & h1 {
+                font-size: clamp(48px, 8vw, 88px);
+                font-weight: 800;
+                line-height: 1.08;
+                margin: 0;
+                letter-spacing: -0.04em;
+                color: var(--black);
+
+                & > span {
+                    background: linear-gradient(135deg, var(--default) 0%, var(--default-middle) 100%);
                     -webkit-background-clip: text;
                     background-clip: text;
                     color: transparent;
                 }
             }
 
-            &>h2 {
-                line-height: 52px;
-                font-size: 32px;
-                font-weight: 500;
-                padding: 16px 0px;
+            & .version {
+                display: inline-flex;
+                align-items: center;
+                gap: 8px;
+                padding: 5px 16px;
+                background: var(--default-alpha-10);
+                border: 1px solid var(--default-shallow);
+                border-radius: var(--border-radius-full);
+                font-size: 12px;
+                font-weight: var(--font-weight-semibold);
+                color: var(--default);
+                margin-bottom: 28px;
+
+                &::before {
+                    content: "";
+                    width: 7px;
+                    height: 7px;
+                    background: var(--default);
+                    border-radius: 50%;
+                }
             }
 
-            &>.main-info {
-                padding: 16px 0;
-                line-height: 24px;
+            & .desc {
+                font-size: clamp(var(--font-size-16), 2vw, 19px);
+                color: var(--black-shallow);
+                line-height: 1.55;
+                max-width: 520px;
+                margin: 18px auto 32px;
+            }
 
-                &>span {
-                    padding: 0 8px;
-                    color: var(--black);
+            & .actions {
+                display: flex;
+                gap: 12px;
 
-                    & * {
+                & .bny-btn {
+                    height: 44px;
+                    padding: 0 26px;
+                    font-size: var(--font-size);
+                    font-weight: var(--font-weight-semibold);
+                }
+            }
+
+            & .meta {
+                display: flex;
+                align-items: center;
+                gap: 18px;
+                margin-top: 32px;
+                font-size: 12px;
+                color: var(--black-shallow);
+
+                & a { color: var(--black-shallow); }
+                & a:hover { color: var(--default); text-decoration: none; }
+
+                & .sep {
+                    width: 1px;
+                    height: 12px;
+                    background: var(--gray-middle);
+                }
+            }
+        }
+
+        /* ========== Feature Cards ========== */
+        & .features {
+            max-width: 1060px;
+            margin: 0 auto;
+            padding: 0 24px 64px;
+
+            & .grid {
+                display: grid;
+                grid-template-columns: repeat(3, 1fr);
+                gap: 20px;
+
+                & .card {
+                    padding: 28px 26px;
+                    background: var(--white);
+                    border: 1px solid var(--gray-shallow);
+                    border-radius: 12px;
+                    transition: var(--transition);
+
+                    &:hover {
+                        border-color: var(--default-shallow);
+                        box-shadow: var(--box-shadow-055);
+                    }
+
+                    & .icon {
+                        width: 40px;
+                        height: 40px;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        border-radius: 10px;
+                        background: var(--default-alpha-15);
+                        color: var(--default);
+                        font-size: 20px;
+                        margin-bottom: 16px;
+                        transition: var(--transition);
+                    }
+
+                    &:hover .icon {
+                        background: var(--default);
+                        color: var(--white);
+                    }
+
+                    & h3 {
+                        font-size: var(--font-size-16);
+                        font-weight: var(--font-weight-semibold);
                         color: var(--black);
+                        margin: 0 0 6px;
+                    }
+
+                    & p {
+                        font-size: var(--font-size-sm);
+                        color: var(--black-shallow);
+                        line-height: 1.6;
+                        margin: 0;
                     }
                 }
             }
         }
 
-        & .home-content {
-            padding-top: 40px;
+        /* ========== CTA ========== */
+        & .cta {
+            text-align: center;
+            padding: 0 24px 80px;
 
-            & .content {
-                line-height: 24px;
+            & p {
+                font-size: var(--font-size);
+                color: var(--black-shallow);
+                margin: 0 0 24px;
+            }
+
+            & .bny-btn {
+                height: 44px;
+                padding: 0 32px;
+                font-size: var(--font-size);
+                font-weight: var(--font-weight-semibold);
+            }
+        }
+    }
+
+    @media screen and (max-width: 768px) {
+        .home-page {
+            & .hero {
+                padding: 48px 20px 48px;
+                & h1 { font-size: 40px; }
+            }
+            & .features {
+                padding: 0 20px 48px;
+                & .grid { grid-template-columns: 1fr; }
             }
         }
     }
 </style>
+
 <div class="home-page">
-    <div class="bny-container">
-        <main class="tc">
-            <h1><span>BunnyUI</span></h1>
-            <h2>轻量级 HTMX 拓展 Web UI 组件库 <br> 通过属性构建现代用户界面，结合简单性和超文本的强大功能。</h2>
-            <div class="main-btn">
-                <button class="bny-btn p-12 m-12" hx-get="/doc/iframe.html" hx-target="#bny-content">开始使用</button>
-                <a href="https://github.com/workbunny/bunny.ui/releases/latest/download/bunny.zip" target="_blank"
-                    class="bny-btn p-12 m-12" model="border">直接下载</a>
+    <div class="hero">
+        <div class="version">v2.x</div>
+        <h1><span>BunnyUI</span></h1>
+        <p class="desc">
+            轻量级 HTMX 拓展 Web UI 组件库——通过属性构建现代界面，融合超文本的简洁与组件的强大。
+        </p>
+        <div class="actions">
+            <button class="bny-btn" hx-get="/doc/iframe.html" hx-target="#bny-content">开始使用</button>
+            <a href="https://github.com/workbunny/bunny.ui/releases/latest/download/bunny.zip"
+               target="_blank" class="bny-btn" model="border">直接下载</a>
+        </div>
+        <div class="meta">
+            <img src="https://badgen.net/github/release/workbunny/bunny.ui" alt="Version">
+            <span class="sep"></span>
+            <a href="https://github.com/workbunny/bunny.ui/releases/" target="_blank">更新日志</a>
+            <span class="sep"></span>
+            <a href="https://github.com/workbunny/bunny.ui/blob/main/LICENSE" target="_blank">MIT License</a>
+        </div>
+    </div>
+
+    <div class="features">
+        <div class="grid">
+            <div class="card">
+                <div class="icon"><i class="bny-icon icon-bunny"></i></div>
+                <h3>轻量 · 零依赖</h3>
+                <p>原生 JavaScript + CSS，无外部框架依赖，模块化按需引入。</p>
             </div>
-            <div class="main-info">
-                <span><img src="https://badgen.net/github/release/workbunny/bunny.ui" alt="Version"></span>
-                <span><a href="https://github.com/workbunny/bunny.ui/releases/" target="_blank">更新日志</a></span>
-                <span><a href="https://github.com/workbunny/bunny.ui/blob/main/LICENSE" target="_blank">免责声明</a></span>
+            <div class="card">
+                <div class="icon"><i class="bny-icon icon-alert-fill"></i></div>
+                <h3>HTMX 深度集成</h3>
+                <p>hx-ext 属性声明式注入，零侵入增强 HTMX 超文本驱动架构。</p>
             </div>
-        </main>
-        <div class="home-content bny-row" gap="18">
-            <div class="col-xs12 col-md4 p-24">
-                <div class="bny-card p-12" model="transition">
-                    <div class="body">
-                        <h1 class="title">轻量高效，无依赖负担</h1>
-                        <h3 class="subtitle">零外部依赖，性能卓越</h3>
-                        <p class="content"> 基于原生 JS 和 CSS
-                            开发，无任何外部框架依赖，核心文件体积小，加载速度快。模块化设计支持按需引入，减少代码冗余，既提升页面性能，又降低项目维护成本，适合对性能要求高的 Web 应用。
-                        </p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-xs12 col-md4 p-24">
-                <div class="bny-card p-12" model="transition">
-                    <div class="body">
-                        <h1 class="title">深度集成 HTMX，增强超文本能力</h1>
-                        <h3 class="subtitle">无缝融合，扩展超文本功能</h3>
-                        <p class="content">作为 HTMX 拓展组件库，Bunny-UI 通过属性构建界面，与 HTMX 深度集成，简化复杂交互实现。保留 HTMX
-                            无刷新更新、服务器端渲染等优势，为开发者提供更灵活高效的开发体验。</p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-xs12 col-md4 p-24">
-                <div class="bny-card p-12" model="transition">
-                    <div class="body">
-                        <h1 class="title">丰富组件与动画，提升用户体验</h1>
-                        <h3 class="subtitle">多样化组件，流畅动画效果</h3>
-                        <p class="content">Bunny-UI 提供警示弹窗、确认框、页面弹窗等常用组件，支持多种动画效果（缩放、滑动等），API
-                            设计简洁易用。同时支持响应式设计，适配不同设备屏幕，确保良好的跨终端用户体验。</p>
-                    </div>
-                </div>
+            <div class="card">
+                <div class="icon"><i class="bny-icon icon-edit-fill"></i></div>
+                <h3>组件丰富 · 响应式</h3>
+                <p>20+ 组件开箱即用，内置动画系统，暗黑模式一键切换。</p>
             </div>
         </div>
     </div>

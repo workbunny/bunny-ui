@@ -64,7 +64,7 @@ htmx.defineExtension('bny-dropdown', {
             const viewportHeight = window.innerHeight;
             const gap = 8; // 菜单与按钮之间的间距
 
-            // 清楚之前的位置类
+            // 清除之前的位置类
             target.classList.remove('up')
 
             // 计算垂直方向位置
@@ -110,23 +110,29 @@ htmx.defineExtension('bny-dropdown', {
         if (name === 'htmx:afterProcessNode') {
             if (bny.hasExtName(evt.target, 'bny-dropdown')) {
                 const dropdown = add(evt.target)
-                // 点击事件
+
+                // 点击触发元素时切换下拉菜单
                 evt.target.addEventListener("click", (e) => {
-                    // 点击下拉菜单区域时，不关闭菜单
                     if (e.target.closest('.bny-dropdown')) {
-                        // htmx.addClass(dropdown, 'show')
-                        open(evt.target, dropdown)
-                    } else {
-                        // htmx.toggleClass(dropdown, "show")
-                        toggle(evt.target, dropdown)
+                        return
                     }
+                    e.stopPropagation()
+                    toggle(evt.target, dropdown)
                 })
+
+                // 点击页面其他位置时关闭下拉菜单
                 document.addEventListener('click', (e) => {
-                    if (!e.target.closest('.bny-dropdown')) {
-                        console.log('close')
-                        close(dropdown)
+                    // 点击下拉菜单内部或其子元素，不关闭
+                    if (e.target.closest('.bny-dropdown')) {
+                        return
                     }
+                    // 点击触发元素自身，不关闭
+                    if (evt.target.contains(e.target)) {
+                        return
+                    }
+                    close(dropdown)
                 })
+
                 return false
             }
             return true
@@ -136,12 +142,14 @@ htmx.defineExtension('bny-dropdown', {
         if (name === "htmx:beforeSwap") {
             if (bny.hasExtName(evt.target, 'bny-dropdown')) {
                 const dropdown = bny.queryChild(evt.target, '.bny-dropdown')
+                // 未打开或无内容 → 填充内容并打开
                 if (!bny.hasClass(dropdown, 'show') || dropdown.innerHTML.trim() === '') {
                     htmx.swap(
                         dropdown,
                         evt.detail.xhr.responseText,
                         { swapStyle: "innerHTML" }
                     )
+                    open(evt.target, dropdown)
                 }
                 return false
             }

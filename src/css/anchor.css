@@ -3,55 +3,60 @@
     display: flex;
     flex-direction: column;
     position: relative;
-    padding-left: 4px;
+    padding-left: 8px;
+    gap: 2px;
 
     & ul {
         width: 100%;
         display: flex;
         flex-direction: column;
-        gap: 5px;
-        padding-left: 4px;
+        gap: 3px;
+        padding-left: 8px;
     }
 
     & .link {
-        line-height: 1.5;
-        border-top-right-radius: var(--border-radius);
-        border-bottom-right-radius: var(--border-radius);
-        padding-left: 4px;
-        color: var(--black);
-        transition: var(--transition);
+        line-height: 1.6;
+        border-radius: var(--border-radius-sm);
+        padding: 4px 10px;
+        color: var(--black-middle);
+        transition: var(--transition-fast);
         cursor: pointer;
+        font-size: var(--font-size-sm);
 
         &:hover {
             color: var(--default);
+            background-color: var(--default-alpha-10);
         }
 
         &.active {
-            background: var(--default-shallow);
-            color: var(--white);
+            background: var(--default-alpha-20);
+            color: var(--default);
+            font-weight: var(--font-weight-medium);
         }
     }
 
     &[rail] {
         &::before {
             content: "";
-            width: 4px;
+            width: 3px;
             height: 100%;
             background: var(--gray-shallow);
+            border-radius: var(--border-radius-full);
             position: absolute;
             top: 0;
             left: 0;
         }
     }
 
-    &>.slider {
+    & > .slider {
         position: absolute;
         top: 0;
         left: 0;
-        width: 4px;
-        height: 21px;
+        width: 3px;
+        height: 24px;
         background: var(--default);
+        border-radius: var(--border-radius-full);
         z-index: 1;
-        transition: var(--transition);
+        transition: top 0.2s ease, height 0.2s ease;
     }
 }

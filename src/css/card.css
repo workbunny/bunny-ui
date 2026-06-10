@@ -1,62 +1,67 @@
 .bny-card {
-    transition: var(--transition);
-    box-shadow: var(--box-shadow);
+    display: flex;
+    flex-direction: column;
+    background-color: var(--white);
     color: var(--black);
     box-shadow: var(--box-shadow-005);
+    border-radius: var(--border-radius-8);
     overflow: hidden;
-    border-radius: var(--border-radius);
-    margin: 8px 0;
+    margin: 10px 0;
+    border: 1px solid var(--gray-shallow);
+    transition: var(--transition);
 
     &[model="transition"] {
-        transition: var(--transition);
-        box-shadow: var(--box-shadow-005);
+        cursor: pointer;
     }
 
     &[model="transition"]:hover {
         box-shadow: var(--box-shadow-hover-005);
-        transform: var(--transform3d-020);
+        transform: translateY(-2px);
+        border-color: var(--default-shallow);
     }
 
-    &>img {
+    & > img {
         width: 100%;
         height: auto;
+        object-fit: cover;
     }
 
-    &>.head {
-        padding: 8px 14px;
-        border-bottom: 1px solid var(--black-middle);
+    & > .head {
+        padding: 14px 18px;
+        border-bottom: 1px solid var(--gray-shallow);
+        font-weight: var(--font-weight-semibold);
+        font-size: var(--font-size-16);
+        color: var(--black);
     }
 
-    &>.foot {
-        padding: 8px 14px;
-        border-top: 1px solid var(--black-middle);
+    & > .foot {
+        padding: 14px 18px;
+        border-top: 1px solid var(--gray-shallow);
     }
 
-    &>.body {
+    & > .body {
         flex: 1 1 auto;
-        padding: 14px;
+        padding: 18px;
 
-        &>.title {
+        & > .title {
             font-size: var(--font-size-18);
-            font-weight: 600;
-            margin-top: 0;
+            font-weight: var(--font-weight-semibold);
+            margin: 0 0 10px 0;
+            line-height: var(--line-height-heading);
+            color: var(--black);
+        }
+
+        & > .subtitle {
+            font-size: var(--font-size-sm);
             margin-bottom: 8px;
-            overflow: hidden;
-            white-space: nowrap;
-            text-overflow: ellipsis;
+            color: var(--black-shallow);
+            font-weight: var(--font-weight-medium);
         }
 
-        &>.subtitle {
-            font-size: var(--font-size-16);
-            margin-bottom: 4px;
-            overflow: hidden;
-            white-space: nowrap;
-            text-overflow: ellipsis;
-            color: var(--blue-middle);
-        }
-
-        &>.content {
-            margin-bottom: 4px;
+        & > .content {
+            margin-bottom: 8px;
+            line-height: var(--line-height);
+            color: var(--black-middle);
         }
     }
 }

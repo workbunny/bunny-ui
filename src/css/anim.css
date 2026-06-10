@@ -1,175 +1,114 @@
-/* 动画 */
+/* ========== 动画系统 ========== */
+
 .bny-anim-scale {
-    /* 放大 */
-    animation: anim-scale 235ms ease-in-out;
+    animation: anim-scale 250ms cubic-bezier(0.4, 0, 0.2, 1);
     animation-fill-mode: forwards;
 }
 
 @keyframes anim-scale {
-    from {
-        transform: scale(0);
-    }
-
-    to {
-        transform: scale(1);
-    }
+    from { transform: scale(0); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
 }
 
 .bny-anim-scaleOut {
-    /* 缩小 */
-    animation: anim-scaleOut 235ms ease-in-out;
+    animation: anim-scaleOut 200ms cubic-bezier(0.4, 0, 0.2, 1);
     animation-fill-mode: forwards;
 }
 
 @keyframes anim-scaleOut {
-    from {
-        transform: scale(1);
-    }
-
-    to {
-        transform: scale(0);
-    }
+    from { transform: scale(1); opacity: 1; }
+    to { transform: scale(0.8); opacity: 0; }
 }
 
 .bny-anim-rotate {
-    /* 旋转 */
-    animation: anim-spin .8s linear infinite;
+    animation: anim-spin 0.8s linear infinite;
 }
 
 @keyframes anim-spin {
-    0% {
-        transform: rotate(0deg);
-    }
-
-    100% {
-        transform: rotate(360deg);
-    }
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
 }
 
+/* ---------- 水平滑动 ---------- */
+
 .bny-anim-left {
-    /* 左侧滑出 */
-    animation: anim-left 235ms ease-in-out;
+    animation: anim-left 250ms cubic-bezier(0.4, 0, 0.2, 1);
     animation-fill-mode: forwards;
 }
 
 @keyframes anim-left {
-    from {
-        transform: translateX(-100%);
-    }
-
-    to {
-        transform: translateX(0);
-    }
+    from { transform: translateX(-100%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
 }
 
 .bny-anim-leftOut {
-    /* 退出到左侧 */
-    animation: anim-leftOut 235ms ease-in-out;
+    animation: anim-leftOut 200ms cubic-bezier(0.4, 0, 0.2, 1);
     animation-fill-mode: forwards;
 }
 
 @keyframes anim-leftOut {
-    from {
-        transform: translateX(0);
-    }
-
-    to {
-        transform: translateX(-100%);
-    }
+    from { transform: translateX(0); opacity: 1; }
+    to { transform: translateX(-100%); opacity: 0; }
 }
 
 .bny-anim-right {
-    /* 右侧滑出 */
-    animation: anim-right 235ms ease-in-out;
+    animation: anim-right 250ms cubic-bezier(0.4, 0, 0.2, 1);
     animation-fill-mode: forwards;
 }
 
 @keyframes anim-right {
-    from {
-        transform: translateX(100%);
-    }
-
-    to {
-        transform: translateX(0);
-    }
+    from { transform: translateX(100%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
 }
 
 .bny-anim-rightOut {
-    /* 退出到右侧 */
-    animation: anim-rightOut 235ms ease-in-out;
+    animation: anim-rightOut 200ms cubic-bezier(0.4, 0, 0.2, 1);
     animation-fill-mode: forwards;
 }
 
 @keyframes anim-rightOut {
-    from {
-        transform: translateX(0);
-    }
-
-    to {
-        transform: translateX(100%);
-    }
+    from { transform: translateX(0); opacity: 1; }
+    to { transform: translateX(100%); opacity: 0; }
 }
 
+/* ---------- 垂直滑动 ---------- */
+
 .bny-anim-up {
-    /* 顶部滑出 */
-    animation: anim-up 235ms ease-in-out;
+    animation: anim-up 250ms cubic-bezier(0.4, 0, 0.2, 1);
     animation-fill-mode: forwards;
 }
 
 @keyframes anim-up {
-    from {
-        transform: translateY(-100%);
-    }
-
-    to {
-        transform: translateY(0);
-    }
+    from { transform: translateY(-100%); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
 }
 
 .bny-anim-upOut {
-    /* 退出到顶部 */
-    animation: anim-upOut 235ms ease-in-out;
+    animation: anim-upOut 200ms cubic-bezier(0.4, 0, 0.2, 1);
     animation-fill-mode: forwards;
 }
 
 @keyframes anim-upOut {
-    from {
-        transform: translateY(0);
-    }
-
-    to {
-        transform: translateY(-100%);
-    }
+    from { transform: translateY(0); opacity: 1; }
+    to { transform: translateY(-100%); opacity: 0; }
 }
 
 .bny-anim-down {
-    /* 底部滑出 */
-    animation: anim-down 235ms ease-in-out;
+    animation: anim-down 250ms cubic-bezier(0.4, 0, 0.2, 1);
     animation-fill-mode: forwards;
 }
 
 @keyframes anim-down {
-    from {
-        transform: translateY(100%);
-    }
-
-    to {
-        transform: translateY(0);
-    }
+    from { transform: translateY(100%); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
 }
 
 .bny-anim-downOut {
-    /* 退出到底部 */
-    animation: anim-downOut 235ms ease-in-out;
+    animation: anim-downOut 200ms cubic-bezier(0.4, 0, 0.2, 1);
     animation-fill-mode: forwards;
 }
 
 @keyframes anim-downOut {
-    from {
-        transform: translateY(0);
-    }
-
-    to {
-        transform: translateY(100%);
-    }
+    from { transform: translateY(0); opacity: 1; }
+    to { transform: translateY(100%); opacity: 0; }
 }

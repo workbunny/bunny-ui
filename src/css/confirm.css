@@ -8,35 +8,40 @@
     display: flex;
     justify-content: center;
     align-items: center;
+    background: rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(4px);
 }
 
 .bny-confirm {
-    width: 240px;
+    width: 360px;
     max-width: calc(100vw - 32px);
-    padding: 8px 16px;
-    border-radius: var(--border-radius);
+    padding: 24px;
+    border-radius: var(--border-radius-8);
     background-color: var(--white);
-    box-shadow: var(--box-shadow-005);
+    box-shadow: var(--box-shadow-055);
 
-    &>.title {
+    & > .title {
         color: var(--black);
-        font-weight: 500;
-        margin: 0;
-    }
-
-    &>.content {
-        margin: 8px 0 16px 0;
+        font-weight: var(--font-weight-semibold);
         font-size: var(--font-size-16);
-        color: var(--black);
-        word-wrap: break-word;
+        margin: 0 0 8px 0;
     }
 
-    &>.btn {
-        text-align: right;
+    & > .content {
+        margin: 8px 0 20px 0;
+        font-size: var(--font-size);
+        color: var(--black-middle);
+        word-wrap: break-word;
+        line-height: var(--line-height);
+    }
+
+    & > .btn {
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
 
         .bny-btn {
-            margin-left: 4px;
+            margin-left: 0;
         }
     }
-
 }
