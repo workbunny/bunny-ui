@@ -6202,6 +6202,97 @@ table[hx-ext~="bny-table"] {
         transition: top 0.2s ease, height 0.2s ease;
     }
 }
+/* ========== Tooltip 气泡提示 ========== */
+.bny-tooltip {
+    position: fixed;
+    z-index: 99999;
+    max-width: 280px;
+    padding: 6px 12px;
+    background: var(--black);
+    color: var(--white);
+    font-size: var(--font-size-sm);
+    line-height: 1.5;
+    border-radius: var(--border-radius-sm);
+    word-wrap: break-word;
+    pointer-events: none;
+    opacity: 0;
+    transform: scale(0.92);
+    transition: opacity 150ms ease, transform 150ms ease;
+
+    &.visible {
+        opacity: 1;
+        transform: scale(1);
+    }
+
+    /* ====== 箭头 ====== */
+    &::after {
+        content: "";
+        position: absolute;
+        width: 0;
+        height: 0;
+        border: 5px solid transparent;
+    }
+
+    /* ====== 上方 ====== */
+    &.top,
+    &.top-start,
+    &.top-end {
+        &::after {
+            top: 100%;
+            border-top-color: var(--black);
+            border-bottom: none;
+        }
+    }
+
+    &.top::after       { left: 50%; transform: translateX(-50%); }
+    &.top-start::after { left: 12px; }
+    &.top-end::after   { right: 12px; }
+
+    /* ====== 下方 ====== */
+    &.bottom,
+    &.bottom-start,
+    &.bottom-end {
+        &::after {
+            bottom: 100%;
+            border-bottom-color: var(--black);
+            border-top: none;
+        }
+    }
+
+    &.bottom::after       { left: 50%; transform: translateX(-50%); }
+    &.bottom-start::after { left: 12px; }
+    &.bottom-end::after   { right: 12px; }
+
+    /* ====== 左侧 ====== */
+    &.left,
+    &.left-start,
+    &.left-end {
+        &::after {
+            left: 100%;
+            border-left-color: var(--black);
+            border-right: none;
+        }
+    }
+
+    &.left::after       { top: 50%; transform: translateY(-50%); }
+    &.left-start::after { top: 8px; }
+    &.left-end::after   { bottom: 8px; }
+
+    /* ====== 右侧 ====== */
+    &.right,
+    &.right-start,
+    &.right-end {
+        &::after {
+            right: 100%;
+            border-right-color: var(--black);
+            border-left: none;
+        }
+    }
+
+    &.right::after       { top: 50%; transform: translateY(-50%); }
+    &.right-start::after { top: 8px; }
+    &.right-end::after   { bottom: 8px; }
+}
 /* ========== 公共样式 ========== */
 
 /* 字体大小 */
