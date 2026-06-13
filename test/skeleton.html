@@ -1,0 +1,381 @@
+<div class="bny-row">
+    <div class="text-content-box col-xs12 col-sm9">
+        <div class="text-content">
+            <h1>Skeleton 骨架屏 <div class="bny-tag" color="red">v2.0.5+</div></h1>
+            <hr>
+            <blockquote class="bny-blockquote">
+                骨架屏是一种加载占位组件，在数据加载期间展示页面轮廓，减少用户等待焦虑。纯 CSS 实现，无需 JS。
+            </blockquote>
+
+            <h2 id="n01">基础形状</h2>
+            <div class="bny-card">
+                <div hx-ext="bny-tab">
+                    <ul class="head">
+                        <li>Preview</li>
+                        <li>Code</li>
+                    </ul>
+                    <div class="body">
+                        <div>
+                            <div class="p-12">
+                                <div class="bny-row" gap="18">
+                                    <div class="col-xs12 col-sm6">
+                                        <p style="margin-bottom:8px; font-size:13px; color:var(--black-shallow);">文本行</p>
+                                        <div class="bny-skeleton bny-skeleton-text"></div>
+                                        <div class="bny-skeleton bny-skeleton-text"></div>
+                                        <div class="bny-skeleton bny-skeleton-text short"></div>
+                                    </div>
+                                    <div class="col-xs12 col-sm6">
+                                        <p style="margin-bottom:8px; font-size:13px; color:var(--black-shallow);">标题</p>
+                                        <div class="bny-skeleton bny-skeleton-title"></div>
+                                        <div class="bny-skeleton bny-skeleton-text"></div>
+                                        <div class="bny-skeleton bny-skeleton-text short"></div>
+                                    </div>
+                                </div>
+                                <div style="margin-top:24px;">
+                                    <p class="fw-medium" style="margin-bottom:8px; font-size:13px; color:var(--black-shallow);">头像 & 按钮 & 图片</p>
+                                    <div class="flex gap-16 flex-wrap">
+                                        <div class="bny-skeleton bny-skeleton-avatar bny-skeleton-circle"></div>
+                                        <div class="bny-skeleton bny-skeleton-avatar bny-skeleton-circle lg"></div>
+                                        <div class="bny-skeleton bny-skeleton-avatar bny-skeleton-circle sm"></div>
+                                        <div class="bny-skeleton bny-skeleton-button"></div>
+                                        <div class="bny-skeleton bny-skeleton-button lg"></div>
+                                        <div class="bny-skeleton bny-skeleton-button sm"></div>
+                                    </div>
+                                </div>
+                                <div style="margin-top:20px; max-width:320px;">
+                                    <div class="bny-skeleton bny-skeleton-image"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <pre hx-ext="bny-code">
+&lt;!-- 文本行 --&gt;
+&lt;div class="bny-skeleton bny-skeleton-text"&gt;&lt;/div&gt;
+&lt;div class="bny-skeleton bny-skeleton-text short"&gt;&lt;/div&gt;
+
+&lt;!-- 标题 --&gt;
+&lt;div class="bny-skeleton bny-skeleton-title"&gt;&lt;/div&gt;
+
+&lt;!-- 头像 --&gt;
+&lt;div class="bny-skeleton bny-skeleton-avatar bny-skeleton-circle"&gt;&lt;/div&gt;
+&lt;div class="bny-skeleton bny-skeleton-avatar bny-skeleton-circle lg"&gt;&lt;/div&gt;
+
+&lt;!-- 按钮 --&gt;
+&lt;div class="bny-skeleton bny-skeleton-button"&gt;&lt;/div&gt;
+&lt;div class="bny-skeleton bny-skeleton-button lg"&gt;&lt;/div&gt;
+
+&lt;!-- 图片 --&gt;
+&lt;div class="bny-skeleton bny-skeleton-image"&gt;&lt;/div&gt;
+                </pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h2 id="n02">组合布局</h2>
+            <div class="bny-card">
+                <div hx-ext="bny-tab">
+                    <ul class="head">
+                        <li>Preview</li>
+                        <li>Code</li>
+                    </ul>
+                    <div class="body">
+                        <div>
+                            <div class="p-12">
+                                <div class="bny-row" gap="22">
+                                    <!-- 文章段落 -->
+                                    <div class="col-xs12 col-sm6">
+                                        <p style="margin-bottom:12px; font-size:13px; color:var(--black-shallow);">文章段落</p>
+                                        <div class="bny-skeleton-paragraph">
+                                            <div class="bny-skeleton bny-skeleton-title"></div>
+                                            <div class="bny-skeleton bny-skeleton-text"></div>
+                                            <div class="bny-skeleton bny-skeleton-text"></div>
+                                            <div class="bny-skeleton bny-skeleton-text short"></div>
+                                        </div>
+                                    </div>
+                                    <!-- 列表 -->
+                                    <div class="col-xs12 col-sm6">
+                                        <p style="margin-bottom:12px; font-size:13px; color:var(--black-shallow);">列表项</p>
+                                        <div class="bny-skeleton-list">
+                                            <div class="bny-skeleton bny-skeleton-avatar bny-skeleton-circle sm"></div>
+                                            <div>
+                                                <div class="bny-skeleton bny-skeleton-text" style="width:80%;"></div>
+                                                <div class="bny-skeleton bny-skeleton-text short"></div>
+                                            </div>
+                                        </div>
+                                        <div class="bny-skeleton-list">
+                                            <div class="bny-skeleton bny-skeleton-avatar bny-skeleton-circle sm"></div>
+                                            <div>
+                                                <div class="bny-skeleton bny-skeleton-text" style="width:65%;"></div>
+                                                <div class="bny-skeleton bny-skeleton-text short"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <pre hx-ext="bny-code">
+&lt;!-- 文章段落 --&gt;
+&lt;div class="bny-skeleton-paragraph"&gt;
+    &lt;div class="bny-skeleton bny-skeleton-title"&gt;&lt;/div&gt;
+    &lt;div class="bny-skeleton bny-skeleton-text"&gt;&lt;/div&gt;
+    &lt;div class="bny-skeleton bny-skeleton-text"&gt;&lt;/div&gt;
+    &lt;div class="bny-skeleton bny-skeleton-text short"&gt;&lt;/div&gt;
+&lt;/div&gt;
+
+&lt;!-- 列表项 --&gt;
+&lt;div class="bny-skeleton-list"&gt;
+    &lt;div class="bny-skeleton bny-skeleton-avatar bny-skeleton-circle sm"&gt;&lt;/div&gt;
+    &lt;div&gt;...&lt;/div&gt;
+&lt;/div&gt;
+                </pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h2 id="n03">卡片 & 表格</h2>
+            <div class="bny-card">
+                <div hx-ext="bny-tab">
+                    <ul class="head">
+                        <li>Preview</li>
+                        <li>Code</li>
+                    </ul>
+                    <div class="body">
+                        <div>
+                            <div class="p-12">
+                                <div class="bny-row" gap="22">
+                                    <!-- 卡片骨架 -->
+                                    <div class="col-xs12 col-sm6">
+                                        <p style="margin-bottom:12px; font-size:13px; color:var(--black-shallow);">卡片骨架</p>
+                                        <div class="bny-skeleton-card" style="border:1px solid var(--gray-shallow); border-radius:var(--border-radius-8); padding:0 0 16px 0;">
+                                            <div class="bny-skeleton bny-skeleton-image"></div>
+                                            <div style="padding:0 16px;">
+                                                <div class="bny-skeleton bny-skeleton-title"></div>
+                                                <div class="bny-skeleton bny-skeleton-text"></div>
+                                                <div class="bny-skeleton bny-skeleton-text short"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- 表格骨架 -->
+                                    <div class="col-xs12 col-sm6">
+                                        <p style="margin-bottom:12px; font-size:13px; color:var(--black-shallow);">表格骨架</p>
+                                        <div class="bny-skeleton-table">
+                                            <div class="row header">
+                                                <div class="bny-skeleton bny-skeleton-text" style="width:30%;"></div>
+                                                <div class="bny-skeleton bny-skeleton-text" style="width:25%;"></div>
+                                                <div class="bny-skeleton bny-skeleton-text" style="width:20%;"></div>
+                                                <div class="bny-skeleton bny-skeleton-text" style="width:25%;"></div>
+                                            </div>
+                                            <div class="row"><div class="bny-skeleton bny-skeleton-text"></div><div class="bny-skeleton bny-skeleton-text"></div><div class="bny-skeleton bny-skeleton-text"></div><div class="bny-skeleton bny-skeleton-text"></div></div>
+                                            <div class="row"><div class="bny-skeleton bny-skeleton-text"></div><div class="bny-skeleton bny-skeleton-text"></div><div class="bny-skeleton bny-skeleton-text"></div><div class="bny-skeleton bny-skeleton-text"></div></div>
+                                            <div class="row"><div class="bny-skeleton bny-skeleton-text"></div><div class="bny-skeleton bny-skeleton-text"></div><div class="bny-skeleton bny-skeleton-text"></div><div class="bny-skeleton bny-skeleton-text"></div></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <pre hx-ext="bny-code">
+&lt;!-- 卡片骨架 --&gt;
+&lt;div class="bny-skeleton-card"&gt;
+    &lt;div class="bny-skeleton bny-skeleton-image"&gt;&lt;/div&gt;
+    &lt;div class="bny-skeleton bny-skeleton-title"&gt;&lt;/div&gt;
+    &lt;div class="bny-skeleton bny-skeleton-text"&gt;&lt;/div&gt;
+    &lt;div class="bny-skeleton bny-skeleton-text short"&gt;&lt;/div&gt;
+&lt;/div&gt;
+
+&lt;!-- 表格骨架 --&gt;
+&lt;div class="bny-skeleton-table"&gt;
+    &lt;div class="row header"&gt;...&lt;/div&gt;
+    &lt;div class="row"&gt;...&lt;/div&gt;
+&lt;/div&gt;
+                </pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h2 id="n04">静默模式</h2>
+            <div class="bny-card">
+                <div hx-ext="bny-tab">
+                    <ul class="head">
+                        <li>Preview</li>
+                        <li>Code</li>
+                    </ul>
+                    <div class="body">
+                        <div>
+                            <div class="p-12">
+                                <p style="margin-bottom:12px; font-size:13px; color:var(--black-shallow);">添加 <code>.quiet</code> 类关闭流光，仅保留呼吸脉冲效果，适合放在卡片等静态背景上。</p>
+                                <div class="bny-skeleton bny-skeleton-text quiet"></div>
+                                <div class="bny-skeleton bny-skeleton-title quiet"></div>
+                                <div class="bny-skeleton bny-skeleton-text quiet"></div>
+                                <div class="bny-skeleton bny-skeleton-text short quiet"></div>
+                            </div>
+                        </div>
+                        <div>
+                            <pre hx-ext="bny-code">
+&lt;!-- 静默模式（无流光，仅呼吸脉冲） --&gt;
+&lt;div class="bny-skeleton bny-skeleton-text quiet"&gt;&lt;/div&gt;
+&lt;div class="bny-skeleton bny-skeleton-title quiet"&gt;&lt;/div&gt;
+                </pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h2 id="n05">配合 HTMX 使用</h2>
+            <div class="bny-card">
+                <div hx-ext="bny-tab">
+                    <ul class="head">
+                        <li>Preview</li>
+                        <li>Code</li>
+                    </ul>
+                    <div class="body">
+                        <div>
+                            <div class="p-12">
+                                <p style="margin-bottom:16px; font-size:13px; color:var(--black-shallow);">
+                                    点击按钮加载内容：先在容器中放置骨架屏，<code>hx-get</code> 返回真实内容后自动替换。
+                                </p>
+                                <button class="bny-btn" hx-get="/test/data/skeleton-card.html"
+                                    hx-target="#skeleton-card-demo" hx-swap="innerHTML"
+                                    style="margin-bottom:20px;" hx-trigger="click delay:3s">
+                                    加载卡片
+                                </button>
+                                <div id="skeleton-card-demo">
+                                    <div class="bny-skeleton-card" style="border:1px solid var(--gray-shallow); border-radius:var(--border-radius-8); padding:0 0 16px 0; max-width:360px;">
+                                        <div class="bny-skeleton bny-skeleton-image"></div>
+                                        <div style="padding:0 16px;">
+                                            <div class="bny-skeleton bny-skeleton-title"></div>
+                                            <div class="bny-skeleton bny-skeleton-text"></div>
+                                            <div class="bny-skeleton bny-skeleton-text short"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <hr style="margin:24px 0;">
+                                <p style="margin-bottom:16px; font-size:13px; color:var(--black-shallow);">
+                                    带 <code>hx-indicator</code> 的段落加载：初始显示骨架屏，请求期间自动切换。
+                                </p>
+                                <button class="bny-btn" hx-get="/test/data/skeleton-paragraph.html"
+                                    hx-target="#skeleton-para-demo" hx-swap="innerHTML"
+                                    hx-indicator="#skeleton-indicator"
+                                    style="margin-bottom:20px;" hx-trigger="click delay:3s">
+                                    加载段落
+                                </button>
+                                <div id="skeleton-para-demo">
+                                    <div id="skeleton-indicator" class="bny-skeleton-paragraph" style="max-width:520px;">
+                                        <div class="bny-skeleton bny-skeleton-title"></div>
+                                        <div class="bny-skeleton bny-skeleton-text"></div>
+                                        <div class="bny-skeleton bny-skeleton-text"></div>
+                                        <div class="bny-skeleton bny-skeleton-text short"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <pre hx-ext="bny-code">
+&lt;!-- 骨架屏作为初始占位 --&gt;
+&lt;div id="target"&gt;
+    &lt;div class="bny-skeleton-card"&gt;
+        &lt;div class="bny-skeleton bny-skeleton-image"&gt;&lt;/div&gt;
+        &lt;div class="bny-skeleton bny-skeleton-title"&gt;&lt;/div&gt;
+        &lt;div class="bny-skeleton bny-skeleton-text"&gt;&lt;/div&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+
+&lt;!-- 点击按钮，用真实内容替换骨架屏 --&gt;
+&lt;button class="bny-btn" hx-get="/data/card.html"
+    hx-target="#target" hx-swap="innerHTML"&gt;
+    加载内容
+&lt;/button&gt;
+
+&lt;!-- 配合 hx-indicator 的用法 --&gt;
+&lt;button class="bny-btn" hx-get="/data/content.html"
+    hx-target="#demo" hx-swap="innerHTML"
+    hx-indicator="#loading"&gt;
+    加载内容
+&lt;/button&gt;
+&lt;div id="demo"&gt;
+    &lt;div id="loading" class="bny-skeleton-paragraph"&gt;
+        &lt;div class="bny-skeleton bny-skeleton-title"&gt;&lt;/div&gt;
+        &lt;div class="bny-skeleton bny-skeleton-text"&gt;&lt;/div&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+                </pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h2 id="n06">API</h2>
+            <h3>CSS 类</h3>
+            <table hx-ext="bny-table">
+                <thead>
+                    <tr>
+                        <th>类名</th>
+                        <th>说明</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>bny-skeleton</code></td>
+                        <td>基础骨架，必须配合形状类使用</td>
+                    </tr>
+                    <tr>
+                        <td><code>bny-skeleton-text</code></td>
+                        <td>文本行，可加 <code>.short</code> 变短行</td>
+                    </tr>
+                    <tr>
+                        <td><code>bny-skeleton-title</code></td>
+                        <td>标题，默认 45% 宽</td>
+                    </tr>
+                    <tr>
+                        <td><code>bny-skeleton-avatar</code></td>
+                        <td>头像方块，配合 <code>.bny-skeleton-circle</code> 变圆，可选 <code>.sm/.lg/.xs</code></td>
+                    </tr>
+                    <tr>
+                        <td><code>bny-skeleton-image</code></td>
+                        <td>图片占位，100% 宽、160px 高</td>
+                    </tr>
+                    <tr>
+                        <td><code>bny-skeleton-button</code></td>
+                        <td>按钮占位，可选 <code>.sm/.lg</code></td>
+                    </tr>
+                    <tr>
+                        <td><code>bny-skeleton-paragraph</code></td>
+                        <td>组合：标题 + 三行文本</td>
+                    </tr>
+                    <tr>
+                        <td><code>bny-skeleton-list</code></td>
+                        <td>组合：小头像 + 两行文本</td>
+                    </tr>
+                    <tr>
+                        <td><code>bny-skeleton-card</code></td>
+                        <td>组合：图片 + 标题 + 文本</td>
+                    </tr>
+                    <tr>
+                        <td><code>bny-skeleton-table</code></td>
+                        <td>组合：表头 + 多行</td>
+                    </tr>
+                    <tr>
+                        <td><code>.quiet</code></td>
+                        <td>静默模式，关闭流光仅保留呼吸脉冲</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="right-anchor-box hidden-xs col-sm3">
+        <div class="right-anchor">
+            <ul hx-ext="bny-anchor" rail>
+                <li class="link" anchor="#n01">基础形状</li>
+                <li class="link" anchor="#n02">组合布局</li>
+                <li class="link" anchor="#n03">卡片 & 表格</li>
+                <li class="link" anchor="#n04">静默模式</li>
+                <li class="link" anchor="#n05">配合 HTMX 使用</li>
+                <li class="link" anchor="#n06">API</li>
+            </ul>
+        </div>
+    </div>
+</div>
