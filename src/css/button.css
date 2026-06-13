@@ -124,7 +124,7 @@
     }
 
     &[model~="border"][color="green"]:hover {
-        background-color: rgba(5, 150, 105, 0.1);
+        background-color: var(--green-alpha-10);
         color: var(--green);
     }
 
@@ -134,7 +134,7 @@
     }
 
     &[model~="border"][color="blue"]:hover {
-        background-color: rgba(2, 132, 199, 0.1);
+        background-color: var(--blue-alpha-10);
         color: var(--blue);
     }
 
@@ -144,7 +144,7 @@
     }
 
     &[model~="border"][color="yellow"]:hover {
-        background-color: rgba(217, 119, 6, 0.1);
+        background-color: var(--yellow-alpha-10);
         color: var(--yellow);
     }
 
@@ -154,7 +154,7 @@
     }
 
     &[model~="border"][color="red"]:hover {
-        background-color: rgba(225, 29, 72, 0.1);
+        background-color: var(--red-alpha-10);
         color: var(--red);
     }
 
@@ -206,7 +206,7 @@
         transform: none !important;
 
         &:not(:last-child) {
-            border-right: 1px solid rgba(255, 255, 255, 0.15);
+            border-right: 1px solid var(--white-alpha-15);
         }
 
         &:first-child {

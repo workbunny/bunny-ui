@@ -18,7 +18,7 @@
             justify-content: center;
             cursor: pointer;
             border-radius: var(--border-radius);
-            background: rgba(255, 255, 255, 0.12);
+            background: var(--white-alpha-12);
             transition: var(--transition);
             backdrop-filter: blur(8px);
 
@@ -28,7 +28,7 @@
             }
 
             &:hover {
-                background: rgba(255, 255, 255, 0.2);
+                background: var(--white-alpha-20);
             }
         }
 
@@ -51,7 +51,7 @@
                 border-radius: var(--border-radius);
                 overflow: hidden;
                 background: var(--white-common);
-                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+                box-shadow: 0 2px 8px var(--black-alpha-15);
 
                 & img {
                     width: 100%;
@@ -71,7 +71,7 @@
             cursor: pointer;
             transition: var(--transition);
             white-space: nowrap;
-            color: rgba(255, 255, 255, 0.85);
+            color: var(--white-alpha-85);
             padding: 12px 20px;
             display: flex;
             align-items: center;
@@ -96,14 +96,14 @@
                 top: 50%;
                 width: 2px;
                 height: 0%;
-                background: rgba(255, 255, 255, 0.5);
+                background: var(--white-alpha-50);
                 border-radius: var(--border-radius-full);
                 transition: var(--transition);
             }
 
             &:hover {
                 color: var(--white-common);
-                background: rgba(255, 255, 255, 0.08);
+                background: var(--white-alpha-08);
 
                 &::before {
                     top: 6px;
@@ -246,7 +246,7 @@
             }
 
             &[collapsed] .sub-menu {
-                background: rgba(0, 0, 0, 0.2) !important;
+                background: var(--black-alpha-20) !important;
             }
         }
     }
@@ -269,7 +269,7 @@
             }
 
             &[collapsed] .sub-menu {
-                background: rgba(0, 0, 0, 0.2) !important;
+                background: var(--black-alpha-20) !important;
             }
         }
     }
@@ -292,7 +292,7 @@
             }
 
             &[collapsed] .sub-menu {
-                background: rgba(0, 0, 0, 0.2) !important;
+                background: var(--black-alpha-20) !important;
             }
         }
     }
@@ -315,7 +315,7 @@
             }
 
             &[collapsed] .sub-menu {
-                background: rgba(0, 0, 0, 0.2) !important;
+                background: var(--black-alpha-20) !important;
             }
         }
     }
@@ -388,7 +388,7 @@
 
         &[collapsed] {
             & > .head {
-                border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+                border-bottom: 1px solid var(--white-alpha-15);
 
                 & > .toggle-btn i {
                     transform: rotate(180deg);
@@ -406,7 +406,7 @@
                 & .sub-menu {
                     position: unset;
                     box-shadow: none;
-                    background: rgba(0, 0, 0, 0.15);
+                    background: var(--black-alpha-15);
                     transform: none;
                     border-radius: 0;
                 }
@@ -428,7 +428,7 @@
         align-items: center;
         justify-content: space-between;
         width: 100%;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+        border-bottom: 1px solid var(--white-alpha-12);
 
         & > .toggle-btn {
             display: flex;
@@ -485,7 +485,7 @@
 
     & .sub-menu {
         position: unset;
-        background: rgba(0, 0, 0, 0.15);
+        background: var(--black-alpha-15);
         box-shadow: none;
         transform: none;
         border-radius: 0;

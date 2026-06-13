@@ -26,25 +26,25 @@
 
     &[color="green"] {
         border-color: var(--green);
-        background-color: rgba(5, 150, 105, 0.08);
+        background-color: var(--green-alpha-10);
         color: var(--green);
     }
 
     &[color="yellow"] {
         border-color: var(--yellow);
-        background-color: rgba(217, 119, 6, 0.08);
+        background-color: var(--yellow-alpha-10);
         color: var(--yellow);
     }
 
     &[color="red"] {
         border-color: var(--red);
-        background-color: rgba(225, 29, 72, 0.08);
+        background-color: var(--red-alpha-10);
         color: var(--red);
     }
 
     &[color="blue"] {
         border-color: var(--blue);
-        background-color: rgba(2, 132, 199, 0.08);
+        background-color: var(--blue-alpha-10);
         color: var(--blue);
     }
 }

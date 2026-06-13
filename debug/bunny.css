@@ -56,6 +56,30 @@ html {
     --default-alpha-20: rgba(94, 79, 66, 0.2);
     --default-alpha-30: rgba(94, 79, 66, 0.3);
 
+    /* 彩色半透明变量（按颜色提取） */
+    --green-alpha-10: rgba(5, 150, 105, 0.08);
+    --green-alpha-20: rgba(5, 150, 105, 0.15);
+    --blue-alpha-10: rgba(2, 132, 199, 0.08);
+    --yellow-alpha-10: rgba(217, 119, 6, 0.08);
+    --red-alpha-10: rgba(225, 29, 72, 0.08);
+
+    /* 黑色/白色半透明（用于遮罩/覆盖层） */
+    --black-alpha-05: rgba(0, 0, 0, 0.05);
+    --black-alpha-08: rgba(0, 0, 0, 0.08);
+    --black-alpha-10: rgba(0, 0, 0, 0.1);
+    --black-alpha-15: rgba(0, 0, 0, 0.15);
+    --black-alpha-20: rgba(0, 0, 0, 0.2);
+    --black-alpha-25: rgba(0, 0, 0, 0.25);
+    --black-alpha-30: rgba(0, 0, 0, 0.3);
+
+    --white-alpha-05: rgba(255, 255, 255, 0.05);
+    --white-alpha-08: rgba(255, 255, 255, 0.08);
+    --white-alpha-12: rgba(255, 255, 255, 0.12);
+    --white-alpha-15: rgba(255, 255, 255, 0.15);
+    --white-alpha-20: rgba(255, 255, 255, 0.2);
+    --white-alpha-50: rgba(255, 255, 255, 0.5);
+    --white-alpha-85: rgba(255, 255, 255, 0.85);
+
     /* ========== 字体系统 ========== */
     --font-size: 14px;
     --font-size-xs: 12px;
@@ -163,6 +187,30 @@ html.dark {
     --default-alpha-10: rgba(184, 168, 152, 0.1);
     --default-alpha-20: rgba(184, 168, 152, 0.2);
     --default-alpha-30: rgba(184, 168, 152, 0.3);
+
+    /* 暗黑模式下彩色半透明（色值随主色变更） */
+    --green-alpha-10: rgba(16, 185, 129, 0.08);
+    --green-alpha-20: rgba(16, 185, 129, 0.15);
+    --blue-alpha-10: rgba(56, 189, 248, 0.08);
+    --yellow-alpha-10: rgba(245, 158, 11, 0.08);
+    --red-alpha-10: rgba(251, 113, 133, 0.08);
+
+    /* 暗黑模式下黑白半透明调优 */
+    --black-alpha-05: rgba(255, 255, 255, 0.05);
+    --black-alpha-08: rgba(255, 255, 255, 0.08);
+    --black-alpha-10: rgba(255, 255, 255, 0.1);
+    --black-alpha-15: rgba(255, 255, 255, 0.15);
+    --black-alpha-20: rgba(255, 255, 255, 0.2);
+    --black-alpha-25: rgba(255, 255, 255, 0.25);
+    --black-alpha-30: rgba(255, 255, 255, 0.3);
+
+    --white-alpha-05: rgba(0, 0, 0, 0.05);
+    --white-alpha-08: rgba(0, 0, 0, 0.08);
+    --white-alpha-12: rgba(0, 0, 0, 0.12);
+    --white-alpha-15: rgba(0, 0, 0, 0.15);
+    --white-alpha-20: rgba(0, 0, 0, 0.2);
+    --white-alpha-50: rgba(0, 0, 0, 0.5);
+    --white-alpha-85: rgba(0, 0, 0, 0.85);
 }
 
 html.dark::view-transition-old(*) {
@@ -2977,7 +3025,7 @@ p {
             }
 
             &:hover {
-                background-color: rgba(255, 255, 255, 0.12);
+                background-color: var(--white-alpha-12);
             }
         }
 
@@ -3108,7 +3156,7 @@ p {
             visibility: visible;
             max-height: 0;
             overflow: hidden;
-            background: rgba(0, 0, 0, 0.1);
+            background: var(--black-alpha-10);
 
             & .item {
                 padding: 0 0 0 14px;
@@ -3256,7 +3304,7 @@ p {
     }
 
     &[model~="border"][color="green"]:hover {
-        background-color: rgba(5, 150, 105, 0.1);
+        background-color: var(--green-alpha-10);
         color: var(--green);
     }
 
@@ -3266,7 +3314,7 @@ p {
     }
 
     &[model~="border"][color="blue"]:hover {
-        background-color: rgba(2, 132, 199, 0.1);
+        background-color: var(--blue-alpha-10);
         color: var(--blue);
     }
 
@@ -3276,7 +3324,7 @@ p {
     }
 
     &[model~="border"][color="yellow"]:hover {
-        background-color: rgba(217, 119, 6, 0.1);
+        background-color: var(--yellow-alpha-10);
         color: var(--yellow);
     }
 
@@ -3286,7 +3334,7 @@ p {
     }
 
     &[model~="border"][color="red"]:hover {
-        background-color: rgba(225, 29, 72, 0.1);
+        background-color: var(--red-alpha-10);
         color: var(--red);
     }
 
@@ -3338,7 +3386,7 @@ p {
         transform: none !important;
 
         &:not(:last-child) {
-            border-right: 1px solid rgba(255, 255, 255, 0.15);
+            border-right: 1px solid var(--white-alpha-15);
         }
 
         &:first-child {
@@ -3556,25 +3604,25 @@ p {
 
     &[color="green"] {
         border-color: var(--green);
-        background-color: rgba(5, 150, 105, 0.08);
+        background-color: var(--green-alpha-10);
         color: var(--green);
     }
 
     &[color="yellow"] {
         border-color: var(--yellow);
-        background-color: rgba(217, 119, 6, 0.08);
+        background-color: var(--yellow-alpha-10);
         color: var(--yellow);
     }
 
     &[color="red"] {
         border-color: var(--red);
-        background-color: rgba(225, 29, 72, 0.08);
+        background-color: var(--red-alpha-10);
         color: var(--red);
     }
 
     &[color="blue"] {
         border-color: var(--blue);
-        background-color: rgba(2, 132, 199, 0.08);
+        background-color: var(--blue-alpha-10);
         color: var(--blue);
     }
 }
@@ -3615,7 +3663,7 @@ p {
     display: flex;
     justify-content: center;
     align-items: center;
-    background: rgba(0, 0, 0, 0.3);
+    background: var(--black-alpha-30);
     backdrop-filter: blur(4px);
 }
 
@@ -3662,7 +3710,7 @@ p {
     display: flex;
     align-items: center;
     justify-content: center;
-    background: rgba(0, 0, 0, 0.25);
+    background: var(--black-alpha-25);
     backdrop-filter: blur(4px);
 }
 
@@ -3978,7 +4026,7 @@ hr {
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.15);
+    background-color: var(--black-alpha-15);
     backdrop-filter: blur(2px);
     z-index: 9999;
     display: flex;
@@ -4696,7 +4744,7 @@ table[hx-ext~="bny-table"] {
         background-color: var(--white);
         border-radius: 50%;
         transition: var(--transition);
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+        box-shadow: 0 1px 3px var(--black-alpha-15);
     }
 
     &:checked {
@@ -5541,7 +5589,7 @@ table[hx-ext~="bny-table"] {
             justify-content: center;
             cursor: pointer;
             border-radius: var(--border-radius);
-            background: rgba(255, 255, 255, 0.12);
+            background: var(--white-alpha-12);
             transition: var(--transition);
             backdrop-filter: blur(8px);
 
@@ -5551,7 +5599,7 @@ table[hx-ext~="bny-table"] {
             }
 
             &:hover {
-                background: rgba(255, 255, 255, 0.2);
+                background: var(--white-alpha-20);
             }
         }
 
@@ -5574,7 +5622,7 @@ table[hx-ext~="bny-table"] {
                 border-radius: var(--border-radius);
                 overflow: hidden;
                 background: var(--white-common);
-                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+                box-shadow: 0 2px 8px var(--black-alpha-15);
 
                 & img {
                     width: 100%;
@@ -5594,7 +5642,7 @@ table[hx-ext~="bny-table"] {
             cursor: pointer;
             transition: var(--transition);
             white-space: nowrap;
-            color: rgba(255, 255, 255, 0.85);
+            color: var(--white-alpha-85);
             padding: 12px 20px;
             display: flex;
             align-items: center;
@@ -5619,14 +5667,14 @@ table[hx-ext~="bny-table"] {
                 top: 50%;
                 width: 2px;
                 height: 0%;
-                background: rgba(255, 255, 255, 0.5);
+                background: var(--white-alpha-50);
                 border-radius: var(--border-radius-full);
                 transition: var(--transition);
             }
 
             &:hover {
                 color: var(--white-common);
-                background: rgba(255, 255, 255, 0.08);
+                background: var(--white-alpha-08);
 
                 &::before {
                     top: 6px;
@@ -5769,7 +5817,7 @@ table[hx-ext~="bny-table"] {
             }
 
             &[collapsed] .sub-menu {
-                background: rgba(0, 0, 0, 0.2) !important;
+                background: var(--black-alpha-20) !important;
             }
         }
     }
@@ -5792,7 +5840,7 @@ table[hx-ext~="bny-table"] {
             }
 
             &[collapsed] .sub-menu {
-                background: rgba(0, 0, 0, 0.2) !important;
+                background: var(--black-alpha-20) !important;
             }
         }
     }
@@ -5815,7 +5863,7 @@ table[hx-ext~="bny-table"] {
             }
 
             &[collapsed] .sub-menu {
-                background: rgba(0, 0, 0, 0.2) !important;
+                background: var(--black-alpha-20) !important;
             }
         }
     }
@@ -5838,7 +5886,7 @@ table[hx-ext~="bny-table"] {
             }
 
             &[collapsed] .sub-menu {
-                background: rgba(0, 0, 0, 0.2) !important;
+                background: var(--black-alpha-20) !important;
             }
         }
     }
@@ -5911,7 +5959,7 @@ table[hx-ext~="bny-table"] {
 
         &[collapsed] {
             & > .head {
-                border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+                border-bottom: 1px solid var(--white-alpha-15);
 
                 & > .toggle-btn i {
                     transform: rotate(180deg);
@@ -5929,7 +5977,7 @@ table[hx-ext~="bny-table"] {
                 & .sub-menu {
                     position: unset;
                     box-shadow: none;
-                    background: rgba(0, 0, 0, 0.15);
+                    background: var(--black-alpha-15);
                     transform: none;
                     border-radius: 0;
                 }
@@ -5951,7 +5999,7 @@ table[hx-ext~="bny-table"] {
         align-items: center;
         justify-content: space-between;
         width: 100%;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+        border-bottom: 1px solid var(--white-alpha-12);
 
         & > .toggle-btn {
             display: flex;
@@ -6008,7 +6056,7 @@ table[hx-ext~="bny-table"] {
 
     & .sub-menu {
         position: unset;
-        background: rgba(0, 0, 0, 0.15);
+        background: var(--black-alpha-15);
         box-shadow: none;
         transform: none;
         border-radius: 0;

@@ -38,7 +38,7 @@
             }
 
             &:hover {
-                background-color: rgba(255, 255, 255, 0.12);
+                background-color: var(--white-alpha-12);
             }
         }
 
@@ -169,7 +169,7 @@
             visibility: visible;
             max-height: 0;
             overflow: hidden;
-            background: rgba(0, 0, 0, 0.1);
+            background: var(--black-alpha-10);
 
             & .item {
                 padding: 0 0 0 14px;

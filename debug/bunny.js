@@ -3722,7 +3722,6 @@
      */
     escapeChars: function(str2) {
       if (typeof str2 !== "string") {
-        q;
         str2 = String(str2);
       }
       const escapeMap = {
