@@ -36,7 +36,7 @@
                     </div>
                 </div>
             </div>
-            <h3>大小</h3>
+            <h3 id="n012">大小</h3>
             <div class="bny-card">
                 <div hx-ext="bny-tab">
                     <ul class="head">
@@ -351,6 +351,32 @@
                     }, 3000)
                 }
             </script>
+
+            <h2 id="n03">API</h2>
+            <h3>bny.load(style, options)</h3>
+            <table hx-ext="bny-table">
+                <thead>
+                    <tr><th>参数</th><th>默认值</th><th>说明</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>style</td><td>0</td><td>0-旋转 / 1-圆形 / 2-弹跳 / 3-血条</td></tr>
+                    <tr><td>options.color</td><td>—</td><td>green / yellow / red / blue</td></tr>
+                    <tr><td>options.size</td><td>—</td><td>small / large</td></tr>
+                </tbody>
+            </table>
+            <h3>CSS 类</h3>
+            <table hx-ext="bny-table">
+                <thead>
+                    <tr><th>类名</th><th>说明</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td><code>bny-load-shade</code></td><td>全屏遮罩层</td></tr>
+                    <tr><td><code>bny-load</code></td><td>旋转加载器，支持 color / size 属性</td></tr>
+                    <tr><td><code>bny-load-ball</code></td><td>弹跳点加载器</td></tr>
+                    <tr><td><code>bny-load-rot</code></td><td>双球旋转加载器</td></tr>
+                    <tr><td><code>bny-load-health</code></td><td>进度条式加载器</td></tr>
+                </tbody>
+            </table>
         </div>
     </div>
     <div class="right-anchor-box hidden-xs col-sm3">
@@ -369,6 +395,7 @@
                     <li class="link" anchor="#n015">样式-血条</li>
                 </ul>
                 <li class="link" anchor="#n02">组件</li>
+                <li class="link" anchor="#n03">API</li>
             </ul>
         </div>
     </div>
