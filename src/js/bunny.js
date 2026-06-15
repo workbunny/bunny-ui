@@ -350,7 +350,7 @@ window.bny = {
             const pageShade = page.parentElement
             minBtn.addEventListener('click', e => {
                 if (minBtn.classList.contains('icon-minus')) {
-                    Object.assign(page.style, { width: '125px', height: 'min-content', bottom: '0', left: `${num * 125}px`, top: 'unset' });
+                    Object.assign(page.style, { width: '125px', height: 'min-content', bottom: '5px', left: `${5 + (num * 125)}px`, top: 'unset' });
                     page.querySelector('.content').style.display = 'none';
                     page.querySelector('.zoom').style.display = 'none';
                     minBtn.classList.remove('icon-minus');
@@ -538,7 +538,7 @@ window.bny = {
         // 页面缩放
         resize(page, width, height, currentX, currentY)
         // 页面最小化
-        minimize(page, num, width, height, currentX, currentY)
+        minimize(page, num - 1, width, height, currentX, currentY)
         // 页面z-index
         zIndex(page)
         return page

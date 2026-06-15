@@ -3962,7 +3962,7 @@
         const pageShade = page2.parentElement;
         minBtn.addEventListener("click", (e) => {
           if (minBtn.classList.contains("icon-minus")) {
-            Object.assign(page2.style, { width: "125px", height: "min-content", bottom: "0", left: `${num2 * 125}px`, top: "unset" });
+            Object.assign(page2.style, { width: "125px", height: "min-content", bottom: "5px", left: `${5 + num2 * 125}px`, top: "unset" });
             page2.querySelector(".content").style.display = "none";
             page2.querySelector(".zoom").style.display = "none";
             minBtn.classList.remove("icon-minus");
@@ -4115,7 +4115,7 @@
       close(page, shade, anim, this.animPlayer);
       drag(page);
       resize(page, width, height, currentX, currentY);
-      minimize(page, num, width, height, currentX, currentY);
+      minimize(page, num - 1, width, height, currentX, currentY);
       zIndex(page);
       return page;
     },
