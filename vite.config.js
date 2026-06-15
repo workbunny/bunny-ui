@@ -53,6 +53,8 @@ const cssFiles = [
   path.resolve(__dirname, 'src/css/anchor.css'),
   path.resolve(__dirname, 'src/css/tooltip.css'),
   path.resolve(__dirname, 'src/css/skeleton.css'),
+  path.resolve(__dirname, 'src/css/breadcrumb.css'),
+  path.resolve(__dirname, 'src/css/avatar.css'),
   // 如需新增CSS文件，直接追加即可：
   // path.resolve(__dirname, 'src/css/style3.css'),
   path.resolve(__dirname, 'src/css/common.css'),

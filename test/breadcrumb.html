@@ -1,0 +1,254 @@
+<div class="bny-row">
+    <div class="text-content-box col-xs12 col-sm9">
+        <div class="text-content">
+            <h1>面包屑导航<div class="bny-tag" color="red">v2.0.5+</div></h1>
+            <hr>
+            <blockquote class="bny-blockquote">
+                面包屑是一种辅助导航组件，用于显示当前页面在站点层级中的位置。纯 CSS 实现，无需 JS。
+            </blockquote>
+
+            <h2 id="n01">基础用法</h2>
+            <div class="bny-card">
+                <div hx-ext="bny-tab">
+                    <ul class="head">
+                        <li>Preview</li>
+                        <li>Code</li>
+                    </ul>
+                    <div class="body">
+                        <div>
+                            <div class="p-24">
+                                <ul class="bny-breadcrumb">
+                                    <li><a href="#">首页</a></li>
+                                    <li><a href="#">组件</a></li>
+                                    <li><a href="#">导航</a></li>
+                                    <li>面包屑</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div>
+                            <pre hx-ext="bny-code">
+&lt;ul class="bny-breadcrumb"&gt;
+    &lt;li&gt;&lt;a href="#"&gt;首页&lt;/a&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;a href="#"&gt;组件&lt;/a&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;a href="#"&gt;导航&lt;/a&gt;&lt;/li&gt;
+    &lt;li&gt;面包屑&lt;/li&gt;
+&lt;/ul&gt;
+                </pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h2 id="n02">分隔符样式</h2>
+            <div class="bny-card">
+                <div hx-ext="bny-tab">
+                    <ul class="head">
+                        <li>Preview</li>
+                        <li>Code</li>
+                    </ul>
+                    <div class="body">
+                        <div>
+                            <div class="p-24">
+                                <p class="fw-medium" style="margin-bottom:8px; font-size:13px; color:var(--black-shallow);">默认 /</p>
+                                <ul class="bny-breadcrumb" style="margin-bottom:24px;">
+                                    <li><a href="#">首页</a></li>
+                                    <li><a href="#">分类</a></li>
+                                    <li>当前页</li>
+                                </ul>
+
+                                <p class="fw-medium" style="margin-bottom:8px; font-size:13px; color:var(--black-shallow);">箭头 ›</p>
+                                <ul class="bny-breadcrumb arrow" style="margin-bottom:24px;">
+                                    <li><a href="#">首页</a></li>
+                                    <li><a href="#">分类</a></li>
+                                    <li>当前页</li>
+                                </ul>
+
+                                <p class="fw-medium" style="margin-bottom:8px; font-size:13px; color:var(--black-shallow);">短线 —</p>
+                                <ul class="bny-breadcrumb dash" style="margin-bottom:24px;">
+                                    <li><a href="#">首页</a></li>
+                                    <li><a href="#">分类</a></li>
+                                    <li>当前页</li>
+                                </ul>
+
+                                <p class="fw-medium" style="margin-bottom:8px; font-size:13px; color:var(--black-shallow);">圆点 •</p>
+                                <ul class="bny-breadcrumb dot">
+                                    <li><a href="#">首页</a></li>
+                                    <li><a href="#">分类</a></li>
+                                    <li>当前页</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div>
+                            <pre hx-ext="bny-code">
+&lt;!-- 斜杠（默认） --&gt;
+&lt;ul class="bny-breadcrumb"&gt;
+    &lt;li&gt;&lt;a href="#"&gt;首页&lt;/a&gt;&lt;/li&gt;
+    &lt;li&gt;当前页&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;!-- 箭头 --&gt;
+&lt;ul class="bny-breadcrumb arrow"&gt;...&lt;/ul&gt;
+
+&lt;!-- 短线 --&gt;
+&lt;ul class="bny-breadcrumb dash"&gt;...&lt;/ul&gt;
+
+&lt;!-- 圆点 --&gt;
+&lt;ul class="bny-breadcrumb dot"&gt;...&lt;/ul&gt;
+                </pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h2 id="n03">带图标</h2>
+            <div class="bny-card">
+                <div hx-ext="bny-tab">
+                    <ul class="head">
+                        <li>Preview</li>
+                        <li>Code</li>
+                    </ul>
+                    <div class="body">
+                        <div>
+                            <div class="p-24">
+                                <ul class="bny-breadcrumb arrow">
+                                    <li><a href="#"><i class="bny-icon icon-home-fill"></i>首页</a></li>
+                                    <li><a href="#"><i class="bny-icon icon-file"></i>文档</a></li>
+                                    <li><a href="#"><i class="bny-icon icon-component"></i>组件</a></li>
+                                    <li>面包屑</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div>
+                            <pre hx-ext="bny-code">
+&lt;ul class="bny-breadcrumb arrow"&gt;
+    &lt;li&gt;&lt;a href="#"&gt;
+        &lt;i class="bny-icon icon-home-fill"&gt;&lt;/i&gt;首页
+    &lt;/a&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;a href="#"&gt;
+        &lt;i class="bny-icon icon-file"&gt;&lt;/i&gt;文档
+    &lt;/a&gt;&lt;/li&gt;
+    &lt;li&gt;面包屑&lt;/li&gt;
+&lt;/ul&gt;
+                </pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h2 id="n04">深层嵌套</h2>
+            <div class="bny-card">
+                <div hx-ext="bny-tab">
+                    <ul class="head">
+                        <li>Preview</li>
+                        <li>Code</li>
+                    </ul>
+                    <div class="body">
+                        <div>
+                            <div class="p-24">
+                                <ul class="bny-breadcrumb arrow">
+                                    <li><a href="#">首页</a></li>
+                                    <li><a href="#">管理后台</a></li>
+                                    <li><a href="#">内容管理</a></li>
+                                    <li><a href="#">文章列表</a></li>
+                                    <li><a href="#">编辑文章</a></li>
+                                    <li>SEO 设置</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div>
+                            <pre hx-ext="bny-code">
+&lt;ul class="bny-breadcrumb arrow"&gt;
+    &lt;li&gt;&lt;a href="#"&gt;首页&lt;/a&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;a href="#"&gt;管理后台&lt;/a&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;a href="#"&gt;内容管理&lt;/a&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;a href="#"&gt;文章列表&lt;/a&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;a href="#"&gt;编辑文章&lt;/a&gt;&lt;/li&gt;
+    &lt;li&gt;SEO 设置&lt;/li&gt;
+&lt;/ul&gt;
+                </pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h2 id="n05">自定义分隔符</h2>
+            <div class="bny-card">
+                <div hx-ext="bny-tab">
+                    <ul class="head">
+                        <li>Preview</li>
+                        <li>Code</li>
+                    </ul>
+                    <div class="body">
+                        <div>
+                            <div class="p-24">
+                                <p style="margin-bottom:12px; font-size:13px; color:var(--black-shallow);">通过 CSS 变量 <code>--bny-sep</code> 自定义分隔符，配合 <code>.custom</code> 类使用。</p>
+                                <ul class="bny-breadcrumb custom" style="--bny-sep: '→'">
+                                    <li><a href="#">首页</a></li>
+                                    <li><a href="#">分类</a></li>
+                                    <li>当前页</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div>
+                            <pre hx-ext="bny-code">
+&lt;ul class="bny-breadcrumb custom" style="--bny-sep: '→'"&gt;
+    &lt;li&gt;&lt;a href="#"&gt;首页&lt;/a&gt;&lt;/li&gt;
+    &lt;li&gt;当前页&lt;/li&gt;
+&lt;/ul&gt;
+                </pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h2 id="n06">API</h2>
+            <h3>CSS 类</h3>
+            <table hx-ext="bny-table">
+                <thead>
+                    <tr>
+                        <th>类名</th>
+                        <th>说明</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>bny-breadcrumb</code></td>
+                        <td>基础类，默认斜杠 / 分隔</td>
+                    </tr>
+                    <tr>
+                        <td><code>.arrow</code></td>
+                        <td>箭头 › 分隔符</td>
+                    </tr>
+                    <tr>
+                        <td><code>.dash</code></td>
+                        <td>短线 — 分隔符</td>
+                    </tr>
+                    <tr>
+                        <td><code>.dot</code></td>
+                        <td>圆点 • 分隔符</td>
+                    </tr>
+                    <tr>
+                        <td><code>.custom</code></td>
+                        <td>配合 <code>style="--bny-sep: '→'"</code> 自定义分隔字符</td>
+                    </tr>
+                </tbody>
+            </table>
+            <h3>规则</h3>
+            <blockquote class="bny-blockquote">
+                最后一项自动加粗、灰色变深、链接不可点（<code>pointer-events: none</code>），表示当前所在位置。
+            </blockquote>
+        </div>
+    </div>
+    <div class="right-anchor-box hidden-xs col-sm3">
+        <div class="right-anchor">
+            <ul hx-ext="bny-anchor" rail>
+                <li class="link" anchor="#n01">基础用法</li>
+                <li class="link" anchor="#n02">分隔符样式</li>
+                <li class="link" anchor="#n03">带图标</li>
+                <li class="link" anchor="#n04">深层嵌套</li>
+                <li class="link" anchor="#n05">自定义分隔符</li>
+                <li class="link" anchor="#n06">API</li>
+            </ul>
+        </div>
+    </div>
+</div>

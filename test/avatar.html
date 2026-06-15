@@ -1,0 +1,394 @@
+<div class="bny-row">
+    <div class="text-content-box col-xs12 col-sm9">
+        <div class="text-content">
+            <h1>头像 & 徽标<div class="bny-tag" color="red">v2.0.5+</div></h1>
+            <hr>
+            <blockquote class="bny-blockquote">
+                头像和徽标是常用的 UI 装饰组件。头像支持图片、文字首字母、状态指示点；徽标支持红点、数字计数、颜色变体。纯 CSS 实现。
+            </blockquote>
+
+            <!-- ==================== Avatar ==================== -->
+
+            <h2 id="n01">头像 — 基础</h2>
+            <div class="bny-card">
+                <div hx-ext="bny-tab">
+                    <ul class="head">
+                        <li>Preview</li>
+                        <li>Code</li>
+                    </ul>
+                    <div class="body">
+                        <div>
+                            <div class="p-24">
+                                <div class="flex gap-12 flex-wrap">
+                                    <div class="bny-avatar" size="xs">A</div>
+                                    <div class="bny-avatar" size="sm">B</div>
+                                    <div class="bny-avatar">C</div>
+                                    <div class="bny-avatar" size="lg">D</div>
+                                    <div class="bny-avatar" size="xl">E</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <pre hx-ext="bny-code">
+&lt;div class="bny-avatar" size="xs"&gt;A&lt;/div&gt;
+&lt;div class="bny-avatar" size="sm"&gt;B&lt;/div&gt;
+&lt;div class="bny-avatar"&gt;C&lt;/div&gt;
+&lt;div class="bny-avatar" size="lg"&gt;D&lt;/div&gt;
+&lt;div class="bny-avatar" size="xl"&gt;E&lt;/div&gt;
+                </pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h2 id="n02">头像 — 图片 & 形状 & 颜色</h2>
+            <div class="bny-card">
+                <div hx-ext="bny-tab">
+                    <ul class="head">
+                        <li>Preview</li>
+                        <li>Code</li>
+                    </ul>
+                    <div class="body">
+                        <div>
+                            <div class="p-24">
+                                <p class="fw-medium" style="margin-bottom:10px; font-size:13px; color:var(--black-shallow);">图片头像</p>
+                                <div class="flex gap-12 flex-wrap" style="margin-bottom:24px;">
+                                    <div class="bny-avatar" size="sm">
+                                        <img src="/bunny.png" alt="avatar">
+                                    </div>
+                                    <div class="bny-avatar">
+                                        <img src="/bunny.png" alt="avatar">
+                                    </div>
+                                    <div class="bny-avatar" size="lg">
+                                        <img src="/bunny.png" alt="avatar">
+                                    </div>
+                                </div>
+
+                                <p class="fw-medium" style="margin-bottom:10px; font-size:13px; color:var(--black-shallow);">方形 <code>shape="square"</code></p>
+                                <div class="flex gap-12 flex-wrap" style="margin-bottom:24px;">
+                                    <div class="bny-avatar" shape="square" size="sm">A</div>
+                                    <div class="bny-avatar" shape="square">B</div>
+                                    <div class="bny-avatar" shape="square" size="lg">C</div>
+                                </div>
+
+                                <p class="fw-medium" style="margin-bottom:10px; font-size:13px; color:var(--black-shallow);">彩色 <code>color="green"</code></p>
+                                <div class="flex gap-12 flex-wrap">
+                                    <div class="bny-avatar" color="green">G</div>
+                                    <div class="bny-avatar" color="blue">B</div>
+                                    <div class="bny-avatar" color="yellow">Y</div>
+                                    <div class="bny-avatar" color="red">R</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <pre hx-ext="bny-code">
+&lt;!-- 图片 --&gt;
+&lt;div class="bny-avatar"&gt;
+    &lt;img src="/bunny.png" alt="avatar"&gt;
+&lt;/div&gt;
+
+&lt;!-- 方形 --&gt;
+&lt;div class="bny-avatar" shape="square"&gt;A&lt;/div&gt;
+
+&lt;!-- 彩色 --&gt;
+&lt;div class="bny-avatar" color="green"&gt;G&lt;/div&gt;
+&lt;div class="bny-avatar" color="blue"&gt;B&lt;/div&gt;
+&lt;div class="bny-avatar" color="yellow"&gt;Y&lt;/div&gt;
+&lt;div class="bny-avatar" color="red"&gt;R&lt;/div&gt;
+                </pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h2 id="n03">头像 — 状态指示</h2>
+            <div class="bny-card">
+                <div hx-ext="bny-tab">
+                    <ul class="head">
+                        <li>Preview</li>
+                        <li>Code</li>
+                    </ul>
+                    <div class="body">
+                        <div>
+                            <div class="p-24">
+                                <div class="flex gap-16 flex-wrap">
+                                    <div class="bny-avatar" size="lg">
+                                        <img src="/bunny.png" alt="avatar">
+                                        <span class="bny-avatar-status online"></span>
+                                    </div>
+                                    <div class="bny-avatar" size="lg">
+                                        <img src="/bunny.png" alt="avatar">
+                                        <span class="bny-avatar-status busy"></span>
+                                    </div>
+                                    <div class="bny-avatar" size="lg">
+                                        <img src="/bunny.png" alt="avatar">
+                                        <span class="bny-avatar-status away"></span>
+                                    </div>
+                                    <div class="bny-avatar" size="lg">
+                                        <img src="/bunny.png" alt="avatar">
+                                        <span class="bny-avatar-status"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <pre hx-ext="bny-code">
+&lt;div class="bny-avatar" size="lg"&gt;
+    &lt;img src="/bunny.png" alt="avatar"&gt;
+    &lt;span class="bny-avatar-status online"&gt;&lt;/span&gt;
+&lt;/div&gt;
+&lt;div class="bny-avatar" size="lg"&gt;
+    &lt;img src="/bunny.png" alt="avatar"&gt;
+    &lt;span class="bny-avatar-status busy"&gt;&lt;/span&gt;
+&lt;/div&gt;
+&lt;div class="bny-avatar" size="lg"&gt;
+    &lt;img src="/bunny.png" alt="avatar"&gt;
+    &lt;span class="bny-avatar-status away"&gt;&lt;/span&gt;
+&lt;/div&gt;
+                </pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h2 id="n04">头像组</h2>
+            <div class="bny-card">
+                <div hx-ext="bny-tab">
+                    <ul class="head">
+                        <li>Preview</li>
+                        <li>Code</li>
+                    </ul>
+                    <div class="body">
+                        <div>
+                            <div class="p-24">
+                                <div class="bny-avatar-group">
+                                    <div class="bny-avatar">+3</div>
+                                    <div class="bny-avatar" color="red">H</div>
+                                    <div class="bny-avatar" color="yellow">I</div>
+                                    <div class="bny-avatar" color="blue">J</div>
+                                    <div class="bny-avatar" color="green">K</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <pre hx-ext="bny-code">
+&lt;div class="bny-avatar-group"&gt;
+    &lt;div class="bny-avatar"&gt;+3&lt;/div&gt;
+    &lt;div class="bny-avatar" color="red"&gt;H&lt;/div&gt;
+    &lt;div class="bny-avatar" color="yellow"&gt;I&lt;/div&gt;
+    &lt;div class="bny-avatar" color="blue"&gt;J&lt;/div&gt;
+    &lt;div class="bny-avatar" color="green"&gt;K&lt;/div&gt;
+&lt;/div&gt;
+                </pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ==================== Badge ==================== -->
+
+            <h2 id="n05">徽标 — 附属在元素上</h2>
+            <div class="bny-card">
+                <div hx-ext="bny-tab">
+                    <ul class="head">
+                        <li>Preview</li>
+                        <li>Code</li>
+                    </ul>
+                    <div class="body">
+                        <div>
+                            <div class="p-24">
+                                <p class="fw-medium" style="margin-bottom:12px; font-size:13px; color:var(--black-shallow);">图标上的徽标</p>
+                                <div class="flex gap-20 flex-wrap" style="margin-bottom:28px;">
+                                    <span class="bny-badge">
+                                        <i class="bny-icon icon-notification" style="font-size:28px; color:var(--black);"></i>
+                                        <span class="bny-badge-dot"></span>
+                                    </span>
+                                    <span class="bny-badge">
+                                        <i class="bny-icon icon-email" style="font-size:28px; color:var(--black);"></i>
+                                        <span class="bny-badge-count">5</span>
+                                    </span>
+                                    <span class="bny-badge">
+                                        <i class="bny-icon icon-message" style="font-size:28px; color:var(--black);"></i>
+                                        <span class="bny-badge-count">99+</span>
+                                    </span>
+                                </div>
+
+                                <p class="fw-medium" style="margin-bottom:12px; font-size:13px; color:var(--black-shallow);">头像上的徽标</p>
+                                <div class="flex gap-16 flex-wrap">
+                                    <span class="bny-badge">
+                                        <div class="bny-avatar" size="lg">
+                                            <img src="/bunny.png" alt="avatar">
+                                        </div>
+                                        <span class="bny-badge-dot"></span>
+                                    </span>
+                                    <span class="bny-badge">
+                                        <div class="bny-avatar" size="lg">
+                                            <img src="/bunny.png" alt="avatar">
+                                        </div>
+                                        <span class="bny-badge-count">3</span>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <pre hx-ext="bny-code">
+&lt;!-- 图标 + 红点 --&gt;
+&lt;span class="bny-badge"&gt;
+    &lt;i class="bny-icon icon-notification"&gt;&lt;/i&gt;
+    &lt;span class="bny-badge-dot"&gt;&lt;/span&gt;
+&lt;/span&gt;
+
+&lt;!-- 图标 + 数字 --&gt;
+&lt;span class="bny-badge"&gt;
+    &lt;i class="bny-icon icon-email"&gt;&lt;/i&gt;
+    &lt;span class="bny-badge-count"&gt;5&lt;/span&gt;
+&lt;/span&gt;
+
+&lt;!-- 头像 + 徽标 --&gt;
+&lt;span class="bny-badge"&gt;
+    &lt;div class="bny-avatar" size="lg"&gt;...&lt;/div&gt;
+    &lt;span class="bny-badge-count"&gt;3&lt;/span&gt;
+&lt;/span&gt;
+                </pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h2 id="n06">徽标 — 独立使用</h2>
+            <div class="bny-card">
+                <div hx-ext="bny-tab">
+                    <ul class="head">
+                        <li>Preview</li>
+                        <li>Code</li>
+                    </ul>
+                    <div class="body">
+                        <div>
+                            <div class="p-24">
+                                <p class="fw-medium" style="margin-bottom:12px; font-size:13px; color:var(--black-shallow);">数字徽标</p>
+                                <div class="flex gap-8 flex-wrap" style="margin-bottom:24px;">
+                                    <span class="bny-badge-standalone">1</span>
+                                    <span class="bny-badge-standalone">99+</span>
+                                    <span class="bny-badge-standalone" size="lg">128</span>
+                                    <span class="bny-badge-standalone" size="lg">999+</span>
+                                </div>
+
+                                <p class="fw-medium" style="margin-bottom:12px; font-size:13px; color:var(--black-shallow);">彩色徽标 <code>color="green"</code></p>
+                                <div class="flex gap-8 flex-wrap" style="margin-bottom:24px;">
+                                    <span class="bny-badge-standalone" color="green">新</span>
+                                    <span class="bny-badge-standalone" color="blue">热</span>
+                                    <span class="bny-badge-standalone" color="yellow">顶</span>
+                                    <span class="bny-badge-standalone" color="red">99+</span>
+                                    <span class="bny-badge-standalone" color="gray">off</span>
+                                </div>
+
+                                <p class="fw-medium" style="margin-bottom:12px; font-size:13px; color:var(--black-shallow);">圆点徽标 <code>.dot</code></p>
+                                <div class="flex gap-8 flex-wrap">
+                                    <span class="bny-badge-standalone dot"></span>
+                                    <span class="bny-badge-standalone dot" color="green"></span>
+                                    <span class="bny-badge-standalone dot" color="blue"></span>
+                                    <span class="bny-badge-standalone dot" color="yellow"></span>
+                                    <span class="bny-badge-standalone dot" color="red"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <pre hx-ext="bny-code">
+&lt;!-- 数字 --&gt;
+&lt;span class="bny-badge-standalone"&gt;1&lt;/span&gt;
+&lt;span class="bny-badge-standalone" size="lg"&gt;128&lt;/span&gt;
+
+&lt;!-- 彩色 --&gt;
+&lt;span class="bny-badge-standalone" color="green"&gt;新&lt;/span&gt;
+&lt;span class="bny-badge-standalone" color="red"&gt;99+&lt;/span&gt;
+
+&lt;!-- 圆点 --&gt;
+&lt;span class="bny-badge-standalone dot" color="red"&gt;&lt;/span&gt;
+&lt;span class="bny-badge-standalone dot" color="green"&gt;&lt;/span&gt;
+                </pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h2 id="n07">API</h2>
+            <h3>Avatar 属性</h3>
+            <table hx-ext="bny-table">
+                <thead>
+                    <tr>
+                        <th>属性</th>
+                        <th>可选值</th>
+                        <th>说明</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>size</code></td>
+                        <td>xs / sm / (default) / lg / xl</td>
+                        <td>24px / 32px / 40px / 56px / 72px</td>
+                    </tr>
+                    <tr>
+                        <td><code>shape</code></td>
+                        <td>square</td>
+                        <td>方形圆角，默认圆形</td>
+                    </tr>
+                    <tr>
+                        <td><code>color</code></td>
+                        <td>green / blue / yellow / red</td>
+                        <td>背景色</td>
+                    </tr>
+                    <tr>
+                        <td><code>bny-avatar-status</code></td>
+                        <td>online / busy / away / (default)</td>
+                        <td>状态指示点，绿 / 红 / 黄 / 灰</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>Badge 类名</h3>
+            <table hx-ext="bny-table">
+                <thead>
+                    <tr>
+                        <th>类名</th>
+                        <th>说明</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>bny-badge</code></td>
+                        <td>附属徽标容器（相对定位），包裹目标元素 + 徽标</td>
+                    </tr>
+                    <tr>
+                        <td><code>bny-badge-dot</code></td>
+                        <td>小红点（8px 圆），默认右上角</td>
+                    </tr>
+                    <tr>
+                        <td><code>bny-badge-count</code></td>
+                        <td>数字徽标，可加 <code>.lg</code> 变大</td>
+                    </tr>
+                    <tr>
+                        <td><code>bny-badge-green</code> 等</td>
+                        <td>徽标颜色变体</td>
+                    </tr>
+                    <tr>
+                        <td><code>bny-badge-standalone</code></td>
+                        <td>独立徽标，可配 <code>color</code> <code>size</code> <code>.dot</code></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="right-anchor-box hidden-xs col-sm3">
+        <div class="right-anchor">
+            <ul hx-ext="bny-anchor" rail>
+                <li class="link" anchor="#n01">头像 — 基础</li>
+                <li class="link" anchor="#n02">头像 — 形状颜色</li>
+                <li class="link" anchor="#n03">头像 — 状态指示</li>
+                <li class="link" anchor="#n04">头像组</li>
+                <li class="link" anchor="#n05">徽标 — 附属</li>
+                <li class="link" anchor="#n06">徽标 — 独立</li>
+                <li class="link" anchor="#n07">API</li>
+            </ul>
+        </div>
+    </div>
+</div>

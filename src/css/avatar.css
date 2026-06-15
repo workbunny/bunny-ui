@@ -1,0 +1,212 @@
+/* ========== Avatar 头像 ========== */
+
+.bny-avatar {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--default-shallow);
+    color: var(--white);
+    font-size: var(--font-size-16);
+    font-weight: var(--font-weight-semibold);
+    overflow: hidden;
+    flex-shrink: 0;
+    user-select: none;
+    position: relative;
+
+    & img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    /* ====== 尺寸 ====== */
+    &[size="xs"]  { width: 24px; height: 24px; font-size: var(--font-size-xs); }
+    &[size="sm"]  { width: 32px; height: 32px; font-size: var(--font-size-sm); }
+    /* md 为默认 40px */
+    &[size="lg"]  { width: 56px; height: 56px; font-size: var(--font-size-20); }
+    &[size="xl"]  { width: 72px; height: 72px; font-size: var(--font-size-24); }
+
+    /* ====== 方形 ====== */
+    &[shape="square"] {
+        border-radius: var(--border-radius-sm);
+
+        &[size="lg"], &[size="xl"] { border-radius: var(--border-radius); }
+    }
+
+    /* ====== 颜色 ====== */
+    &[color="green"]  { background: var(--green); }
+    &[color="blue"]   { background: var(--blue); }
+    &[color="yellow"] { background: var(--yellow); }
+    &[color="red"]    { background: var(--red); }
+
+    /* ====== 状态指示点 ====== */
+    & .bny-avatar-status {
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        border: 2px solid var(--white);
+        background: var(--gray);
+
+        &.online  { background: var(--green); }
+        &.busy    { background: var(--red); }
+        &.away    { background: var(--yellow); }
+
+        &[placement="bottom-left"] {
+            right: auto;
+            left: 0;
+        }
+        &[placement="top-right"] {
+            bottom: auto;
+            top: 0;
+        }
+        &[placement="top-left"] {
+            bottom: auto; right: auto;
+            top: 0; left: 0;
+        }
+    }
+
+    &[size="xs"]  .bny-avatar-status { width: 6px; height: 6px; border-width: 1.5px; }
+    &[size="sm"]  .bny-avatar-status { width: 8px; height: 8px; border-width: 1.5px; }
+    &[size="lg"]  .bny-avatar-status { width: 14px; height: 14px; }
+    &[size="xl"]  .bny-avatar-status { width: 16px; height: 16px; border-width: 3px; }
+}
+
+/* ====== 头像组（重叠排列） ====== */
+.bny-avatar-group {
+    display: inline-flex;
+    flex-direction: row;
+
+    & .bny-avatar {
+        border: 2px solid var(--white);
+        transition: transform var(--transition-fast);
+
+        &:hover {
+            transform: translateY(-2px);
+            z-index: 1;
+        }
+
+        & + .bny-avatar {
+            margin-left: -10px;
+        }
+    }
+}
+
+
+/* ========== Badge 徽标 ========== */
+
+.bny-badge {
+    position: relative;
+    display: inline-flex;
+
+    /* ====== 小红点 ====== */
+    & .bny-badge-dot {
+        position: absolute;
+        top: 0;
+        right: 0;
+        transform: translate(50%, -50%);
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--red);
+        border: 1.5px solid var(--white);
+        z-index: 1;
+    }
+
+    /* ====== 数字/文字徽标 ====== */
+    & .bny-badge-count {
+        position: absolute;
+        top: 0;
+        right: 0;
+        transform: translate(50%, -50%);
+        min-width: 18px;
+        height: 18px;
+        padding: 0 5px;
+        border-radius: 9px;
+        background: var(--red);
+        color: var(--white);
+        font-size: 11px;
+        font-weight: var(--font-weight-semibold);
+        line-height: 18px;
+        text-align: center;
+        border: 1.5px solid var(--white);
+        z-index: 1;
+        white-space: nowrap;
+
+        &.lg {
+            min-width: 22px;
+            height: 22px;
+            padding: 0 7px;
+            border-radius: 11px;
+            font-size: var(--font-size-sm);
+            line-height: 22px;
+        }
+    }
+
+    /* ====== 位置 ====== */
+    & .bny-badge-left {
+        right: auto;
+        left: 0;
+        transform: translate(-50%, -50%);
+    }
+
+    /* 颜色 */
+    & .bny-badge-green  { background: var(--green); }
+    & .bny-badge-blue   { background: var(--blue); }
+    & .bny-badge-yellow { background: var(--yellow); }
+    & .bny-badge-red    { background: var(--red); }
+}
+
+
+/* ========== 独立徽标（不依赖父容器） ========== */
+
+.bny-badge-standalone {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 20px;
+    height: 20px;
+    padding: 0 6px;
+    border-radius: 10px;
+    background: var(--default);
+    color: var(--white);
+    font-size: 11px;
+    font-weight: var(--font-weight-semibold);
+    line-height: 1;
+    white-space: nowrap;
+
+    &[size="lg"] {
+        min-width: 26px;
+        height: 26px;
+        padding: 0 8px;
+        border-radius: 13px;
+        font-size: var(--font-size-sm);
+    }
+
+    /* 圆点模式 */
+    &.dot {
+        min-width: 8px;
+        width: 8px;
+        height: 8px;
+        padding: 0;
+        border-radius: 50%;
+
+        &[size="lg"] {
+            width: 12px;
+            height: 12px;
+            min-width: 12px;
+        }
+    }
+
+    /* 颜色 */
+    &[color="green"]  { background: var(--green); }
+    &[color="blue"]   { background: var(--blue); }
+    &[color="yellow"] { background: var(--yellow); }
+    &[color="red"]    { background: var(--red); }
+    &[color="gray"]   { background: var(--gray); }
+}
