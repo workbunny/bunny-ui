@@ -1,0 +1,318 @@
+/* ========== DatePicker 日期选择器 ========== */
+
+.bny-datepicker-wrap {
+    position: relative;
+    display: inline-block;
+}
+
+.bny-datepicker-panel {
+    position: fixed;
+    z-index: 99998;
+    display: flex;
+    flex-direction: column;
+    background: var(--white);
+    border: 1px solid var(--gray-shallow);
+    border-radius: var(--border-radius-8);
+    box-shadow: var(--box-shadow-055);
+    padding: 14px;
+    width: 292px;
+    user-select: none;
+    font-size: var(--font-size);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-6px);
+    transition: opacity 150ms ease, visibility 150ms ease, transform 150ms ease;
+
+    &.show {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0);
+    }
+
+    /* 纯时间模式：去掉日历部分，紧凑布局 */
+    &.mode-time {
+        width: auto;
+        min-width: auto;
+        padding: 16px 20px;
+
+        & .bny-datepicker-time {
+            border-top: none;
+            margin-top: 0;
+            padding: 4px 0 8px;
+        }
+
+        & .bny-datepicker-footer {
+            border-top: none;
+            margin-top: 0;
+            padding-top: 4px;
+        }
+    }
+}
+
+/* ====== 顶部导航 ====== */
+.bny-datepicker-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 4px 10px;
+
+    & .bny-datepicker-nav {
+        width: 28px;
+        height: 28px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: var(--border-radius-sm);
+        cursor: pointer;
+        color: var(--black-shallow);
+        transition: var(--transition-fast);
+        border: none;
+        background: none;
+        font-size: var(--font-size-16);
+
+        &:hover {
+            background: var(--white-shallow);
+            color: var(--default);
+        }
+
+        &.disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+            &:hover { background: none; color: var(--black-shallow); }
+        }
+    }
+
+    & .bny-datepicker-title {
+        font-weight: var(--font-weight-semibold);
+        color: var(--black);
+        cursor: pointer;
+        padding: 2px 8px;
+        border-radius: var(--border-radius-sm);
+        transition: var(--transition-fast);
+        font-size: var(--font-size);
+
+        &:hover { background: var(--white-shallow); }
+    }
+}
+
+/* ====== 日历表格 ====== */
+.bny-datepicker-calendar {
+    width: 100%;
+    border-collapse: collapse;
+
+    & th {
+        text-align: center;
+        font-weight: var(--font-weight-medium);
+        font-size: 12px;
+        color: var(--black-shallow);
+        padding: 7px 0;
+        width: calc(100% / 7);
+    }
+
+    & td {
+        text-align: center;
+        padding: 0;
+        position: relative;
+    }
+
+    & .day-cell {
+        width: 36px;
+        height: 36px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        cursor: pointer;
+        color: var(--black);
+        font-size: var(--font-size);
+        transition: var(--transition-fast);
+        position: relative;
+
+        &:hover { background: var(--white-shallow); }
+
+        &.other-month { color: var(--gray); }
+
+        &.today {
+            color: var(--default);
+            font-weight: var(--font-weight-semibold);
+            border: 1.5px solid var(--default);
+        }
+
+        &.selected {
+            background: var(--default);
+            color: var(--white);
+            font-weight: var(--font-weight-semibold);
+
+            &.today { border-color: var(--default); }
+        }
+
+        &.in-range {
+            background: var(--default-alpha-10);
+            border-radius: 0;
+            color: var(--default);
+        }
+
+        &.range-start {
+            border-radius: 50% 0 0 50%;
+            background: var(--default);
+            color: var(--white);
+        }
+
+        &.range-end {
+            border-radius: 0 50% 50% 0;
+            background: var(--default);
+            color: var(--white);
+        }
+
+        &.disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+            &:hover { background: none; }
+        }
+    }
+}
+
+/* ====== 时间面板 ====== */
+.bny-datepicker-time {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 10px 0 4px;
+    border-top: 1px solid var(--gray-shallow);
+    margin-top: 10px;
+
+    & .time-col {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 2px;
+    }
+
+    & .time-btn {
+        width: 24px;
+        height: 20px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border: none;
+        background: none;
+        cursor: pointer;
+        color: var(--black-shallow);
+        border-radius: var(--border-radius-sm);
+        font-size: 10px;
+        transition: var(--transition-fast);
+
+        &:hover { background: var(--white-shallow); color: var(--default); }
+    }
+
+    & .time-val {
+        width: 44px;
+        height: 32px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        background: var(--white-shallow);
+        border-radius: var(--border-radius-sm);
+        font-weight: var(--font-weight-semibold);
+        font-size: var(--font-size-16);
+        color: var(--black);
+        cursor: pointer;
+        transition: var(--transition-fast);
+
+        &:focus {
+            outline: none;
+            box-shadow: var(--focus-ring);
+        }
+    }
+
+    & .time-sep {
+        font-size: var(--font-size-16);
+        font-weight: var(--font-weight-semibold);
+        color: var(--black-shallow);
+        padding-top: 20px;
+    }
+}
+
+/* ====== 底部按钮 ====== */
+.bny-datepicker-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    padding-top: 10px;
+    margin-top: 8px;
+    border-top: 1px solid var(--gray-shallow);
+
+    & .bny-datepicker-btn {
+        padding: 4px 14px;
+        border-radius: var(--border-radius-sm);
+        border: 1.5px solid var(--gray-middle);
+        background: var(--white);
+        cursor: pointer;
+        font-size: var(--font-size-sm);
+        color: var(--black-middle);
+        transition: var(--transition-fast);
+
+        &:hover { border-color: var(--default); color: var(--default); }
+
+        &.confirm {
+            background: var(--default);
+            border-color: var(--default);
+            color: var(--white);
+
+            &:hover { background: var(--default-middle); border-color: var(--default-middle); }
+        }
+    }
+}
+
+/* ====== 月份选择面板 ====== */
+.bny-datepicker-months {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 6px;
+    padding: 4px;
+
+    & .month-cell {
+        padding: 10px 0;
+        text-align: center;
+        border-radius: var(--border-radius-sm);
+        cursor: pointer;
+        font-size: var(--font-size-sm);
+        color: var(--black);
+        transition: var(--transition-fast);
+
+        &:hover { background: var(--white-shallow); }
+        &.selected {
+            background: var(--default);
+            color: var(--white);
+            font-weight: var(--font-weight-semibold);
+        }
+    }
+}
+
+/* ====== 年份选择面板 ====== */
+.bny-datepicker-years {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
+    padding: 4px;
+    max-height: 200px;
+    overflow: auto;
+
+    & .year-cell {
+        padding: 8px 0;
+        text-align: center;
+        border-radius: var(--border-radius-sm);
+        cursor: pointer;
+        font-size: var(--font-size-sm);
+        color: var(--black);
+        transition: var(--transition-fast);
+
+        &:hover { background: var(--white-shallow); }
+        &.selected {
+            background: var(--default);
+            color: var(--white);
+            font-weight: var(--font-weight-semibold);
+        }
+    }
+}
