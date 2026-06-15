@@ -56,6 +56,30 @@ html {
     --default-alpha-20: rgba(94, 79, 66, 0.2);
     --default-alpha-30: rgba(94, 79, 66, 0.3);
 
+    /* 彩色半透明变量（按颜色提取） */
+    --green-alpha-10: rgba(5, 150, 105, 0.08);
+    --green-alpha-20: rgba(5, 150, 105, 0.15);
+    --blue-alpha-10: rgba(2, 132, 199, 0.08);
+    --yellow-alpha-10: rgba(217, 119, 6, 0.08);
+    --red-alpha-10: rgba(225, 29, 72, 0.08);
+
+    /* 黑色/白色半透明（用于遮罩/覆盖层） */
+    --black-alpha-05: rgba(0, 0, 0, 0.05);
+    --black-alpha-08: rgba(0, 0, 0, 0.08);
+    --black-alpha-10: rgba(0, 0, 0, 0.1);
+    --black-alpha-15: rgba(0, 0, 0, 0.15);
+    --black-alpha-20: rgba(0, 0, 0, 0.2);
+    --black-alpha-25: rgba(0, 0, 0, 0.25);
+    --black-alpha-30: rgba(0, 0, 0, 0.3);
+
+    --white-alpha-05: rgba(255, 255, 255, 0.05);
+    --white-alpha-08: rgba(255, 255, 255, 0.08);
+    --white-alpha-12: rgba(255, 255, 255, 0.12);
+    --white-alpha-15: rgba(255, 255, 255, 0.15);
+    --white-alpha-20: rgba(255, 255, 255, 0.2);
+    --white-alpha-50: rgba(255, 255, 255, 0.5);
+    --white-alpha-85: rgba(255, 255, 255, 0.85);
+
     /* ========== 字体系统 ========== */
     --font-size: 14px;
     --font-size-xs: 12px;
@@ -163,6 +187,30 @@ html.dark {
     --default-alpha-10: rgba(184, 168, 152, 0.1);
     --default-alpha-20: rgba(184, 168, 152, 0.2);
     --default-alpha-30: rgba(184, 168, 152, 0.3);
+
+    /* 暗黑模式下彩色半透明（色值随主色变更） */
+    --green-alpha-10: rgba(16, 185, 129, 0.08);
+    --green-alpha-20: rgba(16, 185, 129, 0.15);
+    --blue-alpha-10: rgba(56, 189, 248, 0.08);
+    --yellow-alpha-10: rgba(245, 158, 11, 0.08);
+    --red-alpha-10: rgba(251, 113, 133, 0.08);
+
+    /* 暗黑模式下黑白半透明调优 */
+    --black-alpha-05: rgba(255, 255, 255, 0.05);
+    --black-alpha-08: rgba(255, 255, 255, 0.08);
+    --black-alpha-10: rgba(255, 255, 255, 0.1);
+    --black-alpha-15: rgba(255, 255, 255, 0.15);
+    --black-alpha-20: rgba(255, 255, 255, 0.2);
+    --black-alpha-25: rgba(255, 255, 255, 0.25);
+    --black-alpha-30: rgba(255, 255, 255, 0.3);
+
+    --white-alpha-05: rgba(0, 0, 0, 0.05);
+    --white-alpha-08: rgba(0, 0, 0, 0.08);
+    --white-alpha-12: rgba(0, 0, 0, 0.12);
+    --white-alpha-15: rgba(0, 0, 0, 0.15);
+    --white-alpha-20: rgba(0, 0, 0, 0.2);
+    --white-alpha-50: rgba(0, 0, 0, 0.5);
+    --white-alpha-85: rgba(0, 0, 0, 0.85);
 }
 
 html.dark::view-transition-old(*) {
@@ -2977,7 +3025,7 @@ p {
             }
 
             &:hover {
-                background-color: rgba(255, 255, 255, 0.12);
+                background-color: var(--white-alpha-12);
             }
         }
 
@@ -3108,7 +3156,7 @@ p {
             visibility: visible;
             max-height: 0;
             overflow: hidden;
-            background: rgba(0, 0, 0, 0.1);
+            background: var(--black-alpha-10);
 
             & .item {
                 padding: 0 0 0 14px;
@@ -3256,7 +3304,7 @@ p {
     }
 
     &[model~="border"][color="green"]:hover {
-        background-color: rgba(5, 150, 105, 0.1);
+        background-color: var(--green-alpha-10);
         color: var(--green);
     }
 
@@ -3266,7 +3314,7 @@ p {
     }
 
     &[model~="border"][color="blue"]:hover {
-        background-color: rgba(2, 132, 199, 0.1);
+        background-color: var(--blue-alpha-10);
         color: var(--blue);
     }
 
@@ -3276,7 +3324,7 @@ p {
     }
 
     &[model~="border"][color="yellow"]:hover {
-        background-color: rgba(217, 119, 6, 0.1);
+        background-color: var(--yellow-alpha-10);
         color: var(--yellow);
     }
 
@@ -3286,7 +3334,7 @@ p {
     }
 
     &[model~="border"][color="red"]:hover {
-        background-color: rgba(225, 29, 72, 0.1);
+        background-color: var(--red-alpha-10);
         color: var(--red);
     }
 
@@ -3338,7 +3386,7 @@ p {
         transform: none !important;
 
         &:not(:last-child) {
-            border-right: 1px solid rgba(255, 255, 255, 0.15);
+            border-right: 1px solid var(--white-alpha-15);
         }
 
         &:first-child {
@@ -3556,25 +3604,25 @@ p {
 
     &[color="green"] {
         border-color: var(--green);
-        background-color: rgba(5, 150, 105, 0.08);
+        background-color: var(--green-alpha-10);
         color: var(--green);
     }
 
     &[color="yellow"] {
         border-color: var(--yellow);
-        background-color: rgba(217, 119, 6, 0.08);
+        background-color: var(--yellow-alpha-10);
         color: var(--yellow);
     }
 
     &[color="red"] {
         border-color: var(--red);
-        background-color: rgba(225, 29, 72, 0.08);
+        background-color: var(--red-alpha-10);
         color: var(--red);
     }
 
     &[color="blue"] {
         border-color: var(--blue);
-        background-color: rgba(2, 132, 199, 0.08);
+        background-color: var(--blue-alpha-10);
         color: var(--blue);
     }
 }
@@ -3615,7 +3663,7 @@ p {
     display: flex;
     justify-content: center;
     align-items: center;
-    background: rgba(0, 0, 0, 0.3);
+    background: var(--black-alpha-30);
     backdrop-filter: blur(4px);
 }
 
@@ -3662,7 +3710,7 @@ p {
     display: flex;
     align-items: center;
     justify-content: center;
-    background: rgba(0, 0, 0, 0.25);
+    background: var(--black-alpha-25);
     backdrop-filter: blur(4px);
 }
 
@@ -3978,7 +4026,7 @@ hr {
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.15);
+    background-color: var(--black-alpha-15);
     backdrop-filter: blur(2px);
     z-index: 9999;
     display: flex;
@@ -4322,6 +4370,7 @@ table[hx-ext~="bny-table"] {
 [hx-ext~="bny-tab"] {
     width: 100%;
     position: relative;
+    max-width: 100%;
 
     & > .btn-left,
     & > .btn-right,
@@ -4695,7 +4744,7 @@ table[hx-ext~="bny-table"] {
         background-color: var(--white);
         border-radius: 50%;
         transition: var(--transition);
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+        box-shadow: 0 1px 3px var(--black-alpha-15);
     }
 
     &:checked {
@@ -5540,7 +5589,7 @@ table[hx-ext~="bny-table"] {
             justify-content: center;
             cursor: pointer;
             border-radius: var(--border-radius);
-            background: rgba(255, 255, 255, 0.12);
+            background: var(--white-alpha-12);
             transition: var(--transition);
             backdrop-filter: blur(8px);
 
@@ -5550,7 +5599,7 @@ table[hx-ext~="bny-table"] {
             }
 
             &:hover {
-                background: rgba(255, 255, 255, 0.2);
+                background: var(--white-alpha-20);
             }
         }
 
@@ -5573,7 +5622,7 @@ table[hx-ext~="bny-table"] {
                 border-radius: var(--border-radius);
                 overflow: hidden;
                 background: var(--white-common);
-                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+                box-shadow: 0 2px 8px var(--black-alpha-15);
 
                 & img {
                     width: 100%;
@@ -5593,7 +5642,7 @@ table[hx-ext~="bny-table"] {
             cursor: pointer;
             transition: var(--transition);
             white-space: nowrap;
-            color: rgba(255, 255, 255, 0.85);
+            color: var(--white-alpha-85);
             padding: 12px 20px;
             display: flex;
             align-items: center;
@@ -5618,14 +5667,14 @@ table[hx-ext~="bny-table"] {
                 top: 50%;
                 width: 2px;
                 height: 0%;
-                background: rgba(255, 255, 255, 0.5);
+                background: var(--white-alpha-50);
                 border-radius: var(--border-radius-full);
                 transition: var(--transition);
             }
 
             &:hover {
                 color: var(--white-common);
-                background: rgba(255, 255, 255, 0.08);
+                background: var(--white-alpha-08);
 
                 &::before {
                     top: 6px;
@@ -5768,7 +5817,7 @@ table[hx-ext~="bny-table"] {
             }
 
             &[collapsed] .sub-menu {
-                background: rgba(0, 0, 0, 0.2) !important;
+                background: var(--black-alpha-20) !important;
             }
         }
     }
@@ -5791,7 +5840,7 @@ table[hx-ext~="bny-table"] {
             }
 
             &[collapsed] .sub-menu {
-                background: rgba(0, 0, 0, 0.2) !important;
+                background: var(--black-alpha-20) !important;
             }
         }
     }
@@ -5814,7 +5863,7 @@ table[hx-ext~="bny-table"] {
             }
 
             &[collapsed] .sub-menu {
-                background: rgba(0, 0, 0, 0.2) !important;
+                background: var(--black-alpha-20) !important;
             }
         }
     }
@@ -5837,7 +5886,7 @@ table[hx-ext~="bny-table"] {
             }
 
             &[collapsed] .sub-menu {
-                background: rgba(0, 0, 0, 0.2) !important;
+                background: var(--black-alpha-20) !important;
             }
         }
     }
@@ -5910,7 +5959,7 @@ table[hx-ext~="bny-table"] {
 
         &[collapsed] {
             & > .head {
-                border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+                border-bottom: 1px solid var(--white-alpha-15);
 
                 & > .toggle-btn i {
                     transform: rotate(180deg);
@@ -5928,7 +5977,7 @@ table[hx-ext~="bny-table"] {
                 & .sub-menu {
                     position: unset;
                     box-shadow: none;
-                    background: rgba(0, 0, 0, 0.15);
+                    background: var(--black-alpha-15);
                     transform: none;
                     border-radius: 0;
                 }
@@ -5950,7 +5999,7 @@ table[hx-ext~="bny-table"] {
         align-items: center;
         justify-content: space-between;
         width: 100%;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+        border-bottom: 1px solid var(--white-alpha-12);
 
         & > .toggle-btn {
             display: flex;
@@ -6007,7 +6056,7 @@ table[hx-ext~="bny-table"] {
 
     & .sub-menu {
         position: unset;
-        background: rgba(0, 0, 0, 0.15);
+        background: var(--black-alpha-15);
         box-shadow: none;
         transform: none;
         border-radius: 0;
@@ -6151,6 +6200,863 @@ table[hx-ext~="bny-table"] {
         border-radius: var(--border-radius-full);
         z-index: 1;
         transition: top 0.2s ease, height 0.2s ease;
+    }
+}
+/* ========== Tooltip 气泡提示 ========== */
+.bny-tooltip {
+    position: fixed;
+    z-index: 99999;
+    max-width: 280px;
+    padding: 6px 12px;
+    background: var(--black);
+    color: var(--white);
+    font-size: var(--font-size-sm);
+    line-height: 1.5;
+    border-radius: var(--border-radius-sm);
+    word-wrap: break-word;
+    pointer-events: none;
+    opacity: 0;
+    transform: scale(0.92);
+    transition: opacity 150ms ease, transform 150ms ease;
+
+    &.visible {
+        opacity: 1;
+        transform: scale(1);
+    }
+
+    /* ====== 箭头 ====== */
+    &::after {
+        content: "";
+        position: absolute;
+        width: 0;
+        height: 0;
+        border: 5px solid transparent;
+    }
+
+    /* ====== 上方 ====== */
+    &.top,
+    &.top-start,
+    &.top-end {
+        &::after {
+            top: 100%;
+            border-top-color: var(--black);
+            border-bottom: none;
+        }
+    }
+
+    &.top::after       { left: 50%; transform: translateX(-50%); }
+    &.top-start::after { left: 12px; }
+    &.top-end::after   { right: 12px; }
+
+    /* ====== 下方 ====== */
+    &.bottom,
+    &.bottom-start,
+    &.bottom-end {
+        &::after {
+            bottom: 100%;
+            border-bottom-color: var(--black);
+            border-top: none;
+        }
+    }
+
+    &.bottom::after       { left: 50%; transform: translateX(-50%); }
+    &.bottom-start::after { left: 12px; }
+    &.bottom-end::after   { right: 12px; }
+
+    /* ====== 左侧 ====== */
+    &.left,
+    &.left-start,
+    &.left-end {
+        &::after {
+            left: 100%;
+            border-left-color: var(--black);
+            border-right: none;
+        }
+    }
+
+    &.left::after       { top: 50%; transform: translateY(-50%); }
+    &.left-start::after { top: 8px; }
+    &.left-end::after   { bottom: 8px; }
+
+    /* ====== 右侧 ====== */
+    &.right,
+    &.right-start,
+    &.right-end {
+        &::after {
+            right: 100%;
+            border-right-color: var(--black);
+            border-left: none;
+        }
+    }
+
+    &.right::after       { top: 50%; transform: translateY(-50%); }
+    &.right-start::after { top: 8px; }
+    &.right-end::after   { bottom: 8px; }
+}
+/* ========== Skeleton 骨架屏 ========== */
+
+/* ---- 流光动画 ---- */
+@keyframes bny-skeleton-shimmer {
+    0%   { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+}
+
+@keyframes bny-skeleton-pulse {
+    0%, 100% { opacity: 1; }
+    50%      { opacity: 0.4; }
+}
+
+/* ---- 基础骨架块 ---- */
+.bny-skeleton {
+    display: block;
+    background: linear-gradient(90deg,
+        var(--gray-shallow) 25%,
+        var(--white-middle) 37%,
+        var(--gray-shallow) 63%
+    );
+    background-size: 200% 100%;
+    animation: bny-skeleton-shimmer 1.6s ease-in-out infinite;
+    border-radius: var(--border-radius-sm);
+    color: transparent;
+    user-select: none;
+    pointer-events: none;
+    line-height: 1;
+
+    /* 静默模式：仅脉冲，不流光 */
+    &.quiet {
+        background: var(--gray-shallow);
+        animation: bny-skeleton-pulse 1.8s ease-in-out infinite;
+    }
+}
+
+/* ---- 形状变体 ---- */
+
+/* 圆形（头像） */
+.bny-skeleton-circle {
+    border-radius: 50%;
+}
+
+/* 文本行 */
+.bny-skeleton-text {
+    height: 14px;
+    margin-bottom: 10px;
+
+    &:last-child { margin-bottom: 0; }
+
+    /* 短行（通常放最后一行，模拟不完整的末行） */
+    &.short { width: 60%; }
+}
+
+/* 标题 */
+.bny-skeleton-title {
+    height: 22px;
+    margin-bottom: 14px;
+    width: 45%;
+}
+
+/* 头像 */
+.bny-skeleton-avatar {
+    width: 40px;
+    height: 40px;
+
+    &.lg  { width: 56px; height: 56px; }
+    &.sm  { width: 32px; height: 32px; }
+    &.xs  { width: 24px; height: 24px; }
+}
+
+/* 图片占位 */
+.bny-skeleton-image {
+    width: 100%;
+    height: 160px;
+    border-radius: var(--border-radius);
+}
+
+/* 按钮 */
+.bny-skeleton-button {
+    width: 100px;
+    height: 36px;
+    border-radius: var(--border-radius);
+
+    &.lg  { width: 140px; height: 44px; }
+    &.sm  { width: 72px;  height: 28px; }
+}
+
+/* ---- 组合布局 ---- */
+
+/* 文章段落：标题 + 三行文本 */
+.bny-skeleton-paragraph {
+    & .bny-skeleton-title { margin-bottom: 16px; }
+    & .bny-skeleton-text  { margin-bottom: 10px; }
+    & .bny-skeleton-text:last-child { width: 70%; }
+}
+
+/* 列表项：小圆 + 两行文本 */
+.bny-skeleton-list {
+    display: flex;
+    gap: 14px;
+    margin-bottom: 18px;
+
+    &:last-child { margin-bottom: 0; }
+
+    & .bny-skeleton-avatar { flex-shrink: 0; }
+    & .bny-skeleton-text  { flex: 1; margin-bottom: 0; margin-top: 6px; }
+}
+
+/* 卡片骨架：图片 + 标题 + 文本 */
+.bny-skeleton-card {
+    overflow: hidden;
+
+    & .bny-skeleton-image  { margin-bottom: 16px; }
+    & .bny-skeleton-title  { margin-bottom: 12px; }
+    & .bny-skeleton-text   { margin-bottom: 8px; }
+    & .bny-skeleton-text:last-child { width: 55%; }
+}
+
+/* 表格骨架：表头 + 4 行 */
+.bny-skeleton-table {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+
+    & .row {
+        display: flex;
+        gap: 16px;
+        padding: 12px 0;
+        border-bottom: 1px solid var(--gray-shallow);
+
+        & .bny-skeleton-text {
+            flex: 1;
+            margin-bottom: 0;
+            border-radius: 2px;
+        }
+    }
+
+    & .row.header {
+        border-bottom-width: 2px;
+
+        & .bny-skeleton-text {
+            height: 12px;
+            width: auto;
+        }
+    }
+}
+/* ========== Breadcrumb 面包屑导航 ========== */
+
+.bny-breadcrumb {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    padding: 0;
+    margin: 0;
+    list-style: none;
+    font-size: var(--font-size);
+    line-height: 1.5;
+
+    & > li {
+        display: inline-flex;
+        align-items: center;
+        color: var(--black-shallow);
+        transition: color var(--transition-fast);
+        white-space: nowrap;
+
+        & a {
+            color: var(--black-shallow);
+            text-decoration: none;
+            transition: color var(--transition-fast);
+        }
+
+        & a:hover {
+            color: var(--default);
+            text-decoration: none;
+        }
+
+        &:last-child {
+            color: var(--black);
+            font-weight: var(--font-weight-medium);
+
+            & a {
+                color: var(--black);
+                pointer-events: none;
+                cursor: default;
+            }
+        }
+
+        /* 图标 */
+        & i {
+            margin-right: 4px;
+            font-size: var(--font-size-16);
+        }
+    }
+
+    /* ====== 分隔符 ====== */
+
+    /* 斜杠 (默认) */
+    & > li + li::before {
+        content: "/";
+        margin: 0 8px;
+        color: var(--gray-middle);
+        font-weight: var(--font-weight-normal);
+    }
+
+    /* 箭头 */
+    &.arrow > li + li::before {
+        content: "›";
+        margin: 0 10px;
+        font-size: var(--font-size-18);
+        line-height: 1;
+        position: relative;
+        top: 1px;
+    }
+
+    /* 短线 */
+    &.dash > li + li::before {
+        content: "—";
+        margin: 0 10px;
+        font-size: 12px;
+    }
+
+    /* 点 */
+    &.dot > li + li::before {
+        content: "•";
+        margin: 0 10px;
+        font-size: 8px;
+        vertical-align: middle;
+    }
+
+    /* 自定义分隔符（通过 --bny-sep 变量，配合 style="--bny-sep: '→'"） */
+    &.custom > li + li::before {
+        content: var(--bny-sep);
+    }
+}
+/* ========== Avatar 头像 ========== */
+
+.bny-avatar {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--default-shallow);
+    color: var(--white);
+    font-size: var(--font-size-16);
+    font-weight: var(--font-weight-semibold);
+    overflow: hidden;
+    flex-shrink: 0;
+    user-select: none;
+    position: relative;
+
+    & img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    /* ====== 尺寸 ====== */
+    &[size="xs"]  { width: 24px; height: 24px; font-size: var(--font-size-xs); }
+    &[size="sm"]  { width: 32px; height: 32px; font-size: var(--font-size-sm); }
+    /* md 为默认 40px */
+    &[size="lg"]  { width: 56px; height: 56px; font-size: var(--font-size-20); }
+    &[size="xl"]  { width: 72px; height: 72px; font-size: var(--font-size-24); }
+
+    /* ====== 方形 ====== */
+    &[shape="square"] {
+        border-radius: var(--border-radius-sm);
+
+        &[size="lg"], &[size="xl"] { border-radius: var(--border-radius); }
+    }
+
+    /* ====== 颜色 ====== */
+    &[color="green"]  { background: var(--green); }
+    &[color="blue"]   { background: var(--blue); }
+    &[color="yellow"] { background: var(--yellow); }
+    &[color="red"]    { background: var(--red); }
+
+    /* ====== 状态指示点 ====== */
+    & .bny-avatar-status {
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        border: 2px solid var(--white);
+        background: var(--gray);
+
+        &.online  { background: var(--green); }
+        &.busy    { background: var(--red); }
+        &.away    { background: var(--yellow); }
+
+        &[placement="bottom-left"] {
+            right: auto;
+            left: 0;
+        }
+        &[placement="top-right"] {
+            bottom: auto;
+            top: 0;
+        }
+        &[placement="top-left"] {
+            bottom: auto; right: auto;
+            top: 0; left: 0;
+        }
+    }
+
+    &[size="xs"]  .bny-avatar-status { width: 6px; height: 6px; border-width: 1.5px; }
+    &[size="sm"]  .bny-avatar-status { width: 8px; height: 8px; border-width: 1.5px; }
+    &[size="lg"]  .bny-avatar-status { width: 14px; height: 14px; }
+    &[size="xl"]  .bny-avatar-status { width: 16px; height: 16px; border-width: 3px; }
+}
+
+/* ====== 头像组（重叠排列） ====== */
+.bny-avatar-group {
+    display: inline-flex;
+    flex-direction: row;
+
+    & .bny-avatar {
+        border: 2px solid var(--white);
+        transition: transform var(--transition-fast);
+
+        &:hover {
+            transform: translateY(-2px);
+            z-index: 1;
+        }
+
+        & + .bny-avatar {
+            margin-left: -10px;
+        }
+    }
+}
+
+
+/* ========== Badge 徽标 ========== */
+
+.bny-badge {
+    position: relative;
+    display: inline-flex;
+
+    /* ====== 小红点 ====== */
+    & .bny-badge-dot {
+        position: absolute;
+        top: 0;
+        right: 0;
+        transform: translate(50%, -50%);
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--red);
+        border: 1.5px solid var(--white);
+        z-index: 1;
+    }
+
+    /* ====== 数字/文字徽标 ====== */
+    & .bny-badge-count {
+        position: absolute;
+        top: 0;
+        right: 0;
+        transform: translate(50%, -50%);
+        min-width: 18px;
+        height: 18px;
+        padding: 0 5px;
+        border-radius: 9px;
+        background: var(--red);
+        color: var(--white);
+        font-size: 11px;
+        font-weight: var(--font-weight-semibold);
+        line-height: 18px;
+        text-align: center;
+        border: 1.5px solid var(--white);
+        z-index: 1;
+        white-space: nowrap;
+
+        &.lg {
+            min-width: 22px;
+            height: 22px;
+            padding: 0 7px;
+            border-radius: 11px;
+            font-size: var(--font-size-sm);
+            line-height: 22px;
+        }
+    }
+
+    /* ====== 位置 ====== */
+    & .bny-badge-left {
+        right: auto;
+        left: 0;
+        transform: translate(-50%, -50%);
+    }
+
+    /* 颜色 */
+    & .bny-badge-green  { background: var(--green); }
+    & .bny-badge-blue   { background: var(--blue); }
+    & .bny-badge-yellow { background: var(--yellow); }
+    & .bny-badge-red    { background: var(--red); }
+}
+
+
+/* ========== 独立徽标（不依赖父容器） ========== */
+
+.bny-badge-standalone {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 20px;
+    height: 20px;
+    padding: 0 6px;
+    border-radius: 10px;
+    background: var(--default);
+    color: var(--white);
+    font-size: 11px;
+    font-weight: var(--font-weight-semibold);
+    line-height: 1;
+    white-space: nowrap;
+
+    &[size="lg"] {
+        min-width: 26px;
+        height: 26px;
+        padding: 0 8px;
+        border-radius: 13px;
+        font-size: var(--font-size-sm);
+    }
+
+    /* 圆点模式 */
+    &.dot {
+        min-width: 8px;
+        width: 8px;
+        height: 8px;
+        padding: 0;
+        border-radius: 50%;
+
+        &[size="lg"] {
+            width: 12px;
+            height: 12px;
+            min-width: 12px;
+        }
+    }
+
+    /* 颜色 */
+    &[color="green"]  { background: var(--green); }
+    &[color="blue"]   { background: var(--blue); }
+    &[color="yellow"] { background: var(--yellow); }
+    &[color="red"]    { background: var(--red); }
+    &[color="gray"]   { background: var(--gray); }
+}
+/* ========== DatePicker 日期选择器 ========== */
+
+.bny-datepicker-wrap {
+    position: relative;
+    display: inline-block;
+}
+
+.bny-datepicker-panel {
+    position: fixed;
+    z-index: 99998;
+    display: flex;
+    flex-direction: column;
+    background: var(--white);
+    border: 1px solid var(--gray-shallow);
+    border-radius: var(--border-radius-8);
+    box-shadow: var(--box-shadow-055);
+    padding: 14px;
+    width: 292px;
+    user-select: none;
+    font-size: var(--font-size);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-6px);
+    transition: opacity 150ms ease, visibility 150ms ease, transform 150ms ease;
+
+    &.show {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0);
+    }
+
+    /* 纯时间模式：去掉日历部分，紧凑布局 */
+    &.mode-time {
+        width: auto;
+        min-width: auto;
+        padding: 16px 20px;
+
+        & .bny-datepicker-time {
+            border-top: none;
+            margin-top: 0;
+            padding: 4px 0 8px;
+        }
+
+        & .bny-datepicker-footer {
+            border-top: none;
+            margin-top: 0;
+            padding-top: 4px;
+        }
+    }
+}
+
+/* ====== 顶部导航 ====== */
+.bny-datepicker-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 4px 10px;
+
+    & .bny-datepicker-nav {
+        width: 28px;
+        height: 28px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: var(--border-radius-sm);
+        cursor: pointer;
+        color: var(--black-shallow);
+        transition: var(--transition-fast);
+        border: none;
+        background: none;
+        font-size: var(--font-size-16);
+
+        &:hover {
+            background: var(--white-shallow);
+            color: var(--default);
+        }
+
+        &.disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+            &:hover { background: none; color: var(--black-shallow); }
+        }
+    }
+
+    & .bny-datepicker-title {
+        font-weight: var(--font-weight-semibold);
+        color: var(--black);
+        cursor: pointer;
+        padding: 2px 8px;
+        border-radius: var(--border-radius-sm);
+        transition: var(--transition-fast);
+        font-size: var(--font-size);
+
+        &:hover { background: var(--white-shallow); }
+    }
+}
+
+/* ====== 日历表格 ====== */
+.bny-datepicker-calendar {
+    width: 100%;
+    border-collapse: collapse;
+
+    & th {
+        text-align: center;
+        font-weight: var(--font-weight-medium);
+        font-size: 12px;
+        color: var(--black-shallow);
+        padding: 7px 0;
+        width: calc(100% / 7);
+    }
+
+    & td {
+        text-align: center;
+        padding: 0;
+        position: relative;
+    }
+
+    & .day-cell {
+        width: 36px;
+        height: 36px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        cursor: pointer;
+        color: var(--black);
+        font-size: var(--font-size);
+        transition: var(--transition-fast);
+        position: relative;
+
+        &:hover { background: var(--white-shallow); }
+
+        &.other-month { color: var(--gray); }
+
+        &.today {
+            color: var(--default);
+            font-weight: var(--font-weight-semibold);
+            border: 1.5px solid var(--default);
+        }
+
+        &.selected {
+            background: var(--default);
+            color: var(--white);
+            font-weight: var(--font-weight-semibold);
+
+            &.today { border-color: var(--default); }
+        }
+
+        &.in-range {
+            background: var(--default-alpha-10);
+            border-radius: 0;
+            color: var(--default);
+        }
+
+        &.range-start {
+            border-radius: 50% 0 0 50%;
+            background: var(--default);
+            color: var(--white);
+        }
+
+        &.range-end {
+            border-radius: 0 50% 50% 0;
+            background: var(--default);
+            color: var(--white);
+        }
+
+        &.disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+            &:hover { background: none; }
+        }
+    }
+}
+
+/* ====== 时间面板 ====== */
+.bny-datepicker-time {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 10px 0 4px;
+    border-top: 1px solid var(--gray-shallow);
+    margin-top: 10px;
+
+    & .time-col {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 2px;
+    }
+
+    & .time-btn {
+        width: 24px;
+        height: 20px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border: none;
+        background: none;
+        cursor: pointer;
+        color: var(--black-shallow);
+        border-radius: var(--border-radius-sm);
+        font-size: 10px;
+        transition: var(--transition-fast);
+
+        &:hover { background: var(--white-shallow); color: var(--default); }
+    }
+
+    & .time-val {
+        width: 44px;
+        height: 32px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        background: var(--white-shallow);
+        border-radius: var(--border-radius-sm);
+        font-weight: var(--font-weight-semibold);
+        font-size: var(--font-size-16);
+        color: var(--black);
+        cursor: pointer;
+        transition: var(--transition-fast);
+
+        &:focus {
+            outline: none;
+            box-shadow: var(--focus-ring);
+        }
+    }
+
+    & .time-sep {
+        font-size: var(--font-size-16);
+        font-weight: var(--font-weight-semibold);
+        color: var(--black-shallow);
+        padding-top: 20px;
+    }
+}
+
+/* ====== 底部按钮 ====== */
+.bny-datepicker-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    padding-top: 10px;
+    margin-top: 8px;
+    border-top: 1px solid var(--gray-shallow);
+
+    & .bny-datepicker-btn {
+        padding: 4px 14px;
+        border-radius: var(--border-radius-sm);
+        border: 1.5px solid var(--gray-middle);
+        background: var(--white);
+        cursor: pointer;
+        font-size: var(--font-size-sm);
+        color: var(--black-middle);
+        transition: var(--transition-fast);
+
+        &:hover { border-color: var(--default); color: var(--default); }
+
+        &.confirm {
+            background: var(--default);
+            border-color: var(--default);
+            color: var(--white);
+
+            &:hover { background: var(--default-middle); border-color: var(--default-middle); }
+        }
+    }
+}
+
+/* ====== 月份选择面板 ====== */
+.bny-datepicker-months {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 6px;
+    padding: 4px;
+
+    & .month-cell {
+        padding: 10px 0;
+        text-align: center;
+        border-radius: var(--border-radius-sm);
+        cursor: pointer;
+        font-size: var(--font-size-sm);
+        color: var(--black);
+        transition: var(--transition-fast);
+
+        &:hover { background: var(--white-shallow); }
+        &.selected {
+            background: var(--default);
+            color: var(--white);
+            font-weight: var(--font-weight-semibold);
+        }
+    }
+}
+
+/* ====== 年份选择面板 ====== */
+.bny-datepicker-years {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
+    padding: 4px;
+    max-height: 200px;
+    overflow: auto;
+
+    & .year-cell {
+        padding: 8px 0;
+        text-align: center;
+        border-radius: var(--border-radius-sm);
+        cursor: pointer;
+        font-size: var(--font-size-sm);
+        color: var(--black);
+        transition: var(--transition-fast);
+
+        &:hover { background: var(--white-shallow); }
+        &.selected {
+            background: var(--default);
+            color: var(--white);
+            font-weight: var(--font-weight-semibold);
+        }
     }
 }
 /* ========== 公共样式 ========== */

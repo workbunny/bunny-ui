@@ -1,0 +1,225 @@
+<div class="bny-row">
+    <div class="text-content-box col-xs12 col-sm9">
+        <div class="text-content">
+            <h1>DatePicker 日期选择器<div class="bny-tag" color="red">v2.0.5+</div></h1>
+            <hr>
+            <blockquote class="bny-blockquote">
+                日期选择器支持多种模式：日期、日期+时间、纯时间、年月、年份选择，以及两个输入框联动的时间区间。
+            </blockquote>
+
+            <h2 id="n01">日期模式</h2>
+            <div class="bny-card">
+                <div hx-ext="bny-tab">
+                    <ul class="head">
+                        <li>Preview</li>
+                        <li>Code</li>
+                    </ul>
+                    <div class="body">
+                        <div>
+                            <div class="p-24">
+                                <input class="bny-input" data-picker="date" placeholder="选择日期" style="max-width:260px;">
+                            </div>
+                        </div>
+                        <div>
+                            <pre hx-ext="bny-code">
+&lt;input class="bny-input" data-picker="date" placeholder="选择日期"&gt;
+                </pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h2 id="n02">日期 + 时间</h2>
+            <div class="bny-card">
+                <div hx-ext="bny-tab">
+                    <ul class="head">
+                        <li>Preview</li>
+                        <li>Code</li>
+                    </ul>
+                    <div class="body">
+                        <div>
+                            <div class="p-24">
+                                <input class="bny-input" data-picker="datetime" placeholder="选择日期时间" style="max-width:300px;">
+                            </div>
+                        </div>
+                        <div>
+                            <pre hx-ext="bny-code">
+&lt;input class="bny-input" data-picker="datetime" placeholder="选择日期时间"&gt;
+                </pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h2 id="n03">纯时间</h2>
+            <div class="bny-card">
+                <div hx-ext="bny-tab">
+                    <ul class="head">
+                        <li>Preview</li>
+                        <li>Code</li>
+                    </ul>
+                    <div class="body">
+                        <div>
+                            <div class="p-24">
+                                <input class="bny-input" data-picker="time" placeholder="选择时间" style="max-width:220px;">
+                            </div>
+                        </div>
+                        <div>
+                            <pre hx-ext="bny-code">
+&lt;input class="bny-input" data-picker="time" placeholder="选择时间"&gt;
+                </pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h2 id="n04">年月选择</h2>
+            <div class="bny-card">
+                <div hx-ext="bny-tab">
+                    <ul class="head">
+                        <li>Preview</li>
+                        <li>Code</li>
+                    </ul>
+                    <div class="body">
+                        <div>
+                            <div class="p-24">
+                                <input class="bny-input" data-picker="year-month" placeholder="选择年月" style="max-width:220px;">
+                            </div>
+                        </div>
+                        <div>
+                            <pre hx-ext="bny-code">
+&lt;input class="bny-input" data-picker="year-month" placeholder="选择年月"&gt;
+                </pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h2 id="n05">时间区间</h2>
+            <div class="bny-card">
+                <div hx-ext="bny-tab">
+                    <ul class="head">
+                        <li>Preview</li>
+                        <li>Code</li>
+                    </ul>
+                    <div class="body">
+                        <div>
+                            <div class="p-24">
+                                <p style="margin-bottom:12px; font-size:13px; color:var(--black-shallow);">两个输入框联动，开始时间不会晚于结束时间。</p>
+                                <div class="flex gap-12" style="align-items: center; max-width: 520px;">
+                                    <input class="bny-input" id="range-start" data-picker="date" data-picker-range="#range-end" placeholder="开始日期" style="flex:1;">
+                                    <span style="color:var(--black-shallow);">至</span>
+                                    <input class="bny-input" id="range-end" data-picker="date" data-picker-range="#range-start" placeholder="结束日期" style="flex:1;">
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <pre hx-ext="bny-code">
+&lt;div&gt;
+    &lt;input class="bny-input" id="range-start"
+        data-picker="date" data-picker-range="#range-end"
+        placeholder="开始日期"&gt;
+    &lt;span&gt;至&lt;/span&gt;
+    &lt;input class="bny-input" id="range-end"
+        data-picker="date" data-picker-range="#range-start"
+        placeholder="结束日期"&gt;
+&lt;/div&gt;
+                </pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h2 id="n06">配合 HTMX 使用</h2>
+            <div class="bny-card">
+                <div hx-ext="bny-tab">
+                    <ul class="head">
+                        <li>Preview</li>
+                        <li>Code</li>
+                    </ul>
+                    <div class="body">
+                        <div>
+                            <div class="p-24">
+                                <p style="margin-bottom:16px; font-size:13px; color:var(--black-shallow);">
+                                    通过 HTMX 动态加载日期选择器，验证 <code>htmx.onLoad</code> 自动初始化。
+                                </p>
+                                <button class="bny-btn" hx-get="/test/data/datepicker-demo.html"
+                                    hx-target="#dp-dynamic" hx-swap="innerHTML"
+                                    style="margin-bottom:20px;">
+                                    加载表单
+                                </button>
+                                <div id="dp-dynamic" style="border:1px dashed var(--gray-middle); border-radius:var(--border-radius); padding:16px; min-height:60px;">
+                                    <span style="color:var(--black-shallow); font-size:var(--font-size-sm);">点击按钮加载日期选择器…</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <pre hx-ext="bny-code">
+&lt;button class="bny-btn" hx-get="/test/data/datepicker-demo.html"
+    hx-target="#demo" hx-swap="innerHTML"&gt;
+    加载表单
+&lt;/button&gt;
+&lt;div id="demo"&gt;&lt;/div&gt;
+                </pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h2 id="n07">API</h2>
+            <h3>属性</h3>
+            <table hx-ext="bny-table">
+                <thead>
+                    <tr>
+                        <th>属性</th>
+                        <th>值</th>
+                        <th>说明</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>data-picker</code></td>
+                        <td>date</td>
+                        <td>日期选择（默认）</td>
+                    </tr>
+                    <tr>
+                        <td><code>data-picker</code></td>
+                        <td>datetime</td>
+                        <td>日期 + 时分秒</td>
+                    </tr>
+                    <tr>
+                        <td><code>data-picker</code></td>
+                        <td>time</td>
+                        <td>纯时间选择</td>
+                    </tr>
+                    <tr>
+                        <td><code>data-picker</code></td>
+                        <td>year-month</td>
+                        <td>年月选择</td>
+                    </tr>
+                    <tr>
+                        <td><code>data-picker-range</code></td>
+                        <td>#other-id</td>
+                        <td>区间联动，指向另一个 input 的 CSS 选择器</td>
+                    </tr>
+                </tbody>
+            </table>
+            <blockquote class="bny-blockquote">
+                点击标题可在日历 → 月份 → 年份面板之间切换。点击"今天"快捷填充当前时间，💜 确认生效，取消关闭。
+            </blockquote>
+        </div>
+    </div>
+    <div class="right-anchor-box hidden-xs col-sm3">
+        <div class="right-anchor">
+            <ul hx-ext="bny-anchor" rail>
+                <li class="link" anchor="#n01">日期</li>
+                <li class="link" anchor="#n02">日期+时间</li>
+                <li class="link" anchor="#n03">纯时间</li>
+                <li class="link" anchor="#n04">年月</li>
+                <li class="link" anchor="#n05">时间区间</li>
+                <li class="link" anchor="#n06">配合 HTMX</li>
+                <li class="link" anchor="#n07">API</li>
+            </ul>
+        </div>
+    </div>
+</div>

@@ -63,7 +63,6 @@ window.bny = {
      */
     escapeChars: function (str) {
         if (typeof str !== 'string') {
-            q
             str = String(str);
         }
         // 定义需要转义的特殊字符映射表

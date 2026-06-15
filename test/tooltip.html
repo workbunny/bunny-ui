@@ -1,0 +1,210 @@
+<div class="bny-row">
+    <div class="text-content-box col-xs12 col-sm9">
+        <div class="text-content">
+            <h1>气泡提示</h1>
+            <hr>
+            <blockquote class="bny-blockquote">
+                气泡提示是一种悬浮提示组件，支持 12 方向自动定位，通过 <code>bny-tip</code> 属性即可使用。
+            </blockquote>
+
+            <h2 id="n01">基础用法</h2>
+            <div class="bny-card">
+                <div hx-ext="bny-tab">
+                    <ul class="head">
+                        <li>Preview</li>
+                        <li>Code</li>
+                    </ul>
+                    <div class="body">
+                        <div>
+                            <div class="p-12">
+                                <button class="bny-btn" bny-tip="这是一个基础提示">鼠标悬停</button>
+                                <span bny-tip="内联元素也支持" style="margin-left:12px; cursor:default; border-bottom:1px dashed var(--black-shallow);">悬停我</span>
+                            </div>
+                        </div>
+                        <div>
+                            <pre hx-ext="bny-code">
+&lt;button class="bny-btn" bny-tip="这是一个基础提示"&gt;鼠标悬停&lt;/button&gt;
+&lt;span bny-tip="内联元素也支持"&gt;悬停我&lt;/span&gt;
+                </pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h2 id="n02">12 方向自动定位</h2>
+            <div class="bny-card">
+                <div hx-ext="bny-tab">
+                    <ul class="head">
+                        <li>Preview</li>
+                        <li>Code</li>
+                    </ul>
+                    <div class="body">
+                        <div>
+                            <div class="p-12">
+                                <p bny-tip="上方居中的提示气泡，会自动根据视口空间调整方向" class="tc"
+                                    style="padding:24px; background:var(--white-shallow); margin-bottom:12px; border-radius:var(--border-radius); cursor:default;">
+                                    顶部元素
+                                </p>
+                                <div class="bny-row" gap="10" style="margin-bottom:12px;">
+                                    <div class="col-xs6">
+                                        <p bny-tip="左侧对齐的气泡提示，当上方空间不足时会自动切换到下方"
+                                            style="padding:24px; background:var(--white-shallow); border-radius:var(--border-radius); cursor:default; text-align:center;">
+                                            左区元素
+                                        </p>
+                                    </div>
+                                    <div class="col-xs6">
+                                        <p bny-tip="右侧对齐的提示，这是一段比较长的文本用来测试气泡的自动换行和最大宽度效果"
+                                            style="padding:24px; background:var(--white-shallow); border-radius:var(--border-radius); cursor:default; text-align:center;">
+                                            右区元素（长文本）
+                                        </p>
+                                    </div>
+                                </div>
+                                <p bny-tip="底部元素会自动向上弹出气泡" class="tc"
+                                    style="padding:24px; background:var(--white-shallow); border-radius:var(--border-radius); cursor:default;">
+                                    底部元素
+                                </p>
+                            </div>
+                        </div>
+                        <div>
+                            <pre hx-ext="bny-code">
+&lt;p bny-tip="上方居中的提示气泡"&gt;顶部元素&lt;/p&gt;
+
+&lt;p bny-tip="左侧对齐的气泡提示，当上方空间不足时会自动切换到下方"&gt;左区元素&lt;/p&gt;
+
+&lt;p bny-tip="右侧对齐的提示，这是一段比较长的文本用来测试气泡的自动换行和最大宽度效果"&gt;右区元素（长文本）&lt;/p&gt;
+
+&lt;p bny-tip="底部元素会自动向上弹出气泡"&gt;底部元素&lt;/p&gt;
+                </pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h2 id="n03">键盘无障碍</h2>
+            <div class="bny-card">
+                <div hx-ext="bny-tab">
+                    <ul class="head">
+                        <li>Preview</li>
+                        <li>Code</li>
+                    </ul>
+                    <div class="body">
+                        <div>
+                            <div class="p-12">
+                                <p>使用 Tab 键聚焦下方输入框和按钮：</p>
+                                <input class="bny-input" bny-tip="请输入您的用户名" placeholder="聚焦我试试" style="margin-bottom:12px;">
+                                <br>
+                                <button class="bny-btn" bny-tip="点击或聚焦均可触发提示" style="margin-top:8px;">可聚焦按钮</button>
+                            </div>
+                        </div>
+                        <div>
+                            <pre hx-ext="bny-code">
+&lt;input class="bny-input" bny-tip="请输入您的用户名" placeholder="聚焦我试试"&gt;
+
+&lt;button class="bny-btn" bny-tip="点击或聚焦均可触发提示"&gt;可聚焦按钮&lt;/button&gt;
+                </pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h2 id="n04">HTMX 动态内容</h2>
+            <div class="bny-card">
+                <div hx-ext="bny-tab">
+                    <ul class="head">
+                        <li>Preview</li>
+                        <li>Code</li>
+                    </ul>
+                    <div class="body">
+                        <div>
+                            <div class="p-12">
+                                <button class="bny-btn" hx-get="/test/data/tooltip-demo.html" hx-target="#tooltip-dynamic" hx-swap="innerHTML">
+                                    加载动态内容
+                                </button>
+                                <div id="tooltip-dynamic" style="margin-top:16px;"></div>
+                            </div>
+                        </div>
+                        <div>
+                            <pre hx-ext="bny-code">
+&lt;button class="bny-btn" hx-get="/test/data/tooltip-demo.html"
+    hx-target="#tooltip-dynamic" hx-swap="innerHTML"&gt;
+    加载动态内容
+&lt;/button&gt;
+&lt;div id="tooltip-dynamic"&gt;&lt;/div&gt;
+                </pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h2 id="n05">API</h2>
+            <h3>标签属性</h3>
+            <table hx-ext="bny-table">
+                <thead>
+                    <tr>
+                        <th>属性</th>
+                        <th>默认值</th>
+                        <th>必须</th>
+                        <th>描述</th>
+                        <th>版本</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>bny-tip</td>
+                        <td>—</td>
+                        <td>是</td>
+                        <td>气泡提示的文本内容</td>
+                        <td><div class="bny-tag" color="red">v2.0.5+</div></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>定位规则</h3>
+            <table hx-ext="bny-table">
+                <thead>
+                    <tr>
+                        <th>方向</th>
+                        <th>变体</th>
+                        <th>描述</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>top</td>
+                        <td>top / top-start / top-end</td>
+                        <td>上方居中 / 上方左对齐 / 上方右对齐</td>
+                    </tr>
+                    <tr>
+                        <td>bottom</td>
+                        <td>bottom / bottom-start / bottom-end</td>
+                        <td>下方居中 / 下方左对齐 / 下方右对齐</td>
+                    </tr>
+                    <tr>
+                        <td>left</td>
+                        <td>left / left-start / left-end</td>
+                        <td>左侧居中 / 左侧上对齐 / 左侧下对齐</td>
+                    </tr>
+                    <tr>
+                        <td>right</td>
+                        <td>right / right-start / right-end</td>
+                        <td>右侧居中 / 右侧上对齐 / 右侧下对齐</td>
+                    </tr>
+                </tbody>
+            </table>
+            <blockquote class="bny-blockquote">
+                优先级：top → bottom → left → right。JS 引擎实时计算视口空间，自动选定最佳方向。
+            </blockquote>
+        </div>
+    </div>
+    <div class="right-anchor-box hidden-xs col-sm3">
+        <div class="right-anchor">
+            <ul hx-ext="bny-anchor" rail>
+                <li class="link" anchor="#n01">基础用法</li>
+                <li class="link" anchor="#n02">12 方向自动定位</li>
+                <li class="link" anchor="#n03">键盘无障碍</li>
+                <li class="link" anchor="#n04">HTMX 动态内容</li>
+                <li class="link" anchor="#n05">API</li>
+            </ul>
+        </div>
+    </div>
+</div>

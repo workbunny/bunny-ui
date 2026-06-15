@@ -1,0 +1,88 @@
+/* ========== Breadcrumb 面包屑导航 ========== */
+
+.bny-breadcrumb {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    padding: 0;
+    margin: 0;
+    list-style: none;
+    font-size: var(--font-size);
+    line-height: 1.5;
+
+    & > li {
+        display: inline-flex;
+        align-items: center;
+        color: var(--black-shallow);
+        transition: color var(--transition-fast);
+        white-space: nowrap;
+
+        & a {
+            color: var(--black-shallow);
+            text-decoration: none;
+            transition: color var(--transition-fast);
+        }
+
+        & a:hover {
+            color: var(--default);
+            text-decoration: none;
+        }
+
+        &:last-child {
+            color: var(--black);
+            font-weight: var(--font-weight-medium);
+
+            & a {
+                color: var(--black);
+                pointer-events: none;
+                cursor: default;
+            }
+        }
+
+        /* 图标 */
+        & i {
+            margin-right: 4px;
+            font-size: var(--font-size-16);
+        }
+    }
+
+    /* ====== 分隔符 ====== */
+
+    /* 斜杠 (默认) */
+    & > li + li::before {
+        content: "/";
+        margin: 0 8px;
+        color: var(--gray-middle);
+        font-weight: var(--font-weight-normal);
+    }
+
+    /* 箭头 */
+    &.arrow > li + li::before {
+        content: "›";
+        margin: 0 10px;
+        font-size: var(--font-size-18);
+        line-height: 1;
+        position: relative;
+        top: 1px;
+    }
+
+    /* 短线 */
+    &.dash > li + li::before {
+        content: "—";
+        margin: 0 10px;
+        font-size: 12px;
+    }
+
+    /* 点 */
+    &.dot > li + li::before {
+        content: "•";
+        margin: 0 10px;
+        font-size: 8px;
+        vertical-align: middle;
+    }
+
+    /* 自定义分隔符（通过 --bny-sep 变量，配合 style="--bny-sep: '→'"） */
+    &.custom > li + li::before {
+        content: var(--bny-sep);
+    }
+}

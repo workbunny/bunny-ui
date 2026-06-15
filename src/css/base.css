@@ -56,6 +56,30 @@ html {
     --default-alpha-20: rgba(94, 79, 66, 0.2);
     --default-alpha-30: rgba(94, 79, 66, 0.3);
 
+    /* 彩色半透明变量（按颜色提取） */
+    --green-alpha-10: rgba(5, 150, 105, 0.08);
+    --green-alpha-20: rgba(5, 150, 105, 0.15);
+    --blue-alpha-10: rgba(2, 132, 199, 0.08);
+    --yellow-alpha-10: rgba(217, 119, 6, 0.08);
+    --red-alpha-10: rgba(225, 29, 72, 0.08);
+
+    /* 黑色/白色半透明（用于遮罩/覆盖层） */
+    --black-alpha-05: rgba(0, 0, 0, 0.05);
+    --black-alpha-08: rgba(0, 0, 0, 0.08);
+    --black-alpha-10: rgba(0, 0, 0, 0.1);
+    --black-alpha-15: rgba(0, 0, 0, 0.15);
+    --black-alpha-20: rgba(0, 0, 0, 0.2);
+    --black-alpha-25: rgba(0, 0, 0, 0.25);
+    --black-alpha-30: rgba(0, 0, 0, 0.3);
+
+    --white-alpha-05: rgba(255, 255, 255, 0.05);
+    --white-alpha-08: rgba(255, 255, 255, 0.08);
+    --white-alpha-12: rgba(255, 255, 255, 0.12);
+    --white-alpha-15: rgba(255, 255, 255, 0.15);
+    --white-alpha-20: rgba(255, 255, 255, 0.2);
+    --white-alpha-50: rgba(255, 255, 255, 0.5);
+    --white-alpha-85: rgba(255, 255, 255, 0.85);
+
     /* ========== 字体系统 ========== */
     --font-size: 14px;
     --font-size-xs: 12px;
@@ -163,6 +187,30 @@ html.dark {
     --default-alpha-10: rgba(184, 168, 152, 0.1);
     --default-alpha-20: rgba(184, 168, 152, 0.2);
     --default-alpha-30: rgba(184, 168, 152, 0.3);
+
+    /* 暗黑模式下彩色半透明（色值随主色变更） */
+    --green-alpha-10: rgba(16, 185, 129, 0.08);
+    --green-alpha-20: rgba(16, 185, 129, 0.15);
+    --blue-alpha-10: rgba(56, 189, 248, 0.08);
+    --yellow-alpha-10: rgba(245, 158, 11, 0.08);
+    --red-alpha-10: rgba(251, 113, 133, 0.08);
+
+    /* 暗黑模式下黑白半透明调优 */
+    --black-alpha-05: rgba(255, 255, 255, 0.05);
+    --black-alpha-08: rgba(255, 255, 255, 0.08);
+    --black-alpha-10: rgba(255, 255, 255, 0.1);
+    --black-alpha-15: rgba(255, 255, 255, 0.15);
+    --black-alpha-20: rgba(255, 255, 255, 0.2);
+    --black-alpha-25: rgba(255, 255, 255, 0.25);
+    --black-alpha-30: rgba(255, 255, 255, 0.3);
+
+    --white-alpha-05: rgba(0, 0, 0, 0.05);
+    --white-alpha-08: rgba(0, 0, 0, 0.08);
+    --white-alpha-12: rgba(0, 0, 0, 0.12);
+    --white-alpha-15: rgba(0, 0, 0, 0.15);
+    --white-alpha-20: rgba(0, 0, 0, 0.2);
+    --white-alpha-50: rgba(0, 0, 0, 0.5);
+    --white-alpha-85: rgba(0, 0, 0, 0.85);
 }
 
 html.dark::view-transition-old(*) {

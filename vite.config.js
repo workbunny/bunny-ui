@@ -22,6 +22,8 @@ const jsFiles = [
   path.resolve(__dirname, 'src/js/tab.js'),
   path.resolve(__dirname, 'src/js/nav.js'),
   path.resolve(__dirname, 'src/js/anchor.js'),
+  path.resolve(__dirname, 'src/js/tooltip.js'),
+  path.resolve(__dirname, 'src/js/datepicker.js'),
   // 如需新增JS文件，直接追加即可：
   // path.resolve(__dirname, 'src/js/entry3.js'),
 ];
@@ -50,6 +52,11 @@ const cssFiles = [
   path.resolve(__dirname, 'src/css/grid.css'),
   path.resolve(__dirname, 'src/css/nav.css'),
   path.resolve(__dirname, 'src/css/anchor.css'),
+  path.resolve(__dirname, 'src/css/tooltip.css'),
+  path.resolve(__dirname, 'src/css/skeleton.css'),
+  path.resolve(__dirname, 'src/css/breadcrumb.css'),
+  path.resolve(__dirname, 'src/css/avatar.css'),
+  path.resolve(__dirname, 'src/css/datepicker.css'),
   // 如需新增CSS文件，直接追加即可：
   // path.resolve(__dirname, 'src/css/style3.css'),
   path.resolve(__dirname, 'src/css/common.css'),
