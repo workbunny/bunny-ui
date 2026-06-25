@@ -7064,6 +7064,65 @@ table[hx-ext~="bny-table"] {
         }
     }
 }
+/* ========== BackTop 回到顶部 ========== */
+
+.bny-backtop {
+    position: fixed;
+    right: 24px;
+    bottom: 80px;
+    z-index: 999;
+    width: 42px;
+    height: 42px;
+    border-radius: var(--border-radius-full);
+    background: var(--white);
+    color: var(--black-shallow);
+    border: 1px solid var(--gray-shallow);
+    box-shadow: var(--box-shadow-005);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(20px);
+    transition: opacity var(--transition), visibility var(--transition), transform var(--transition);
+
+    /* 图标尺寸 */
+    & .bny-icon {
+        font-size: 20px;
+    }
+
+    &:hover {
+        color: var(--blue);
+        border-color: var(--blue-shallow);
+        box-shadow: var(--box-shadow-hover-005);
+    }
+
+    &:active {
+        transform: translateY(18px) scale(0.95);
+    }
+
+    /* 显示状态 */
+    &.visible {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0);
+    }
+}
+
+/* ========== 暗黑模式 ========== */
+
+html.dark .bny-backtop {
+    background: rgba(255, 255, 255, 0.06);
+    color: var(--white-alpha-50);
+    border-color: rgba(255, 255, 255, 0.06);
+
+    &:hover {
+        color: var(--blue-middle);
+        border-color: rgba(56, 189, 248, 0.3);
+        background: rgba(255, 255, 255, 0.08);
+    }
+}
 /* ========== 公共样式 ========== */
 
 /* ---------- 布局 ---------- */
