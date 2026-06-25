@@ -62,7 +62,7 @@
             else if (el.closest('.time-btn.down')) self.handleTimeBtn(el.closest('.time-btn.down'));
             else if (el.closest('.bny-datepicker-btn.today')) self.selectToday();
             else if (el.closest('.bny-datepicker-btn.confirm')) self.confirm();
-            else if (el.closest('.bny-datepicker-btn.cancel')) self.close();
+            else if (el.closest('.bny-datepicker-btn.cancel')) self.cancel();
         });
     };
 
@@ -102,7 +102,7 @@
         document.addEventListener('click', function (e) {
             if (!self.panel.classList.contains('show')) return;
             if (!self.panel.contains(e.target) && e.target !== self.input && (!self.rangeInput || e.target !== self.rangeInput)) {
-                self.confirm();
+                self.close();
             }
         });
         window.addEventListener('resize', function () { if (self.panel.classList.contains('show')) self.position(); });
@@ -139,6 +139,12 @@
     DatePicker.prototype.close = function () {
         this.panel.classList.remove('show');
         currentPanel = null;
+    };
+
+    DatePicker.prototype.cancel = function () {
+        // 取消操作：清空输入框
+        this.input.value = '';
+        this.close();
     };
 
     DatePicker.prototype.confirm = function () {
@@ -343,14 +349,16 @@
         if (this.needsMonthOnly()) {
             // year-month mode: select month too
         }
-        if (!this.needsTime()) this.confirm(); else this.render();
+        // 所有模式统一只高亮选中，不自动确认，由"确定/取消"按钮决定
+        this.render();
     };
 
     DatePicker.prototype.handleMonthClick = function (el) {
         this.temp.m = +el.getAttribute('data-month');
         if (this.needsMonthOnly()) {
             this.temp.y = this.viewYear;
-            this.confirm();
+            // 不再自动确认，由"确定/取消"按钮决定
+            this.render();
         } else {
             this.viewMonth = this.temp.m;
             this.viewType = 'calendar';

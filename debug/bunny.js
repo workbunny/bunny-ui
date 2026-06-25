@@ -4470,13 +4470,13 @@
           code.innerHTML = getCode(evt.target, content.trim());
           evt.target.appendChild(code);
           const copyBtn = document.createElement("a");
-          copyBtn.setAttribute("title", "复制代码");
+          copyBtn.setAttribute("title", "copy code");
           copyBtn.classList.add("copy-btn");
           copyBtn.innerHTML = '<i class="bny-icon icon-file-copy"></i>';
           evt.target.appendChild(copyBtn);
           copyBtn.addEventListener("click", (e) => {
             navigator.clipboard.writeText(code.textContent);
-            bny.alert("复制成功");
+            bny.alert("copy success");
           });
         }
       }
@@ -5091,7 +5091,7 @@
         else if (el.closest(".time-btn.down")) self.handleTimeBtn(el.closest(".time-btn.down"));
         else if (el.closest(".bny-datepicker-btn.today")) self.selectToday();
         else if (el.closest(".bny-datepicker-btn.confirm")) self.confirm();
-        else if (el.closest(".bny-datepicker-btn.cancel")) self.close();
+        else if (el.closest(".bny-datepicker-btn.cancel")) self.cancel();
       });
     };
     DatePicker.prototype.buildHTML = function() {
@@ -5133,7 +5133,7 @@
       document.addEventListener("click", function(e) {
         if (!self.panel.classList.contains("show")) return;
         if (!self.panel.contains(e.target) && e.target !== self.input && (!self.rangeInput || e.target !== self.rangeInput)) {
-          self.confirm();
+          self.close();
         }
       });
       window.addEventListener("resize", function() {
@@ -5167,6 +5167,10 @@
     DatePicker.prototype.close = function() {
       this.panel.classList.remove("show");
       currentPanel = null;
+    };
+    DatePicker.prototype.cancel = function() {
+      this.input.value = "";
+      this.close();
     };
     DatePicker.prototype.confirm = function() {
       if (!this.panel.classList.contains("show")) return;
@@ -5363,14 +5367,13 @@
       this.temp.m = this.viewMonth;
       this.temp.d = day;
       if (this.needsMonthOnly()) ;
-      if (!this.needsTime()) this.confirm();
-      else this.render();
+      this.render();
     };
     DatePicker.prototype.handleMonthClick = function(el) {
       this.temp.m = +el.getAttribute("data-month");
       if (this.needsMonthOnly()) {
         this.temp.y = this.viewYear;
-        this.confirm();
+        this.render();
       } else {
         this.viewMonth = this.temp.m;
         this.viewType = "calendar";
