@@ -61,6 +61,63 @@ table[hx-ext~="bny-table"] {
     }
 }
 
+/* ========== 表头排序 ========== */
+
+table[hx-ext~="bny-table"] th.sortable {
+    cursor: pointer;
+    user-select: none;
+    position: relative;
+    padding-right: 28px;
+
+    &::after {
+        content: "";
+        position: absolute;
+        right: 8px;
+        top: 50%;
+        width: 0;
+        height: 0;
+        border-left: 4px solid transparent;
+        border-right: 4px solid transparent;
+        border-top: 5px solid var(--white-alpha-50);
+        transform: translateY(-50%);
+        opacity: 0.4;
+    }
+
+    &::before {
+        content: "";
+        position: absolute;
+        right: 8px;
+        top: 50%;
+        width: 0;
+        height: 0;
+        border-left: 4px solid transparent;
+        border-right: 4px solid transparent;
+        border-bottom: 5px solid var(--white-alpha-50);
+        transform: translateY(calc(-50% - 8px));
+        opacity: 0.4;
+    }
+
+    /* 升序：上箭头高亮 */
+    &.sort-asc::before {
+        border-bottom-color: var(--white-common);
+        opacity: 1;
+    }
+
+    &.sort-asc::after {
+        opacity: 0.2;
+    }
+
+    /* 降序：下箭头高亮 */
+    &.sort-desc::after {
+        border-top-color: var(--white-common);
+        opacity: 1;
+    }
+
+    &.sort-desc::before {
+        opacity: 0.2;
+    }
+}
+
 /* ========== 移动端响应式表格 ========== */
 @media screen and (max-width: 767px) {
     table[hx-ext~="bny-table"] {

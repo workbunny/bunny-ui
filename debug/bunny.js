@@ -4500,30 +4500,122 @@
     }
   });
   htmx.defineExtension("bny-table", {
+    // 事件
     onEvent: function(name, evt) {
+      function sortVal(td) {
+        return td.getAttribute("data-sort-val") || td.textContent.trim();
+      }
+      function sortRows(tbody, colIndex, type, asc) {
+        const rows = Array.from(tbody.querySelectorAll("tr"));
+        const dir = asc ? 1 : -1;
+        rows.sort(function(a, b) {
+          const tdA = a.querySelectorAll("td")[colIndex];
+          const tdB = b.querySelectorAll("td")[colIndex];
+          if (!tdA || !tdB) return 0;
+          if (type === "number") {
+            const va2 = parseFloat(sortVal(tdA)) || 0;
+            const vb2 = parseFloat(sortVal(tdB)) || 0;
+            return (va2 - vb2) * dir;
+          }
+          const va = sortVal(tdA);
+          const vb = sortVal(tdB);
+          if (va < vb) return -1 * dir;
+          if (va > vb) return 1 * dir;
+          return 0;
+        });
+        rows.forEach(function(row) {
+          tbody.appendChild(row);
+        });
+      }
+      function initSort(table) {
+        let ths = table.querySelectorAll("thead th[data-sort]");
+        if (!ths.length) {
+          ths = table.querySelectorAll("thead th[sortable]");
+        }
+        if (!ths.length) return;
+        ths.forEach(function(th) {
+          const colIndex = Array.from(th.parentElement.querySelectorAll("th")).indexOf(th);
+          th.style.cursor = "pointer";
+          th.setAttribute("title", "点击排序");
+          th.classList.add("sortable");
+          th.addEventListener("click", function() {
+            const isAsc = th.classList.contains("sort-asc");
+            ths.forEach(function(t) {
+              t.classList.remove("sort-asc", "sort-desc");
+            });
+            if (isAsc) {
+              th.classList.add("sort-desc");
+            } else {
+              th.classList.add("sort-asc");
+            }
+            const type = th.getAttribute("data-sort") || "string";
+            const asc = th.classList.contains("sort-asc");
+            const tbody = table.querySelector("tbody");
+            if (tbody) {
+              sortRows(tbody, colIndex, type, asc);
+            }
+          });
+        });
+      }
+      function initLabels(table) {
+        const titles = [];
+        const ths = table.querySelectorAll("th");
+        for (let i = 0; i < ths.length; i++) {
+          titles.push(ths[i].textContent);
+        }
+        const tbodyTrs = table.querySelectorAll("tbody tr");
+        for (let j = 0; j < tbodyTrs.length; j++) {
+          const tds = tbodyTrs[j].querySelectorAll("td");
+          for (let k = 0; k < tds.length; k++) {
+            tds[k].setAttribute("label", titles[tds[k].cellIndex] || "");
+          }
+        }
+      }
       if (name === "htmx:afterProcessNode") {
         if (bny.hasExtName(evt.target, "bny-table")) {
-          let titles = [];
-          let ths = evt.target.querySelectorAll("th");
-          for (let th of ths) {
-            titles.push(th.textContent);
-          }
-          const tbody_trs = evt.target.querySelectorAll("tbody tr");
-          for (let tr of tbody_trs) {
-            let tds = tr.querySelectorAll("td");
-            for (let td of tds) {
-              td.setAttribute("label", titles[td.cellIndex]);
-            }
-          }
+          initLabels(evt.target);
+          initSort(evt.target);
+          return false;
         } else if (evt.target.tagName === "TR") {
-          let tds = evt.target.querySelectorAll("td");
-          for (let td of tds) {
-            let label = evt.target.parentElement.parentElement.querySelector(`th:nth-child(${td.cellIndex + 1})`).textContent;
-            td.setAttribute("label", label);
+          const tds = evt.target.querySelectorAll("td");
+          for (let i = 0; i < tds.length; i++) {
+            const label = evt.target.parentElement.parentElement.querySelector("th:nth-child(" + (tds[i].cellIndex + 1) + ")");
+            tds[i].setAttribute("label", label ? label.textContent : "");
           }
         }
       }
       return true;
+    },
+    // 响应转换
+    transformResponse: function(text, xhr, elt) {
+      function buildTable(data) {
+        const cols = data.cols || [];
+        const rows = data.rows || [];
+        const color = data.color || "";
+        let h = "";
+        h += '<table hx-ext="bny-table"' + (color ? ' color="' + color + '"' : "") + ">";
+        h += "<thead><tr>";
+        cols.forEach(function(col) {
+          h += "<th>" + bny.escapeChars(col) + "</th>";
+        });
+        h += "</tr></thead>";
+        h += "<tbody>";
+        rows.forEach(function(row) {
+          h += "<tr>";
+          row.forEach(function(cell) {
+            h += "<td>" + bny.escapeChars(String(cell)) + "</td>";
+          });
+          h += "</tr>";
+        });
+        h += "</tbody></table>";
+        return h;
+      }
+      if (xhr.getResponseHeader("Content-Type") && xhr.getResponseHeader("Content-Type").includes("application/json")) {
+        const json = JSON.parse(xhr.responseText);
+        const data = json.data || json;
+        return buildTable(data);
+      }
+      return text;
     }
   });
   htmx.defineExtension("bny-tab", {
@@ -4891,7 +4983,8 @@
   (function() {
     var tip = null;
     var current = null;
-    var timer = null;
+    var showTimer = null;
+    var hideTimer = null;
     var gap = 6;
     var DIRS = [
       ["top", "top-start", "top-end"],
@@ -4905,20 +4998,47 @@
       tip.className = "bny-tooltip";
       document.body.appendChild(tip);
     }
+    function attr(elt, attr2) {
+      return elt.getAttribute(attr2) || null;
+    }
     function show(elt) {
       ensure();
-      clearTimeout(timer);
+      clearTimeout(showTimer);
+      clearTimeout(hideTimer);
+      var delay = parseInt(attr(elt, "data-tip-delay")) || 0;
+      showTimer = setTimeout(function() {
+        _show(elt);
+      }, delay);
+    }
+    function _show(elt) {
       current = elt;
-      var text = elt.getAttribute("bny-tip");
-      if (!text) return;
-      tip.textContent = text;
+      var html = attr(elt, "bny-tip-html");
+      var text = attr(elt, "bny-tip");
+      if (html) {
+        tip.innerHTML = html;
+      } else if (text) {
+        tip.textContent = text;
+      } else {
+        return;
+      }
+      var width = attr(elt, "data-tip-width");
+      tip.style.maxWidth = width ? width : "";
+      var theme = attr(elt, "data-tip-theme");
+      var themeClass = theme === "light" ? "bny-tooltip-light" : "";
+      tip.className = "bny-tooltip " + themeClass;
       tip.style.display = "block";
       tip.style.visibility = "hidden";
       tip.offsetHeight;
       var tw = tip.offsetWidth, th = tip.offsetHeight;
-      var best = pick(elt, tw, th);
+      var placement = attr(elt, "data-tip-placement");
+      var best;
+      if (placement) {
+        best = placement;
+      } else {
+        best = pick(elt, tw, th);
+      }
+      tip.classList.add(best);
       var r = elt.getBoundingClientRect();
-      tip.className = "bny-tooltip " + best;
       var p = pos(best, r, tw, th);
       tip.style.left = p.x + "px";
       tip.style.top = p.y + "px";
@@ -4928,14 +5048,20 @@
       tip.classList.add("visible");
     }
     function hide() {
-      timer = setTimeout(function() {
-        if (tip) tip.classList.remove("visible");
+      clearTimeout(showTimer);
+      hideTimer = setTimeout(function() {
+        if (tip) {
+          tip.classList.remove("visible");
+        }
         current = null;
       }, 100);
     }
     function hideNow() {
-      clearTimeout(timer);
-      if (tip) tip.classList.remove("visible");
+      clearTimeout(showTimer);
+      clearTimeout(hideTimer);
+      if (tip) {
+        tip.classList.remove("visible");
+      }
       current = null;
     }
     function pick(elt, tw, th) {
@@ -5018,8 +5144,8 @@
     }
     function scan(root) {
       if (root.nodeType !== 1) return;
-      if (root.hasAttribute && root.hasAttribute("bny-tip")) bind(root);
-      if (root.querySelectorAll) root.querySelectorAll("[bny-tip]").forEach(bind);
+      if (root.hasAttribute && (root.hasAttribute("bny-tip") || root.hasAttribute("bny-tip-html"))) bind(root);
+      if (root.querySelectorAll) root.querySelectorAll("[bny-tip], [bny-tip-html]").forEach(bind);
     }
     if (typeof htmx !== "undefined") {
       htmx.onLoad(function(content) {

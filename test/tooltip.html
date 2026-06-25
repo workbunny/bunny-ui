@@ -136,7 +136,105 @@
                 </div>
             </div>
 
-            <h2 id="n05">API</h2>
+            <h2 id="n05">HTML 内容</h2>
+            <div class="bny-card">
+                <div hx-ext="bny-tab">
+                    <ul class="head">
+                        <li>Preview</li>
+                        <li>Code</li>
+                    </ul>
+                    <div class="body">
+                        <div>
+                            <div class="p-12">
+                                <button class="bny-btn" bny-tip-html="<b>加粗标题</b><br><span style='color:var(--green)'>带颜色的描述文字</span>">HTML 内容提示</button>
+                            </div>
+                        </div>
+                        <div>
+                            <pre hx-ext="bny-code">
+&lt;button class=&quot;bny-btn&quot;
+    bny-tip-html=&quot;&lt;b&gt;加粗标题&lt;/b&gt;&lt;br&gt;&lt;span style='color:var(--green)'&gt;带颜色的描述文字&lt;/span&gt;&quot;&gt;
+    HTML 内容提示
+&lt;/button&gt;
+                </pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h2 id="n06">延迟显示</h2>
+            <div class="bny-card">
+                <div hx-ext="bny-tab">
+                    <ul class="head">
+                        <li>Preview</li>
+                        <li>Code</li>
+                    </ul>
+                    <div class="body">
+                        <div>
+                            <div class="p-12">
+                                <button class="bny-btn" bny-tip="悬停 500ms 后才显示" data-tip-delay="500">延迟 500ms</button>
+                                <button class="bny-btn" bny-tip="立即显示（默认）" style="margin-left:12px;">无延迟</button>
+                            </div>
+                        </div>
+                        <div>
+                            <pre hx-ext="bny-code">
+&lt;button class=&quot;bny-btn&quot; bny-tip=&quot;悬停 500ms 后才显示&quot; data-tip-delay=&quot;500&quot;&gt;延迟 500ms&lt;/button&gt;
+                </pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h2 id="n07">手动指定方向</h2>
+            <div class="bny-card">
+                <div hx-ext="bny-tab">
+                    <ul class="head">
+                        <li>Preview</li>
+                        <li>Code</li>
+                    </ul>
+                    <div class="body">
+                        <div>
+                            <div class="p-12">
+                                <button class="bny-btn" bny-tip="始终在右侧显示" data-tip-placement="right">右侧提示</button>
+                                <button class="bny-btn" bny-tip="始终在下方左对齐" data-tip-placement="bottom-start" style="margin-left:12px;">下方左对齐</button>
+                            </div>
+                        </div>
+                        <div>
+                            <pre hx-ext="bny-code">
+&lt;button class=&quot;bny-btn&quot; bny-tip=&quot;始终在右侧显示&quot; data-tip-placement=&quot;right&quot;&gt;右侧提示&lt;/button&gt;
+
+&lt;button class=&quot;bny-btn&quot; bny-tip=&quot;始终在下方左对齐&quot; data-tip-placement=&quot;bottom-start&quot;&gt;下方左对齐&lt;/button&gt;
+                </pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h2 id="n08">亮色主题 &amp; 自定义宽度</h2>
+            <div class="bny-card">
+                <div hx-ext="bny-tab">
+                    <ul class="head">
+                        <li>Preview</li>
+                        <li>Code</li>
+                    </ul>
+                    <div class="body">
+                        <div>
+                            <div class="p-12">
+                                <button class="bny-btn" bny-tip="白色背景的气泡提示，带阴影效果" data-tip-theme="light">亮色主题</button>
+                                <button class="bny-btn" bny-tip="这是一段比较长的文本，用于展示自定义宽度的气泡提示效果" data-tip-width="180px" style="margin-left:12px;">窄宽度</button>
+                            </div>
+                        </div>
+                        <div>
+                            <pre hx-ext="bny-code">
+&lt;button class=&quot;bny-btn&quot; bny-tip=&quot;白色背景的气泡提示&quot; data-tip-theme=&quot;light&quot;&gt;亮色主题&lt;/button&gt;
+
+&lt;button class=&quot;bny-btn&quot; bny-tip=&quot;长文本...&quot; data-tip-width=&quot;180px&quot;&gt;窄宽度&lt;/button&gt;
+                </pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h2 id="n09">API</h2>
             <h3>标签属性</h3>
             <table hx-ext="bny-table">
                 <thead>
@@ -152,9 +250,44 @@
                     <tr>
                         <td>bny-tip</td>
                         <td>—</td>
-                        <td>是</td>
-                        <td>气泡提示的文本内容</td>
+                        <td>否</td>
+                        <td>气泡提示的纯文本内容（与 bny-tip-html 二选一）</td>
                         <td><div class="bny-tag" color="red">v2.0.5+</div></td>
+                    </tr>
+                    <tr>
+                        <td>bny-tip-html</td>
+                        <td>—</td>
+                        <td>否</td>
+                        <td>气泡提示的 HTML 内容（与 bny-tip 二选一，优先级更高）</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>data-tip-delay</td>
+                        <td>0</td>
+                        <td>否</td>
+                        <td>显示延迟时间（毫秒）</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>data-tip-placement</td>
+                        <td>—</td>
+                        <td>否</td>
+                        <td>手动指定方向，不设置则自动评分。可选值见下方定位表</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>data-tip-theme</td>
+                        <td>—</td>
+                        <td>否</td>
+                        <td>主题：light-亮色（白色背景+阴影）</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>data-tip-width</td>
+                        <td>280px</td>
+                        <td>否</td>
+                        <td>自定义最大宽度</td>
+                        <td></td>
                     </tr>
                 </tbody>
             </table>
@@ -203,7 +336,11 @@
                 <li class="link" anchor="#n02">12 方向自动定位</li>
                 <li class="link" anchor="#n03">键盘无障碍</li>
                 <li class="link" anchor="#n04">HTMX 动态内容</li>
-                <li class="link" anchor="#n05">API</li>
+                <li class="link" anchor="#n05">HTML 内容</li>
+                <li class="link" anchor="#n06">延迟显示</li>
+                <li class="link" anchor="#n07">手动指定方向</li>
+                <li class="link" anchor="#n08">亮色主题 &amp; 宽度</li>
+                <li class="link" anchor="#n09">API</li>
             </ul>
         </div>
     </div>

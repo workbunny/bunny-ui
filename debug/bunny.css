@@ -4302,6 +4302,63 @@ table[hx-ext~="bny-table"] {
     }
 }
 
+/* ========== 表头排序 ========== */
+
+table[hx-ext~="bny-table"] th.sortable {
+    cursor: pointer;
+    user-select: none;
+    position: relative;
+    padding-right: 28px;
+
+    &::after {
+        content: "";
+        position: absolute;
+        right: 8px;
+        top: 50%;
+        width: 0;
+        height: 0;
+        border-left: 4px solid transparent;
+        border-right: 4px solid transparent;
+        border-top: 5px solid var(--white-alpha-50);
+        transform: translateY(-50%);
+        opacity: 0.4;
+    }
+
+    &::before {
+        content: "";
+        position: absolute;
+        right: 8px;
+        top: 50%;
+        width: 0;
+        height: 0;
+        border-left: 4px solid transparent;
+        border-right: 4px solid transparent;
+        border-bottom: 5px solid var(--white-alpha-50);
+        transform: translateY(calc(-50% - 8px));
+        opacity: 0.4;
+    }
+
+    /* 升序：上箭头高亮 */
+    &.sort-asc::before {
+        border-bottom-color: var(--white-common);
+        opacity: 1;
+    }
+
+    &.sort-asc::after {
+        opacity: 0.2;
+    }
+
+    /* 降序：下箭头高亮 */
+    &.sort-desc::after {
+        border-top-color: var(--white-common);
+        opacity: 1;
+    }
+
+    &.sort-desc::before {
+        opacity: 0.2;
+    }
+}
+
 /* ========== 移动端响应式表格 ========== */
 @media screen and (max-width: 767px) {
     table[hx-ext~="bny-table"] {
@@ -6297,6 +6354,75 @@ table[hx-ext~="bny-table"] {
     &.right::after       { top: 50%; transform: translateY(-50%); }
     &.right-start::after { top: 8px; }
     &.right-end::after   { bottom: 8px; }
+}
+
+/* ========== 亮色主题 ========== */
+
+.bny-tooltip.bny-tooltip-light {
+    background: var(--white);
+    color: var(--black);
+    box-shadow: var(--box-shadow-055);
+
+    /* 上方箭头 */
+    &.top::after,
+    &.top-start::after,
+    &.top-end::after {
+        border-top-color: var(--white);
+    }
+
+    /* 下方箭头 */
+    &.bottom::after,
+    &.bottom-start::after,
+    &.bottom-end::after {
+        border-bottom-color: var(--white);
+    }
+
+    /* 左侧箭头 */
+    &.left::after,
+    &.left-start::after,
+    &.left-end::after {
+        border-left-color: var(--white);
+    }
+
+    /* 右侧箭头 */
+    &.right::after,
+    &.right-start::after,
+    &.right-end::after {
+        border-right-color: var(--white);
+    }
+}
+
+/* ========== 暗黑模式下的亮色主题 ========== */
+
+html.dark .bny-tooltip.bny-tooltip-light {
+    background: rgba(255, 255, 255, 0.92);
+    color: var(--black);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+
+    &.top::after,
+    &.top-start::after,
+    &.top-end::after {
+        border-top-color: rgba(255, 255, 255, 0.92);
+    }
+
+    &.bottom::after,
+    &.bottom-start::after,
+    &.bottom-end::after {
+        border-bottom-color: rgba(255, 255, 255, 0.92);
+    }
+
+    &.left::after,
+    &.left-start::after,
+    &.left-end::after {
+        border-left-color: rgba(255, 255, 255, 0.92);
+    }
+
+    &.right::after,
+    &.right-start::after,
+    &.right-end::after {
+        border-right-color: rgba(255, 255, 255, 0.92);
+    }
 }
 /* ========== Skeleton 骨架屏 ========== */
 
