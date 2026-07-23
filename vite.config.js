@@ -25,6 +25,7 @@ const jsFiles = [
   path.resolve(__dirname, 'src/js/tooltip.js'),
   path.resolve(__dirname, 'src/js/datepicker.js'),
   path.resolve(__dirname, 'src/js/backtop.js'),
+  path.resolve(__dirname, 'src/js/button.js'),
   // 如需新增JS文件，直接追加即可：
   // path.resolve(__dirname, 'src/js/entry3.js'),
 ];

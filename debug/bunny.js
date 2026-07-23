@@ -3803,6 +3803,21 @@
       return elt.classList?.contains(cls) || false;
     },
     /**
+     * 获取/创建 alert 共享容器（单例，多个 alert 在容器内垂直堆叠，避免重叠在屏幕中心）
+     *
+     * @returns {HTMLElement} 容器元素
+     */
+    alertContainer: function() {
+      let box = document.getElementById("bny-alert-box");
+      if (!box) {
+        box = document.createElement("div");
+        box.id = "bny-alert-box";
+        box.className = "bny-alert-box";
+        document.body.appendChild(box);
+      }
+      return box;
+    },
+    /**
      * 显示警示弹窗
      * 
      * @param {String} msg 消息
@@ -3826,20 +3841,31 @@
         }
       }
       const color = type(code);
-      const alert_open = document.createElement("div");
-      alert_open.classList.add("bny-alert-open");
       const alert = document.createElement("div");
       alert.classList.add("bny-alert", `bny-anim-${anim}`);
       alert.setAttribute("color", color);
       alert.style.width = "auto";
-      alert.innerHTML = msg;
-      alert_open.appendChild(alert);
-      document.body.appendChild(alert_open);
-      setTimeout(() => {
+      alert.innerHTML = bny.escapeChars(msg);
+      const closeBtn = document.createElement("i");
+      closeBtn.className = "bny-icon icon-close bny-alert-close";
+      closeBtn.setAttribute("title", "关闭");
+      alert.appendChild(closeBtn);
+      this.alertContainer().appendChild(alert);
+      let timer = null;
+      const removeAlert = () => {
+        if (timer) {
+          clearTimeout(timer);
+          timer = null;
+        }
+        if (!alert.parentElement) return;
         this.animPlayer(alert, anim, false, () => {
-          alert_open.remove();
+          alert.remove();
+          const box = document.getElementById("bny-alert-box");
+          if (box && box.children.length === 0) box.remove();
         });
-      }, time * 1e3);
+      };
+      closeBtn.addEventListener("click", removeAlert);
+      timer = setTimeout(removeAlert, time * 1e3);
     },
     /**
      * 显示确认弹窗
@@ -3871,10 +3897,10 @@
       confirm2.classList.add("bny-confirm", `bny-anim-${anim}`);
       const confirm_title = document.createElement("h3");
       confirm_title.classList.add("title");
-      confirm_title.innerHTML = title;
+      confirm_title.innerHTML = bny.escapeChars(title);
       const confirm_content = document.createElement("p");
       confirm_content.classList.add("content");
-      confirm_content.innerHTML = msg;
+      confirm_content.innerHTML = bny.escapeChars(msg);
       const confirm_btn = document.createElement("div");
       confirm_btn.classList.add("btn");
       const confirm_yes = document.createElement("button");
@@ -3884,25 +3910,42 @@
       const confirm_no = document.createElement("button");
       confirm_no.classList.add("bny-btn");
       confirm_no.innerHTML = "取消";
+      let closed = false;
+      const close = (cb) => {
+        if (closed) return;
+        closed = true;
+        document.removeEventListener("keydown", onKeydown);
+        this.animPlayer(confirm2, anim, false, () => {
+          confirm_shield.remove();
+          if (typeof cb === "function") cb();
+        });
+      };
       confirm_shield.addEventListener("click", (e) => {
         if (e.target === confirm_shield) {
-          this.animPlayer(confirm2, anim, false, () => {
-            confirm_shield.remove();
-          });
+          close(no_cb);
         }
       });
       confirm_yes.addEventListener("click", (e) => {
-        yes_cb();
-        this.animPlayer(confirm2, anim, false, () => {
-          confirm_shield.remove();
-        });
+        close(yes_cb);
       });
       confirm_no.addEventListener("click", (e) => {
-        no_cb();
-        this.animPlayer(confirm2, anim, false, () => {
-          confirm_shield.remove();
-        });
+        close(no_cb);
       });
+      const onKeydown = (e) => {
+        const top = document.querySelector(".bny-confirm-shield:last-of-type");
+        if (top !== confirm_shield) return;
+        if (e.key === "Escape") {
+          e.preventDefault();
+          e.stopPropagation();
+          close(no_cb);
+        } else if (e.key === "Enter") {
+          e.preventDefault();
+          e.stopPropagation();
+          close(yes_cb);
+        }
+      };
+      document.addEventListener("keydown", onKeydown);
+      requestAnimationFrame(() => confirm_yes.focus());
       confirm_btn.appendChild(confirm_yes);
       confirm_btn.appendChild(confirm_no);
       confirm2.appendChild(confirm_title);
@@ -3925,22 +3968,35 @@
      * @returns {HTMLElement} 页面元素
      */
     page: function(content, options = {}) {
-      function drag(page2) {
+      function isSafeUrl(str2) {
+        if (typeof str2 !== "string") return false;
+        const s = str2.trim().replace(/^[\u0000-\u001F\u007F]+/, "");
+        return /^https?:\/\//i.test(s);
+      }
+      function drag(page2, onUnmount) {
         const header2 = page2.querySelector(".header");
         let startX, startY, newX, newY;
-        header2.addEventListener("mousedown", (e) => {
-          [startX, startY] = [e.clientX, e.clientY];
-          [newX, newY] = [parseInt(page2.style.left), parseInt(page2.style.top)];
-          page2.classList.add("dragging");
-        });
-        document.addEventListener("mousemove", (e) => {
+        const onMove = (e) => {
           if (!page2.classList.contains("dragging")) return;
           Object.assign(page2.style, {
             left: `${newX + e.clientX - startX}px`,
             top: `${newY + e.clientY - startY}px`
           });
+        };
+        const onUp = () => page2.classList.remove("dragging");
+        header2.addEventListener("mousedown", (e) => {
+          if (e.button !== 0) return;
+          if (e.target.closest(".setwin")) return;
+          [startX, startY] = [e.clientX, e.clientY];
+          [newX, newY] = [parseInt(page2.style.left), parseInt(page2.style.top)];
+          page2.classList.add("dragging");
         });
-        document.addEventListener("mouseup", () => page2.classList.remove("dragging"));
+        document.addEventListener("mousemove", onMove);
+        document.addEventListener("mouseup", onUp);
+        onUnmount(() => {
+          document.removeEventListener("mousemove", onMove);
+          document.removeEventListener("mouseup", onUp);
+        });
       }
       function resize(page2, width2, height2, currentX2, currentY2) {
         const zoomBtn = page2.querySelector(".zoom");
@@ -3987,20 +4043,12 @@
         });
       }
       function zIndex(page2) {
+        page2.style.zIndex = ++bny._pageZIndexCounter;
         page2.addEventListener("click", () => {
-          let pageZindex = document.querySelectorAll(".bny-page");
-          let maxZIndex = 0;
-          for (let i = 0; i < pageZindex.length; i++) {
-            let div = pageZindex[i];
-            const zIndex2 = parseInt(window.getComputedStyle(div).zIndex);
-            if (zIndex2 > maxZIndex) {
-              maxZIndex = zIndex2;
-            }
-          }
-          page2.style.zIndex = maxZIndex + 1;
+          page2.style.zIndex = ++bny._pageZIndexCounter;
         });
       }
-      function close(page2, shade2, anim2, animPlayer) {
+      function close(page2, shade2, anim2, animPlayer, unloads2) {
         const closeBtn = page2.querySelector(".close-btn");
         if (shade2) {
           const shade3 = document.createElement("div");
@@ -4009,6 +4057,12 @@
           shade3.addEventListener("click", (e) => {
             if (e.target === shade3) {
               animPlayer(page2, anim2, false, () => {
+                unloads2.forEach((fn) => {
+                  try {
+                    fn();
+                  } catch (_) {
+                  }
+                });
                 shade3.remove();
               });
               e.stopPropagation();
@@ -4021,10 +4075,22 @@
         closeBtn.addEventListener("click", (e) => {
           if (shade2) {
             animPlayer(page2, anim2, false, () => {
+              unloads2.forEach((fn) => {
+                try {
+                  fn();
+                } catch (_) {
+                }
+              });
               page2.parentNode.remove();
             });
           } else {
             animPlayer(page2, anim2, false, () => {
+              unloads2.forEach((fn) => {
+                try {
+                  fn();
+                } catch (_) {
+                }
+              });
               page2.remove();
             });
           }
@@ -4036,7 +4102,7 @@
       let height = options.height ?? "520px";
       const offset = options.offset ?? "auto";
       const shade = options.shade ?? false;
-      if (content.startsWith("http://") || content.startsWith("https://")) {
+      if (typeof content === "string" && isSafeUrl(content)) {
         content = `<iframe src="${content}"></iframe>`;
       }
       const windowWidth = window.innerWidth;
@@ -4101,7 +4167,7 @@
       }
       page.innerHTML = `
         <div class="header">
-            <div class="title">${title}</div>
+            <div class="title">${bny.escapeChars(title === false ? "" : title)}</div>
                 <div class="setwin">
                     <span class="bny-icon icon-minus min-auto"></span>
                     <span class="bny-icon icon-fullscreen zoom"></span>
@@ -4112,13 +4178,20 @@
         <div class="content ${title === false ? "not-title" : ""}">${content}</div>`;
       const header = page.querySelector(".header");
       if (title === false) header.style.display = "none";
-      close(page, shade, anim, this.animPlayer);
-      drag(page);
+      const unloads = [];
+      close(page, shade, anim, this.animPlayer, unloads);
+      drag(page, (fn) => unloads.push(fn));
       resize(page, width, height, currentX, currentY);
       minimize(page, num - 1, width, height, currentX, currentY);
       zIndex(page);
       return page;
     },
+    /**
+     * bny.page 的 z-index 计数器（模块级单例，避免每次点击遍历所有 .bny-page）
+     * 起始值 999，每次创建/聚焦 page 自增
+     * @type {Number}
+     */
+    _pageZIndexCounter: 999,
     /**
      * 加载页面
      * @param {number} style 加载样式 0:旋转 1:线性 2:球型
@@ -4157,6 +4230,7 @@
     onEvent: function(name, evt) {
       if (name === "htmx:afterProcessNode") {
         if (bny.hasExtName(evt.target, "bny-menu")) {
+          initFocusable(evt.target);
           evt.target.addEventListener("click", function(e) {
             const item = e.target.closest(".item");
             let subMenu = item.querySelector(".sub-menu");
@@ -4164,6 +4238,7 @@
               item.classList.toggle("show");
             }
           });
+          evt.target.addEventListener("keydown", onMenuKeydown);
           return false;
         }
       }
@@ -4176,8 +4251,8 @@
         arr.forEach((v) => {
           const attrStr = bny.parAttrStr(v.attr);
           html += `<div class="item" ${attrStr}>`;
-          html += `<div class="trigger" bny-id="${v.id}">`;
-          html += `<span>${v.name}</span>`;
+          html += `<div class="trigger" bny-id="${bny.escapeChars(String(v.id))}">`;
+          html += `<span>${bny.escapeChars(v.name)}</span>`;
           if (v.child) {
             html += `<i class="bny-icon icon-right"></i>`;
           }
@@ -4202,6 +4277,126 @@
       return text;
     }
   });
+  function initFocusable(root) {
+    root.querySelectorAll(".item").forEach(function(item) {
+      if (item.querySelector(":scope > .trigger")) {
+        item.setAttribute("tabindex", "0");
+      }
+    });
+  }
+  function getMenuOrientation(item) {
+    const parent = item.parentElement;
+    if (parent && parent.classList.contains("sub-menu")) {
+      return "vertical";
+    }
+    const menuRoot = item.closest('[hx-ext~="bny-menu"]');
+    if (menuRoot) {
+      if (menuRoot.getAttribute("mode") === "vertical" || menuRoot.classList.contains("vertical")) {
+        return "vertical";
+      }
+    }
+    return "horizontal";
+  }
+  function getSiblings(item) {
+    const parent = item.parentElement;
+    if (!parent) return [];
+    return Array.from(parent.querySelectorAll(":scope > .item")).filter(function(it) {
+      return it.querySelector(":scope > .trigger");
+    });
+  }
+  function onMenuKeydown(e) {
+    const item = e.target.closest(".item");
+    if (!item) return;
+    const orientation = getMenuOrientation(item);
+    const sub = item.querySelector(":scope > .sub-menu");
+    switch (e.key) {
+      case "ArrowRight": {
+        e.preventDefault();
+        e.stopPropagation();
+        if (orientation === "vertical" && sub) {
+          if (!item.classList.contains("show")) item.classList.add("show");
+          const first = sub.querySelector(":scope > .item[tabindex]");
+          if (first) first.focus();
+        } else {
+          focusSibling(item, 1);
+        }
+        break;
+      }
+      case "ArrowLeft": {
+        e.preventDefault();
+        e.stopPropagation();
+        if (orientation === "vertical") {
+          const parentSub = item.parentElement;
+          if (parentSub && parentSub.classList.contains("sub-menu")) {
+            const parentItem = parentSub.parentElement;
+            if (parentItem && parentItem.classList.contains("item")) {
+              parentItem.classList.remove("show");
+              parentItem.focus();
+            }
+          }
+        } else {
+          focusSibling(item, -1);
+        }
+        break;
+      }
+      case "ArrowDown": {
+        e.preventDefault();
+        e.stopPropagation();
+        if (orientation === "horizontal" && sub) {
+          if (!item.classList.contains("show")) item.classList.add("show");
+          const first = sub.querySelector(":scope > .item[tabindex]");
+          if (first) first.focus();
+        } else {
+          focusSibling(item, 1);
+        }
+        break;
+      }
+      case "ArrowUp": {
+        e.preventDefault();
+        e.stopPropagation();
+        if (orientation === "horizontal") {
+          if (item.classList.contains("show")) {
+            item.classList.remove("show");
+          }
+        } else {
+          focusSibling(item, -1);
+        }
+        break;
+      }
+      case "Enter":
+      case " ": {
+        e.preventDefault();
+        e.stopPropagation();
+        item.click();
+        break;
+      }
+      case "Escape": {
+        e.preventDefault();
+        e.stopPropagation();
+        if (item.classList.contains("show")) {
+          item.classList.remove("show");
+          item.focus();
+        } else {
+          const parentSub = item.parentElement;
+          if (parentSub && parentSub.classList.contains("sub-menu")) {
+            const parentItem = parentSub.parentElement;
+            if (parentItem && parentItem.classList.contains("item")) {
+              parentItem.classList.remove("show");
+              parentItem.focus();
+            }
+          }
+        }
+        break;
+      }
+    }
+  }
+  function focusSibling(item, dir) {
+    const siblings = getSiblings(item);
+    const idx = siblings.indexOf(item);
+    if (idx === -1) return;
+    const next = siblings[idx + dir];
+    if (next) next.focus();
+  }
   htmx.defineExtension("bny-collapse", {
     // 事件
     onEvent: function(name, evt) {
@@ -4533,6 +4728,29 @@
           ths = table.querySelectorAll("thead th[sortable]");
         }
         if (!ths.length) return;
+        const tableKey = table.getAttribute("data-table-key") || "";
+        const storeKey = tableKey ? "bny-table-sort:" + tableKey : "";
+        function persistSort(colIndex, type, asc) {
+          if (!storeKey) return;
+          try {
+            sessionStorage.setItem(storeKey, JSON.stringify({
+              colIndex,
+              type,
+              asc
+            }));
+          } catch (_) {
+          }
+        }
+        function readSort() {
+          if (!storeKey) return null;
+          try {
+            var raw = sessionStorage.getItem(storeKey);
+            if (!raw) return null;
+            return JSON.parse(raw);
+          } catch (_) {
+            return null;
+          }
+        }
         ths.forEach(function(th) {
           const colIndex = Array.from(th.parentElement.querySelectorAll("th")).indexOf(th);
           th.style.cursor = "pointer";
@@ -4554,8 +4772,20 @@
             if (tbody) {
               sortRows(tbody, colIndex, type, asc);
             }
+            persistSort(colIndex, type, asc);
           });
         });
+        const saved = readSort();
+        if (saved) {
+          const targetTh = ths[saved.colIndex];
+          if (targetTh) {
+            targetTh.classList.add(saved.asc ? "sort-asc" : "sort-desc");
+            const tbody = table.querySelector("tbody");
+            if (tbody) {
+              sortRows(tbody, saved.colIndex, saved.type, saved.asc);
+            }
+          }
+        }
       }
       function initLabels(table) {
         const titles = [];
@@ -4588,25 +4818,55 @@
     },
     // 响应转换
     transformResponse: function(text, xhr, elt) {
+      function renderCell(cell) {
+        if (cell !== null && typeof cell === "object" && typeof cell.__html !== "undefined") {
+          return String(cell.__html);
+        }
+        return bny.escapeChars(String(cell));
+      }
+      function renderCol(col) {
+        if (col !== null && typeof col === "object") {
+          var name = bny.escapeChars(String(col.name ?? ""));
+          var attrs = "";
+          if (col.sortable) attrs += " sortable";
+          if (col.sort) attrs += ' data-sort="' + bny.escapeChars(String(col.sort)) + '"';
+          return "<th" + attrs + ">" + name + "</th>";
+        }
+        return "<th>" + bny.escapeChars(String(col)) + "</th>";
+      }
       function buildTable(data) {
         const cols = data.cols || [];
         const rows = data.rows || [];
         const color = data.color || "";
+        const emptyText = data.empty || "暂无数据";
+        const tableKey = data.key || color || "";
         let h = "";
-        h += '<table hx-ext="bny-table"' + (color ? ' color="' + color + '"' : "") + ">";
+        h += '<table hx-ext="bny-table"' + (color ? ' color="' + color + '"' : "");
+        if (tableKey) h += ' data-table-key="' + bny.escapeChars(tableKey) + '"';
+        h += ">";
         h += "<thead><tr>";
         cols.forEach(function(col) {
-          h += "<th>" + bny.escapeChars(col) + "</th>";
+          h += renderCol(col);
         });
         h += "</tr></thead>";
         h += "<tbody>";
-        rows.forEach(function(row) {
-          h += "<tr>";
-          row.forEach(function(cell) {
-            h += "<td>" + bny.escapeChars(String(cell)) + "</td>";
+        if (rows.length === 0) {
+          h += '<tr class="bny-table-empty"><td colspan="' + cols.length + '">' + bny.escapeChars(emptyText) + "</td></tr>";
+        } else {
+          rows.forEach(function(row) {
+            h += "<tr>";
+            if (Array.isArray(row)) {
+              row.forEach(function(cell) {
+                h += "<td>" + renderCell(cell) + "</td>";
+              });
+            } else if (row && typeof row === "object" && row.__html) {
+              h += row.__html;
+            } else {
+              h += "<td>" + renderCell(row) + "</td>";
+            }
+            h += "</tr>";
           });
-          h += "</tr>";
-        });
+        }
         h += "</tbody></table>";
         return h;
       }
@@ -4957,25 +5217,45 @@
               moveSilder(evt.target, link);
             }
           });
-          window.addEventListener("scroll", () => {
-            const links = evt.target.querySelectorAll(".link");
-            let currentLink = null;
-            links.forEach((link) => {
-              const anchor = link.getAttribute("anchor");
-              const section = htmx.find(anchor);
-              if (section) {
-                const rect = section.getBoundingClientRect();
-                if (rect.top <= 100 && rect.bottom >= 100) {
-                  currentLink = link;
+          let ticking = false;
+          const onScroll = () => {
+            if (ticking) return;
+            ticking = true;
+            requestAnimationFrame(() => {
+              ticking = false;
+              if (!evt.target.isConnected) {
+                window.removeEventListener("scroll", onScroll, true);
+                return;
+              }
+              const links = evt.target.querySelectorAll(".link");
+              let currentLink = null;
+              links.forEach((link) => {
+                const anchor = link.getAttribute("anchor");
+                const section = htmx.find(anchor);
+                if (section) {
+                  const rect = section.getBoundingClientRect();
+                  if (rect.top <= 100 && rect.bottom >= 100) {
+                    currentLink = link;
+                  }
                 }
+              });
+              if (currentLink) {
+                bny.removeClass(links, "active");
+                moveSilder(evt.target, currentLink);
               }
             });
-            if (currentLink) {
-              bny.removeClass(links, "active");
-              moveSilder(evt.target, currentLink);
-            }
-          });
+          };
+          window.addEventListener("scroll", onScroll, { passive: true, capture: true });
+          evt.target._bnyAnchorCleanup = function() {
+            window.removeEventListener("scroll", onScroll, true);
+          };
           return false;
+        }
+      }
+      if (name === "htmx:beforeOnNodeDisposal") {
+        if (evt.target && typeof evt.target._bnyAnchorCleanup === "function") {
+          evt.target._bnyAnchorCleanup();
+          evt.target._bnyAnchorCleanup = null;
         }
       }
     }
@@ -5178,6 +5458,8 @@
       this.rangeInput = options.rangeInput || null;
       this.min = options.min || null;
       this.max = options.max || null;
+      this._minStamp = parseBoundary(this.min);
+      this._maxStamp = parseBoundary(this.max);
       this.viewYear = (/* @__PURE__ */ new Date()).getFullYear();
       this.viewMonth = (/* @__PURE__ */ new Date()).getMonth();
       this.viewType = "calendar";
@@ -5186,6 +5468,12 @@
       this.temp = { y: null, m: null, d: null, H: 0, M: 0, S: 0 };
       this.initPanel();
       this.bindEvents();
+    }
+    function parseBoundary(v) {
+      if (!v) return null;
+      var d = v instanceof Date ? v : new Date(v);
+      if (isNaN(d.getTime())) return null;
+      return d.getTime();
     }
     DatePicker.prototype.initPanel = function() {
       var self = this;
@@ -5268,6 +5556,111 @@
       window.addEventListener("scroll", function() {
         if (self.panel.classList.contains("show")) self.position();
       }, true);
+      this.panel.addEventListener("keydown", function(e) {
+        self.handleKeydown(e);
+      });
+    };
+    DatePicker.prototype.handleKeydown = function(e) {
+      var key = e.key;
+      if (key === "Enter") {
+        e.preventDefault();
+        this.confirm();
+        return;
+      }
+      if (key === "Escape") {
+        e.preventDefault();
+        this.cancel();
+        return;
+      }
+      if (!this.needsDate()) return;
+      if (this.viewType === "calendar") {
+        if (this.temp.y === null) {
+          var t = /* @__PURE__ */ new Date();
+          this.temp.y = t.getFullYear();
+          this.temp.m = t.getMonth();
+          this.temp.d = t.getDate();
+        }
+        var y = this.temp.y, m = this.temp.m, d = this.temp.d;
+        var cur = new Date(y, m, d);
+        switch (key) {
+          case "ArrowLeft":
+            cur.setDate(cur.getDate() - 1);
+            break;
+          case "ArrowRight":
+            cur.setDate(cur.getDate() + 1);
+            break;
+          case "ArrowUp":
+            cur.setDate(cur.getDate() - 7);
+            break;
+          case "ArrowDown":
+            cur.setDate(cur.getDate() + 7);
+            break;
+          default:
+            return;
+        }
+        e.preventDefault();
+        this.temp.y = cur.getFullYear();
+        this.temp.m = cur.getMonth();
+        this.temp.d = cur.getDate();
+        this.viewYear = this.temp.y;
+        this.viewMonth = this.temp.m;
+        this.render();
+      } else if (this.viewType === "months") {
+        switch (key) {
+          case "ArrowLeft":
+            e.preventDefault();
+            if (this.temp.m > 0) this.temp.m--;
+            else {
+              this.temp.m = 11;
+              this.viewYear--;
+            }
+            this.render();
+            break;
+          case "ArrowRight":
+            e.preventDefault();
+            if (this.temp.m < 11) this.temp.m++;
+            else {
+              this.temp.m = 0;
+              this.viewYear++;
+            }
+            this.render();
+            break;
+          case "ArrowUp":
+            e.preventDefault();
+            this.viewYear--;
+            this.render();
+            break;
+          case "ArrowDown":
+            e.preventDefault();
+            this.viewYear++;
+            this.render();
+            break;
+        }
+      } else if (this.viewType === "years") {
+        if (this.temp.y === null) this.temp.y = this.viewYear;
+        switch (key) {
+          case "ArrowLeft":
+            e.preventDefault();
+            this.temp.y--;
+            this.render();
+            break;
+          case "ArrowRight":
+            e.preventDefault();
+            this.temp.y++;
+            this.render();
+            break;
+          case "ArrowUp":
+            e.preventDefault();
+            this.temp.y -= 4;
+            this.render();
+            break;
+          case "ArrowDown":
+            e.preventDefault();
+            this.temp.y += 4;
+            this.render();
+            break;
+        }
+      }
     };
     DatePicker.prototype.needsTime = function() {
       return this.mode === "datetime" || this.mode === "time";
@@ -5289,10 +5682,22 @@
       this.render();
       this.position();
       this.panel.classList.add("show");
+      var self = this;
+      requestAnimationFrame(function() {
+        if (self.panel) {
+          self.panel.setAttribute("tabindex", "-1");
+          self.panel.focus();
+        }
+      });
     };
     DatePicker.prototype.close = function() {
       this.panel.classList.remove("show");
-      currentPanel = null;
+      if (currentPanel === this) currentPanel = null;
+      try {
+        var event = new Event("change", { bubbles: true });
+        this.input.dispatchEvent(event);
+      } catch (_) {
+      }
     };
     DatePicker.prototype.cancel = function() {
       this.input.value = "";
@@ -5557,13 +5962,13 @@
       this.confirm();
     };
     DatePicker.prototype.isDisabled = function(y, m, d) {
-      if (this.min) {
-        var min = new Date(this.min);
-        if (new Date(y, m, d) < new Date(min.getFullYear(), min.getMonth(), min.getDate())) return true;
+      if (this._minStamp !== null) {
+        var cur = new Date(y, m, d).getTime();
+        if (cur < this._minStamp) return true;
       }
-      if (this.max) {
-        var max = new Date(this.max);
-        if (new Date(y, m, d) > new Date(max.getFullYear(), max.getMonth(), max.getDate())) return true;
+      if (this._maxStamp !== null) {
+        var cur2 = new Date(y, m, d).getTime();
+        if (cur2 > this._maxStamp) return true;
       }
       return false;
     };
@@ -5582,8 +5987,9 @@
     function DateRangePicker(input1, input2, options) {
       this.mode = "range";
       options = options || {};
-      this.picker1 = new DatePicker(input1, { mode: options.subMode || "date", min: options.min, max: options.max });
-      this.picker2 = new DatePicker(input2, { mode: options.subMode || "date", min: options.min, max: options.max });
+      var subMode = options.subMode === "range" ? "date" : options.subMode || "date";
+      this.picker1 = new DatePicker(input1, { mode: subMode, min: options.min, max: options.max });
+      this.picker2 = new DatePicker(input2, { mode: subMode, min: options.min, max: options.max });
       var self = this;
       var origConfirm1 = this.picker1.confirm;
       this.picker1.confirm = function() {
@@ -5595,6 +6001,11 @@
             self.picker2.selected.y = self.picker1.selected.y;
             self.picker2.selected.m = self.picker1.selected.m;
             self.picker2.selected.d = self.picker1.selected.d;
+            if (subMode === "datetime") {
+              self.picker2.selected.H = self.picker1.selected.H;
+              self.picker2.selected.M = self.picker1.selected.M;
+              self.picker2.selected.S = self.picker1.selected.S;
+            }
             self.picker2.syncInput();
           }
         }
@@ -5609,6 +6020,11 @@
             self.picker1.selected.y = self.picker2.selected.y;
             self.picker1.selected.m = self.picker2.selected.m;
             self.picker1.selected.d = self.picker2.selected.d;
+            if (subMode === "datetime") {
+              self.picker1.selected.H = self.picker2.selected.H;
+              self.picker1.selected.M = self.picker2.selected.M;
+              self.picker1.selected.S = self.picker2.selected.S;
+            }
             self.picker1.syncInput();
           }
         }
@@ -5644,116 +6060,120 @@
     }
   })();
   (function() {
-    var btn = null;
-    var threshold = 200;
     var ticking = false;
-    var container = null;
-    var isWindow = true;
-    function getThreshold(elt) {
-      var val = elt.getAttribute("data-threshold") || elt.getAttribute("data-bny-backtop");
-      if (val && !isNaN(parseInt(val, 10))) {
-        return parseInt(val, 10);
+    var instances = [];
+    function getConfig(elt) {
+      var t = elt.getAttribute("data-threshold") || elt.getAttribute("data-bny-backtop");
+      var th = t && !isNaN(parseInt(t, 10)) ? parseInt(t, 10) : 200;
+      var container = window;
+      var isWindow = true;
+      var target = elt.getAttribute("data-target");
+      if (target) {
+        var el = document.querySelector(target);
+        if (el && el.scrollHeight > el.clientHeight) {
+          container = el;
+          isWindow = false;
+        }
       }
-      return 200;
+      if (isWindow) {
+        var candidates = document.querySelectorAll("#bny-content, [data-scroll-container]");
+        for (var i = 0; i < candidates.length; i++) {
+          if (candidates[i].scrollHeight > candidates[i].clientHeight) {
+            container = candidates[i];
+            isWindow = false;
+            break;
+          }
+        }
+      }
+      return { threshold: th, container, isWindow };
     }
-    function scrollTop() {
+    function getScrollTop(container, isWindow) {
       if (isWindow) {
         return window.scrollY || document.documentElement.scrollTop || 0;
       }
       return container.scrollTop || 0;
     }
-    function scrollToTop() {
+    function scrollToTop(container, isWindow) {
       if (isWindow) {
         window.scrollTo({ top: 0, behavior: "smooth" });
       } else {
         container.scrollTo({ top: 0, behavior: "smooth" });
       }
     }
-    function detectContainer() {
-      if (btn) {
-        var target = btn.getAttribute("data-target");
-        if (target) {
-          var el = document.querySelector(target);
-          if (el && el.scrollHeight > el.clientHeight) {
-            container = el;
-            isWindow = false;
-            return;
-          }
-        }
-      }
-      var candidates = document.querySelectorAll("#bny-content, [data-scroll-container]");
-      for (var i = 0; i < candidates.length; i++) {
-        if (candidates[i].scrollHeight > candidates[i].clientHeight) {
-          container = candidates[i];
-          isWindow = false;
-          return;
-        }
-      }
-      container = window;
-      isWindow = true;
-    }
-    function ensure() {
-      if (btn) return;
-      btn = document.getElementById("bny-backtop");
-      if (!btn) {
-        btn = document.querySelector("[data-bny-backtop]");
-      }
-      if (btn) {
-        threshold = getThreshold(btn);
-        if (!btn.classList.contains("bny-backtop")) {
-          btn.classList.add("bny-backtop");
-        }
+    function updateInstance(inst) {
+      if (!inst.btn || !inst.btn.isConnected) return;
+      var top = getScrollTop(inst.container, inst.isWindow);
+      if (top > inst.threshold) {
+        inst.btn.classList.add("visible");
       } else {
-        btn = document.createElement("div");
-        btn.className = "bny-backtop";
-        btn.setAttribute("title", "回到顶部");
-        btn.innerHTML = '<i class="bny-icon icon-arrowup"></i>';
-        document.body.appendChild(btn);
-      }
-    }
-    function update() {
-      if (!btn) return;
-      ticking = false;
-      if (scrollTop() > threshold) {
-        btn.classList.add("visible");
-      } else {
-        btn.classList.remove("visible");
+        inst.btn.classList.remove("visible");
       }
     }
     function onScroll() {
-      if (!ticking) {
-        requestAnimationFrame(update);
-        ticking = true;
-      }
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(function() {
+        ticking = false;
+        for (var i = 0; i < instances.length; i++) {
+          updateInstance(instances[i]);
+        }
+      });
     }
-    function onClick() {
-      scrollToTop();
-    }
-    function bind() {
-      ensure();
-      if (!btn || btn._bnyBacktop) return;
+    function bindInstance(btn) {
+      if (!btn) return;
+      if (btn._bnyBacktop) return;
       btn._bnyBacktop = true;
-      detectContainer();
-      btn.addEventListener("click", onClick);
-      if (isWindow) {
+      if (!btn.classList.contains("bny-backtop")) {
+        btn.classList.add("bny-backtop");
+      }
+      var cfg = getConfig(btn);
+      var inst = {
+        btn,
+        threshold: cfg.threshold,
+        container: cfg.container,
+        isWindow: cfg.isWindow
+      };
+      btn.addEventListener("click", function() {
+        scrollToTop(inst.container, inst.isWindow);
+      });
+      if (inst.isWindow) {
         window.addEventListener("scroll", onScroll, { passive: true });
       } else {
-        container.addEventListener("scroll", onScroll, { passive: true });
+        cfg.container.addEventListener("scroll", onScroll, { passive: true });
       }
-      update();
+      instances.push(inst);
+      updateInstance(inst);
     }
     function scan(root) {
-      if (root.nodeType !== 1) return;
-      if (root.id === "bny-backtop" || root.hasAttribute && root.hasAttribute("data-bny-backtop")) {
-        btn = null;
-        bind();
-      }
-      if (root.querySelectorAll) {
-        var custom = root.querySelector("[data-bny-backtop]");
-        if (custom) {
-          btn = null;
-          bind();
+      var customBtns = [];
+      if (root && root.nodeType === 1) {
+        if (root.id === "bny-backtop" || root.hasAttribute && root.hasAttribute("data-bny-backtop")) {
+          customBtns.push(root);
         }
+        if (root.querySelectorAll) {
+          var found = root.querySelectorAll("[data-bny-backtop]");
+          for (var i = 0; i < found.length; i++) customBtns.push(found[i]);
+        }
+      } else {
+        var all = document.querySelectorAll("[data-bny-backtop]");
+        for (var j = 0; j < all.length; j++) customBtns.push(all[j]);
+        var byId = document.getElementById("bny-backtop");
+        if (byId && customBtns.indexOf(byId) === -1) customBtns.push(byId);
+      }
+      if (customBtns.length === 0) {
+        if (!document.getElementById("bny-backtop") && !instances.length) {
+          var auto = document.createElement("div");
+          auto.id = "bny-backtop";
+          auto.className = "bny-backtop";
+          auto.setAttribute("title", "回到顶部");
+          auto.innerHTML = '<i class="bny-icon icon-arrowup"></i>';
+          document.body.appendChild(auto);
+          bindInstance(auto);
+        }
+        return;
+      }
+      for (var k = 0; k < customBtns.length; k++) {
+        bindInstance(customBtns[k]);
       }
     }
     if (typeof htmx !== "undefined") {
@@ -5763,10 +6183,50 @@
     }
     if (document.readyState === "loading") {
       document.addEventListener("DOMContentLoaded", function() {
-        bind();
+        scan(document.body);
       });
     } else {
-      bind();
+      scan(document.body);
+    }
+  })();
+  (function() {
+    if (typeof htmx === "undefined") return;
+    function shouldShowLoading(elt) {
+      if (!elt || !elt.classList || !elt.classList.contains("bny-btn")) return false;
+      if (elt.getAttribute("bny-button-loading") === "false") return false;
+      if (elt.getAttribute("bny-button-loading") !== null) return true;
+      var global = document.body.getAttribute("data-bny-button-loading-auto");
+      return global !== "false";
+    }
+    function startLoading(evt) {
+      var elt = evt.detail && evt.detail.elt;
+      if (!shouldShowLoading(elt)) return;
+      elt.classList.add("bny-loading");
+      elt.setAttribute("disabled", "disabled");
+    }
+    function stopLoading(evt) {
+      var elt = evt.detail && evt.detail.elt;
+      if (!elt) return;
+      requestAnimationFrame(function() {
+        elt.classList.remove("bny-loading");
+        if (elt.getAttribute("bny-button-loading") !== null || !elt.hasAttribute("data-bny-keep-disabled")) {
+          elt.removeAttribute("disabled");
+        }
+      });
+    }
+    function bindListeners() {
+      var body = document.body;
+      if (!body) return false;
+      if (body._bnyBtnLoadingBound) return true;
+      body._bnyBtnLoadingBound = true;
+      body.addEventListener("htmx:beforeRequest", startLoading);
+      body.addEventListener("htmx:afterRequest", stopLoading);
+      body.addEventListener("htmx:responseError", stopLoading);
+      body.addEventListener("htmx:sendError", stopLoading);
+      return true;
+    }
+    if (!bindListeners()) {
+      document.addEventListener("DOMContentLoaded", bindListeners);
     }
   })();
 })();

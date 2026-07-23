@@ -139,6 +139,21 @@ window.bny = {
         return elt.classList?.contains(cls) || false
     },
     /**
+     * 获取/创建 alert 共享容器（单例，多个 alert 在容器内垂直堆叠，避免重叠在屏幕中心）
+     *
+     * @returns {HTMLElement} 容器元素
+     */
+    alertContainer: function () {
+        let box = document.getElementById('bny-alert-box')
+        if (!box) {
+            box = document.createElement('div')
+            box.id = 'bny-alert-box'
+            box.className = 'bny-alert-box'
+            document.body.appendChild(box)
+        }
+        return box
+    },
+    /**
      * 显示警示弹窗
      * 
      * @param {String} msg 消息
@@ -169,25 +184,35 @@ window.bny = {
             }
         }
         const color = type(code) // 获取颜色
-        // 创建alert_open元素
-        const alert_open = document.createElement('div')
-        alert_open.classList.add('bny-alert-open')
-        // 创建alert元素
+        // 创建 alert 元素（直接挂入共享容器，多条按调用顺序自上而下堆叠，不再重叠）
         const alert = document.createElement('div')
         alert.classList.add('bny-alert', `bny-anim-${anim}`)
         alert.setAttribute('color', color)
         alert.style.width = 'auto'
-        alert.innerHTML = msg
-        // 将alert添加到alert_open
-        alert_open.appendChild(alert)
-        // 将alert_open添加到body
-        document.body.appendChild(alert_open)
-        // 设置定时器，移除alert
-        setTimeout(() => {
+        alert.innerHTML = bny.escapeChars(msg)
+        // 关闭按钮：允许用户主动关闭
+        const closeBtn = document.createElement('i')
+        closeBtn.className = 'bny-icon icon-close bny-alert-close'
+        closeBtn.setAttribute('title', '关闭')
+        alert.appendChild(closeBtn)
+        // 挂到共享容器
+        this.alertContainer().appendChild(alert)
+        // 计时器句柄，便于提前关闭时清除
+        let timer = null
+        const removeAlert = () => {
+            if (timer) { clearTimeout(timer); timer = null }
+            // 防止重复移除
+            if (!alert.parentElement) return
             this.animPlayer(alert, anim, false, () => {
-                alert_open.remove()
+                alert.remove()
+                // 容器内无 alert 时移除容器，避免空白占位
+                const box = document.getElementById('bny-alert-box')
+                if (box && box.children.length === 0) box.remove()
             })
-        }, time * 1000)
+        }
+        closeBtn.addEventListener('click', removeAlert)
+        // 设置定时器，移除 alert
+        timer = setTimeout(removeAlert, time * 1000)
     },
     /**
      * 显示确认弹窗
@@ -220,11 +245,11 @@ window.bny = {
         // 创建title元素
         const confirm_title = document.createElement('h3')
         confirm_title.classList.add('title')
-        confirm_title.innerHTML = title
+        confirm_title.innerHTML = bny.escapeChars(title)
         // 创建content元素
         const confirm_content = document.createElement('p')
         confirm_content.classList.add('content')
-        confirm_content.innerHTML = msg
+        confirm_content.innerHTML = bny.escapeChars(msg)
         // 创建btn元素
         const confirm_btn = document.createElement('div')
         confirm_btn.classList.add('btn')
@@ -237,29 +262,57 @@ window.bny = {
         const confirm_no = document.createElement('button')
         confirm_no.classList.add('bny-btn')
         confirm_no.innerHTML = '取消'
-        // 点击遮罩层时关闭弹窗
+
+        // 统一关闭函数（避免多次绑定重复动画）
+        let closed = false
+        const close = (cb) => {
+            if (closed) return
+            closed = true
+            // 关闭时移除键盘监听，避免泄漏
+            document.removeEventListener('keydown', onKeydown)
+            this.animPlayer(confirm, anim, false, () => {
+                confirm_shield.remove()
+                if (typeof cb === 'function') cb()
+            })
+        }
+
+        // 点击遮罩层时关闭弹窗（视为取消）
         confirm_shield.addEventListener('click', (e) => {
             // 只有点击confirm_shield本身时才关闭弹窗
             if (e.target === confirm_shield) {
-                this.animPlayer(confirm, anim, false, () => {
-                    confirm_shield.remove()
-                })
+                close(no_cb)
             }
         })
         // 点击确认按钮时调用确认回调
         confirm_yes.addEventListener('click', (e) => {
-            yes_cb()
-            this.animPlayer(confirm, anim, false, () => {
-                confirm_shield.remove()
-            })
+            close(yes_cb)
         })
         // 点击取消按钮时调用取消回调
         confirm_no.addEventListener('click', (e) => {
-            no_cb()
-            this.animPlayer(confirm, anim, false, () => {
-                confirm_shield.remove()
-            })
+            close(no_cb)
         })
+
+        // 键盘支持：ESC 关闭（视为取消）、Enter 确认
+        const onKeydown = (e) => {
+            // 仅处理当前最上层 confirm（防止多个 confirm 叠加时误触发）
+            const top = document.querySelector('.bny-confirm-shield:last-of-type')
+            if (top !== confirm_shield) return
+            if (e.key === 'Escape') {
+                e.preventDefault()
+                e.stopPropagation()
+                close(no_cb)
+            } else if (e.key === 'Enter') {
+                e.preventDefault()
+                e.stopPropagation()
+                close(yes_cb)
+            }
+        }
+        document.addEventListener('keydown', onKeydown)
+
+        // 让确认按钮获得焦点，便于直接按 Enter
+        // 等待元素挂载到 DOM 后再聚焦
+        requestAnimationFrame(() => confirm_yes.focus())
+
         // 将确认按钮添加到btn
         confirm_btn.appendChild(confirm_yes)
         // 将取消按钮添加到btn
@@ -291,25 +344,50 @@ window.bny = {
     page: function (content, options = {}) {
 
         /**
+         * 判断字符串是否为安全的可被 iframe 加载的 http/https 链接
+         * 拒绝 javascript:、data:、vbscript: 等危险协议，防止 XSS
+         * @param {String} str
+         * @returns {Boolean}
+         */
+        function isSafeUrl(str) {
+            if (typeof str !== 'string') return false
+            // 去除首尾空白与可能的前置控制字符
+            const s = str.trim().replace(/^[\u0000-\u001F\u007F]+/, '')
+            return /^https?:\/\//i.test(s)
+        }
+
+        /**
          * 页面拖动
          * @param {HTMLElement} page 页面元素
+         * @param {Function} onUnmount 返回解绑函数的注册器（用于关闭时解绑 document 监听）
          */
-        function drag(page) {
+        function drag(page, onUnmount) {
             const header = page.querySelector('.header')
             let startX, startY, newX, newY;
-            header.addEventListener('mousedown', e => {
-                [startX, startY] = [e.clientX, e.clientY];
-                [newX, newY] = [parseInt(page.style.left), parseInt(page.style.top)];
-                page.classList.add('dragging');
-            });
-            document.addEventListener('mousemove', e => {
+            // 命名函数引用，便于解绑，避免每次创建 page 都向 document 永久挂监听器
+            const onMove = (e) => {
                 if (!page.classList.contains('dragging')) return;
                 Object.assign(page.style, {
                     left: `${newX + e.clientX - startX}px`,
                     top: `${newY + e.clientY - startY}px`
                 });
+            };
+            const onUp = () => page.classList.remove('dragging');
+            header.addEventListener('mousedown', e => {
+                // 只允许主键拖动，且不在按钮上触发（避免点击 setwin 时拖动）
+                if (e.button !== 0) return;
+                if (e.target.closest('.setwin')) return;
+                [startX, startY] = [e.clientX, e.clientY];
+                [newX, newY] = [parseInt(page.style.left), parseInt(page.style.top)];
+                page.classList.add('dragging');
             });
-            document.addEventListener('mouseup', () => page.classList.remove('dragging'));
+            document.addEventListener('mousemove', onMove);
+            document.addEventListener('mouseup', onUp);
+            // 注册解绑，page 关闭时清理
+            onUnmount(() => {
+                document.removeEventListener('mousemove', onMove);
+                document.removeEventListener('mouseup', onUp);
+            });
         }
 
         /**
@@ -377,24 +455,13 @@ window.bny = {
         }
 
         /**
-         * 页面z-index
+         * 页面 z-index（使用模块级计数器，避免每次点击遍历所有 .bny-page 计算 maxZIndex）
          * @param {HTMLElement} page 页面元素
          */
         function zIndex(page) {
+            page.style.zIndex = ++bny._pageZIndexCounter
             page.addEventListener('click', () => {
-                // 获取所有的 div 元素
-                let pageZindex = document.querySelectorAll('.bny-page');
-                let maxZIndex = 0;
-                // 遍历所有的 div 元素
-                for (let i = 0; i < pageZindex.length; i++) {
-                    let div = pageZindex[i];
-                    // 获取当前 div 的 z-index 值
-                    const zIndex = parseInt(window.getComputedStyle(div).zIndex);
-                    if (zIndex > maxZIndex) {
-                        maxZIndex = zIndex;
-                    }
-                }
-                page.style.zIndex = maxZIndex + 1;
+                page.style.zIndex = ++bny._pageZIndexCounter
             });
         }
 
@@ -404,8 +471,9 @@ window.bny = {
          * @param {bool} shade 是否关闭遮罩层
          * @param {String} anim 动画类型
          * @param {cb} animPlayer 动画播放器
+         * @param {Array} unloads 解绑回调数组，关闭时依次调用
          */
-        function close(page, shade, anim, animPlayer) {
+        function close(page, shade, anim, animPlayer, unloads) {
             const closeBtn = page.querySelector('.close-btn')
             if (shade) {
                 const shade = document.createElement("div")
@@ -414,6 +482,7 @@ window.bny = {
                 shade.addEventListener('click', (e) => {
                     if (e.target === shade) {
                         animPlayer(page, anim, false, () => {
+                            unloads.forEach(fn => { try { fn() } catch (_) { } })
                             shade.remove()
                         })
                         e.stopPropagation()
@@ -426,10 +495,12 @@ window.bny = {
             closeBtn.addEventListener('click', (e) => {
                 if (shade) {
                     animPlayer(page, anim, false, () => {
+                        unloads.forEach(fn => { try { fn() } catch (_) { } })
                         page.parentNode.remove()
                     })
                 } else {
                     animPlayer(page, anim, false, () => {
+                        unloads.forEach(fn => { try { fn() } catch (_) { } })
                         page.remove()
                     })
                 }
@@ -448,8 +519,8 @@ window.bny = {
         const offset = options.offset ?? 'auto'
         // 遮罩层
         const shade = options.shade ?? false
-        // 判断内容是否石链接
-        if (content.startsWith("http://") || content.startsWith("https://")) {
+        // 安全判断：仅 http/https 链接才转 iframe，过滤 javascript:/data: 等危险协议
+        if (typeof content === 'string' && isSafeUrl(content)) {
             content = `<iframe src="${content}"></iframe>`;
         }
         const windowWidth = window.innerWidth
@@ -520,7 +591,7 @@ window.bny = {
 
         page.innerHTML = `
         <div class="header">
-            <div class="title">${title}</div>
+            <div class="title">${bny.escapeChars(title === false ? '' : title)}</div>
                 <div class="setwin">
                     <span class="bny-icon icon-minus min-auto"></span>
                     <span class="bny-icon icon-fullscreen zoom"></span>
@@ -531,10 +602,12 @@ window.bny = {
         <div class="content ${title === false ? 'not-title' : ''}">${content}</div>`
         const header = page.querySelector('.header')
         if (title === false) header.style.display = 'none'
+        // 解绑回调数组：page 关闭时统一调用，避免 document 监听器泄漏
+        const unloads = []
         // 关闭页面
-        close(page, shade, anim, this.animPlayer)
-        // 页面拖动
-        drag(page)
+        close(page, shade, anim, this.animPlayer, unloads)
+        // 页面拖动（注入解绑回调）
+        drag(page, fn => unloads.push(fn))
         // 页面缩放
         resize(page, width, height, currentX, currentY)
         // 页面最小化
@@ -543,6 +616,12 @@ window.bny = {
         zIndex(page)
         return page
     },
+    /**
+     * bny.page 的 z-index 计数器（模块级单例，避免每次点击遍历所有 .bny-page）
+     * 起始值 999，每次创建/聚焦 page 自增
+     * @type {Number}
+     */
+    _pageZIndexCounter: 999,
     /**
      * 加载页面
      * @param {number} style 加载样式 0:旋转 1:线性 2:球型

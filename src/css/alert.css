@@ -1,14 +1,45 @@
-.bny-alert-open {
+/* 多条 alert 共享的垂直堆叠容器（替代原 .bny-alert-open 单条居中容器） */
+.bny-alert-box {
     position: fixed;
     z-index: 9999;
-    top: 50%;
+    top: 24px;
     left: 50%;
-    transition: none;
-    transform: translate(-50%, -50%);
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    pointer-events: none; /* 容器本身不拦截事件，让 alert 自行处理 */
+    max-width: 90vw;
+
+    /* 容器为空时不占位 */
+    &:empty {
+        display: none;
+    }
+
+    /* alert 自身可点击（关闭按钮） */
+    & > .bny-alert {
+        pointer-events: auto;
+        min-width: 220px;
+        max-width: 80vw;
+    }
+
+    /* 关闭按钮样式 */
+    & .bny-alert-close {
+        cursor: pointer;
+        margin-left: auto;
+        padding: 2px;
+        opacity: 0.6;
+        font-size: var(--font-size-sm);
+
+        &:hover {
+            opacity: 1;
+        }
+    }
 }
 
 .bny-alert {
-    margin-bottom: 12px;
+    margin-bottom: 0;
     padding: 12px 18px;
     width: 100%;
     border-style: solid;

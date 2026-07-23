@@ -3411,6 +3411,59 @@ p {
         }
     }
 }
+
+/* ========== Loading 状态（与 htmx 集成） ========== */
+.bny-btn.bny-loading {
+    cursor: progress;
+    pointer-events: none;
+    position: relative;
+    color: transparent !important;
+
+    /* 文字隐藏后用伪元素展示 spinner */
+    &::after {
+        content: "";
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 16px;
+        height: 16px;
+        margin: -8px 0 0 -8px;
+        /* 不能用 currentColor：color 已被设为 transparent，currentColor 也会解析为透明
+         * 用 CSS 变量 --btn-spin-color 显式指定 spinner 颜色，默认白色（实色按钮用） */
+        --btn-spin-color: var(--white-common);
+        border: 2px solid var(--btn-spin-color);
+        border-top-color: transparent;
+        border-radius: 50%;
+        animation: bny-btn-spin 0.6s linear infinite;
+        box-sizing: content-box;
+    }
+
+    /* 边框按钮的 spinner 颜色取主色 */
+    &[model~="border"]::after {
+        --btn-spin-color: var(--default);
+    }
+
+    &[color="green"]::after { --btn-spin-color: var(--white-common); }
+    &[color="blue"]::after  { --btn-spin-color: var(--white-common); }
+    &[color="yellow"]::after{ --btn-spin-color: var(--white-common); }
+    &[color="red"]::after   { --btn-spin-color: var(--white-common); }
+
+    /* 边框 + 颜色：spinner 取颜色主色（边框按钮背景透明，白色不可见） */
+    &[model~="border"][color="green"]::after  { --btn-spin-color: var(--green); }
+    &[model~="border"][color="blue"]::after   { --btn-spin-color: var(--blue); }
+    &[model~="border"][color="yellow"]::after { --btn-spin-color: var(--yellow); }
+    &[model~="border"][color="red"]::after   { --btn-spin-color: var(--red); }
+
+    /* 禁用 hover/active 视觉 */
+    &:hover,
+    &:active {
+        transform: none !important;
+    }
+}
+
+@keyframes bny-btn-spin {
+    to { transform: rotate(360deg); }
+}
 .bny-tag {
     display: inline-flex;
     align-items: center;
@@ -3576,17 +3629,48 @@ p {
         }
     }
 }
-.bny-alert-open {
+/* 多条 alert 共享的垂直堆叠容器（替代原 .bny-alert-open 单条居中容器） */
+.bny-alert-box {
     position: fixed;
     z-index: 9999;
-    top: 50%;
+    top: 24px;
     left: 50%;
-    transition: none;
-    transform: translate(-50%, -50%);
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    pointer-events: none; /* 容器本身不拦截事件，让 alert 自行处理 */
+    max-width: 90vw;
+
+    /* 容器为空时不占位 */
+    &:empty {
+        display: none;
+    }
+
+    /* alert 自身可点击（关闭按钮） */
+    & > .bny-alert {
+        pointer-events: auto;
+        min-width: 220px;
+        max-width: 80vw;
+    }
+
+    /* 关闭按钮样式 */
+    & .bny-alert-close {
+        cursor: pointer;
+        margin-left: auto;
+        padding: 2px;
+        opacity: 0.6;
+        font-size: var(--font-size-sm);
+
+        &:hover {
+            opacity: 1;
+        }
+    }
 }
 
 .bny-alert {
-    margin-bottom: 12px;
+    margin-bottom: 0;
     padding: 12px 18px;
     width: 100%;
     border-style: solid;
@@ -4429,6 +4513,19 @@ table[hx-ext~="bny-table"] th.sortable {
         }
     }
 }
+
+/* ========== 空状态占位 ========== */
+table[hx-ext~="bny-table"] tbody tr.bny-table-empty td {
+    text-align: center;
+    padding: 32px 16px;
+    color: var(--gray);
+    font-size: var(--font-size-sm);
+    background-color: var(--white-alpha-04, rgba(255, 255, 255, 0.04));
+}
+
+html.dark table[hx-ext~="bny-table"] tbody tr.bny-table-empty td {
+    color: var(--gray-shallow);
+}
 [hx-ext~="bny-tab"] {
     width: 100%;
     position: relative;
@@ -4923,6 +5020,71 @@ table[hx-ext~="bny-table"] th.sortable {
             }
         }
     }
+}
+
+/* ========== 表单控件 size 变体 ==========
+ * 适用于 input / textarea / select 三类控件
+ * - size="sm" : 30px 高度，紧凑型
+ * - 默认      : 38px
+ * - size="lg" : 46px 高度
+ */
+.bny-input[size="sm"],
+.bny-textarea[size="sm"],
+.bny-select[size="sm"],
+[hx-ext="bny-input"][size="sm"],
+[hx-ext="bny-textarea"][size="sm"],
+[hx-ext="bny-select"][size="sm"] {
+    height: 30px;
+    font-size: var(--font-size-sm);
+    padding: 0 8px;
+    border-radius: var(--border-radius-sm);
+}
+
+.bny-input[size="lg"],
+.bny-textarea[size="lg"],
+.bny-select[size="lg"],
+[hx-ext="bny-input"][size="lg"],
+[hx-ext="bny-textarea"][size="lg"],
+[hx-ext="bny-select"][size="lg"] {
+    height: 46px;
+    font-size: var(--font-size-16);
+    padding: 0 16px;
+    border-radius: var(--border-radius-8);
+}
+
+/* textarea 不强制固定高度 */
+.bny-textarea[size="sm"],
+.bny-textarea[size="lg"],
+[hx-ext="bny-textarea"][size="sm"],
+[hx-ext="bny-textarea"][size="lg"] {
+    height: auto;
+    min-height: 80px;
+}
+
+/* ========== select 增强：自定义箭头视觉 + 焦点态 ========== */
+.bny-select:hover,
+[hx-ext="bny-select"]:hover {
+    border-color: var(--default-middle);
+}
+
+.bny-select:focus,
+[hx-ext="bny-select"]:focus {
+    border-color: var(--default);
+    box-shadow: var(--focus-ring);
+}
+
+/* select 选项组样式（部分浏览器支持） */
+.bny-select option,
+[hx-ext="bny-select"] option {
+    padding: 8px 12px;
+    background-color: var(--white);
+    color: var(--black);
+}
+
+/* select disabled 视觉 */
+.bny-select:disabled,
+[hx-ext="bny-select"]:disabled {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23B0B7C0' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
 }
 .bny-container {
     margin: 0 auto;

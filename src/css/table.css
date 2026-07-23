@@ -188,3 +188,16 @@ table[hx-ext~="bny-table"] th.sortable {
         }
     }
 }
+
+/* ========== 空状态占位 ========== */
+table[hx-ext~="bny-table"] tbody tr.bny-table-empty td {
+    text-align: center;
+    padding: 32px 16px;
+    color: var(--gray);
+    font-size: var(--font-size-sm);
+    background-color: var(--white-alpha-04, rgba(255, 255, 255, 0.04));
+}
+
+html.dark table[hx-ext~="bny-table"] tbody tr.bny-table-empty td {
+    color: var(--gray-shallow);
+}

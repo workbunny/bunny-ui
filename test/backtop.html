@@ -116,6 +116,37 @@
                 </div>
             </div>
 
+            <h2 id="n04b">指定滚动容器</h2>
+            <div class="bny-card">
+                <div hx-ext="bny-tab">
+                    <ul class="head">
+                        <li>Preview</li>
+                        <li>Code</li>
+                    </ul>
+                    <div class="body">
+                        <div>
+                            <div class="p-12">
+                                <blockquote class="bny-blockquote">
+                                    默认监听 window 滚动；通过 <code>data-target</code> 指定选择器，可绑定到内部滚动容器；不指定时自动检测 <code>#bny-content</code> 或 <code>[data-scroll-container]</code>。支持页面同时存在多个 backtop 实例。
+                                </blockquote>
+                            </div>
+                        </div>
+                        <div>
+                            <pre hx-ext="bny-code">
+&lt;!-- 指定容器 --&gt;
+&lt;div id=&quot;bny-backtop&quot; data-target=&quot;#my-scroll&quot; data-threshold=&quot;100&quot;&gt;
+    &lt;i class=&quot;bny-icon icon-arrowup&quot;&gt;&lt;/i&gt;
+&lt;/div&gt;
+&lt;div id=&quot;my-scroll&quot; style=&quot;height:300px;overflow:auto;&quot;&gt;...&lt;/div&gt;
+
+&lt;!-- 自动创建（页面无任何 backtop 元素时）--&gt;
+&lt;!-- 脚本会在 body 末尾自动插入 #bny-backtop --&gt;
+            </pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <h2 id="n05">API</h2>
             <h3>属性</h3>
             <table hx-ext="bny-table">

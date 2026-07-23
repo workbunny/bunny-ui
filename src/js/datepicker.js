@@ -16,6 +16,10 @@
         this.min = options.min || null;
         this.max = options.max || null;
 
+        // 预解析 min/max 为可比较的数字，避免 isDisabled 每次调用都 new Date()
+        this._minStamp = parseBoundary(this.min);
+        this._maxStamp = parseBoundary(this.max);
+
         // 当前展示的年月
         this.viewYear = new Date().getFullYear();
         this.viewMonth = new Date().getMonth();
@@ -30,6 +34,19 @@
 
         this.initPanel();
         this.bindEvents();
+    }
+
+    /**
+     * 解析边界值（min/max）为时间戳，避免重复 new Date()
+     * 接受 Date 对象或日期字符串
+     * @param {Date|string|*} v
+     * @returns {number|null}
+     */
+    function parseBoundary(v) {
+        if (!v) return null;
+        var d = (v instanceof Date) ? v : new Date(v);
+        if (isNaN(d.getTime())) return null;
+        return d.getTime();
     }
 
     DatePicker.prototype.initPanel = function () {
@@ -107,6 +124,91 @@
         });
         window.addEventListener('resize', function () { if (self.panel.classList.contains('show')) self.position(); });
         window.addEventListener('scroll', function () { if (self.panel.classList.contains('show')) self.position(); }, true);
+
+        // 键盘导航：方向键移动临时日期、Enter 确认、Escape 取消
+        this.panel.addEventListener('keydown', function (e) {
+            self.handleKeydown(e);
+        });
+    };
+
+    /**
+     * 键盘事件处理
+     * - ←/→: 前一日/后一日
+     * - ↑/↓: 上一周/下一周
+     * - Enter: 确认选择（confirm）
+     * - Escape: 取消并关闭（cancel）
+     * 仅在 calendar 视图下响应方向键；months/years 视图也支持方向键导航
+     * @param {KeyboardEvent} e
+     */
+    DatePicker.prototype.handleKeydown = function (e) {
+        var key = e.key;
+        if (key === 'Enter') {
+            e.preventDefault();
+            this.confirm();
+            return;
+        }
+        if (key === 'Escape') {
+            e.preventDefault();
+            this.cancel();
+            return;
+        }
+        // 仅在 date/datetime/range/year-month 模式下响应方向键
+        if (!this.needsDate()) return;
+        if (this.viewType === 'calendar') {
+            // 日历视图：方向键移动临时日期
+            if (this.temp.y === null) {
+                var t = new Date();
+                this.temp.y = t.getFullYear();
+                this.temp.m = t.getMonth();
+                this.temp.d = t.getDate();
+            }
+            var y = this.temp.y, m = this.temp.m, d = this.temp.d;
+            var cur = new Date(y, m, d);
+            switch (key) {
+                case 'ArrowLeft':  cur.setDate(cur.getDate() - 1); break;
+                case 'ArrowRight': cur.setDate(cur.getDate() + 1); break;
+                case 'ArrowUp':    cur.setDate(cur.getDate() - 7); break;
+                case 'ArrowDown':  cur.setDate(cur.getDate() + 7); break;
+                default: return;
+            }
+            e.preventDefault();
+            this.temp.y = cur.getFullYear();
+            this.temp.m = cur.getMonth();
+            this.temp.d = cur.getDate();
+            // 视图跟随到目标月份
+            this.viewYear = this.temp.y;
+            this.viewMonth = this.temp.m;
+            this.render();
+        } else if (this.viewType === 'months') {
+            // 月份视图：←/→ 切换月份
+            switch (key) {
+                case 'ArrowLeft':
+                    e.preventDefault();
+                    if (this.temp.m > 0) this.temp.m--;
+                    else { this.temp.m = 11; this.viewYear--; }
+                    this.render();
+                    break;
+                case 'ArrowRight':
+                    e.preventDefault();
+                    if (this.temp.m < 11) this.temp.m++;
+                    else { this.temp.m = 0; this.viewYear++; }
+                    this.render();
+                    break;
+                case 'ArrowUp':
+                    e.preventDefault(); this.viewYear--; this.render(); break;
+                case 'ArrowDown':
+                    e.preventDefault(); this.viewYear++; this.render(); break;
+            }
+        } else if (this.viewType === 'years') {
+            // 年份视图：←/→ 切换 1 年，↑/↓ 切换 4 年
+            if (this.temp.y === null) this.temp.y = this.viewYear;
+            switch (key) {
+                case 'ArrowLeft':  e.preventDefault(); this.temp.y--; this.render(); break;
+                case 'ArrowRight': e.preventDefault(); this.temp.y++; this.render(); break;
+                case 'ArrowUp':    e.preventDefault(); this.temp.y -= 4; this.render(); break;
+                case 'ArrowDown':  e.preventDefault(); this.temp.y += 4; this.render(); break;
+            }
+        }
     };
 
     DatePicker.prototype.needsTime = function () {
@@ -124,6 +226,7 @@
     DatePicker.prototype.open = function () {
         if (currentPanel && currentPanel !== this) currentPanel.close();
         currentPanel = this;
+        currentInstance = this;
 
         this.parseFromInput();
         this.initTemp();
@@ -134,11 +237,26 @@
         // 先定位再显示（过渡动画需要元素已有尺寸）
         this.position();
         this.panel.classList.add('show');
+        // 面板获得焦点，便于键盘操作
+        var self = this;
+        requestAnimationFrame(function () {
+            if (self.panel) {
+                self.panel.setAttribute('tabindex', '-1');
+                self.panel.focus();
+            }
+        });
     };
 
     DatePicker.prototype.close = function () {
         this.panel.classList.remove('show');
-        currentPanel = null;
+        if (currentPanel === this) currentPanel = null;
+        if (currentInstance === this) currentInstance = null;
+        // 关闭后回流焦点到 input，并触发 change 事件
+        // HTMX 集成场景依赖 input 的 change 事件提交（hx-trigger="change"）
+        try {
+            var event = new Event('change', { bubbles: true });
+            this.input.dispatchEvent(event);
+        } catch (_) { /* 兼容旧浏览器 */ }
     };
 
     DatePicker.prototype.cancel = function () {
@@ -417,13 +535,14 @@
     };
 
     DatePicker.prototype.isDisabled = function (y, m, d) {
-        if (this.min) {
-            var min = new Date(this.min);
-            if (new Date(y, m, d) < new Date(min.getFullYear(), min.getMonth(), min.getDate())) return true;
+        // 使用预解析时间戳比较，避免重复 new Date(this.min)
+        if (this._minStamp !== null) {
+            var cur = new Date(y, m, d).getTime();
+            if (cur < this._minStamp) return true;
         }
-        if (this.max) {
-            var max = new Date(this.max);
-            if (new Date(y, m, d) > new Date(max.getFullYear(), max.getMonth(), max.getDate())) return true;
+        if (this._maxStamp !== null) {
+            var cur2 = new Date(y, m, d).getTime();
+            if (cur2 > this._maxStamp) return true;
         }
         return false;
     };
@@ -446,8 +565,10 @@
     function DateRangePicker(input1, input2, options) {
         this.mode = 'range';
         options = options || {};
-        this.picker1 = new DatePicker(input1, { mode: options.subMode || 'date', min: options.min, max: options.max });
-        this.picker2 = new DatePicker(input2, { mode: options.subMode || 'date', min: options.min, max: options.max });
+        // subMode 仅在 mode='range' 时回退到 'date'，其他模式（如 datetime）保持原值
+        var subMode = options.subMode === 'range' ? 'date' : (options.subMode || 'date');
+        this.picker1 = new DatePicker(input1, { mode: subMode, min: options.min, max: options.max });
+        this.picker2 = new DatePicker(input2, { mode: subMode, min: options.min, max: options.max });
 
         // 联动：确保 start <= end
         var self = this;
@@ -461,6 +582,12 @@
                     self.picker2.selected.y = self.picker1.selected.y;
                     self.picker2.selected.m = self.picker1.selected.m;
                     self.picker2.selected.d = self.picker1.selected.d;
+                    // datetime 等模式同步时分秒
+                    if (subMode === 'datetime') {
+                        self.picker2.selected.H = self.picker1.selected.H;
+                        self.picker2.selected.M = self.picker1.selected.M;
+                        self.picker2.selected.S = self.picker1.selected.S;
+                    }
                     self.picker2.syncInput();
                 }
             }
@@ -475,6 +602,11 @@
                     self.picker1.selected.y = self.picker2.selected.y;
                     self.picker1.selected.m = self.picker2.selected.m;
                     self.picker1.selected.d = self.picker2.selected.d;
+                    if (subMode === 'datetime') {
+                        self.picker1.selected.H = self.picker2.selected.H;
+                        self.picker1.selected.M = self.picker2.selected.M;
+                        self.picker1.selected.S = self.picker2.selected.S;
+                    }
                     self.picker1.syncInput();
                 }
             }

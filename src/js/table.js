@@ -57,6 +57,38 @@ htmx.defineExtension('bny-table', {
             }
             if (!ths.length) return;
 
+            // 表格唯一标识（用于持久化排序状态到 sessionStorage）
+            const tableKey = table.getAttribute('data-table-key') || '';
+            const storeKey = tableKey ? 'bny-table-sort:' + tableKey : '';
+
+            /**
+             * 持久化排序状态到 sessionStorage
+             * @param {number} colIndex
+             * @param {string} type
+             * @param {boolean} asc
+             */
+            function persistSort(colIndex, type, asc) {
+                if (!storeKey) return;
+                try {
+                    sessionStorage.setItem(storeKey, JSON.stringify({
+                        colIndex: colIndex, type: type, asc: asc
+                    }));
+                } catch (_) { /* 隐私模式或配额超限，忽略 */ }
+            }
+
+            /**
+             * 读取持久化的排序状态
+             * @returns {{colIndex:number,type:string,asc:boolean}|null}
+             */
+            function readSort() {
+                if (!storeKey) return null;
+                try {
+                    var raw = sessionStorage.getItem(storeKey);
+                    if (!raw) return null;
+                    return JSON.parse(raw);
+                } catch (_) { return null; }
+            }
+
             ths.forEach(function (th) {
                 const colIndex = Array.from(th.parentElement.querySelectorAll('th')).indexOf(th);
 
@@ -85,8 +117,23 @@ htmx.defineExtension('bny-table', {
                     if (tbody) {
                         sortRows(tbody, colIndex, type, asc);
                     }
+                    // 持久化排序状态
+                    persistSort(colIndex, type, asc);
                 });
             });
+
+            // 恢复持久化的排序状态（HTMX 重新请求后自动应用）
+            const saved = readSort();
+            if (saved) {
+                const targetTh = ths[saved.colIndex];
+                if (targetTh) {
+                    targetTh.classList.add(saved.asc ? 'sort-asc' : 'sort-desc');
+                    const tbody = table.querySelector('tbody');
+                    if (tbody) {
+                        sortRows(tbody, saved.colIndex, saved.type, saved.asc);
+                    }
+                }
+            }
         }
 
         /**
@@ -133,30 +180,82 @@ htmx.defineExtension('bny-table', {
     transformResponse: function (text, xhr, elt) {
 
         /**
+         * 渲染单个单元格内容
+         * - 字符串/数字：默认 escapeChars 转义，防 XSS
+         * - 对象 { __html: '...' }：原始 HTML（用于嵌入链接、按钮等富内容，由调用方保证安全）
+         * @param {*} cell
+         * @returns {string}
+         */
+        function renderCell(cell) {
+            if (cell !== null && typeof cell === 'object' && typeof cell.__html !== 'undefined') {
+                return String(cell.__html)
+            }
+            return bny.escapeChars(String(cell))
+        }
+
+        /**
+         * 渲染表头单元格
+         * - 字符串：escapeChars
+         * - 对象 { name, sortable, sort }：支持列级排序声明
+         * @param {*} col
+         * @returns {string}
+         */
+        function renderCol(col) {
+            if (col !== null && typeof col === 'object') {
+                var name = bny.escapeChars(String(col.name ?? ''))
+                var attrs = ''
+                if (col.sortable) attrs += ' sortable'
+                if (col.sort) attrs += ' data-sort="' + bny.escapeChars(String(col.sort)) + '"'
+                return '<th' + attrs + '>' + name + '</th>'
+            }
+            return '<th>' + bny.escapeChars(String(col)) + '</th>'
+        }
+
+        /**
          * JSON数据转表格HTML
-         * @param {object} data { cols: [...], rows: [[...], ...] }
+         * @param {object} data { cols: [...], rows: [[...], ...], color, empty }
          * @returns {string} html
          */
         function buildTable(data) {
             const cols = data.cols || [];
             const rows = data.rows || [];
             const color = data.color || '';
+            // 空数据时的占位文案，默认 '暂无数据'
+            const emptyText = data.empty || '暂无数据';
+            // 表格唯一标识（用于排序状态持久化），优先使用 data.key，其次 color
+            const tableKey = data.key || color || '';
 
             let h = '';
-            h += '<table hx-ext="bny-table"' + (color ? ' color="' + color + '"' : '') + '>';
+            // 先拼完所有属性，最后再加 '>' 闭合 <table> 标签
+            // 否则 data-table-key 会跑到 table 标签后面变成文本节点（页面多出 '>' 符号）
+            h += '<table hx-ext="bny-table"' + (color ? ' color="' + color + '"' : '');
+            if (tableKey) h += ' data-table-key="' + bny.escapeChars(tableKey) + '"';
+            h += '>';
             h += '<thead><tr>';
             cols.forEach(function (col) {
-                h += '<th>' + bny.escapeChars(col) + '</th>';
+                h += renderCol(col);
             });
             h += '</tr></thead>';
             h += '<tbody>';
-            rows.forEach(function (row) {
-                h += '<tr>';
-                row.forEach(function (cell) {
-                    h += '<td>' + bny.escapeChars(String(cell)) + '</td>';
+            if (rows.length === 0) {
+                // 空状态：合并所有列显示占位文案
+                h += '<tr class="bny-table-empty"><td colspan="' + cols.length + '">' + bny.escapeChars(emptyText) + '</td></tr>';
+            } else {
+                rows.forEach(function (row) {
+                    h += '<tr>';
+                    if (Array.isArray(row)) {
+                        row.forEach(function (cell) {
+                            h += '<td>' + renderCell(cell) + '</td>';
+                        });
+                    } else if (row && typeof row === 'object' && row.__html) {
+                        // 整行原始 HTML（用于自定义行结构）
+                        h += row.__html;
+                    } else {
+                        h += '<td>' + renderCell(row) + '</td>';
+                    }
+                    h += '</tr>';
                 });
-                h += '</tr>';
-            });
+            }
             h += '</tbody></table>';
             return h;
         }

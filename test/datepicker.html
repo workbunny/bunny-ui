@@ -166,6 +166,38 @@
                 </div>
             </div>
 
+            <h2 id="n06b">键盘交互</h2>
+            <div class="bny-card">
+                <div hx-ext="bny-tab">
+                    <ul class="head">
+                        <li>Preview</li>
+                        <li>Code</li>
+                    </ul>
+                    <div class="body">
+                        <div>
+                            <div class="p-12">
+                                <blockquote class="bny-blockquote">
+                                    打开日期面板后：
+                                    <ul>
+                                        <li>←/→：前一/后一日（月份视图下切换月份）</li>
+                                        <li>↑/↓：上一周/下一周（月份视图下切换年份）</li>
+                                        <li>Enter：确认选择</li>
+                                        <li>Escape：取消并关闭</li>
+                                    </ul>
+                                    关闭面板后自动触发 input 的 change 事件，便于配合 hx-trigger="change" 提交。
+                                </blockquote>
+                            </div>
+                        </div>
+                        <div>
+                            <pre hx-ext="bny-code">
+&lt;input class=&quot;bny-input&quot; data-picker=&quot;date&quot;&gt;
+&lt;input class=&quot;bny-input&quot; data-picker=&quot;range&quot; data-picker-mode=&quot;datetime&quot;&gt;
+            </pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <h2 id="n07">API</h2>
             <h3>属性</h3>
             <table hx-ext="bny-table">

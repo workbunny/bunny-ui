@@ -369,6 +369,87 @@
                 </div>
             </div>
 
+            <h2 id="n06b">富内容单元格 + 持久化排序</h2>
+            <div class="bny-card">
+                <div hx-ext="bny-tab">
+                    <ul class="head">
+                        <li>Preview</li>
+                        <li>Code</li>
+                        <li>Json</li>
+                    </ul>
+                    <div class="body">
+                        <div>
+                            <div class="p-12">
+                                <button class="bny-btn" hx-ext="bny-table" hx-get="/test/data/table03.json" hx-target="#table-raw-demo" hx-swap="innerHTML" hx-trigger="click">加载表格</button>
+                                <div id="table-raw-demo" class="mt-12"></div>
+                                <blockquote class="bny-blockquote">
+                                    单元格支持 { "__html": "..." } 渲染原始 HTML（用于链接/按钮等富内容）。点击列头排序后，HTMX 重新加载会从 sessionStorage 恢复排序状态。
+                                </blockquote>
+                            </div>
+                        </div>
+                        <div>
+                            <pre hx-ext="bny-code">
+&lt;button hx-ext=&quot;bny-table&quot; hx-get=&quot;/test/data/table03.json&quot;
+    hx-target=&quot;#table-raw-demo&quot; hx-swap=&quot;innerHTML&quot;&gt;加载表格&lt;/button&gt;
+
+// 单元格使用对象 { __html: '&lt;a ...&gt;编辑&lt;/a&gt;' } 时会渲染原始 HTML
+            </pre>
+                        </div>
+                        <div>
+                            <pre hx-ext="bny-code">
+// table03.json
+{
+    "key": "user-list",
+    "cols": [
+        {"name": "姓名", "sortable": true, "sort": "string"},
+        {"name": "操作", "sortable": false}
+    ],
+    "rows": [
+        ["张三", {"__html": "&lt;a class='bny-btn' model='border'&gt;编辑&lt;/a&gt;"}]
+    ]
+}
+            </pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h2 id="n06c">空状态</h2>
+            <div class="bny-card">
+                <div hx-ext="bny-tab">
+                    <ul class="head">
+                        <li>Preview</li>
+                        <li>Code</li>
+                        <li>Json</li>
+                    </ul>
+                    <div class="body">
+                        <div>
+                            <div class="p-12">
+                                <button class="bny-btn" hx-ext="bny-table" hx-get="/test/data/table04.json" hx-target="#table-empty-demo" hx-swap="innerHTML" hx-trigger="click">加载空数据</button>
+                                <div id="table-empty-demo" class="mt-12"></div>
+                            </div>
+                        </div>
+                        <div>
+                            <pre hx-ext="bny-code">
+&lt;button hx-ext=&quot;bny-table&quot; hx-get=&quot;/test/data/table04.json&quot;
+    hx-target=&quot;#table-empty-demo&quot;&gt;加载空数据&lt;/button&gt;
+            </pre>
+                        </div>
+                        <div>
+                            <pre hx-ext="bny-code">
+// table04.json
+{
+    "key": "empty-table",
+    "cols": ["姓名", "年龄", "积分"],
+    "rows": [],
+    "empty": "暂无符合条件的记录"
+}
+            </pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <h2 id="n07">API</h2>
             <h3>标签属性</h3>
             <table hx-ext="bny-table">
