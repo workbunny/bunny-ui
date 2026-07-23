@@ -1,0 +1,15 @@
+{
+    "key": "user-list",
+    "cols": [
+        {"name": "姓名", "sortable": true, "sort": "string"},
+        {"name": "年龄", "sortable": true, "sort": "number"},
+        {"name": "积分", "sortable": true, "sort": "number"},
+        {"name": "操作", "sortable": false}
+    ],
+    "rows": [
+        ["张三", "28", "920", {"__html": "<a href=\"#\" class=\"bny-btn\" model=\"border\" color=\"blue\" size=\"sm\">编辑</a>"}],
+        ["李四", "22", "1050", {"__html": "<a href=\"#\" class=\"bny-btn\" model=\"border\" color=\"blue\" size=\"sm\">编辑</a>"}],
+        ["王五", "31", "780", {"__html": "<a href=\"#\" class=\"bny-btn\" model=\"border\" color=\"blue\" size=\"sm\">编辑</a>"}],
+        ["赵六", "25", "1340", {"__html": "<a href=\"#\" class=\"bny-btn\" model=\"border\" color=\"blue\" size=\"sm\">编辑</a>"}]
+    ]
+}

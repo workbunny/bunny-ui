@@ -146,3 +146,174 @@
         }
     }
 }
+
+/* ---- 扩展组合布局 ---- */
+
+/* 详情页骨架：标签 + 值的两栏布局 */
+.bny-skeleton-detail {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+
+    & .row {
+        display: flex;
+        gap: 16px;
+        align-items: center;
+
+        & .label {
+            width: 80px;
+            height: 14px;
+            flex-shrink: 0;
+        }
+
+        & .value {
+            flex: 1;
+            height: 14px;
+        }
+    }
+}
+
+/* 评论骨架：头像 + 名称 + 内容 */
+.bny-skeleton-comment {
+    display: flex;
+    gap: 14px;
+    margin-bottom: 20px;
+
+    &:last-child { margin-bottom: 0; }
+
+    & .bny-skeleton-avatar {
+        flex-shrink: 0;
+    }
+
+    & .body {
+        flex: 1;
+
+        & .name {
+            width: 30%;
+            height: 12px;
+            margin-bottom: 8px;
+        }
+
+        & .line {
+            height: 14px;
+            margin-bottom: 6px;
+        }
+
+        & .line.short {
+            width: 60%;
+        }
+    }
+}
+
+/* 表单骨架：label + input 的多行 */
+.bny-skeleton-form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    max-width: 480px;
+
+    & .form-row {
+        & .label {
+            width: 60px;
+            height: 12px;
+            margin-bottom: 6px;
+        }
+
+        & .input {
+            width: 100%;
+            height: 32px;
+            border-radius: var(--border-radius);
+        }
+    }
+}
+
+/* 导航/页头骨架：logo + 菜单项 */
+.bny-skeleton-navbar {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    padding: 14px 0;
+
+    & .logo {
+        width: 120px;
+        height: 28px;
+        flex-shrink: 0;
+    }
+
+    & .menu {
+        flex: 1;
+        display: flex;
+        gap: 20px;
+
+        & .item {
+            width: 60px;
+            height: 14px;
+        }
+    }
+
+    & .action {
+        width: 80px;
+        height: 28px;
+        flex-shrink: 0;
+    }
+}
+
+/* 个人资料卡片骨架：大头像 + 名称 + 简介行 */
+.bny-skeleton-profile {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    padding: 24px;
+
+    & .bny-skeleton-avatar {
+        width: 72px;
+        height: 72px;
+    }
+
+    & .name {
+        width: 40%;
+        height: 18px;
+    }
+
+    & .bio {
+        width: 70%;
+        height: 12px;
+    }
+
+    & .stats {
+        display: flex;
+        gap: 32px;
+        margin-top: 8px;
+
+        & .stat {
+            text-align: center;
+
+            & .num {
+                width: 40px;
+                height: 16px;
+                margin: 0 auto 4px;
+            }
+
+            & .label {
+                width: 32px;
+                height: 10px;
+                margin: 0 auto;
+            }
+        }
+    }
+}
+
+/* 多列网格骨架 */
+.bny-skeleton-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 16px;
+
+    & .bny-skeleton-card {
+        & .bny-skeleton-image { height: 120px; }
+        & .bny-skeleton-title { margin: 12px 16px 8px; }
+        & .bny-skeleton-text { margin: 0 16px 6px; }
+        & .bny-skeleton-text:last-child { width: 55%; margin-bottom: 16px; }
+    }
+}

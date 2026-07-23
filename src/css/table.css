@@ -1,5 +1,5 @@
 /* ========== 表格 ========== */
-table[hx-ext~="bny-table"] {
+table.bny-table, table[hx-ext~="bny-table"] {
     width: 100%;
     border-collapse: collapse;
     box-shadow: var(--box-shadow-005);
@@ -58,6 +58,63 @@ table[hx-ext~="bny-table"] {
 
     & tbody tr:nth-child(even):hover {
         background-color: var(--white-shallow);
+    }
+}
+
+/* ========== 表头排序 ========== */
+
+table[hx-ext~="bny-table"] th.sortable {
+    cursor: pointer;
+    user-select: none;
+    position: relative;
+    padding-right: 28px;
+
+    &::after {
+        content: "";
+        position: absolute;
+        right: 8px;
+        top: 50%;
+        width: 0;
+        height: 0;
+        border-left: 4px solid transparent;
+        border-right: 4px solid transparent;
+        border-top: 5px solid var(--white-alpha-50);
+        transform: translateY(-50%);
+        opacity: 0.4;
+    }
+
+    &::before {
+        content: "";
+        position: absolute;
+        right: 8px;
+        top: 50%;
+        width: 0;
+        height: 0;
+        border-left: 4px solid transparent;
+        border-right: 4px solid transparent;
+        border-bottom: 5px solid var(--white-alpha-50);
+        transform: translateY(calc(-50% - 8px));
+        opacity: 0.4;
+    }
+
+    /* 升序：上箭头高亮 */
+    &.sort-asc::before {
+        border-bottom-color: var(--white-common);
+        opacity: 1;
+    }
+
+    &.sort-asc::after {
+        opacity: 0.2;
+    }
+
+    /* 降序：下箭头高亮 */
+    &.sort-desc::after {
+        border-top-color: var(--white-common);
+        opacity: 1;
+    }
+
+    &.sort-desc::before {
+        opacity: 0.2;
     }
 }
 
@@ -130,4 +187,17 @@ table[hx-ext~="bny-table"] {
             background-color: var(--blue);
         }
     }
+}
+
+/* ========== 空状态占位 ========== */
+table[hx-ext~="bny-table"] tbody tr.bny-table-empty td {
+    text-align: center;
+    padding: 32px 16px;
+    color: var(--gray);
+    font-size: var(--font-size-sm);
+    background-color: var(--white-alpha-04, rgba(255, 255, 255, 0.04));
+}
+
+html.dark table[hx-ext~="bny-table"] tbody tr.bny-table-empty td {
+    color: var(--gray-shallow);
 }

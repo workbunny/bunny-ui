@@ -1,5 +1,6 @@
 <style>
     .home-page {
+
         /* ========== Hero ========== */
         & .hero {
             display: flex;
@@ -18,7 +19,7 @@
                 letter-spacing: -0.04em;
                 color: var(--black);
 
-                & > span {
+                &>span {
                     background: linear-gradient(135deg, var(--default) 0%, var(--default-middle) 100%);
                     -webkit-background-clip: text;
                     background-clip: text;
@@ -76,8 +77,14 @@
                 font-size: 12px;
                 color: var(--black-shallow);
 
-                & a { color: var(--black-shallow); }
-                & a:hover { color: var(--default); text-decoration: none; }
+                & a {
+                    color: var(--black-shallow);
+                }
+
+                & a:hover {
+                    color: var(--default);
+                    text-decoration: none;
+                }
 
                 & .sep {
                     width: 1px;
@@ -170,11 +177,18 @@
         .home-page {
             & .hero {
                 padding: 48px 20px 48px;
-                & h1 { font-size: 40px; }
+
+                & h1 {
+                    font-size: 40px;
+                }
             }
+
             & .features {
                 padding: 0 20px 48px;
-                & .grid { grid-template-columns: 1fr; }
+
+                & .grid {
+                    grid-template-columns: 1fr;
+                }
             }
         }
     }
@@ -189,8 +203,8 @@
         </p>
         <div class="actions">
             <button class="bny-btn" hx-get="/doc/iframe.html" hx-target="#bny-content">开始使用</button>
-            <a href="https://github.com/workbunny/bunny.ui/releases/latest/download/bunny.zip"
-               target="_blank" class="bny-btn" model="border">直接下载</a>
+            <a href="https://github.com/workbunny/bunny.ui/releases/latest/download/bunny.zip" target="_blank"
+                class="bny-btn" model="border">直接下载</a>
         </div>
         <div class="meta">
             <img src="https://badgen.net/github/release/workbunny/bunny.ui" alt="Version">

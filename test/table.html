@@ -1,50 +1,52 @@
 <div class="bny-row">
     <div class="text-content-box col-xs12 col-sm9">
         <div class="text-content">
-            <h1>样式</h1>
+            <h1>表格</h1>
             <hr>
             <blockquote class="bny-blockquote">
-                表格是一种用于展示数据的结构化布局。
+                表格是一种用于展示数据的结构化布局，支持表头排序和移动端响应式。
             </blockquote>
-            <h2 id="n01">基本表格</h2>
-            <div hx-ext="bny-tab">
-                <ul class="head">
-                    <li>Preview</li>
-                    <li>Code</li>
-                </ul>
-                <div class="body">
-                    <div>
-                        <div class="p-12">
-                            <table hx-ext="bny-table">
-                                <colgroup>
-                                    <col width="150">
-                                    <col width="150">
-                                    <col>
-                                </colgroup>
-                                <thead>
-                                    <tr>
-                                        <th>人物</th>
-                                        <th>民族</th>
-                                        <th>人生格言</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>孔子</td>
-                                        <td>华夏</td>
-                                        <td>有朋自远方来，不亦乐乎</td>
-                                    </tr>
-                                    <tr>
-                                        <td>孟子</td>
-                                        <td>华夏</td>
-                                        <td>穷则独善其身，达则兼济天下</td>
-                                    </tr>
-                                </tbody>
-                            </table>
+
+            <h2 id="n01">基础表格</h2>
+            <div class="bny-card">
+                <div hx-ext="bny-tab">
+                    <ul class="head">
+                        <li>Preview</li>
+                        <li>Code</li>
+                    </ul>
+                    <div class="body">
+                        <div>
+                            <div class="p-12">
+                                <table hx-ext="bny-table">
+                                    <colgroup>
+                                        <col width="150">
+                                        <col width="150">
+                                        <col>
+                                    </colgroup>
+                                    <thead>
+                                        <tr>
+                                            <th>人物</th>
+                                            <th>民族</th>
+                                            <th>人生格言</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>孔子</td>
+                                            <td>华夏</td>
+                                            <td>有朋自远方来，不亦乐乎</td>
+                                        </tr>
+                                        <tr>
+                                            <td>孟子</td>
+                                            <td>华夏</td>
+                                            <td>穷则独善其身，达则兼济天下</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
-                    </div>
-                    <div>
-                        <pre hx-ext="bny-code">
+                        <div>
+                            <pre hx-ext="bny-code">
 &lt;table hx-ext=&quot;bny-table&quot;&gt;
     &lt;colgroup&gt;
         &lt;col width=&quot;150&quot;&gt;
@@ -72,86 +74,489 @@
     &lt;/tbody&gt;
 &lt;/table&gt;
                 </pre>
+                        </div>
                     </div>
                 </div>
             </div>
+
             <h2 id="n02">颜色</h2>
-            <h3>绿色（green）-红色（red）-黄色（yellow）-蓝色（blue）</h3>
-            <div hx-ext="bny-tab">
-                <ul class="head">
-                    <li>Preview</li>
-                    <li>Code</li>
-                </ul>
-                <div class="body">
-                    <div>
-                        <div class="p-12">
-                            <table hx-ext="bny-table" color="green">
-                                <colgroup>
-                                    <col width="150">
-                                    <col width="150">
-                                    <col>
-                                </colgroup>
-                                <thead>
-                                    <tr>
-                                        <th>人物</th>
-                                        <th>民族</th>
-                                        <th>人生格言</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>孔子</td>
-                                        <td>华夏</td>
-                                        <td>有朋自远方来，不亦乐乎</td>
-                                    </tr>
-                                    <tr>
-                                        <td>孟子</td>
-                                        <td>华夏</td>
-                                        <td>穷则独善其身，达则兼济天下</td>
-                                    </tr>
-                                </tbody>
-                            </table>
+            <div class="bny-card">
+                <div hx-ext="bny-tab">
+                    <ul class="head">
+                        <li>Preview</li>
+                        <li>Code</li>
+                    </ul>
+                    <div class="body">
+                        <div>
+                            <div class="p-12">
+                                <table hx-ext="bny-table" color="green">
+                                    <thead>
+                                        <tr>
+                                            <th>人物</th>
+                                            <th>民族</th>
+                                            <th>人生格言</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>孔子</td>
+                                            <td>华夏</td>
+                                            <td>有朋自远方来，不亦乐乎</td>
+                                        </tr>
+                                        <tr>
+                                            <td>孟子</td>
+                                            <td>华夏</td>
+                                            <td>穷则独善其身，达则兼济天下</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div>
+                            <pre hx-ext="bny-code">
+&lt;table hx-ext=&quot;bny-table&quot; color=&quot;green&quot;&gt;
+    ...
+&lt;/table&gt;
+
+&lt;!-- 支持 green / yellow / red / blue --&gt;
+                </pre>
                         </div>
                     </div>
-                    <div>
-                        <pre hx-ext="bny-code">
-&lt;table hx-ext=&quot;bny-table&quot; color=&quot;green&quot;&gt;
-    &lt;colgroup&gt;
-        &lt;col width=&quot;150&quot;&gt;
-        &lt;col width=&quot;150&quot;&gt;
-        &lt;col&gt;
-    &lt;/colgroup&gt;
+                </div>
+            </div>
+
+            <h2 id="n03">表头排序</h2>
+            <div class="bny-card">
+                <div hx-ext="bny-tab">
+                    <ul class="head">
+                        <li>Preview</li>
+                        <li>Code</li>
+                    </ul>
+                    <div class="body">
+                        <div>
+                            <div class="p-12">
+                                <table hx-ext="bny-table">
+                                    <thead>
+                                        <tr>
+                                            <th data-sort>姓名</th>
+                                            <th data-sort="number">年龄</th>
+                                            <th data-sort="number">积分</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>张三</td>
+                                            <td>28</td>
+                                            <td>920</td>
+                                        </tr>
+                                        <tr>
+                                            <td>李四</td>
+                                            <td>22</td>
+                                            <td>1050</td>
+                                        </tr>
+                                        <tr>
+                                            <td>王五</td>
+                                            <td>31</td>
+                                            <td>780</td>
+                                        </tr>
+                                        <tr>
+                                            <td>赵六</td>
+                                            <td>25</td>
+                                            <td>1340</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div>
+                            <pre hx-ext="bny-code">
+&lt;table hx-ext=&quot;bny-table&quot;&gt;
     &lt;thead&gt;
         &lt;tr&gt;
-            &lt;th&gt;人物&lt;/th&gt;
-            &lt;th&gt;民族&lt;/th&gt;
-            &lt;th&gt;人生格言&lt;/th&gt;
+            &lt;th data-sort&gt;姓名&lt;/th&gt;
+            &lt;th data-sort=&quot;number&quot;&gt;年龄&lt;/th&gt;
+            &lt;th data-sort=&quot;number&quot;&gt;积分&lt;/th&gt;
+        &lt;/tr&gt;
+    &lt;/thead&gt;
+    &lt;tbody&gt;
+        &lt;tr&gt;&lt;td&gt;张三&lt;/td&gt;&lt;td&gt;28&lt;/td&gt;&lt;td&gt;920&lt;/td&gt;&lt;/tr&gt;
+        &lt;tr&gt;&lt;td&gt;李四&lt;/td&gt;&lt;td&gt;22&lt;/td&gt;&lt;td&gt;1050&lt;/td&gt;&lt;/tr&gt;
+        &lt;tr&gt;&lt;td&gt;王五&lt;/td&gt;&lt;td&gt;31&lt;/td&gt;&lt;td&gt;780&lt;/td&gt;&lt;/tr&gt;
+        &lt;tr&gt;&lt;td&gt;赵六&lt;/td&gt;&lt;td&gt;25&lt;/td&gt;&lt;td&gt;1340&lt;/td&gt;&lt;/tr&gt;
+    &lt;/tbody&gt;
+&lt;/table&gt;
+                </pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h2 id="n04">自定义排序值</h2>
+            <div class="bny-card">
+                <div hx-ext="bny-tab">
+                    <ul class="head">
+                        <li>Preview</li>
+                        <li>Code</li>
+                    </ul>
+                    <div class="body">
+                        <div>
+                            <div class="p-12">
+                                <p>当单元格显示内容与排序值不一致时，使用 <code>data-sort-val</code> 指定参与排序的值</p>
+                                <table hx-ext="bny-table" color="blue">
+                                    <thead>
+                                        <tr>
+                                            <th data-sort="number">排名</th>
+                                            <th>选手</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td data-sort-val="1">🥇 第一名</td>
+                                            <td>选手A</td>
+                                        </tr>
+                                        <tr>
+                                            <td data-sort-val="3">🥉 第三名</td>
+                                            <td>选手C</td>
+                                        </tr>
+                                        <tr>
+                                            <td data-sort-val="2">🥈 第二名</td>
+                                            <td>选手B</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div>
+                            <pre hx-ext="bny-code">
+&lt;table hx-ext=&quot;bny-table&quot;&gt;
+    &lt;thead&gt;
+        &lt;tr&gt;
+            &lt;th data-sort=&quot;number&quot;&gt;排名&lt;/th&gt;
+            &lt;th&gt;选手&lt;/th&gt;
         &lt;/tr&gt;
     &lt;/thead&gt;
     &lt;tbody&gt;
         &lt;tr&gt;
-            &lt;td&gt;孔子&lt;/td&gt;
-            &lt;td&gt;华夏&lt;/td&gt;
-            &lt;td&gt;有朋自远方来，不亦乐乎&lt;/td&gt;
+            &lt;td data-sort-val=&quot;1&quot;&gt;🥇 第一名&lt;/td&gt;
+            &lt;td&gt;选手A&lt;/td&gt;
         &lt;/tr&gt;
         &lt;tr&gt;
-            &lt;td&gt;孟子&lt;/td&gt;
-            &lt;td&gt;华夏&lt;/td&gt;
-            &lt;td&gt;穷则独善其身，达则兼济天下&lt;/td&gt;
+            &lt;td data-sort-val=&quot;2&quot;&gt;🥈 第二名&lt;/td&gt;
+            &lt;td&gt;选手B&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+            &lt;td data-sort-val=&quot;3&quot;&gt;🥉 第三名&lt;/td&gt;
+            &lt;td&gt;选手C&lt;/td&gt;
         &lt;/tr&gt;
     &lt;/tbody&gt;
 &lt;/table&gt;
                 </pre>
+                        </div>
                     </div>
                 </div>
             </div>
+
+            <h2 id="n05">Htmx用法</h2>
+            <div class="bny-card">
+                <div hx-ext="bny-tab">
+                    <ul class="head">
+                        <li>Preview</li>
+                        <li>Code</li>
+                        <li>Json</li>
+                    </ul>
+                    <div class="body">
+                        <div>
+                            <div class="p-12">
+                                <button class="bny-btn" hx-ext="bny-table" hx-get="/test/data/table01.json" hx-target="#table-demo" hx-swap="innerHTML" hx-trigger="click">加载表格</button>
+                                <button class="bny-btn" hx-ext="bny-table" hx-get="/test/data/table02.json" hx-target="#table-demo" hx-swap="innerHTML" hx-trigger="click" style="margin-left: 8px;">加载蓝色表格</button>
+                                <div id="table-demo" class="mt-16"></div>
+                            </div>
+                        </div>
+                        <div>
+                            <pre hx-ext="bny-code">
+&lt;button class=&quot;bny-btn&quot; hx-ext=&quot;bny-table&quot;
+    hx-get=&quot;/test/data/table01.json&quot; hx-target=&quot;#table-demo&quot;
+    hx-swap=&quot;innerHTML&quot; hx-trigger=&quot;click&quot;&gt;加载表格&lt;/button&gt;
+
+&lt;button class=&quot;bny-btn&quot; hx-ext=&quot;bny-table&quot;
+    hx-get=&quot;/test/data/table02.json&quot; hx-target=&quot;#table-demo&quot;
+    hx-swap=&quot;innerHTML&quot; hx-trigger=&quot;click&quot;&gt;加载蓝色表格&lt;/button&gt;
+
+&lt;div id=&quot;table-demo&quot;&gt;&lt;/div&gt;
+                </pre>
+                        </div>
+                        <div>
+                            <pre hx-ext="bny-code">
+// table01.json
+{
+    "cols": ["姓名", "年龄", "积分"],
+    "rows": [
+        ["张三", "28", "920"],
+        ["李四", "22", "1050"],
+        ["王五", "31", "780"],
+        ["赵六", "25", "1340"]
+    ]
+}
+
+// table02.json — 带颜色
+{
+    "color": "blue",
+    "cols": ["排名", "选手", "得分"],
+    "rows": [
+        ["1", "选手A", "98.5"],
+        ["2", "选手B", "95.0"],
+        ...
+    ]
+}
+                </pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h2 id="n06">Htmx-动态追加行</h2>
+            <div class="bny-card">
+                <div hx-ext="bny-tab">
+                    <ul class="head">
+                        <li>Preview</li>
+                        <li>Code</li>
+                    </ul>
+                    <div class="body">
+                        <div>
+                            <div class="p-12">
+                                <button class="bny-btn" hx-get="/test/data/table-row.html" hx-target="#table-append tbody" hx-swap="beforeend" hx-trigger="click">追加一行</button>
+                                <table hx-ext="bny-table" class="mt-12" id="table-append">
+                                    <thead>
+                                        <tr>
+                                            <th data-sort>姓名</th>
+                                            <th data-sort="number">年龄</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>张三</td>
+                                            <td>28</td>
+                                        </tr>
+                                        <tr>
+                                            <td>李四</td>
+                                            <td>22</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div>
+                            <pre hx-ext="bny-code">
+&lt;button class=&quot;bny-btn&quot; hx-get=&quot;/test/data/table-row.html&quot;
+    hx-target=&quot;#table-append tbody&quot; hx-swap=&quot;beforeend&quot;
+    hx-trigger=&quot;click&quot;&gt;追加一行&lt;/button&gt;
+
+&lt;table hx-ext=&quot;bny-table&quot; id=&quot;table-append&quot;&gt;
+    &lt;thead&gt;
+        &lt;tr&gt;
+            &lt;th data-sort&gt;姓名&lt;/th&gt;
+            &lt;th data-sort=&quot;number&quot;&gt;年龄&lt;/th&gt;
+        &lt;/tr&gt;
+    &lt;/thead&gt;
+    &lt;tbody&gt;
+        &lt;tr&gt;&lt;td&gt;张三&lt;/td&gt;&lt;td&gt;28&lt;/td&gt;&lt;/tr&gt;
+        &lt;tr&gt;&lt;td&gt;李四&lt;/td&gt;&lt;td&gt;22&lt;/td&gt;&lt;/tr&gt;
+    &lt;/tbody&gt;
+&lt;/table&gt;
+                </pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h2 id="n06b">富内容单元格 + 持久化排序</h2>
+            <div class="bny-card">
+                <div hx-ext="bny-tab">
+                    <ul class="head">
+                        <li>Preview</li>
+                        <li>Code</li>
+                        <li>Json</li>
+                    </ul>
+                    <div class="body">
+                        <div>
+                            <div class="p-12">
+                                <button class="bny-btn" hx-ext="bny-table" hx-get="/test/data/table03.json" hx-target="#table-raw-demo" hx-swap="innerHTML" hx-trigger="click">加载表格</button>
+                                <div id="table-raw-demo" class="mt-12"></div>
+                                <blockquote class="bny-blockquote">
+                                    单元格支持 { "__html": "..." } 渲染原始 HTML（用于链接/按钮等富内容）。点击列头排序后，HTMX 重新加载会从 sessionStorage 恢复排序状态。
+                                </blockquote>
+                            </div>
+                        </div>
+                        <div>
+                            <pre hx-ext="bny-code">
+&lt;button hx-ext=&quot;bny-table&quot; hx-get=&quot;/test/data/table03.json&quot;
+    hx-target=&quot;#table-raw-demo&quot; hx-swap=&quot;innerHTML&quot;&gt;加载表格&lt;/button&gt;
+
+// 单元格使用对象 { __html: '&lt;a ...&gt;编辑&lt;/a&gt;' } 时会渲染原始 HTML
+            </pre>
+                        </div>
+                        <div>
+                            <pre hx-ext="bny-code">
+// table03.json
+{
+    "key": "user-list",
+    "cols": [
+        {"name": "姓名", "sortable": true, "sort": "string"},
+        {"name": "操作", "sortable": false}
+    ],
+    "rows": [
+        ["张三", {"__html": "&lt;a class='bny-btn' model='border'&gt;编辑&lt;/a&gt;"}]
+    ]
+}
+            </pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h2 id="n06c">空状态</h2>
+            <div class="bny-card">
+                <div hx-ext="bny-tab">
+                    <ul class="head">
+                        <li>Preview</li>
+                        <li>Code</li>
+                        <li>Json</li>
+                    </ul>
+                    <div class="body">
+                        <div>
+                            <div class="p-12">
+                                <button class="bny-btn" hx-ext="bny-table" hx-get="/test/data/table04.json" hx-target="#table-empty-demo" hx-swap="innerHTML" hx-trigger="click">加载空数据</button>
+                                <div id="table-empty-demo" class="mt-12"></div>
+                            </div>
+                        </div>
+                        <div>
+                            <pre hx-ext="bny-code">
+&lt;button hx-ext=&quot;bny-table&quot; hx-get=&quot;/test/data/table04.json&quot;
+    hx-target=&quot;#table-empty-demo&quot;&gt;加载空数据&lt;/button&gt;
+            </pre>
+                        </div>
+                        <div>
+                            <pre hx-ext="bny-code">
+// table04.json
+{
+    "key": "empty-table",
+    "cols": ["姓名", "年龄", "积分"],
+    "rows": [],
+    "empty": "暂无符合条件的记录"
+}
+            </pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h2 id="n07">API</h2>
+            <h3>标签属性</h3>
+            <table hx-ext="bny-table">
+                <thead>
+                    <tr>
+                        <th>属性</th>
+                        <th>默认值</th>
+                        <th>必须</th>
+                        <th>描述</th>
+                        <th>版本</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>hx-ext</td>
+                        <td>bny-table</td>
+                        <td>是</td>
+                        <td>拓展属性名</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>color</td>
+                        <td>default</td>
+                        <td>否</td>
+                        <td>表头颜色：green/yellow/red/blue</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>data-sort</td>
+                        <td>string</td>
+                        <td>否</td>
+                        <td>作用于 th，启用排序。值 number 表示按数字排序，默认为字符串</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>sortable</td>
+                        <td>—</td>
+                        <td>否</td>
+                        <td>作用于 th，等同于 data-sort（字符串排序）</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>data-sort-val</td>
+                        <td>—</td>
+                        <td>否</td>
+                        <td>作用于 td，指定该单元格参与排序的值（显示与排序值不同时使用）</td>
+                        <td></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>JSON属性</h3>
+            <table hx-ext="bny-table">
+                <thead>
+                    <tr>
+                        <th>属性</th>
+                        <th>默认值</th>
+                        <th>必须</th>
+                        <th>描述</th>
+                        <th>版本</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>color</td>
+                        <td>—</td>
+                        <td>否</td>
+                        <td>表头颜色：green/yellow/red/blue</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>cols</td>
+                        <td>[]</td>
+                        <td>是</td>
+                        <td>列名字符串数组</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>rows</td>
+                        <td>[]</td>
+                        <td>是</td>
+                        <td>二维数组，每行为一条数据</td>
+                        <td></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>排序行为</h3>
+            <ol style="line-height:var(--line-height); color:var(--black-middle);">
+                <li>点击带 <code>data-sort</code> 或 <code>sortable</code> 属性的表头即可排序</li>
+                <li>首次点击 → 升序（▲ 高亮），再次点击 → 降序（▼ 高亮）</li>
+                <li><code>data-sort="number"</code> 按数值排序，否则按字符串排序</li>
+                <li>单元格可通过 <code>data-sort-val</code> 指定参与排序的实际值</li>
+                <li>JSON 响应自动渲染为完整表格，同时支持直接追加 HTML 行</li>
+            </ol>
         </div>
     </div>
     <div class="right-anchor-box hidden-xs col-sm3">
         <div class="right-anchor">
             <ul hx-ext="bny-anchor" rail>
-                <li class="link" anchor="#n01">基本代码</li>
+                <li class="link" anchor="#n01">基础表格</li>
                 <li class="link" anchor="#n02">颜色</li>
+                <li class="link" anchor="#n03">表头排序</li>
+                <li class="link" anchor="#n04">自定义排序值</li>
+                <li class="link" anchor="#n05">Htmx用法</li>
+                <li class="link" anchor="#n06">Htmx-动态追加行</li>
+                <li class="link" anchor="#n07">API</li>
             </ul>
         </div>
     </div>

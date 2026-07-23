@@ -1,0 +1,159 @@
+<div class="bny-row">
+    <div class="text-content-box col-xs12 col-sm9">
+        <div class="text-content">
+            <h1>Image 图片预览</h1>
+            <hr>
+            <blockquote class="bny-blockquote">
+                图片预览组件，给 img 加 <code>data-preview</code> 即可启用点击放大预览。支持分组翻页、滚轮/按钮缩放、旋转、键盘操作。
+            </blockquote>
+
+            <h2 id="n01">基础用法</h2>
+            <div class="bny-card">
+                <div hx-ext="bny-tab">
+                    <ul class="head">
+                        <li>Preview</li>
+                        <li>Code</li>
+                    </ul>
+                    <div class="body">
+                        <div>
+                            <div class="p-12">
+                                <img src="https://picsum.photos/480/320"
+                                     data-preview
+                                     style="width:240px; border-radius:var(--border-radius); cursor:zoom-in;">
+                                <blockquote class="bny-blockquote" style="margin-top:14px;">
+                                    点击图片打开全屏预览。
+                                </blockquote>
+                            </div>
+                        </div>
+                        <div>
+                            <pre hx-ext="bny-code">
+&lt;img src=&quot;thumb.jpg&quot; data-preview&gt;
+                            </pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h2 id="n02">分组预览</h2>
+            <div class="bny-card">
+                <div hx-ext="bny-tab">
+                    <ul class="head">
+                        <li>Preview</li>
+                        <li>Code</li>
+                    </ul>
+                    <div class="body">
+                        <div>
+                            <div class="p-12">
+                                <div class="flex gap-16 flex-wrap">
+                                    <img src="https://picsum.photos/seed/a/360/260"
+                                         data-preview data-preview-group="gallery"
+                                         style="width:180px; height:130px; object-fit:cover; border-radius:var(--border-radius); cursor:zoom-in;">
+                                    <img src="https://picsum.photos/seed/b/360/260"
+                                         data-preview data-preview-group="gallery"
+                                         style="width:180px; height:130px; object-fit:cover; border-radius:var(--border-radius); cursor:zoom-in;">
+                                    <img src="https://picsum.photos/seed/c/360/260"
+                                         data-preview data-preview-group="gallery"
+                                         style="width:180px; height:130px; object-fit:cover; border-radius:var(--border-radius); cursor:zoom-in;">
+                                </div>
+                                <blockquote class="bny-blockquote" style="margin-top:14px;">
+                                    同一 <code>data-preview-group</code> 内的图片可翻页查看。
+                                </blockquote>
+                            </div>
+                        </div>
+                        <div>
+                            <pre hx-ext="bny-code">
+&lt;img src=&quot;a.jpg&quot; data-preview data-preview-group=&quot;gallery&quot;&gt;
+&lt;img src=&quot;b.jpg&quot; data-preview data-preview-group=&quot;gallery&quot;&gt;
+&lt;img src=&quot;c.jpg&quot; data-preview data-preview-group=&quot;gallery&quot;&gt;
+                            </pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h2 id="n03">指定大图地址</h2>
+            <div class="bny-card">
+                <div hx-ext="bny-tab">
+                    <ul class="head">
+                        <li>Preview</li>
+                        <li>Code</li>
+                    </ul>
+                    <div class="body">
+                        <div>
+                            <div class="p-12">
+                                <img src="https://picsum.photos/seed/thumb/240/160"
+                                     data-preview
+                                     data-preview-src="https://picsum.photos/seed/full/1200/800"
+                                     style="width:240px; border-radius:var(--border-radius); cursor:zoom-in;">
+                                <blockquote class="bny-blockquote" style="margin-top:14px;">
+                                    缩略图与大图地址不同时，用 <code>data-preview-src</code> 指定大图。
+                                </blockquote>
+                            </div>
+                        </div>
+                        <div>
+                            <pre hx-ext="bny-code">
+&lt;img src=&quot;thumb.jpg&quot;
+     data-preview
+     data-preview-src=&quot;full.jpg&quot;&gt;
+                            </pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h2 id="n04">操作说明</h2>
+            <div class="bny-card">
+                <div hx-ext="bny-tab">
+                    <ul class="head">
+                        <li>Preview</li>
+                        <li>Code</li>
+                    </ul>
+                    <div class="body">
+                        <div>
+                            <div class="p-12">
+                                <blockquote class="bny-blockquote">
+                                    预览打开后可用操作：
+                                    <ul>
+                                        <li><code>←</code> / <code>→</code>：上一张 / 下一张</li>
+                                        <li><code>+</code> / <code>-</code>：放大 / 缩小</li>
+                                        <li><code>0</code>：重置缩放</li>
+                                        <li><code>ESC</code>：关闭</li>
+                                        <li>鼠标滚轮：缩放</li>
+                                        <li>鼠标拖拽：平移</li>
+                                    </ul>
+                                </blockquote>
+                            </div>
+                        </div>
+                        <div>
+                            <pre hx-ext="bny-code">
+// 键盘 / 鼠标操作无需额外配置
+                            </pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h2 id="n05">API</h2>
+            <h3>属性</h3>
+            <table hx-ext="bny-table">
+                <thead><tr><th>属性</th><th>说明</th></tr></thead>
+                <tbody>
+                    <tr><td><code>data-preview</code></td><td>启用预览</td></tr>
+                    <tr><td><code>data-preview-src</code></td><td>大图地址（默认取 src）</td></tr>
+                    <tr><td><code>data-preview-group</code></td><td>分组名，同组可翻页</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="right-anchor-box hidden-xs col-sm3">
+        <div class="right-anchor">
+            <ul hx-ext="bny-anchor" rail>
+                <li class="link" anchor="#n01">基础用法</li>
+                <li class="link" anchor="#n02">分组预览</li>
+                <li class="link" anchor="#n03">指定大图</li>
+                <li class="link" anchor="#n04">操作说明</li>
+                <li class="link" anchor="#n05">API</li>
+            </ul>
+        </div>
+    </div>
+</div>

@@ -3411,6 +3411,59 @@ p {
         }
     }
 }
+
+/* ========== Loading 状态（与 htmx 集成） ========== */
+.bny-btn.bny-loading {
+    cursor: progress;
+    pointer-events: none;
+    position: relative;
+    color: transparent !important;
+
+    /* 文字隐藏后用伪元素展示 spinner */
+    &::after {
+        content: "";
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 16px;
+        height: 16px;
+        margin: -8px 0 0 -8px;
+        /* 不能用 currentColor：color 已被设为 transparent，currentColor 也会解析为透明
+         * 用 CSS 变量 --btn-spin-color 显式指定 spinner 颜色，默认白色（实色按钮用） */
+        --btn-spin-color: var(--white-common);
+        border: 2px solid var(--btn-spin-color);
+        border-top-color: transparent;
+        border-radius: 50%;
+        animation: bny-btn-spin 0.6s linear infinite;
+        box-sizing: content-box;
+    }
+
+    /* 边框按钮的 spinner 颜色取主色 */
+    &[model~="border"]::after {
+        --btn-spin-color: var(--default);
+    }
+
+    &[color="green"]::after { --btn-spin-color: var(--white-common); }
+    &[color="blue"]::after  { --btn-spin-color: var(--white-common); }
+    &[color="yellow"]::after{ --btn-spin-color: var(--white-common); }
+    &[color="red"]::after   { --btn-spin-color: var(--white-common); }
+
+    /* 边框 + 颜色：spinner 取颜色主色（边框按钮背景透明，白色不可见） */
+    &[model~="border"][color="green"]::after  { --btn-spin-color: var(--green); }
+    &[model~="border"][color="blue"]::after   { --btn-spin-color: var(--blue); }
+    &[model~="border"][color="yellow"]::after { --btn-spin-color: var(--yellow); }
+    &[model~="border"][color="red"]::after   { --btn-spin-color: var(--red); }
+
+    /* 禁用 hover/active 视觉 */
+    &:hover,
+    &:active {
+        transform: none !important;
+    }
+}
+
+@keyframes bny-btn-spin {
+    to { transform: rotate(360deg); }
+}
 .bny-tag {
     display: inline-flex;
     align-items: center;
@@ -3576,17 +3629,48 @@ p {
         }
     }
 }
-.bny-alert-open {
+/* 多条 alert 共享的垂直堆叠容器（替代原 .bny-alert-open 单条居中容器） */
+.bny-alert-box {
     position: fixed;
     z-index: 9999;
-    top: 50%;
+    top: 24px;
     left: 50%;
-    transition: none;
-    transform: translate(-50%, -50%);
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    pointer-events: none; /* 容器本身不拦截事件，让 alert 自行处理 */
+    max-width: 90vw;
+
+    /* 容器为空时不占位 */
+    &:empty {
+        display: none;
+    }
+
+    /* alert 自身可点击（关闭按钮） */
+    & > .bny-alert {
+        pointer-events: auto;
+        min-width: 220px;
+        max-width: 80vw;
+    }
+
+    /* 关闭按钮样式 */
+    & .bny-alert-close {
+        cursor: pointer;
+        margin-left: auto;
+        padding: 2px;
+        opacity: 0.6;
+        font-size: var(--font-size-sm);
+
+        &:hover {
+            opacity: 1;
+        }
+    }
 }
 
 .bny-alert {
-    margin-bottom: 12px;
+    margin-bottom: 0;
     padding: 12px 18px;
     width: 100%;
     border-style: solid;
@@ -3748,6 +3832,12 @@ p {
             cursor: move;
         }
 
+        & .title {
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+        }
+
         & .setwin {
             white-space: nowrap;
             display: flex;
@@ -3784,14 +3874,13 @@ p {
             height: 100%;
         }
 
-        & > iframe {
+        &>iframe {
             width: 100%;
             height: 100%;
             border: none;
         }
     }
-}
-[hx-ext~="bny-code"] {
+}[hx-ext~="bny-code"] {
     border-radius: var(--border-radius);
     overflow: auto;
     padding: 18px;
@@ -4235,7 +4324,7 @@ hr {
     100% { transform: translateX(400%); }
 }
 /* ========== 表格 ========== */
-table[hx-ext~="bny-table"] {
+table.bny-table, table[hx-ext~="bny-table"] {
     width: 100%;
     border-collapse: collapse;
     box-shadow: var(--box-shadow-005);
@@ -4294,6 +4383,63 @@ table[hx-ext~="bny-table"] {
 
     & tbody tr:nth-child(even):hover {
         background-color: var(--white-shallow);
+    }
+}
+
+/* ========== 表头排序 ========== */
+
+table[hx-ext~="bny-table"] th.sortable {
+    cursor: pointer;
+    user-select: none;
+    position: relative;
+    padding-right: 28px;
+
+    &::after {
+        content: "";
+        position: absolute;
+        right: 8px;
+        top: 50%;
+        width: 0;
+        height: 0;
+        border-left: 4px solid transparent;
+        border-right: 4px solid transparent;
+        border-top: 5px solid var(--white-alpha-50);
+        transform: translateY(-50%);
+        opacity: 0.4;
+    }
+
+    &::before {
+        content: "";
+        position: absolute;
+        right: 8px;
+        top: 50%;
+        width: 0;
+        height: 0;
+        border-left: 4px solid transparent;
+        border-right: 4px solid transparent;
+        border-bottom: 5px solid var(--white-alpha-50);
+        transform: translateY(calc(-50% - 8px));
+        opacity: 0.4;
+    }
+
+    /* 升序：上箭头高亮 */
+    &.sort-asc::before {
+        border-bottom-color: var(--white-common);
+        opacity: 1;
+    }
+
+    &.sort-asc::after {
+        opacity: 0.2;
+    }
+
+    /* 降序：下箭头高亮 */
+    &.sort-desc::after {
+        border-top-color: var(--white-common);
+        opacity: 1;
+    }
+
+    &.sort-desc::before {
+        opacity: 0.2;
     }
 }
 
@@ -4366,6 +4512,19 @@ table[hx-ext~="bny-table"] {
             background-color: var(--blue);
         }
     }
+}
+
+/* ========== 空状态占位 ========== */
+table[hx-ext~="bny-table"] tbody tr.bny-table-empty td {
+    text-align: center;
+    padding: 32px 16px;
+    color: var(--gray);
+    font-size: var(--font-size-sm);
+    background-color: var(--white-alpha-04, rgba(255, 255, 255, 0.04));
+}
+
+html.dark table[hx-ext~="bny-table"] tbody tr.bny-table-empty td {
+    color: var(--gray-shallow);
 }
 [hx-ext~="bny-tab"] {
     width: 100%;
@@ -4861,6 +5020,116 @@ table[hx-ext~="bny-table"] {
             }
         }
     }
+}
+
+/* ========== 表单控件 size 变体 ==========
+ * 适用于 input / textarea / select 三类控件
+ * - size="sm" : 30px 高度，紧凑型
+ * - 默认      : 38px
+ * - size="lg" : 46px 高度
+ */
+.bny-input[size="sm"],
+.bny-textarea[size="sm"],
+.bny-select[size="sm"],
+[hx-ext="bny-input"][size="sm"],
+[hx-ext="bny-textarea"][size="sm"],
+[hx-ext="bny-select"][size="sm"] {
+    height: 30px;
+    font-size: var(--font-size-sm);
+    padding: 0 8px;
+    border-radius: var(--border-radius-sm);
+}
+
+.bny-input[size="lg"],
+.bny-textarea[size="lg"],
+.bny-select[size="lg"],
+[hx-ext="bny-input"][size="lg"],
+[hx-ext="bny-textarea"][size="lg"],
+[hx-ext="bny-select"][size="lg"] {
+    height: 46px;
+    font-size: var(--font-size-16);
+    padding: 0 16px;
+    border-radius: var(--border-radius-8);
+}
+
+/* textarea 不强制固定高度 */
+.bny-textarea[size="sm"],
+.bny-textarea[size="lg"],
+[hx-ext="bny-textarea"][size="sm"],
+[hx-ext="bny-textarea"][size="lg"] {
+    height: auto;
+    min-height: 80px;
+}
+
+/* ========== select 增强：自定义箭头视觉 + 焦点态 ========== */
+.bny-select:hover,
+[hx-ext="bny-select"]:hover {
+    border-color: var(--default-middle);
+}
+
+.bny-select:focus,
+[hx-ext="bny-select"]:focus {
+    border-color: var(--default);
+    box-shadow: var(--focus-ring);
+}
+
+/* select 选项组样式（部分浏览器支持） */
+.bny-select option,
+[hx-ext="bny-select"] option {
+    padding: 8px 12px;
+    background-color: var(--white);
+    color: var(--black);
+}
+
+/* select disabled 视觉 */
+.bny-select:disabled,
+[hx-ext="bny-select"]:disabled {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23B0B7C0' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+}
+
+/* ========== 表单校验 ========== */
+/* 错误状态：input/textarea/select 边框变红 */
+.bny-input.bny-input-error,
+.bny-textarea.bny-input-error,
+.bny-select.bny-input-error,
+[hx-ext="bny-input"].bny-input-error,
+[hx-ext="bny-textarea"].bny-input-error,
+[hx-ext="bny-select"].bny-input-error {
+    border-color: var(--red);
+
+    &:focus {
+        border-color: var(--red);
+        box-shadow: 0 0 0 3px var(--red-alpha-10);
+    }
+}
+
+/* 错误提示文本 */
+.bny-form-error {
+    display: block;
+    margin-top: 6px;
+    color: var(--red);
+    font-size: var(--font-size-sm);
+    line-height: 1.4;
+    font-weight: var(--font-weight-medium);
+    animation: bny-form-error-in 200ms ease-out;
+}
+
+@keyframes bny-form-error-in {
+    from {
+        opacity: 0;
+        transform: translateY(-4px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* 校验通过状态的视觉提示（可选，配合 data-valid-feedback="true" 启用） */
+.form-item.is-valid .bny-input,
+.form-item.is-valid .bny-textarea,
+.form-item.is-valid .bny-select {
+    border-color: var(--green);
 }
 .bny-container {
     margin: 0 auto;
@@ -6293,6 +6562,75 @@ table[hx-ext~="bny-table"] {
     &.right-start::after { top: 8px; }
     &.right-end::after   { bottom: 8px; }
 }
+
+/* ========== 亮色主题 ========== */
+
+.bny-tooltip.bny-tooltip-light {
+    background: var(--white);
+    color: var(--black);
+    box-shadow: var(--box-shadow-055);
+
+    /* 上方箭头 */
+    &.top::after,
+    &.top-start::after,
+    &.top-end::after {
+        border-top-color: var(--white);
+    }
+
+    /* 下方箭头 */
+    &.bottom::after,
+    &.bottom-start::after,
+    &.bottom-end::after {
+        border-bottom-color: var(--white);
+    }
+
+    /* 左侧箭头 */
+    &.left::after,
+    &.left-start::after,
+    &.left-end::after {
+        border-left-color: var(--white);
+    }
+
+    /* 右侧箭头 */
+    &.right::after,
+    &.right-start::after,
+    &.right-end::after {
+        border-right-color: var(--white);
+    }
+}
+
+/* ========== 暗黑模式下的亮色主题 ========== */
+
+html.dark .bny-tooltip.bny-tooltip-light {
+    background: rgba(255, 255, 255, 0.92);
+    color: var(--black);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+
+    &.top::after,
+    &.top-start::after,
+    &.top-end::after {
+        border-top-color: rgba(255, 255, 255, 0.92);
+    }
+
+    &.bottom::after,
+    &.bottom-start::after,
+    &.bottom-end::after {
+        border-bottom-color: rgba(255, 255, 255, 0.92);
+    }
+
+    &.left::after,
+    &.left-start::after,
+    &.left-end::after {
+        border-left-color: rgba(255, 255, 255, 0.92);
+    }
+
+    &.right::after,
+    &.right-start::after,
+    &.right-end::after {
+        border-right-color: rgba(255, 255, 255, 0.92);
+    }
+}
 /* ========== Skeleton 骨架屏 ========== */
 
 /* ---- 流光动画 ---- */
@@ -6439,6 +6777,177 @@ table[hx-ext~="bny-table"] {
             height: 12px;
             width: auto;
         }
+    }
+}
+
+/* ---- 扩展组合布局 ---- */
+
+/* 详情页骨架：标签 + 值的两栏布局 */
+.bny-skeleton-detail {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+
+    & .row {
+        display: flex;
+        gap: 16px;
+        align-items: center;
+
+        & .label {
+            width: 80px;
+            height: 14px;
+            flex-shrink: 0;
+        }
+
+        & .value {
+            flex: 1;
+            height: 14px;
+        }
+    }
+}
+
+/* 评论骨架：头像 + 名称 + 内容 */
+.bny-skeleton-comment {
+    display: flex;
+    gap: 14px;
+    margin-bottom: 20px;
+
+    &:last-child { margin-bottom: 0; }
+
+    & .bny-skeleton-avatar {
+        flex-shrink: 0;
+    }
+
+    & .body {
+        flex: 1;
+
+        & .name {
+            width: 30%;
+            height: 12px;
+            margin-bottom: 8px;
+        }
+
+        & .line {
+            height: 14px;
+            margin-bottom: 6px;
+        }
+
+        & .line.short {
+            width: 60%;
+        }
+    }
+}
+
+/* 表单骨架：label + input 的多行 */
+.bny-skeleton-form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    max-width: 480px;
+
+    & .form-row {
+        & .label {
+            width: 60px;
+            height: 12px;
+            margin-bottom: 6px;
+        }
+
+        & .input {
+            width: 100%;
+            height: 32px;
+            border-radius: var(--border-radius);
+        }
+    }
+}
+
+/* 导航/页头骨架：logo + 菜单项 */
+.bny-skeleton-navbar {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    padding: 14px 0;
+
+    & .logo {
+        width: 120px;
+        height: 28px;
+        flex-shrink: 0;
+    }
+
+    & .menu {
+        flex: 1;
+        display: flex;
+        gap: 20px;
+
+        & .item {
+            width: 60px;
+            height: 14px;
+        }
+    }
+
+    & .action {
+        width: 80px;
+        height: 28px;
+        flex-shrink: 0;
+    }
+}
+
+/* 个人资料卡片骨架：大头像 + 名称 + 简介行 */
+.bny-skeleton-profile {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    padding: 24px;
+
+    & .bny-skeleton-avatar {
+        width: 72px;
+        height: 72px;
+    }
+
+    & .name {
+        width: 40%;
+        height: 18px;
+    }
+
+    & .bio {
+        width: 70%;
+        height: 12px;
+    }
+
+    & .stats {
+        display: flex;
+        gap: 32px;
+        margin-top: 8px;
+
+        & .stat {
+            text-align: center;
+
+            & .num {
+                width: 40px;
+                height: 16px;
+                margin: 0 auto 4px;
+            }
+
+            & .label {
+                width: 32px;
+                height: 10px;
+                margin: 0 auto;
+            }
+        }
+    }
+}
+
+/* 多列网格骨架 */
+.bny-skeleton-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 16px;
+
+    & .bny-skeleton-card {
+        & .bny-skeleton-image { height: 120px; }
+        & .bny-skeleton-title { margin: 12px 16px 8px; }
+        & .bny-skeleton-text { margin: 0 16px 6px; }
+        & .bny-skeleton-text:last-child { width: 55%; margin-bottom: 16px; }
     }
 }
 /* ========== Breadcrumb 面包屑导航 ========== */
@@ -7059,153 +7568,1160 @@ table[hx-ext~="bny-table"] {
         }
     }
 }
-/* ========== 公共样式 ========== */
+/* ========== BackTop 回到顶部 ========== */
 
-/* 字体大小 */
-.fs-16 {
-    font-size: var(--font-size-16);
-}
-
-.fs-18 {
-    font-size: var(--font-size-18);
-}
-
-.fs-20 {
-    font-size: var(--font-size-20);
-}
-
-.fs-24 {
-    font-size: var(--font-size-24);
-}
-
-.fs-32 {
-    font-size: var(--font-size-32);
-}
-
-/* 字重 */
-.fw-medium { font-weight: var(--font-weight-medium); }
-.fw-semibold { font-weight: var(--font-weight-semibold); }
-.fw-bold { font-weight: var(--font-weight-bold); }
-
-/* 内边距 */
-.p-12 {
-    padding: 12px;
-}
-
-.p-24 {
-    padding: 24px;
-}
-
-.p-36 {
-    padding: 36px;
-}
-
-/* 外边距 */
-.m-12 {
-    margin: 12px;
-}
-
-.m-24 {
-    margin: 24px;
-}
-
-.m-36 {
-    margin: 36px;
-}
-
-/* Flex 布局 */
-.flex {
-    display: flex;
-}
-
-.flex-col {
-    display: flex;
-    flex-direction: column;
-}
-
-.flex-center {
+.bny-backtop {
+    position: fixed;
+    right: 24px;
+    bottom: 80px;
+    z-index: 999;
+    width: 42px;
+    height: 42px;
+    border-radius: var(--border-radius-full);
+    background: var(--white);
+    color: var(--black-shallow);
+    border: 1px solid var(--gray-shallow);
+    box-shadow: var(--box-shadow-005);
     display: flex;
     align-items: center;
     justify-content: center;
+    cursor: pointer;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(20px);
+    transition: opacity var(--transition), visibility var(--transition), transform var(--transition);
+
+    /* 图标尺寸 */
+    & .bny-icon {
+        font-size: 20px;
+    }
+
+    &:hover {
+        color: var(--blue);
+        border-color: var(--blue-shallow);
+        box-shadow: var(--box-shadow-hover-005);
+    }
+
+    &:active {
+        transform: translateY(18px) scale(0.95);
+    }
+
+    /* 显示状态 */
+    &.visible {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0);
+    }
 }
 
-.flex-between {
+/* ========== 暗黑模式 ========== */
+
+html.dark .bny-backtop {
+    background: rgba(255, 255, 255, 0.06);
+    color: var(--white-alpha-50);
+    border-color: rgba(255, 255, 255, 0.06);
+
+    &:hover {
+        color: var(--blue-middle);
+        border-color: rgba(56, 189, 248, 0.3);
+        background: rgba(255, 255, 255, 0.08);
+    }
+}
+/* ========== 分页 ========== */
+.bny-pagination {
     display: flex;
     align-items: center;
-    justify-content: space-between;
-}
-
-.flex-wrap {
     flex-wrap: wrap;
+    gap: 6px;
+    padding: 12px 0;
+    font-size: var(--font-size);
+    color: var(--black);
+
+    /* 总数 */
+    & .bny-pagination-total {
+        margin-right: 8px;
+        color: var(--black-shallow);
+        font-size: var(--font-size-sm);
+
+        & em {
+            font-style: normal;
+            color: var(--default);
+            font-weight: var(--font-weight-semibold);
+            margin: 0 2px;
+        }
+    }
+
+    /* 页码按钮 & 上下一页 */
+    & .bny-pagination-btn,
+    & .bny-pagination-prev,
+    & .bny-pagination-next {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 32px;
+        height: 32px;
+        padding: 0 8px;
+        border: 1.5px solid var(--gray-middle);
+        border-radius: var(--border-radius-sm);
+        background-color: var(--white);
+        color: var(--black-middle);
+        font-size: var(--font-size-sm);
+        line-height: 1;
+        cursor: pointer;
+        user-select: none;
+        transition: var(--transition-fast);
+        text-decoration: none;
+
+        &:hover:not(.disabled):not(.active) {
+            border-color: var(--default);
+            color: var(--default);
+            background-color: var(--default-alpha-10);
+        }
+
+        &.active {
+            background-color: var(--default);
+            border-color: var(--default);
+            color: var(--white-common);
+            cursor: default;
+        }
+
+        &.disabled {
+            color: var(--gray-middle);
+            cursor: not-allowed;
+            opacity: 0.6;
+            background-color: var(--white-shallow);
+        }
+    }
+
+    /* 省略号 */
+    & .bny-pagination-ellipsis {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 32px;
+        height: 32px;
+        color: var(--gray);
+        font-size: var(--font-size-sm);
+        letter-spacing: 1px;
+    }
+
+    /* 跳转输入框 */
+    & .bny-pagination-jump {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        margin-left: 8px;
+        color: var(--black-shallow);
+        font-size: var(--font-size-sm);
+
+        & .bny-pagination-input {
+            width: 52px;
+            height: 32px;
+            padding: 0 8px;
+            text-align: center;
+            border: 1.5px solid var(--gray-middle);
+            border-radius: var(--border-radius-sm);
+            background-color: var(--white);
+            color: var(--black);
+            font-size: var(--font-size-sm);
+            transition: var(--transition-fast);
+
+            /* 隐藏 number 控件自带的上下箭头 */
+            &::-webkit-inner-spin-button,
+            &::-webkit-outer-spin-button {
+                -webkit-appearance: none;
+                margin: 0;
+            }
+            -moz-appearance: textfield;
+
+            &:hover {
+                border-color: var(--gray);
+            }
+
+            &:focus {
+                border-color: var(--default);
+                box-shadow: var(--focus-ring);
+                outline: none;
+            }
+        }
+    }
 }
 
-.gap-4 { gap: 4px; }
-.gap-8 { gap: 8px; }
+/* 主题色变体 */
+.bny-pagination[color="green"] .bny-pagination-btn.active,
+.bny-pagination[color="green"] .bny-pagination-prev.active,
+.bny-pagination[color="green"] .bny-pagination-next.active {
+    background-color: var(--green);
+    border-color: var(--green);
+}
+
+.bny-pagination[color="blue"] .bny-pagination-btn.active,
+.bny-pagination[color="blue"] .bny-pagination-prev.active,
+.bny-pagination[color="blue"] .bny-pagination-next.active {
+    background-color: var(--blue);
+    border-color: var(--blue);
+}
+
+.bny-pagination[color="red"] .bny-pagination-btn.active,
+.bny-pagination[color="red"] .bny-pagination-prev.active,
+.bny-pagination[color="red"] .bny-pagination-next.active {
+    background-color: var(--red);
+    border-color: var(--red);
+}
+
+/* 简洁模式：无边框 */
+.bny-pagination[model="simple"] .bny-pagination-btn,
+.bny-pagination[model="simple"] .bny-pagination-prev,
+.bny-pagination[model="simple"] .bny-pagination-next {
+    border: none;
+    background-color: transparent;
+
+    &:hover:not(.disabled):not(.active) {
+        background-color: var(--default-alpha-10);
+    }
+}
+/* ========== 图片预览 ========== */
+
+/* 缩略图：可点击的预览触发元素 */
+.bny-image-thumb {
+    cursor: zoom-in;
+    transition: var(--transition);
+
+    &:hover {
+        opacity: 0.85;
+    }
+}
+
+/* Lightbox 容器（遮罩 + 图片 + 工具栏） */
+.bny-image-viewer {
+    position: fixed;
+    inset: 0;
+    z-index: 10000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+
+    /* 显示状态 */
+    &.show {
+        display: flex;
+    }
+
+    /* 遮罩 */
+    & .bny-image-mask {
+        position: absolute;
+        inset: 0;
+        background-color: var(--black-alpha-30);
+        backdrop-filter: blur(6px);
+        animation: bny-image-fade-in 200ms ease-out;
+    }
+
+    /* 图片容器（用于居中，z-index 高于遮罩） */
+    & .bny-image-container {
+        position: relative;
+        z-index: 1;
+        max-width: 90vw;
+        max-height: 90vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    /* 大图 */
+    & .bny-image-large {
+        max-width: 90vw;
+        max-height: 90vh;
+        object-fit: contain;
+        cursor: grab;
+        transition: transform 100ms linear;
+        box-shadow: 0 8px 32px var(--black-alpha-30);
+        border-radius: var(--border-radius-8);
+        animation: bny-image-zoom-in 200ms ease-out;
+
+        &.grabbing {
+            cursor: grabbing;
+            transition: none;
+        }
+
+        &.loading {
+            opacity: 0.5;
+        }
+    }
+
+    /* 工具栏 */
+    & .bny-image-tools {
+        position: absolute;
+        bottom: 32px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 2;
+        display: flex;
+        gap: 8px;
+        padding: 8px 12px;
+        background-color: var(--white-alpha-85);
+        backdrop-filter: blur(8px);
+        border-radius: var(--border-radius-full);
+        box-shadow: var(--box-shadow-055);
+        animation: bny-image-fade-in 300ms ease-out 100ms both;
+
+        & .bny-image-tool {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            color: var(--black);
+            background-color: transparent;
+            font-size: 18px;
+            cursor: pointer;
+            transition: var(--transition-fast);
+
+            &:hover {
+                background-color: var(--default-alpha-10);
+                color: var(--default);
+            }
+
+            &.disabled {
+                opacity: 0.3;
+                cursor: not-allowed;
+
+                &:hover {
+                    background-color: transparent;
+                    color: var(--black);
+                }
+            }
+        }
+    }
+
+    /* 关闭按钮 */
+    & .bny-image-close {
+        position: absolute;
+        top: 24px;
+        right: 32px;
+        z-index: 2;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background-color: var(--white-alpha-85);
+        backdrop-filter: blur(8px);
+        color: var(--black);
+        font-size: 18px;
+        cursor: pointer;
+        transition: var(--transition-fast);
+        box-shadow: var(--box-shadow-005);
+        text-decoration: none;
+
+        &:hover {
+            background-color: var(--red);
+            color: var(--white-common);
+            transform: rotate(90deg);
+        }
+    }
+
+    /* 计数器 */
+    & .bny-image-counter {
+        position: absolute;
+        top: 24px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 2;
+        padding: 4px 14px;
+        background-color: var(--white-alpha-85);
+        backdrop-filter: blur(8px);
+        border-radius: var(--border-radius-full);
+        color: var(--black);
+        font-size: var(--font-size-sm);
+        font-weight: var(--font-weight-medium);
+        box-shadow: var(--box-shadow-005);
+    }
+}
+
+@keyframes bny-image-fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes bny-image-zoom-in {
+    from {
+        opacity: 0;
+        transform: scale(0.92);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* 暗黑模式适配 */
+html.dark .bny-image-viewer .bny-image-tools,
+html.dark .bny-image-viewer .bny-image-close,
+html.dark .bny-image-viewer .bny-image-counter {
+    background-color: var(--white-alpha-15);
+    color: var(--black);
+}
+/* ========== 步骤条 ========== */
+.bny-steps {
+    display: flex;
+    width: 100%;
+    font-size: var(--font-size);
+
+    /* 横向（默认） */
+    & .bny-step {
+        position: relative;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        padding-right: 32px;
+
+        /* 连接线 */
+        &:not(:last-child)::after {
+            content: "";
+            position: absolute;
+            top: 18px;
+            left: 38px;
+            right: 8px;
+            height: 2px;
+            background-color: var(--gray-middle);
+            transition: background-color var(--transition);
+        }
+
+        /* 已完成步骤的连接线变主色 */
+        &.is-finish:not(:last-child)::after {
+            background-color: var(--default);
+        }
+
+        &.is-error:not(:last-child)::after {
+            background-color: var(--red);
+        }
+
+        /* 头部：图标 + 标题/描述 */
+        & .bny-step-head {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        & .bny-step-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background-color: var(--white);
+            border: 2px solid var(--gray-middle);
+            color: var(--gray);
+            font-size: var(--font-size-sm);
+            font-weight: var(--font-weight-semibold);
+            transition: var(--transition);
+            flex-shrink: 0;
+        }
+
+        & .bny-step-content {
+            margin-left: 12px;
+        }
+
+        & .bny-step-title {
+            font-size: var(--font-size);
+            font-weight: var(--font-weight-medium);
+            color: var(--black);
+            line-height: 1.4;
+        }
+
+        & .bny-step-desc {
+            margin-top: 2px;
+            font-size: var(--font-size-sm);
+            color: var(--black-shallow);
+            line-height: 1.4;
+        }
+    }
+
+    /* 状态：等待 */
+    & .bny-step.is-wait .bny-step-icon {
+        background-color: var(--white);
+        border-color: var(--gray-middle);
+        color: var(--gray);
+    }
+
+    /* 状态：进行中 */
+    & .bny-step.is-process .bny-step-icon {
+        background-color: var(--default);
+        border-color: var(--default);
+        color: var(--white-common);
+        box-shadow: var(--focus-ring);
+    }
+
+    /* 状态：完成 */
+    & .bny-step.is-finish .bny-step-icon {
+        background-color: var(--default);
+        border-color: var(--default);
+        color: var(--white-common);
+    }
+
+    /* 状态：错误 */
+    & .bny-step.is-error .bny-step-icon {
+        background-color: var(--red);
+        border-color: var(--red);
+        color: var(--white-common);
+    }
+
+    /* 已完成时图标显示对勾 */
+    & .bny-step.is-finish .bny-step-icon::after {
+        content: "";
+        width: 8px;
+        height: 14px;
+        border: solid var(--white-common);
+        border-width: 0 2px 2px 0;
+        transform: rotate(45deg) translate(-1px, -1px);
+    }
+
+    /* 错误时图标显示 × */
+    & .bny-step.is-error .bny-step-icon::after {
+        content: "×";
+        font-size: 22px;
+        font-weight: var(--font-weight-bold);
+        line-height: 1;
+    }
+
+    /* 隐藏序号文字（用 ::after 替代） */
+    & .bny-step.is-finish .bny-step-num,
+    & .bny-step.is-error .bny-step-num {
+        display: none;
+    }
+
+    /* ============ 纵向 ============ */
+    &[direction="vertical"] {
+        flex-direction: column;
+        gap: 0;
+
+        & .bny-step {
+            flex: none;
+            flex-direction: row;
+            align-items: flex-start;
+            padding-right: 0;
+            padding-bottom: 28px;
+
+            /* 连接线（纵向） */
+            &:not(:last-child)::after {
+                top: 38px;
+                left: 17px;
+                right: auto;
+                width: 2px;
+                height: calc(100% - 38px);
+            }
+
+            & .bny-step-head {
+                flex-direction: column;
+                align-items: center;
+                margin-bottom: 0;
+                margin-right: 12px;
+            }
+
+            & .bny-step-content {
+                margin-left: 0;
+                padding-top: 6px;
+            }
+        }
+    }
+
+    /* ============ 简洁模式 ============ */
+    &[model="simple"] .bny-step {
+        & .bny-step-icon {
+            width: 28px;
+            height: 28px;
+            font-size: var(--font-size-xs);
+        }
+
+        &:not(:last-child)::after {
+            top: 14px;
+            left: 32px;
+        }
+    }
+
+    /* ============ 主题色变体 ============ */
+    &[color="green"] .bny-step.is-process .bny-step-icon,
+    &[color="green"] .bny-step.is-finish .bny-step-icon,
+    &[color="green"] .bny-step.is-finish:not(:last-child)::after {
+        background-color: var(--green);
+        border-color: var(--green);
+    }
+
+    &[color="green"] .bny-step.is-process .bny-step-icon {
+        box-shadow: 0 0 0 3px var(--green-alpha-10);
+    }
+
+    &[color="blue"] .bny-step.is-process .bny-step-icon,
+    &[color="blue"] .bny-step.is-finish .bny-step-icon,
+    &[color="blue"] .bny-step.is-finish:not(:last-child)::after {
+        background-color: var(--blue);
+        border-color: var(--blue);
+    }
+
+    &[color="blue"] .bny-step.is-process .bny-step-icon {
+        box-shadow: 0 0 0 3px var(--blue-alpha-10);
+    }
+
+    &[color="red"] .bny-step.is-finish:not(:last-child)::after {
+        background-color: var(--red);
+    }
+
+    /* 可点击 */
+    &.bny-steps-clickable .bny-step {
+        cursor: pointer;
+
+        &:hover .bny-step-icon {
+            transform: scale(1.08);
+        }
+    }
+}
+/* ========== 评分 ========== */
+.bny-rate {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--default);
+    font-size: var(--font-size);
+    outline: none;
+    user-select: none;
+
+    /* 星星容器 */
+    & .bny-rate-stars {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+    }
+
+    & .bny-rate-star {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: transform var(--transition-fast);
+
+        &:hover {
+            transform: scale(1.15);
+        }
+    }
+
+    &.is-readonly .bny-rate-star {
+        cursor: default;
+
+        &:hover {
+            transform: none;
+        }
+    }
+
+    /* 星星图标 */
+    & .bny-rate-icon {
+        width: 22px;
+        height: 22px;
+        color: var(--gray-middle);
+        transition: color var(--transition-fast);
+
+        &.is-active {
+            color: var(--default);
+        }
+
+        &.is-half {
+            color: var(--default);
+        }
+    }
+
+    /* 文本 */
+    & .bny-rate-text {
+        color: var(--black-middle);
+        font-size: var(--font-size-sm);
+        font-weight: var(--font-weight-medium);
+        min-width: 32px;
+    }
+
+    /* 键盘聚焦态 */
+    &:focus-visible {
+        box-shadow: var(--focus-ring);
+        border-radius: var(--border-radius-sm);
+    }
+}
+
+/* 主题色变体 */
+.bny-rate[color="green"] .bny-rate-icon.is-active,
+.bny-rate[color="green"] .bny-rate-icon.is-half {
+    color: var(--green);
+}
+
+.bny-rate[color="blue"] .bny-rate-icon.is-active,
+.bny-rate[color="blue"] .bny-rate-icon.is-half {
+    color: var(--blue);
+}
+
+.bny-rate[color="yellow"] .bny-rate-icon.is-active,
+.bny-rate[color="yellow"] .bny-rate-icon.is-half {
+    color: var(--yellow);
+}
+
+.bny-rate[color="red"] .bny-rate-icon.is-active,
+.bny-rate[color="red"] .bny-rate-icon.is-half {
+    color: var(--red);
+}
+
+/* 尺寸变体 */
+.bny-rate[size="sm"] .bny-rate-icon {
+    width: 16px;
+    height: 16px;
+}
+
+.bny-rate[size="lg"] .bny-rate-icon {
+    width: 28px;
+    height: 28px;
+}
+/* ========== 空状态 ========== */
+.bny-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+    text-align: center;
+    color: var(--black-shallow);
+
+    /* 图标区 */
+    & .bny-empty-icon {
+        margin-bottom: 16px;
+        color: var(--gray);
+
+        /* 内置 SVG 图标 */
+        svg {
+            width: 80px;
+            height: 80px;
+            display: block;
+        }
+    }
+
+    /* 描述文本 */
+    & .bny-empty-desc {
+        font-size: var(--font-size);
+        color: var(--black-shallow);
+        line-height: 1.6;
+        max-width: 360px;
+        margin-bottom: 16px;
+    }
+
+    /* 副描述（次要文案） */
+    & .bny-empty-sub {
+        font-size: var(--font-size-sm);
+        color: var(--gray);
+        line-height: 1.5;
+        margin-bottom: 20px;
+    }
+
+    /* 操作区（按钮） */
+    & .bny-empty-actions {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+    }
+
+    /* ============ 尺寸变体 ============ */
+    &.is-sm {
+        padding: 20px 10px;
+
+        & .bny-empty-icon svg {
+            width: 56px;
+            height: 56px;
+        }
+
+        & .bny-empty-desc {
+            font-size: var(--font-size-sm);
+        }
+    }
+
+    &.is-lg {
+        padding: 60px 20px;
+
+        & .bny-empty-icon svg {
+            width: 120px;
+            height: 120px;
+        }
+
+        & .bny-empty-desc {
+            font-size: var(--font-size-16);
+        }
+    }
+
+    /* ============ 主题色变体 ============
+     * -shallow 色在白底上过浅几乎不可见，改用主题主色让图标与描述都鲜明可辨 */
+    &[color="default"] .bny-empty-icon,
+    &[color="default"] .bny-empty-desc {
+        color: var(--default);
+    }
+
+    &[color="green"] .bny-empty-icon,
+    &[color="green"] .bny-empty-desc {
+        color: var(--green);
+    }
+
+    &[color="blue"] .bny-empty-icon,
+    &[color="blue"] .bny-empty-desc {
+        color: var(--blue);
+    }
+
+    &[color="yellow"] .bny-empty-icon,
+    &[color="yellow"] .bny-empty-desc {
+        color: var(--yellow);
+    }
+
+    &[color="red"] .bny-empty-icon,
+    &[color="red"] .bny-empty-desc {
+        color: var(--red);
+    }
+
+    /* ============ 简洁模式：仅文字 ============ */
+    &.is-simple {
+        padding: 24px 16px;
+
+        & .bny-empty-icon {
+            display: none;
+        }
+    }
+}
+/* ========== 时间线 ========== */
+.bny-timeline {
+    position: relative;
+    padding: 8px 0;
+    font-size: var(--font-size);
+    color: var(--black);
+
+    /* 主轴（默认在左侧） */
+    &::before {
+        content: "";
+        position: absolute;
+        top: 8px;
+        bottom: 8px;
+        left: 8px;
+        width: 2px;
+        background-color: var(--gray-middle);
+        border-radius: var(--border-radius-full);
+    }
+
+    /* 时间线项 */
+    & .bny-timeline-item {
+        position: relative;
+        padding-left: 32px;
+        padding-bottom: 24px;
+
+        &:last-child {
+            padding-bottom: 0;
+        }
+
+        /* 节点圆点 */
+        & .bny-timeline-node {
+            position: absolute;
+            top: 4px;
+            left: 2px;
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background-color: var(--white);
+            border: 2px solid var(--default);
+            box-sizing: content-box;
+            /* 用一个白色伪元素遮盖主轴（让节点圆点覆盖在轴上方） */
+            z-index: 1;
+        }
+
+        /* 时间戳 */
+        & .bny-timestamp {
+            margin-bottom: 6px;
+            font-size: var(--font-size-sm);
+            color: var(--black-shallow);
+            font-weight: var(--font-weight-medium);
+        }
+
+        /* 标题 */
+        & .bny-timeline-title {
+            margin-bottom: 4px;
+            font-size: var(--font-size);
+            font-weight: var(--font-weight-semibold);
+            color: var(--black);
+            line-height: 1.4;
+        }
+
+        /* 内容 */
+        & .bny-timeline-content {
+            font-size: var(--font-size-sm);
+            color: var(--black-middle);
+            line-height: 1.6;
+        }
+    }
+
+    /* ============ 节点颜色变体 ============ */
+    & .bny-timeline-item.is-primary .bny-timeline-node {
+        border-color: var(--default);
+        background-color: var(--default);
+    }
+
+    & .bny-timeline-item.is-success .bny-timeline-node {
+        border-color: var(--green);
+        background-color: var(--green);
+    }
+
+    & .bny-timeline-item.is-warning .bny-timeline-node {
+        border-color: var(--yellow);
+        background-color: var(--yellow);
+    }
+
+    & .bny-timeline-item.is-danger .bny-timeline-node {
+        border-color: var(--red);
+        background-color: var(--red);
+    }
+
+    & .bny-timeline-item.is-info .bny-timeline-node {
+        border-color: var(--blue);
+        background-color: var(--blue);
+    }
+
+    /* 空心节点（仅边框） */
+    & .bny-timeline-item.is-hollow .bny-timeline-node {
+        background-color: var(--white);
+    }
+
+    /* ============ 主题色变体（默认节点色） ============ */
+    &[color="green"] .bny-timeline-item .bny-timeline-node {
+        border-color: var(--green);
+        background-color: var(--green);
+    }
+
+    &[color="blue"] .bny-timeline-item .bny-timeline-node {
+        border-color: var(--blue);
+        background-color: var(--blue);
+    }
+
+    &[color="yellow"] .bny-timeline-item .bny-timeline-node {
+        border-color: var(--yellow);
+        background-color: var(--yellow);
+    }
+
+    &[color="red"] .bny-timeline-item .bny-timeline-node {
+        border-color: var(--red);
+        background-color: var(--red);
+    }
+
+    /* ============ 右侧布局 ============ */
+    &[mode="right"] {
+        &::before {
+            left: auto;
+            right: 8px;
+        }
+
+        & .bny-timeline-item {
+            padding-left: 0;
+            padding-right: 32px;
+            text-align: right;
+
+            & .bny-timeline-node {
+                left: auto;
+                right: 2px;
+            }
+        }
+    }
+
+    /* ============ 交错布局 ============ */
+    &[mode="alternate"] {
+        &::before {
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        & .bny-timeline-item {
+            padding-left: 0;
+            padding-right: 0;
+
+            /* 第偶数项在左 */
+            &:nth-child(even) {
+                padding-right: calc(50% + 16px);
+                text-align: right;
+
+                & .bny-timeline-node {
+                    left: auto;
+                    right: calc(50% - 8px);
+                }
+            }
+
+            /* 第奇数项在右 */
+            &:nth-child(odd) {
+                padding-left: calc(50% + 16px);
+
+                & .bny-timeline-node {
+                    left: calc(50% - 8px);
+                }
+            }
+        }
+    }
+
+    /* ============ 自定义节点图标 ============ */
+    & .bny-timeline-item.has-icon .bny-timeline-node {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 28px;
+        height: 28px;
+        left: -4px;
+        color: var(--white-common);
+        font-size: 14px;
+
+        & .bny-icon,
+        & i {
+            font-size: 12px;
+        }
+    }
+
+    &[mode="right"] .bny-timeline-item.has-icon .bny-timeline-node {
+        left: auto;
+        right: -4px;
+    }
+
+    &[mode="alternate"] .bny-timeline-item.has-icon .bny-timeline-node {
+        &:nth-child(even) {
+            left: auto;
+            right: calc(50% - 14px);
+        }
+
+        &:nth-child(odd) {
+            left: calc(50% - 14px);
+        }
+    }
+}
+/* ========== 公共样式 ========== */
+
+/* ---------- 布局 ---------- */
+
+/* Display */
+.hidden { display: none !important; }
+.block  { display: block; }
+.inline { display: inline-block; }
+.flex   { display: flex; }
+.flex-col    { display: flex; flex-direction: column; }
+.inline-flex { display: inline-flex; }
+
+/* Flex 对齐 */
+.flex-center  { display: flex; align-items: center; justify-content: center; }
+.flex-between { display: flex; align-items: center; justify-content: space-between; }
+.flex-around  { display: flex; align-items: center; justify-content: space-around; }
+.flex-start   { display: flex; align-items: flex-start; }
+.flex-end     { display: flex; align-items: flex-end; justify-content: flex-end; }
+.flex-wrap    { flex-wrap: wrap; }
+.flex-1       { flex: 1; }
+.flex-shrink  { flex-shrink: 0; }
+.items-center { align-items: center; }
+.justify-center { justify-content: center; }
+
+/* 浮动 */
+.fl { float: left; }
+.fr { float: right; }
+.clearfix { zoom: 1; }
+.clearfix:after { content: "."; width: 0; height: 0; visibility: hidden; display: block; clear: both; overflow: hidden; }
+
+/* ---------- 间距 ---------- */
+
+/* 内边距 */
+.p-4  { padding: 4px; }
+.p-8  { padding: 8px; }
+.p-12 { padding: 12px; }
+.p-16 { padding: 16px; }
+.p-24 { padding: 24px; }
+.p-36 { padding: 36px; }
+
+/* 外边距 */
+.m-4  { margin: 4px; }
+.m-8  { margin: 8px; }
+.m-12 { margin: 12px; }
+.m-16 { margin: 16px; }
+.m-24 { margin: 24px; }
+.m-36 { margin: 36px; }
+
+/* Gap */
+.gap-4  { gap: 4px; }
+.gap-8  { gap: 8px; }
 .gap-12 { gap: 12px; }
 .gap-16 { gap: 16px; }
 .gap-24 { gap: 24px; }
 
-/* 清除浮动 */
-.clearfix {
-    zoom: 1;
-}
+/* ---------- 文本 ---------- */
 
-.clearfix:after {
-    content: ".";
-    width: 0;
-    height: 0;
-    visibility: hidden;
-    display: block;
-    clear: both;
-    overflow: hidden;
-}
+/* 字号 */
+.fs-16 { font-size: var(--font-size-16); }
+.fs-18 { font-size: var(--font-size-18); }
+.fs-20 { font-size: var(--font-size-20); }
+.fs-24 { font-size: var(--font-size-24); }
+.fs-32 { font-size: var(--font-size-32); }
 
-/* 浮动 */
-.fl {
-    float: left;
-}
+/* 字重 */
+.fw-normal    { font-weight: var(--font-weight-normal); }
+.fw-medium    { font-weight: var(--font-weight-medium); }
+.fw-semibold  { font-weight: var(--font-weight-semibold); }
+.fw-bold      { font-weight: var(--font-weight-bold); }
 
-.fr {
-    float: right;
-}
+/* 对齐 */
+.tl { text-align: left; }
+.tc { text-align: center; }
+.tr { text-align: right; }
 
-/* 文本对齐 */
-.tl {
-    text-align: left;
-}
+/* 换行 & 溢出 */
+.ellipse    { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.nowrap     { white-space: nowrap; }
+.pre-wrap   { white-space: pre-wrap; }
+.break-word { word-break: break-word; }
 
-.tc {
-    text-align: center;
-}
-
-.tr {
-    text-align: right;
-}
-
-/* 省略号 */
-.ellipse {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-
-/* 行内块 */
-.inline {
-    display: inline-block;
-}
+/* ---------- 外观 ---------- */
 
 /* 圆角 */
-.rounded-sm { border-radius: var(--border-radius-sm); }
-.rounded { border-radius: var(--border-radius); }
-.rounded-8 { border-radius: var(--border-radius-8); }
-.rounded-15 { border-radius: var(--border-radius-15); }
+.rounded-sm   { border-radius: var(--border-radius-sm); }
+.rounded      { border-radius: var(--border-radius); }
+.rounded-8    { border-radius: var(--border-radius-8); }
+.rounded-15   { border-radius: var(--border-radius-15); }
 .rounded-full { border-radius: var(--border-radius-full); }
 
 /* 阴影 */
-.shadow { box-shadow: var(--box-shadow-005); }
-.shadow-md { box-shadow: var(--box-shadow-055); }
+.shadow       { box-shadow: var(--box-shadow-005); }
+.shadow-md    { box-shadow: var(--box-shadow-055); }
 .shadow-hover { box-shadow: var(--box-shadow-hover-005); }
 
 /* 过渡 */
-.transition { transition: var(--transition); }
+.transition      { transition: var(--transition); }
 .transition-fast { transition: var(--transition-fast); }
+
+/* ---------- 宽高 ---------- */
+.w-25   { width: 25%; }
+.w-33   { width: 33.333%; }
+.w-50   { width: 50%; }
+.w-75   { width: 75%; }
+.w-100  { width: 100%; }
+.w-auto { width: auto; }
+
+.h-100 { height: 100%; }
+
+.max-w-full { max-width: 100%; }
+
+/* ---------- 其他 ---------- */
+
+/* 溢出 */
+.overflow-hidden { overflow: hidden; }
+.overflow-auto   { overflow: auto; }
+
+/* 光标 */
+.cursor-pointer   { cursor: pointer; }
+.cursor-default   { cursor: default; }
+.cursor-not-allowed { cursor: not-allowed; }
+
+/* 可见性 */
+.invisible { visibility: hidden; }
+
+/* 垂直对齐 */
+.align-middle { vertical-align: middle; }
+
+/* 背景 */
+.bg-transparent { background: transparent; }

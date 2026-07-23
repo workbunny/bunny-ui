@@ -135,7 +135,7 @@
                 </div>
             </div>
 
-            <h2 id="n03">卡片 & 表格</h2>
+            <h2 id="n03">卡片 & 表格<div class="bny-tag" color="red">v2.0.6+</div></h2>
             <div class="bny-card">
                 <div hx-ext="bny-tab">
                     <ul class="head">
@@ -308,7 +308,153 @@
                 </div>
             </div>
 
-            <h2 id="n06">API</h2>
+            <h2 id="n06">扩展组合布局</h2>
+            <div class="bny-card">
+                <div hx-ext="bny-tab">
+                    <ul class="head">
+                        <li>Preview</li>
+                        <li>Code</li>
+                    </ul>
+                    <div class="body">
+                        <div>
+                            <div class="p-12">
+                                <div class="bny-row" gap="22">
+                                    <!-- 详情页 -->
+                                    <div class="col-xs12 col-sm6">
+                                        <p style="margin-bottom:12px; font-size:13px; color:var(--black-shallow);">详情页</p>
+                                        <div class="bny-skeleton-detail">
+                                            <div class="row"><div class="bny-skeleton label"></div><div class="bny-skeleton value"></div></div>
+                                            <div class="row"><div class="bny-skeleton label"></div><div class="bny-skeleton value"></div></div>
+                                            <div class="row"><div class="bny-skeleton label"></div><div class="bny-skeleton value"></div></div>
+                                            <div class="row"><div class="bny-skeleton label"></div><div class="bny-skeleton value"></div></div>
+                                        </div>
+                                    </div>
+                                    <!-- 评论 -->
+                                    <div class="col-xs12 col-sm6">
+                                        <p style="margin-bottom:12px; font-size:13px; color:var(--black-shallow);">评论</p>
+                                        <div class="bny-skeleton-comment">
+                                            <div class="bny-skeleton bny-skeleton-avatar bny-skeleton-circle sm"></div>
+                                            <div class="body">
+                                                <div class="bny-skeleton name"></div>
+                                                <div class="bny-skeleton line"></div>
+                                                <div class="bny-skeleton line short"></div>
+                                            </div>
+                                        </div>
+                                        <div class="bny-skeleton-comment">
+                                            <div class="bny-skeleton bny-skeleton-avatar bny-skeleton-circle sm"></div>
+                                            <div class="body">
+                                                <div class="bny-skeleton name"></div>
+                                                <div class="bny-skeleton line"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- 表单 -->
+                                    <div class="col-xs12 col-sm6">
+                                        <p style="margin-bottom:12px; font-size:13px; color:var(--black-shallow);">表单</p>
+                                        <div class="bny-skeleton-form">
+                                            <div class="form-row"><div class="bny-skeleton label"></div><div class="bny-skeleton input"></div></div>
+                                            <div class="form-row"><div class="bny-skeleton label"></div><div class="bny-skeleton input"></div></div>
+                                            <div class="form-row"><div class="bny-skeleton label"></div><div class="bny-skeleton input"></div></div>
+                                        </div>
+                                    </div>
+                                    <!-- 导航条 -->
+                                    <div class="col-xs12 col-sm6">
+                                        <p style="margin-bottom:12px; font-size:13px; color:var(--black-shallow);">导航条</p>
+                                        <div class="bny-skeleton-navbar">
+                                            <div class="bny-skeleton logo"></div>
+                                            <div class="menu">
+                                                <div class="bny-skeleton item"></div>
+                                                <div class="bny-skeleton item"></div>
+                                                <div class="bny-skeleton item"></div>
+                                            </div>
+                                            <div class="bny-skeleton action"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <hr style="margin:24px 0;">
+                                <!-- 个人资料 -->
+                                <p style="margin-bottom:12px; font-size:13px; color:var(--black-shallow);">个人资料卡片</p>
+                                <div style="max-width:300px; border:1px solid var(--gray-shallow); border-radius:var(--border-radius-8);">
+                                    <div class="bny-skeleton-profile">
+                                        <div class="bny-skeleton bny-skeleton-avatar bny-skeleton-circle"></div>
+                                        <div class="bny-skeleton name"></div>
+                                        <div class="bny-skeleton bio"></div>
+                                        <div class="stats">
+                                            <div class="stat"><div class="bny-skeleton num"></div><div class="bny-skeleton label"></div></div>
+                                            <div class="stat"><div class="bny-skeleton num"></div><div class="bny-skeleton label"></div></div>
+                                            <div class="stat"><div class="bny-skeleton num"></div><div class="bny-skeleton label"></div></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <hr style="margin:24px 0;">
+                                <!-- 网格卡片 -->
+                                <p style="margin-bottom:12px; font-size:13px; color:var(--black-shallow);">网格卡片</p>
+                                <div class="bny-skeleton-grid">
+                                    <div class="bny-skeleton-card">
+                                        <div class="bny-skeleton bny-skeleton-image"></div>
+                                        <div class="bny-skeleton bny-skeleton-title"></div>
+                                        <div class="bny-skeleton bny-skeleton-text"></div>
+                                    </div>
+                                    <div class="bny-skeleton-card">
+                                        <div class="bny-skeleton bny-skeleton-image"></div>
+                                        <div class="bny-skeleton bny-skeleton-title"></div>
+                                        <div class="bny-skeleton bny-skeleton-text"></div>
+                                    </div>
+                                    <div class="bny-skeleton-card">
+                                        <div class="bny-skeleton bny-skeleton-image"></div>
+                                        <div class="bny-skeleton bny-skeleton-title"></div>
+                                        <div class="bny-skeleton bny-skeleton-text"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <pre hx-ext="bny-code">
+&lt;!-- 详情页骨架 --&gt;
+&lt;div class=&quot;bny-skeleton-detail&quot;&gt;
+    &lt;div class=&quot;row&quot;&gt;
+        &lt;div class=&quot;bny-skeleton label&quot;&gt;&lt;/div&gt;
+        &lt;div class=&quot;bny-skeleton value&quot;&gt;&lt;/div&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+
+&lt;!-- 评论骨架 --&gt;
+&lt;div class=&quot;bny-skeleton-comment&quot;&gt;
+    &lt;div class=&quot;bny-skeleton bny-skeleton-avatar bny-skeleton-circle sm&quot;&gt;&lt;/div&gt;
+    &lt;div class=&quot;body&quot;&gt;
+        &lt;div class=&quot;bny-skeleton name&quot;&gt;&lt;/div&gt;
+        &lt;div class=&quot;bny-skeleton line&quot;&gt;&lt;/div&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+
+&lt;!-- 表单骨架 --&gt;
+&lt;div class=&quot;bny-skeleton-form&quot;&gt;
+    &lt;div class=&quot;form-row&quot;&gt;
+        &lt;div class=&quot;bny-skeleton label&quot;&gt;&lt;/div&gt;
+        &lt;div class=&quot;bny-skeleton input&quot;&gt;&lt;/div&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+
+&lt;!-- 导航条骨架 --&gt;
+&lt;div class=&quot;bny-skeleton-navbar&quot;&gt;
+    &lt;div class=&quot;bny-skeleton logo&quot;&gt;&lt;/div&gt;
+    &lt;div class=&quot;menu&quot;&gt;&lt;div class=&quot;bny-skeleton item&quot;&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;/div&gt;
+
+&lt;!-- 个人资料卡片骨架 --&gt;
+&lt;div class=&quot;bny-skeleton-profile&quot;&gt;...&lt;/div&gt;
+
+&lt;!-- 网格卡片骨架 --&gt;
+&lt;div class=&quot;bny-skeleton-grid&quot;&gt;
+    &lt;div class=&quot;bny-skeleton-card&quot;&gt;...&lt;/div&gt;
+&lt;/div&gt;
+                </pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h2 id="n07">API</h2>
             <h3>CSS 类</h3>
             <table hx-ext="bny-table">
                 <thead>
@@ -359,6 +505,30 @@
                         <td>组合：表头 + 多行</td>
                     </tr>
                     <tr>
+                        <td><code>bny-skeleton-detail</code></td>
+                        <td>组合：详情页标签 + 值的两栏布局</td>
+                    </tr>
+                    <tr>
+                        <td><code>bny-skeleton-comment</code></td>
+                        <td>组合：评论（头像 + 名称 + 内容）</td>
+                    </tr>
+                    <tr>
+                        <td><code>bny-skeleton-form</code></td>
+                        <td>组合：表单（label + input 多行）</td>
+                    </tr>
+                    <tr>
+                        <td><code>bny-skeleton-navbar</code></td>
+                        <td>组合：导航条（logo + 菜单 + 操作）</td>
+                    </tr>
+                    <tr>
+                        <td><code>bny-skeleton-profile</code></td>
+                        <td>组合：个人资料卡片</td>
+                    </tr>
+                    <tr>
+                        <td><code>bny-skeleton-grid</code></td>
+                        <td>组合：多列网格卡片</td>
+                    </tr>
+                    <tr>
                         <td><code>.quiet</code></td>
                         <td>静默模式，关闭流光仅保留呼吸脉冲</td>
                     </tr>
@@ -374,7 +544,8 @@
                 <li class="link" anchor="#n03">卡片 & 表格</li>
                 <li class="link" anchor="#n04">静默模式</li>
                 <li class="link" anchor="#n05">配合 HTMX 使用</li>
-                <li class="link" anchor="#n06">API</li>
+                <li class="link" anchor="#n06">扩展组合布局</li>
+                <li class="link" anchor="#n07">API</li>
             </ul>
         </div>
     </div>

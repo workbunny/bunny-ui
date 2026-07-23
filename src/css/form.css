@@ -331,3 +331,113 @@
         }
     }
 }
+
+/* ========== 表单控件 size 变体 ==========
+ * 适用于 input / textarea / select 三类控件
+ * - size="sm" : 30px 高度，紧凑型
+ * - 默认      : 38px
+ * - size="lg" : 46px 高度
+ */
+.bny-input[size="sm"],
+.bny-textarea[size="sm"],
+.bny-select[size="sm"],
+[hx-ext="bny-input"][size="sm"],
+[hx-ext="bny-textarea"][size="sm"],
+[hx-ext="bny-select"][size="sm"] {
+    height: 30px;
+    font-size: var(--font-size-sm);
+    padding: 0 8px;
+    border-radius: var(--border-radius-sm);
+}
+
+.bny-input[size="lg"],
+.bny-textarea[size="lg"],
+.bny-select[size="lg"],
+[hx-ext="bny-input"][size="lg"],
+[hx-ext="bny-textarea"][size="lg"],
+[hx-ext="bny-select"][size="lg"] {
+    height: 46px;
+    font-size: var(--font-size-16);
+    padding: 0 16px;
+    border-radius: var(--border-radius-8);
+}
+
+/* textarea 不强制固定高度 */
+.bny-textarea[size="sm"],
+.bny-textarea[size="lg"],
+[hx-ext="bny-textarea"][size="sm"],
+[hx-ext="bny-textarea"][size="lg"] {
+    height: auto;
+    min-height: 80px;
+}
+
+/* ========== select 增强：自定义箭头视觉 + 焦点态 ========== */
+.bny-select:hover,
+[hx-ext="bny-select"]:hover {
+    border-color: var(--default-middle);
+}
+
+.bny-select:focus,
+[hx-ext="bny-select"]:focus {
+    border-color: var(--default);
+    box-shadow: var(--focus-ring);
+}
+
+/* select 选项组样式（部分浏览器支持） */
+.bny-select option,
+[hx-ext="bny-select"] option {
+    padding: 8px 12px;
+    background-color: var(--white);
+    color: var(--black);
+}
+
+/* select disabled 视觉 */
+.bny-select:disabled,
+[hx-ext="bny-select"]:disabled {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23B0B7C0' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+}
+
+/* ========== 表单校验 ========== */
+/* 错误状态：input/textarea/select 边框变红 */
+.bny-input.bny-input-error,
+.bny-textarea.bny-input-error,
+.bny-select.bny-input-error,
+[hx-ext="bny-input"].bny-input-error,
+[hx-ext="bny-textarea"].bny-input-error,
+[hx-ext="bny-select"].bny-input-error {
+    border-color: var(--red);
+
+    &:focus {
+        border-color: var(--red);
+        box-shadow: 0 0 0 3px var(--red-alpha-10);
+    }
+}
+
+/* 错误提示文本 */
+.bny-form-error {
+    display: block;
+    margin-top: 6px;
+    color: var(--red);
+    font-size: var(--font-size-sm);
+    line-height: 1.4;
+    font-weight: var(--font-weight-medium);
+    animation: bny-form-error-in 200ms ease-out;
+}
+
+@keyframes bny-form-error-in {
+    from {
+        opacity: 0;
+        transform: translateY(-4px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* 校验通过状态的视觉提示（可选，配合 data-valid-feedback="true" 启用） */
+.form-item.is-valid .bny-input,
+.form-item.is-valid .bny-textarea,
+.form-item.is-valid .bny-select {
+    border-color: var(--green);
+}

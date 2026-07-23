@@ -116,6 +116,28 @@ echo $code;
                     </div>
                 </div>
             </div>
+
+            <h2 id="n04">API</h2>
+            <h3>HTMX 扩展</h3>
+            <table hx-ext="bny-table">
+                <thead>
+                    <tr><th>属性</th><th>说明</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td><code>hx-ext="bny-code"</code></td><td>激活代码块组件：自动高亮 + 复制按钮</td></tr>
+                </tbody>
+            </table>
+            <h3>CSS 类</h3>
+            <table hx-ext="bny-table">
+                <thead>
+                    <tr><th>类名</th><th>说明</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td><code>[hx-ext~="bny-code"]</code></td><td>代码块容器，背景色 + 内边距</td></tr>
+                    <tr><td><code>.copy-btn</code></td><td>复制按钮，hover 时出现</td></tr>
+                    <tr><td><code>code</code></td><td>内联代码标签，浅灰背景 + 红色文字</td></tr>
+                </tbody>
+            </table>
         </div>
     </div>
     <div class="right-anchor-box hidden-xs col-sm3">
@@ -123,6 +145,8 @@ echo $code;
             <ul hx-ext="bny-anchor" rail>
                 <li class="link" anchor="#n01">基本代码</li>
                 <li class="link" anchor="#n02">htmx-组件</li>
+                <li class="link" anchor="#n03">高亮集成</li>
+                <li class="link" anchor="#n04">API</li>
             </ul>
         </div>
     </div>

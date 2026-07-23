@@ -231,3 +231,56 @@
         }
     }
 }
+
+/* ========== Loading 状态（与 htmx 集成） ========== */
+.bny-btn.bny-loading {
+    cursor: progress;
+    pointer-events: none;
+    position: relative;
+    color: transparent !important;
+
+    /* 文字隐藏后用伪元素展示 spinner */
+    &::after {
+        content: "";
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 16px;
+        height: 16px;
+        margin: -8px 0 0 -8px;
+        /* 不能用 currentColor：color 已被设为 transparent，currentColor 也会解析为透明
+         * 用 CSS 变量 --btn-spin-color 显式指定 spinner 颜色，默认白色（实色按钮用） */
+        --btn-spin-color: var(--white-common);
+        border: 2px solid var(--btn-spin-color);
+        border-top-color: transparent;
+        border-radius: 50%;
+        animation: bny-btn-spin 0.6s linear infinite;
+        box-sizing: content-box;
+    }
+
+    /* 边框按钮的 spinner 颜色取主色 */
+    &[model~="border"]::after {
+        --btn-spin-color: var(--default);
+    }
+
+    &[color="green"]::after { --btn-spin-color: var(--white-common); }
+    &[color="blue"]::after  { --btn-spin-color: var(--white-common); }
+    &[color="yellow"]::after{ --btn-spin-color: var(--white-common); }
+    &[color="red"]::after   { --btn-spin-color: var(--white-common); }
+
+    /* 边框 + 颜色：spinner 取颜色主色（边框按钮背景透明，白色不可见） */
+    &[model~="border"][color="green"]::after  { --btn-spin-color: var(--green); }
+    &[model~="border"][color="blue"]::after   { --btn-spin-color: var(--blue); }
+    &[model~="border"][color="yellow"]::after { --btn-spin-color: var(--yellow); }
+    &[model~="border"][color="red"]::after   { --btn-spin-color: var(--red); }
+
+    /* 禁用 hover/active 视觉 */
+    &:hover,
+    &:active {
+        transform: none !important;
+    }
+}
+
+@keyframes bny-btn-spin {
+    to { transform: rotate(360deg); }
+}

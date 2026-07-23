@@ -3,7 +3,8 @@
 
     var tip = null;
     var current = null;
-    var timer = null;
+    var showTimer = null;
+    var hideTimer = null;
     var gap = 6;
 
     var DIRS = [
@@ -20,24 +21,69 @@
         document.body.appendChild(tip);
     }
 
+    /**
+     * 获取属性值
+     * @param {HTMLElement} elt
+     * @param {string} attr
+     * @returns {string|null}
+     */
+    function attr(elt, attr) {
+        return elt.getAttribute(attr) || null;
+    }
+
     function show(elt) {
         ensure();
-        clearTimeout(timer);
+        clearTimeout(showTimer);
+        clearTimeout(hideTimer);
+
+        // 获取延迟时间
+        var delay = parseInt(attr(elt, 'data-tip-delay')) || 0;
+
+        showTimer = setTimeout(function () {
+            _show(elt);
+        }, delay);
+    }
+
+    function _show(elt) {
         current = elt;
 
-        var text = elt.getAttribute('bny-tip');
-        if (!text) return;
+        // 内容：优先 bny-tip-html，其次 bny-tip
+        var html = attr(elt, 'bny-tip-html');
+        var text = attr(elt, 'bny-tip');
+        if (html) {
+            tip.innerHTML = html;
+        } else if (text) {
+            tip.textContent = text;
+        } else {
+            return;
+        }
 
-        tip.textContent = text;
+        // 自定义宽度
+        var width = attr(elt, 'data-tip-width');
+        tip.style.maxWidth = width ? width : '';
+
+        // 主题
+        var theme = attr(elt, 'data-tip-theme');
+        var themeClass = theme === 'light' ? 'bny-tooltip-light' : '';
+        tip.className = 'bny-tooltip ' + themeClass;
+
         tip.style.display = 'block';
         tip.style.visibility = 'hidden';
         tip.offsetHeight; // reflow
 
         var tw = tip.offsetWidth, th = tip.offsetHeight;
-        var best = pick(elt, tw, th);
-        var r = elt.getBoundingClientRect();
 
-        tip.className = 'bny-tooltip ' + best;
+        // 方向：手动指定 > 自动评分
+        var placement = attr(elt, 'data-tip-placement');
+        var best;
+        if (placement) {
+            best = placement;
+        } else {
+            best = pick(elt, tw, th);
+        }
+
+        tip.classList.add(best);
+        var r = elt.getBoundingClientRect();
         var p = pos(best, r, tw, th);
 
         tip.style.left = p.x + 'px';
@@ -49,15 +95,21 @@
     }
 
     function hide() {
-        timer = setTimeout(function () {
-            if (tip) tip.classList.remove('visible');
+        clearTimeout(showTimer);
+        hideTimer = setTimeout(function () {
+            if (tip) {
+                tip.classList.remove('visible');
+            }
             current = null;
         }, 100);
     }
 
     function hideNow() {
-        clearTimeout(timer);
-        if (tip) tip.classList.remove('visible');
+        clearTimeout(showTimer);
+        clearTimeout(hideTimer);
+        if (tip) {
+            tip.classList.remove('visible');
+        }
         current = null;
     }
 
@@ -68,7 +120,6 @@
         for (var i = 0; i < DIRS.length; i++) {
             for (var j = 0; j < DIRS[i].length; j++) {
                 var d = DIRS[i][j], s = score(d, r, tw, th, vw, vh);
-                // 同组方向，完全可见的优先；不同组按全局优先级
                 if (s >= 10 && bestS < 10) { bestS = s; best = d; }
                 else if (s > bestS) { bestS = s; best = d; }
             }
@@ -123,8 +174,8 @@
 
     function scan(root) {
         if (root.nodeType !== 1) return;
-        if (root.hasAttribute && root.hasAttribute('bny-tip')) bind(root);
-        if (root.querySelectorAll) root.querySelectorAll('[bny-tip]').forEach(bind);
+        if (root.hasAttribute && (root.hasAttribute('bny-tip') || root.hasAttribute('bny-tip-html'))) bind(root);
+        if (root.querySelectorAll) root.querySelectorAll('[bny-tip], [bny-tip-html]').forEach(bind);
     }
 
     // 初始化

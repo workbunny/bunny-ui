@@ -3803,6 +3803,21 @@
       return elt.classList?.contains(cls) || false;
     },
     /**
+     * 获取/创建 alert 共享容器（单例，多个 alert 在容器内垂直堆叠，避免重叠在屏幕中心）
+     *
+     * @returns {HTMLElement} 容器元素
+     */
+    alertContainer: function() {
+      let box = document.getElementById("bny-alert-box");
+      if (!box) {
+        box = document.createElement("div");
+        box.id = "bny-alert-box";
+        box.className = "bny-alert-box";
+        document.body.appendChild(box);
+      }
+      return box;
+    },
+    /**
      * 显示警示弹窗
      * 
      * @param {String} msg 消息
@@ -3826,20 +3841,31 @@
         }
       }
       const color = type(code);
-      const alert_open = document.createElement("div");
-      alert_open.classList.add("bny-alert-open");
       const alert = document.createElement("div");
       alert.classList.add("bny-alert", `bny-anim-${anim}`);
       alert.setAttribute("color", color);
       alert.style.width = "auto";
-      alert.innerHTML = msg;
-      alert_open.appendChild(alert);
-      document.body.appendChild(alert_open);
-      setTimeout(() => {
+      alert.innerHTML = bny.escapeChars(msg);
+      const closeBtn = document.createElement("i");
+      closeBtn.className = "bny-icon icon-close bny-alert-close";
+      closeBtn.setAttribute("title", "关闭");
+      alert.appendChild(closeBtn);
+      this.alertContainer().appendChild(alert);
+      let timer = null;
+      const removeAlert = () => {
+        if (timer) {
+          clearTimeout(timer);
+          timer = null;
+        }
+        if (!alert.parentElement) return;
         this.animPlayer(alert, anim, false, () => {
-          alert_open.remove();
+          alert.remove();
+          const box = document.getElementById("bny-alert-box");
+          if (box && box.children.length === 0) box.remove();
         });
-      }, time * 1e3);
+      };
+      closeBtn.addEventListener("click", removeAlert);
+      timer = setTimeout(removeAlert, time * 1e3);
     },
     /**
      * 显示确认弹窗
@@ -3871,10 +3897,10 @@
       confirm2.classList.add("bny-confirm", `bny-anim-${anim}`);
       const confirm_title = document.createElement("h3");
       confirm_title.classList.add("title");
-      confirm_title.innerHTML = title;
+      confirm_title.innerHTML = bny.escapeChars(title);
       const confirm_content = document.createElement("p");
       confirm_content.classList.add("content");
-      confirm_content.innerHTML = msg;
+      confirm_content.innerHTML = bny.escapeChars(msg);
       const confirm_btn = document.createElement("div");
       confirm_btn.classList.add("btn");
       const confirm_yes = document.createElement("button");
@@ -3884,25 +3910,42 @@
       const confirm_no = document.createElement("button");
       confirm_no.classList.add("bny-btn");
       confirm_no.innerHTML = "取消";
+      let closed = false;
+      const close = (cb) => {
+        if (closed) return;
+        closed = true;
+        document.removeEventListener("keydown", onKeydown);
+        this.animPlayer(confirm2, anim, false, () => {
+          confirm_shield.remove();
+          if (typeof cb === "function") cb();
+        });
+      };
       confirm_shield.addEventListener("click", (e) => {
         if (e.target === confirm_shield) {
-          this.animPlayer(confirm2, anim, false, () => {
-            confirm_shield.remove();
-          });
+          close(no_cb);
         }
       });
       confirm_yes.addEventListener("click", (e) => {
-        yes_cb();
-        this.animPlayer(confirm2, anim, false, () => {
-          confirm_shield.remove();
-        });
+        close(yes_cb);
       });
       confirm_no.addEventListener("click", (e) => {
-        no_cb();
-        this.animPlayer(confirm2, anim, false, () => {
-          confirm_shield.remove();
-        });
+        close(no_cb);
       });
+      const onKeydown = (e) => {
+        const top = document.querySelector(".bny-confirm-shield:last-of-type");
+        if (top !== confirm_shield) return;
+        if (e.key === "Escape") {
+          e.preventDefault();
+          e.stopPropagation();
+          close(no_cb);
+        } else if (e.key === "Enter") {
+          e.preventDefault();
+          e.stopPropagation();
+          close(yes_cb);
+        }
+      };
+      document.addEventListener("keydown", onKeydown);
+      requestAnimationFrame(() => confirm_yes.focus());
       confirm_btn.appendChild(confirm_yes);
       confirm_btn.appendChild(confirm_no);
       confirm2.appendChild(confirm_title);
@@ -3925,22 +3968,35 @@
      * @returns {HTMLElement} 页面元素
      */
     page: function(content, options = {}) {
-      function drag(page2) {
+      function isSafeUrl(str2) {
+        if (typeof str2 !== "string") return false;
+        const s = str2.trim().replace(/^[\u0000-\u001F\u007F]+/, "");
+        return /^https?:\/\//i.test(s);
+      }
+      function drag(page2, onUnmount) {
         const header2 = page2.querySelector(".header");
         let startX, startY, newX, newY;
-        header2.addEventListener("mousedown", (e) => {
-          [startX, startY] = [e.clientX, e.clientY];
-          [newX, newY] = [parseInt(page2.style.left), parseInt(page2.style.top)];
-          page2.classList.add("dragging");
-        });
-        document.addEventListener("mousemove", (e) => {
+        const onMove = (e) => {
           if (!page2.classList.contains("dragging")) return;
           Object.assign(page2.style, {
             left: `${newX + e.clientX - startX}px`,
             top: `${newY + e.clientY - startY}px`
           });
+        };
+        const onUp = () => page2.classList.remove("dragging");
+        header2.addEventListener("mousedown", (e) => {
+          if (e.button !== 0) return;
+          if (e.target.closest(".setwin")) return;
+          [startX, startY] = [e.clientX, e.clientY];
+          [newX, newY] = [parseInt(page2.style.left), parseInt(page2.style.top)];
+          page2.classList.add("dragging");
         });
-        document.addEventListener("mouseup", () => page2.classList.remove("dragging"));
+        document.addEventListener("mousemove", onMove);
+        document.addEventListener("mouseup", onUp);
+        onUnmount(() => {
+          document.removeEventListener("mousemove", onMove);
+          document.removeEventListener("mouseup", onUp);
+        });
       }
       function resize(page2, width2, height2, currentX2, currentY2) {
         const zoomBtn = page2.querySelector(".zoom");
@@ -3962,7 +4018,7 @@
         const pageShade = page2.parentElement;
         minBtn.addEventListener("click", (e) => {
           if (minBtn.classList.contains("icon-minus")) {
-            Object.assign(page2.style, { width: "125px", height: "min-content", bottom: "0", left: `${num2 * 125}px`, top: "unset" });
+            Object.assign(page2.style, { width: "125px", height: "min-content", bottom: "5px", left: `${5 + num2 * 125}px`, top: "unset" });
             page2.querySelector(".content").style.display = "none";
             page2.querySelector(".zoom").style.display = "none";
             minBtn.classList.remove("icon-minus");
@@ -3987,20 +4043,12 @@
         });
       }
       function zIndex(page2) {
+        page2.style.zIndex = ++bny._pageZIndexCounter;
         page2.addEventListener("click", () => {
-          let pageZindex = document.querySelectorAll(".bny-page");
-          let maxZIndex = 0;
-          for (let i = 0; i < pageZindex.length; i++) {
-            let div = pageZindex[i];
-            const zIndex2 = parseInt(window.getComputedStyle(div).zIndex);
-            if (zIndex2 > maxZIndex) {
-              maxZIndex = zIndex2;
-            }
-          }
-          page2.style.zIndex = maxZIndex + 1;
+          page2.style.zIndex = ++bny._pageZIndexCounter;
         });
       }
-      function close(page2, shade2, anim2, animPlayer) {
+      function close(page2, shade2, anim2, animPlayer, unloads2) {
         const closeBtn = page2.querySelector(".close-btn");
         if (shade2) {
           const shade3 = document.createElement("div");
@@ -4009,6 +4057,12 @@
           shade3.addEventListener("click", (e) => {
             if (e.target === shade3) {
               animPlayer(page2, anim2, false, () => {
+                unloads2.forEach((fn) => {
+                  try {
+                    fn();
+                  } catch (_) {
+                  }
+                });
                 shade3.remove();
               });
               e.stopPropagation();
@@ -4021,10 +4075,22 @@
         closeBtn.addEventListener("click", (e) => {
           if (shade2) {
             animPlayer(page2, anim2, false, () => {
+              unloads2.forEach((fn) => {
+                try {
+                  fn();
+                } catch (_) {
+                }
+              });
               page2.parentNode.remove();
             });
           } else {
             animPlayer(page2, anim2, false, () => {
+              unloads2.forEach((fn) => {
+                try {
+                  fn();
+                } catch (_) {
+                }
+              });
               page2.remove();
             });
           }
@@ -4036,7 +4102,7 @@
       let height = options.height ?? "520px";
       const offset = options.offset ?? "auto";
       const shade = options.shade ?? false;
-      if (content.startsWith("http://") || content.startsWith("https://")) {
+      if (typeof content === "string" && isSafeUrl(content)) {
         content = `<iframe src="${content}"></iframe>`;
       }
       const windowWidth = window.innerWidth;
@@ -4101,7 +4167,7 @@
       }
       page.innerHTML = `
         <div class="header">
-            <div class="title">${title}</div>
+            <div class="title">${bny.escapeChars(title === false ? "" : title)}</div>
                 <div class="setwin">
                     <span class="bny-icon icon-minus min-auto"></span>
                     <span class="bny-icon icon-fullscreen zoom"></span>
@@ -4112,13 +4178,20 @@
         <div class="content ${title === false ? "not-title" : ""}">${content}</div>`;
       const header = page.querySelector(".header");
       if (title === false) header.style.display = "none";
-      close(page, shade, anim, this.animPlayer);
-      drag(page);
+      const unloads = [];
+      close(page, shade, anim, this.animPlayer, unloads);
+      drag(page, (fn) => unloads.push(fn));
       resize(page, width, height, currentX, currentY);
-      minimize(page, num, width, height, currentX, currentY);
+      minimize(page, num - 1, width, height, currentX, currentY);
       zIndex(page);
       return page;
     },
+    /**
+     * bny.page 的 z-index 计数器（模块级单例，避免每次点击遍历所有 .bny-page）
+     * 起始值 999，每次创建/聚焦 page 自增
+     * @type {Number}
+     */
+    _pageZIndexCounter: 999,
     /**
      * 加载页面
      * @param {number} style 加载样式 0:旋转 1:线性 2:球型
@@ -4157,6 +4230,7 @@
     onEvent: function(name, evt) {
       if (name === "htmx:afterProcessNode") {
         if (bny.hasExtName(evt.target, "bny-menu")) {
+          initFocusable(evt.target);
           evt.target.addEventListener("click", function(e) {
             const item = e.target.closest(".item");
             let subMenu = item.querySelector(".sub-menu");
@@ -4164,6 +4238,7 @@
               item.classList.toggle("show");
             }
           });
+          evt.target.addEventListener("keydown", onMenuKeydown);
           return false;
         }
       }
@@ -4176,8 +4251,8 @@
         arr.forEach((v) => {
           const attrStr = bny.parAttrStr(v.attr);
           html += `<div class="item" ${attrStr}>`;
-          html += `<div class="trigger" bny-id="${v.id}">`;
-          html += `<span>${v.name}</span>`;
+          html += `<div class="trigger" bny-id="${bny.escapeChars(String(v.id))}">`;
+          html += `<span>${bny.escapeChars(v.name)}</span>`;
           if (v.child) {
             html += `<i class="bny-icon icon-right"></i>`;
           }
@@ -4202,6 +4277,126 @@
       return text;
     }
   });
+  function initFocusable(root) {
+    root.querySelectorAll(".item").forEach(function(item) {
+      if (item.querySelector(":scope > .trigger")) {
+        item.setAttribute("tabindex", "0");
+      }
+    });
+  }
+  function getMenuOrientation(item) {
+    const parent = item.parentElement;
+    if (parent && parent.classList.contains("sub-menu")) {
+      return "vertical";
+    }
+    const menuRoot = item.closest('[hx-ext~="bny-menu"]');
+    if (menuRoot) {
+      if (menuRoot.getAttribute("mode") === "vertical" || menuRoot.classList.contains("vertical")) {
+        return "vertical";
+      }
+    }
+    return "horizontal";
+  }
+  function getSiblings(item) {
+    const parent = item.parentElement;
+    if (!parent) return [];
+    return Array.from(parent.querySelectorAll(":scope > .item")).filter(function(it) {
+      return it.querySelector(":scope > .trigger");
+    });
+  }
+  function onMenuKeydown(e) {
+    const item = e.target.closest(".item");
+    if (!item) return;
+    const orientation = getMenuOrientation(item);
+    const sub = item.querySelector(":scope > .sub-menu");
+    switch (e.key) {
+      case "ArrowRight": {
+        e.preventDefault();
+        e.stopPropagation();
+        if (orientation === "vertical" && sub) {
+          if (!item.classList.contains("show")) item.classList.add("show");
+          const first = sub.querySelector(":scope > .item[tabindex]");
+          if (first) first.focus();
+        } else {
+          focusSibling(item, 1);
+        }
+        break;
+      }
+      case "ArrowLeft": {
+        e.preventDefault();
+        e.stopPropagation();
+        if (orientation === "vertical") {
+          const parentSub = item.parentElement;
+          if (parentSub && parentSub.classList.contains("sub-menu")) {
+            const parentItem = parentSub.parentElement;
+            if (parentItem && parentItem.classList.contains("item")) {
+              parentItem.classList.remove("show");
+              parentItem.focus();
+            }
+          }
+        } else {
+          focusSibling(item, -1);
+        }
+        break;
+      }
+      case "ArrowDown": {
+        e.preventDefault();
+        e.stopPropagation();
+        if (orientation === "horizontal" && sub) {
+          if (!item.classList.contains("show")) item.classList.add("show");
+          const first = sub.querySelector(":scope > .item[tabindex]");
+          if (first) first.focus();
+        } else {
+          focusSibling(item, 1);
+        }
+        break;
+      }
+      case "ArrowUp": {
+        e.preventDefault();
+        e.stopPropagation();
+        if (orientation === "horizontal") {
+          if (item.classList.contains("show")) {
+            item.classList.remove("show");
+          }
+        } else {
+          focusSibling(item, -1);
+        }
+        break;
+      }
+      case "Enter":
+      case " ": {
+        e.preventDefault();
+        e.stopPropagation();
+        item.click();
+        break;
+      }
+      case "Escape": {
+        e.preventDefault();
+        e.stopPropagation();
+        if (item.classList.contains("show")) {
+          item.classList.remove("show");
+          item.focus();
+        } else {
+          const parentSub = item.parentElement;
+          if (parentSub && parentSub.classList.contains("sub-menu")) {
+            const parentItem = parentSub.parentElement;
+            if (parentItem && parentItem.classList.contains("item")) {
+              parentItem.classList.remove("show");
+              parentItem.focus();
+            }
+          }
+        }
+        break;
+      }
+    }
+  }
+  function focusSibling(item, dir) {
+    const siblings = getSiblings(item);
+    const idx = siblings.indexOf(item);
+    if (idx === -1) return;
+    const next = siblings[idx + dir];
+    if (next) next.focus();
+  }
   htmx.defineExtension("bny-collapse", {
     // 事件
     onEvent: function(name, evt) {
@@ -4470,13 +4665,13 @@
           code.innerHTML = getCode(evt.target, content.trim());
           evt.target.appendChild(code);
           const copyBtn = document.createElement("a");
-          copyBtn.setAttribute("title", "复制代码");
+          copyBtn.setAttribute("title", "copy code");
           copyBtn.classList.add("copy-btn");
           copyBtn.innerHTML = '<i class="bny-icon icon-file-copy"></i>';
           evt.target.appendChild(copyBtn);
           copyBtn.addEventListener("click", (e) => {
             navigator.clipboard.writeText(code.textContent);
-            bny.alert("复制成功");
+            bny.alert("copy success");
           });
         }
       }
@@ -4500,30 +4695,187 @@
     }
   });
   htmx.defineExtension("bny-table", {
+    // 事件
     onEvent: function(name, evt) {
-      if (name === "htmx:afterProcessNode") {
-        if (bny.hasExtName(evt.target, "bny-table")) {
-          let titles = [];
-          let ths = evt.target.querySelectorAll("th");
-          for (let th of ths) {
-            titles.push(th.textContent);
+      function sortVal(td) {
+        return td.getAttribute("data-sort-val") || td.textContent.trim();
+      }
+      function sortRows(tbody, colIndex, type, asc) {
+        const rows = Array.from(tbody.querySelectorAll("tr"));
+        const dir = asc ? 1 : -1;
+        rows.sort(function(a, b) {
+          const tdA = a.querySelectorAll("td")[colIndex];
+          const tdB = b.querySelectorAll("td")[colIndex];
+          if (!tdA || !tdB) return 0;
+          if (type === "number") {
+            const va2 = parseFloat(sortVal(tdA)) || 0;
+            const vb2 = parseFloat(sortVal(tdB)) || 0;
+            return (va2 - vb2) * dir;
           }
-          const tbody_trs = evt.target.querySelectorAll("tbody tr");
-          for (let tr of tbody_trs) {
-            let tds = tr.querySelectorAll("td");
-            for (let td of tds) {
-              td.setAttribute("label", titles[td.cellIndex]);
+          const va = sortVal(tdA);
+          const vb = sortVal(tdB);
+          if (va < vb) return -1 * dir;
+          if (va > vb) return 1 * dir;
+          return 0;
+        });
+        rows.forEach(function(row) {
+          tbody.appendChild(row);
+        });
+      }
+      function initSort(table) {
+        let ths = table.querySelectorAll("thead th[data-sort]");
+        if (!ths.length) {
+          ths = table.querySelectorAll("thead th[sortable]");
+        }
+        if (!ths.length) return;
+        const tableKey = table.getAttribute("data-table-key") || "";
+        const storeKey = tableKey ? "bny-table-sort:" + tableKey : "";
+        function persistSort(colIndex, type, asc) {
+          if (!storeKey) return;
+          try {
+            sessionStorage.setItem(storeKey, JSON.stringify({
+              colIndex,
+              type,
+              asc
+            }));
+          } catch (_) {
+          }
+        }
+        function readSort() {
+          if (!storeKey) return null;
+          try {
+            var raw = sessionStorage.getItem(storeKey);
+            if (!raw) return null;
+            return JSON.parse(raw);
+          } catch (_) {
+            return null;
+          }
+        }
+        ths.forEach(function(th) {
+          const colIndex = Array.from(th.parentElement.querySelectorAll("th")).indexOf(th);
+          th.style.cursor = "pointer";
+          th.setAttribute("title", "点击排序");
+          th.classList.add("sortable");
+          th.addEventListener("click", function() {
+            const isAsc = th.classList.contains("sort-asc");
+            ths.forEach(function(t) {
+              t.classList.remove("sort-asc", "sort-desc");
+            });
+            if (isAsc) {
+              th.classList.add("sort-desc");
+            } else {
+              th.classList.add("sort-asc");
+            }
+            const type = th.getAttribute("data-sort") || "string";
+            const asc = th.classList.contains("sort-asc");
+            const tbody = table.querySelector("tbody");
+            if (tbody) {
+              sortRows(tbody, colIndex, type, asc);
+            }
+            persistSort(colIndex, type, asc);
+          });
+        });
+        const saved = readSort();
+        if (saved) {
+          const targetTh = ths[saved.colIndex];
+          if (targetTh) {
+            targetTh.classList.add(saved.asc ? "sort-asc" : "sort-desc");
+            const tbody = table.querySelector("tbody");
+            if (tbody) {
+              sortRows(tbody, saved.colIndex, saved.type, saved.asc);
             }
           }
+        }
+      }
+      function initLabels(table) {
+        const titles = [];
+        const ths = table.querySelectorAll("th");
+        for (let i = 0; i < ths.length; i++) {
+          titles.push(ths[i].textContent);
+        }
+        const tbodyTrs = table.querySelectorAll("tbody tr");
+        for (let j = 0; j < tbodyTrs.length; j++) {
+          const tds = tbodyTrs[j].querySelectorAll("td");
+          for (let k = 0; k < tds.length; k++) {
+            tds[k].setAttribute("label", titles[tds[k].cellIndex] || "");
+          }
+        }
+      }
+      if (name === "htmx:afterProcessNode") {
+        if (bny.hasExtName(evt.target, "bny-table")) {
+          initLabels(evt.target);
+          initSort(evt.target);
+          return false;
         } else if (evt.target.tagName === "TR") {
-          let tds = evt.target.querySelectorAll("td");
-          for (let td of tds) {
-            let label = evt.target.parentElement.parentElement.querySelector(`th:nth-child(${td.cellIndex + 1})`).textContent;
-            td.setAttribute("label", label);
+          const tds = evt.target.querySelectorAll("td");
+          for (let i = 0; i < tds.length; i++) {
+            const label = evt.target.parentElement.parentElement.querySelector("th:nth-child(" + (tds[i].cellIndex + 1) + ")");
+            tds[i].setAttribute("label", label ? label.textContent : "");
           }
         }
       }
       return true;
+    },
+    // 响应转换
+    transformResponse: function(text, xhr, elt) {
+      function renderCell(cell) {
+        if (cell !== null && typeof cell === "object" && typeof cell.__html !== "undefined") {
+          return String(cell.__html);
+        }
+        return bny.escapeChars(String(cell));
+      }
+      function renderCol(col) {
+        if (col !== null && typeof col === "object") {
+          var name = bny.escapeChars(String(col.name ?? ""));
+          var attrs = "";
+          if (col.sortable) attrs += " sortable";
+          if (col.sort) attrs += ' data-sort="' + bny.escapeChars(String(col.sort)) + '"';
+          return "<th" + attrs + ">" + name + "</th>";
+        }
+        return "<th>" + bny.escapeChars(String(col)) + "</th>";
+      }
+      function buildTable(data) {
+        const cols = data.cols || [];
+        const rows = data.rows || [];
+        const color = data.color || "";
+        const emptyText = data.empty || "暂无数据";
+        const tableKey = data.key || color || "";
+        let h = "";
+        h += '<table hx-ext="bny-table"' + (color ? ' color="' + color + '"' : "");
+        if (tableKey) h += ' data-table-key="' + bny.escapeChars(tableKey) + '"';
+        h += ">";
+        h += "<thead><tr>";
+        cols.forEach(function(col) {
+          h += renderCol(col);
+        });
+        h += "</tr></thead>";
+        h += "<tbody>";
+        if (rows.length === 0) {
+          h += '<tr class="bny-table-empty"><td colspan="' + cols.length + '">' + bny.escapeChars(emptyText) + "</td></tr>";
+        } else {
+          rows.forEach(function(row) {
+            h += "<tr>";
+            if (Array.isArray(row)) {
+              row.forEach(function(cell) {
+                h += "<td>" + renderCell(cell) + "</td>";
+              });
+            } else if (row && typeof row === "object" && row.__html) {
+              h += row.__html;
+            } else {
+              h += "<td>" + renderCell(row) + "</td>";
+            }
+            h += "</tr>";
+          });
+        }
+        h += "</tbody></table>";
+        return h;
+      }
+      if (xhr.getResponseHeader("Content-Type") && xhr.getResponseHeader("Content-Type").includes("application/json")) {
+        const json = JSON.parse(xhr.responseText);
+        const data = json.data || json;
+        return buildTable(data);
+      }
+      return text;
     }
   });
   htmx.defineExtension("bny-tab", {
@@ -4865,25 +5217,45 @@
               moveSilder(evt.target, link);
             }
           });
-          window.addEventListener("scroll", () => {
-            const links = evt.target.querySelectorAll(".link");
-            let currentLink = null;
-            links.forEach((link) => {
-              const anchor = link.getAttribute("anchor");
-              const section = htmx.find(anchor);
-              if (section) {
-                const rect = section.getBoundingClientRect();
-                if (rect.top <= 100 && rect.bottom >= 100) {
-                  currentLink = link;
+          let ticking = false;
+          const onScroll = () => {
+            if (ticking) return;
+            ticking = true;
+            requestAnimationFrame(() => {
+              ticking = false;
+              if (!evt.target.isConnected) {
+                window.removeEventListener("scroll", onScroll, true);
+                return;
+              }
+              const links = evt.target.querySelectorAll(".link");
+              let currentLink = null;
+              links.forEach((link) => {
+                const anchor = link.getAttribute("anchor");
+                const section = htmx.find(anchor);
+                if (section) {
+                  const rect = section.getBoundingClientRect();
+                  if (rect.top <= 100 && rect.bottom >= 100) {
+                    currentLink = link;
+                  }
                 }
+              });
+              if (currentLink) {
+                bny.removeClass(links, "active");
+                moveSilder(evt.target, currentLink);
               }
             });
-            if (currentLink) {
-              bny.removeClass(links, "active");
-              moveSilder(evt.target, currentLink);
-            }
-          });
+          };
+          window.addEventListener("scroll", onScroll, { passive: true, capture: true });
+          evt.target._bnyAnchorCleanup = function() {
+            window.removeEventListener("scroll", onScroll, true);
+          };
           return false;
+        }
+      }
+      if (name === "htmx:beforeOnNodeDisposal") {
+        if (evt.target && typeof evt.target._bnyAnchorCleanup === "function") {
+          evt.target._bnyAnchorCleanup();
+          evt.target._bnyAnchorCleanup = null;
         }
       }
     }
@@ -4891,7 +5263,8 @@
   (function() {
     var tip = null;
     var current = null;
-    var timer = null;
+    var showTimer = null;
+    var hideTimer = null;
     var gap = 6;
     var DIRS = [
       ["top", "top-start", "top-end"],
@@ -4905,20 +5278,47 @@
       tip.className = "bny-tooltip";
       document.body.appendChild(tip);
     }
+    function attr(elt, attr2) {
+      return elt.getAttribute(attr2) || null;
+    }
     function show(elt) {
       ensure();
-      clearTimeout(timer);
+      clearTimeout(showTimer);
+      clearTimeout(hideTimer);
+      var delay = parseInt(attr(elt, "data-tip-delay")) || 0;
+      showTimer = setTimeout(function() {
+        _show(elt);
+      }, delay);
+    }
+    function _show(elt) {
       current = elt;
-      var text = elt.getAttribute("bny-tip");
-      if (!text) return;
-      tip.textContent = text;
+      var html = attr(elt, "bny-tip-html");
+      var text = attr(elt, "bny-tip");
+      if (html) {
+        tip.innerHTML = html;
+      } else if (text) {
+        tip.textContent = text;
+      } else {
+        return;
+      }
+      var width = attr(elt, "data-tip-width");
+      tip.style.maxWidth = width ? width : "";
+      var theme = attr(elt, "data-tip-theme");
+      var themeClass = theme === "light" ? "bny-tooltip-light" : "";
+      tip.className = "bny-tooltip " + themeClass;
       tip.style.display = "block";
       tip.style.visibility = "hidden";
       tip.offsetHeight;
       var tw = tip.offsetWidth, th = tip.offsetHeight;
-      var best = pick(elt, tw, th);
+      var placement = attr(elt, "data-tip-placement");
+      var best;
+      if (placement) {
+        best = placement;
+      } else {
+        best = pick(elt, tw, th);
+      }
+      tip.classList.add(best);
       var r = elt.getBoundingClientRect();
-      tip.className = "bny-tooltip " + best;
       var p = pos(best, r, tw, th);
       tip.style.left = p.x + "px";
       tip.style.top = p.y + "px";
@@ -4928,14 +5328,20 @@
       tip.classList.add("visible");
     }
     function hide() {
-      timer = setTimeout(function() {
-        if (tip) tip.classList.remove("visible");
+      clearTimeout(showTimer);
+      hideTimer = setTimeout(function() {
+        if (tip) {
+          tip.classList.remove("visible");
+        }
         current = null;
       }, 100);
     }
     function hideNow() {
-      clearTimeout(timer);
-      if (tip) tip.classList.remove("visible");
+      clearTimeout(showTimer);
+      clearTimeout(hideTimer);
+      if (tip) {
+        tip.classList.remove("visible");
+      }
       current = null;
     }
     function pick(elt, tw, th) {
@@ -5018,8 +5424,8 @@
     }
     function scan(root) {
       if (root.nodeType !== 1) return;
-      if (root.hasAttribute && root.hasAttribute("bny-tip")) bind(root);
-      if (root.querySelectorAll) root.querySelectorAll("[bny-tip]").forEach(bind);
+      if (root.hasAttribute && (root.hasAttribute("bny-tip") || root.hasAttribute("bny-tip-html"))) bind(root);
+      if (root.querySelectorAll) root.querySelectorAll("[bny-tip], [bny-tip-html]").forEach(bind);
     }
     if (typeof htmx !== "undefined") {
       htmx.onLoad(function(content) {
@@ -5052,6 +5458,8 @@
       this.rangeInput = options.rangeInput || null;
       this.min = options.min || null;
       this.max = options.max || null;
+      this._minStamp = parseBoundary(this.min);
+      this._maxStamp = parseBoundary(this.max);
       this.viewYear = (/* @__PURE__ */ new Date()).getFullYear();
       this.viewMonth = (/* @__PURE__ */ new Date()).getMonth();
       this.viewType = "calendar";
@@ -5060,6 +5468,12 @@
       this.temp = { y: null, m: null, d: null, H: 0, M: 0, S: 0 };
       this.initPanel();
       this.bindEvents();
+    }
+    function parseBoundary(v) {
+      if (!v) return null;
+      var d = v instanceof Date ? v : new Date(v);
+      if (isNaN(d.getTime())) return null;
+      return d.getTime();
     }
     DatePicker.prototype.initPanel = function() {
       var self = this;
@@ -5091,7 +5505,7 @@
         else if (el.closest(".time-btn.down")) self.handleTimeBtn(el.closest(".time-btn.down"));
         else if (el.closest(".bny-datepicker-btn.today")) self.selectToday();
         else if (el.closest(".bny-datepicker-btn.confirm")) self.confirm();
-        else if (el.closest(".bny-datepicker-btn.cancel")) self.close();
+        else if (el.closest(".bny-datepicker-btn.cancel")) self.cancel();
       });
     };
     DatePicker.prototype.buildHTML = function() {
@@ -5133,7 +5547,7 @@
       document.addEventListener("click", function(e) {
         if (!self.panel.classList.contains("show")) return;
         if (!self.panel.contains(e.target) && e.target !== self.input && (!self.rangeInput || e.target !== self.rangeInput)) {
-          self.confirm();
+          self.close();
         }
       });
       window.addEventListener("resize", function() {
@@ -5142,6 +5556,111 @@
       window.addEventListener("scroll", function() {
         if (self.panel.classList.contains("show")) self.position();
       }, true);
+      this.panel.addEventListener("keydown", function(e) {
+        self.handleKeydown(e);
+      });
+    };
+    DatePicker.prototype.handleKeydown = function(e) {
+      var key = e.key;
+      if (key === "Enter") {
+        e.preventDefault();
+        this.confirm();
+        return;
+      }
+      if (key === "Escape") {
+        e.preventDefault();
+        this.cancel();
+        return;
+      }
+      if (!this.needsDate()) return;
+      if (this.viewType === "calendar") {
+        if (this.temp.y === null) {
+          var t = /* @__PURE__ */ new Date();
+          this.temp.y = t.getFullYear();
+          this.temp.m = t.getMonth();
+          this.temp.d = t.getDate();
+        }
+        var y = this.temp.y, m = this.temp.m, d = this.temp.d;
+        var cur = new Date(y, m, d);
+        switch (key) {
+          case "ArrowLeft":
+            cur.setDate(cur.getDate() - 1);
+            break;
+          case "ArrowRight":
+            cur.setDate(cur.getDate() + 1);
+            break;
+          case "ArrowUp":
+            cur.setDate(cur.getDate() - 7);
+            break;
+          case "ArrowDown":
+            cur.setDate(cur.getDate() + 7);
+            break;
+          default:
+            return;
+        }
+        e.preventDefault();
+        this.temp.y = cur.getFullYear();
+        this.temp.m = cur.getMonth();
+        this.temp.d = cur.getDate();
+        this.viewYear = this.temp.y;
+        this.viewMonth = this.temp.m;
+        this.render();
+      } else if (this.viewType === "months") {
+        switch (key) {
+          case "ArrowLeft":
+            e.preventDefault();
+            if (this.temp.m > 0) this.temp.m--;
+            else {
+              this.temp.m = 11;
+              this.viewYear--;
+            }
+            this.render();
+            break;
+          case "ArrowRight":
+            e.preventDefault();
+            if (this.temp.m < 11) this.temp.m++;
+            else {
+              this.temp.m = 0;
+              this.viewYear++;
+            }
+            this.render();
+            break;
+          case "ArrowUp":
+            e.preventDefault();
+            this.viewYear--;
+            this.render();
+            break;
+          case "ArrowDown":
+            e.preventDefault();
+            this.viewYear++;
+            this.render();
+            break;
+        }
+      } else if (this.viewType === "years") {
+        if (this.temp.y === null) this.temp.y = this.viewYear;
+        switch (key) {
+          case "ArrowLeft":
+            e.preventDefault();
+            this.temp.y--;
+            this.render();
+            break;
+          case "ArrowRight":
+            e.preventDefault();
+            this.temp.y++;
+            this.render();
+            break;
+          case "ArrowUp":
+            e.preventDefault();
+            this.temp.y -= 4;
+            this.render();
+            break;
+          case "ArrowDown":
+            e.preventDefault();
+            this.temp.y += 4;
+            this.render();
+            break;
+        }
+      }
     };
     DatePicker.prototype.needsTime = function() {
       return this.mode === "datetime" || this.mode === "time";
@@ -5163,10 +5682,26 @@
       this.render();
       this.position();
       this.panel.classList.add("show");
+      var self = this;
+      requestAnimationFrame(function() {
+        if (self.panel) {
+          self.panel.setAttribute("tabindex", "-1");
+          self.panel.focus();
+        }
+      });
     };
     DatePicker.prototype.close = function() {
       this.panel.classList.remove("show");
-      currentPanel = null;
+      if (currentPanel === this) currentPanel = null;
+      try {
+        var event = new Event("change", { bubbles: true });
+        this.input.dispatchEvent(event);
+      } catch (_) {
+      }
+    };
+    DatePicker.prototype.cancel = function() {
+      this.input.value = "";
+      this.close();
     };
     DatePicker.prototype.confirm = function() {
       if (!this.panel.classList.contains("show")) return;
@@ -5363,14 +5898,13 @@
       this.temp.m = this.viewMonth;
       this.temp.d = day;
       if (this.needsMonthOnly()) ;
-      if (!this.needsTime()) this.confirm();
-      else this.render();
+      this.render();
     };
     DatePicker.prototype.handleMonthClick = function(el) {
       this.temp.m = +el.getAttribute("data-month");
       if (this.needsMonthOnly()) {
         this.temp.y = this.viewYear;
-        this.confirm();
+        this.render();
       } else {
         this.viewMonth = this.temp.m;
         this.viewType = "calendar";
@@ -5428,13 +5962,13 @@
       this.confirm();
     };
     DatePicker.prototype.isDisabled = function(y, m, d) {
-      if (this.min) {
-        var min = new Date(this.min);
-        if (new Date(y, m, d) < new Date(min.getFullYear(), min.getMonth(), min.getDate())) return true;
+      if (this._minStamp !== null) {
+        var cur = new Date(y, m, d).getTime();
+        if (cur < this._minStamp) return true;
       }
-      if (this.max) {
-        var max = new Date(this.max);
-        if (new Date(y, m, d) > new Date(max.getFullYear(), max.getMonth(), max.getDate())) return true;
+      if (this._maxStamp !== null) {
+        var cur2 = new Date(y, m, d).getTime();
+        if (cur2 > this._maxStamp) return true;
       }
       return false;
     };
@@ -5453,8 +5987,9 @@
     function DateRangePicker(input1, input2, options) {
       this.mode = "range";
       options = options || {};
-      this.picker1 = new DatePicker(input1, { mode: options.subMode || "date", min: options.min, max: options.max });
-      this.picker2 = new DatePicker(input2, { mode: options.subMode || "date", min: options.min, max: options.max });
+      var subMode = options.subMode === "range" ? "date" : options.subMode || "date";
+      this.picker1 = new DatePicker(input1, { mode: subMode, min: options.min, max: options.max });
+      this.picker2 = new DatePicker(input2, { mode: subMode, min: options.min, max: options.max });
       var self = this;
       var origConfirm1 = this.picker1.confirm;
       this.picker1.confirm = function() {
@@ -5466,6 +6001,11 @@
             self.picker2.selected.y = self.picker1.selected.y;
             self.picker2.selected.m = self.picker1.selected.m;
             self.picker2.selected.d = self.picker1.selected.d;
+            if (subMode === "datetime") {
+              self.picker2.selected.H = self.picker1.selected.H;
+              self.picker2.selected.M = self.picker1.selected.M;
+              self.picker2.selected.S = self.picker1.selected.S;
+            }
             self.picker2.syncInput();
           }
         }
@@ -5480,6 +6020,11 @@
             self.picker1.selected.y = self.picker2.selected.y;
             self.picker1.selected.m = self.picker2.selected.m;
             self.picker1.selected.d = self.picker2.selected.d;
+            if (subMode === "datetime") {
+              self.picker1.selected.H = self.picker2.selected.H;
+              self.picker1.selected.M = self.picker2.selected.M;
+              self.picker1.selected.S = self.picker2.selected.S;
+            }
             self.picker1.syncInput();
           }
         }
@@ -5512,6 +6057,970 @@
         scan(document.body);
       });
       else scan(document.body);
+    }
+  })();
+  (function() {
+    var ticking = false;
+    var instances = [];
+    function getConfig(elt) {
+      var t = elt.getAttribute("data-threshold") || elt.getAttribute("data-bny-backtop");
+      var th = t && !isNaN(parseInt(t, 10)) ? parseInt(t, 10) : 200;
+      var container = window;
+      var isWindow = true;
+      var target = elt.getAttribute("data-target");
+      if (target) {
+        var el = document.querySelector(target);
+        if (el && el.scrollHeight > el.clientHeight) {
+          container = el;
+          isWindow = false;
+        }
+      }
+      if (isWindow) {
+        var candidates = document.querySelectorAll("#bny-content, [data-scroll-container]");
+        for (var i = 0; i < candidates.length; i++) {
+          if (candidates[i].scrollHeight > candidates[i].clientHeight) {
+            container = candidates[i];
+            isWindow = false;
+            break;
+          }
+        }
+      }
+      return { threshold: th, container, isWindow };
+    }
+    function getScrollTop(container, isWindow) {
+      if (isWindow) {
+        return window.scrollY || document.documentElement.scrollTop || 0;
+      }
+      return container.scrollTop || 0;
+    }
+    function scrollToTop(container, isWindow) {
+      if (isWindow) {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      } else {
+        container.scrollTo({ top: 0, behavior: "smooth" });
+      }
+    }
+    function updateInstance(inst) {
+      if (!inst.btn || !inst.btn.isConnected) return;
+      var top = getScrollTop(inst.container, inst.isWindow);
+      if (top > inst.threshold) {
+        inst.btn.classList.add("visible");
+      } else {
+        inst.btn.classList.remove("visible");
+      }
+    }
+    function onScroll() {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(function() {
+        ticking = false;
+        for (var i = 0; i < instances.length; i++) {
+          updateInstance(instances[i]);
+        }
+      });
+    }
+    function bindInstance(btn) {
+      if (!btn) return;
+      if (btn._bnyBacktop) return;
+      btn._bnyBacktop = true;
+      if (!btn.classList.contains("bny-backtop")) {
+        btn.classList.add("bny-backtop");
+      }
+      var cfg = getConfig(btn);
+      var inst = {
+        btn,
+        threshold: cfg.threshold,
+        container: cfg.container,
+        isWindow: cfg.isWindow
+      };
+      btn.addEventListener("click", function() {
+        scrollToTop(inst.container, inst.isWindow);
+      });
+      if (inst.isWindow) {
+        window.addEventListener("scroll", onScroll, { passive: true });
+      } else {
+        cfg.container.addEventListener("scroll", onScroll, { passive: true });
+      }
+      instances.push(inst);
+      updateInstance(inst);
+    }
+    function scan(root) {
+      var customBtns = [];
+      if (root && root.nodeType === 1) {
+        if (root.id === "bny-backtop" || root.hasAttribute && root.hasAttribute("data-bny-backtop")) {
+          customBtns.push(root);
+        }
+        if (root.querySelectorAll) {
+          var found = root.querySelectorAll("[data-bny-backtop]");
+          for (var i = 0; i < found.length; i++) customBtns.push(found[i]);
+        }
+      } else {
+        var all = document.querySelectorAll("[data-bny-backtop]");
+        for (var j = 0; j < all.length; j++) customBtns.push(all[j]);
+        var byId = document.getElementById("bny-backtop");
+        if (byId && customBtns.indexOf(byId) === -1) customBtns.push(byId);
+      }
+      if (customBtns.length === 0) {
+        if (!document.getElementById("bny-backtop") && !instances.length) {
+          var auto = document.createElement("div");
+          auto.id = "bny-backtop";
+          auto.className = "bny-backtop";
+          auto.setAttribute("title", "回到顶部");
+          auto.innerHTML = '<i class="bny-icon icon-arrowup"></i>';
+          document.body.appendChild(auto);
+          bindInstance(auto);
+        }
+        return;
+      }
+      for (var k = 0; k < customBtns.length; k++) {
+        bindInstance(customBtns[k]);
+      }
+    }
+    if (typeof htmx !== "undefined") {
+      htmx.onLoad(function(content) {
+        scan(content);
+      });
+    }
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", function() {
+        scan(document.body);
+      });
+    } else {
+      scan(document.body);
+    }
+  })();
+  (function() {
+    if (typeof htmx === "undefined") return;
+    function shouldShowLoading(elt) {
+      if (!elt || !elt.classList || !elt.classList.contains("bny-btn")) return false;
+      if (elt.getAttribute("bny-button-loading") === "false") return false;
+      if (elt.getAttribute("bny-button-loading") !== null) return true;
+      var global = document.body.getAttribute("data-bny-button-loading-auto");
+      return global !== "false";
+    }
+    function startLoading(evt) {
+      var elt = evt.detail && evt.detail.elt;
+      if (!shouldShowLoading(elt)) return;
+      elt.classList.add("bny-loading");
+      elt.setAttribute("disabled", "disabled");
+    }
+    function stopLoading(evt) {
+      var elt = evt.detail && evt.detail.elt;
+      if (!elt) return;
+      requestAnimationFrame(function() {
+        elt.classList.remove("bny-loading");
+        if (elt.getAttribute("bny-button-loading") !== null || !elt.hasAttribute("data-bny-keep-disabled")) {
+          elt.removeAttribute("disabled");
+        }
+      });
+    }
+    function bindListeners() {
+      var body = document.body;
+      if (!body) return false;
+      if (body._bnyBtnLoadingBound) return true;
+      body._bnyBtnLoadingBound = true;
+      body.addEventListener("htmx:beforeRequest", startLoading);
+      body.addEventListener("htmx:afterRequest", stopLoading);
+      body.addEventListener("htmx:responseError", stopLoading);
+      body.addEventListener("htmx:sendError", stopLoading);
+      return true;
+    }
+    if (!bindListeners()) {
+      document.addEventListener("DOMContentLoaded", bindListeners);
+    }
+  })();
+  htmx.defineExtension("bny-validate", {
+    onEvent: function(name, evt) {
+      if (name === "htmx:afterProcessNode") {
+        if (!bny.hasExtName(evt.target, "bny-validate")) return false;
+        var form = evt.target;
+        if (form._bnyValidateInit) return false;
+        form._bnyValidateInit = true;
+        form.setAttribute("novalidate", "");
+        form.addEventListener("submit", function(e) {
+          var ok = validateForm(form);
+          if (!ok) {
+            e.preventDefault();
+            e.stopImmediatePropagation();
+            return false;
+          }
+          var hasHx = form.getAttribute("hx-post") || form.getAttribute("hx-get") || form.getAttribute("hx-put") || form.getAttribute("hx-patch") || form.getAttribute("hx-delete");
+          if (!hasHx) {
+            e.preventDefault();
+            if (typeof bny !== "undefined" && bny.alert) {
+              bny.alert("校验通过");
+            }
+          }
+        }, true);
+        var fields = form.querySelectorAll("input, textarea, select");
+        Array.prototype.forEach.call(fields, function(field) {
+          if (field._bnyValidateBound) return;
+          field._bnyValidateBound = true;
+          field.addEventListener("blur", function() {
+            validateField(field);
+          });
+          field.addEventListener("input", function() {
+            if (field.getAttribute("aria-invalid") === "true") {
+              clearError(field);
+            }
+          });
+        });
+        return false;
+      }
+      return true;
+    }
+  });
+  function validateField(field) {
+    var error = getFieldError(field);
+    if (error) {
+      showError(field, error);
+      return false;
+    }
+    clearError(field);
+    return true;
+  }
+  function validateForm(form) {
+    var fields = form.querySelectorAll("input, textarea, select");
+    var allOk = true;
+    var firstInvalid = null;
+    Array.prototype.forEach.call(fields, function(field) {
+      if (field.disabled || !field.name) return;
+      var ok = validateField(field);
+      if (!ok && !firstInvalid) {
+        firstInvalid = field;
+        allOk = false;
+      }
+    });
+    if (firstInvalid) {
+      try {
+        firstInvalid.focus();
+      } catch (_) {
+      }
+    }
+    return allOk;
+  }
+  function getFieldError(field) {
+    if (typeof field.willValidate !== "undefined" && field.checkValidity) {
+      if (!field.checkValidity()) {
+        var v = field.validity;
+        if (v.valueMissing) {
+          return field.getAttribute("data-msg-required") || field.getAttribute("data-msg") || "该项为必填";
+        }
+        if (v.typeMismatch) {
+          return field.getAttribute("data-msg-type") || field.getAttribute("data-msg") || "格式不正确";
+        }
+        if (v.patternMismatch) {
+          return field.getAttribute("data-msg-pattern") || field.getAttribute("data-msg") || "格式不符合要求";
+        }
+        if (v.tooShort) {
+          return field.getAttribute("data-msg-min") || field.getAttribute("data-msg") || "长度不能少于 " + field.getAttribute("minlength") + " 个字符";
+        }
+        if (v.tooLong) {
+          return field.getAttribute("data-msg-max") || field.getAttribute("data-msg") || "长度不能超过 " + field.getAttribute("maxlength") + " 个字符";
+        }
+        if (v.rangeUnderflow) {
+          return field.getAttribute("data-msg-min") || field.getAttribute("data-msg") || "值不能小于 " + field.getAttribute("min");
+        }
+        if (v.rangeOverflow) {
+          return field.getAttribute("data-msg-max") || field.getAttribute("data-msg") || "值不能大于 " + field.getAttribute("max");
+        }
+        return field.getAttribute("data-msg") || field.validationMessage || "校验未通过";
+      }
+    }
+    var rules = field.getAttribute("data-rules");
+    if (!rules) return null;
+    var val = (field.value || "").trim();
+    if (!val) return null;
+    var ruleList = rules.split(",");
+    var i;
+    for (i = 0; i < ruleList.length; i++) {
+      var pair = ruleList[i].split(":");
+      var key = (pair[0] || "").trim();
+      var arg = pair.slice(1).join(":").trim();
+      var err = null;
+      switch (key) {
+        case "min":
+          if (val.length < parseInt(arg, 10)) {
+            err = field.getAttribute("data-msg-min") || field.getAttribute("data-msg") || "长度不能少于 " + arg + " 个字符";
+          }
+          break;
+        case "max":
+          if (val.length > parseInt(arg, 10)) {
+            err = field.getAttribute("data-msg-max") || field.getAttribute("data-msg") || "长度不能超过 " + arg + " 个字符";
+          }
+          break;
+        case "min-val":
+          if (parseFloat(val) < parseFloat(arg)) {
+            err = field.getAttribute("data-msg-min") || field.getAttribute("data-msg") || "值不能小于 " + arg;
+          }
+          break;
+        case "max-val":
+          if (parseFloat(val) > parseFloat(arg)) {
+            err = field.getAttribute("data-msg-max") || field.getAttribute("data-msg") || "值不能大于 " + arg;
+          }
+          break;
+        case "regexp":
+          try {
+            var re = new RegExp(arg);
+            if (!re.test(val)) {
+              err = field.getAttribute("data-msg-pattern") || field.getAttribute("data-msg") || "格式不符合要求";
+            }
+          } catch (_) {
+          }
+          break;
+        case "equals":
+          var other = document.querySelector('[name="' + arg + '"]');
+          if (other && val !== other.value) {
+            err = field.getAttribute("data-msg-equals") || field.getAttribute("data-msg") || "两次输入不一致";
+          }
+          break;
+      }
+      if (err) return err;
+    }
+    return null;
+  }
+  function showError(field, msg) {
+    field.setAttribute("aria-invalid", "true");
+    field.classList.add("bny-input-error");
+    var item = field.closest(".form-item");
+    if (!item) {
+      var next = field.nextElementSibling;
+      if (!next || !next.classList.contains("bny-form-error")) {
+        var err1 = document.createElement("div");
+        err1.className = "bny-form-error";
+        err1.textContent = msg;
+        field.parentNode.insertBefore(err1, field.nextSibling);
+      } else {
+        next.textContent = msg;
+      }
+      return;
+    }
+    var errEl = item.querySelector(".bny-form-error");
+    if (!errEl) {
+      errEl = document.createElement("div");
+      errEl.className = "bny-form-error";
+      item.appendChild(errEl);
+    }
+    errEl.textContent = msg;
+  }
+  function clearError(field) {
+    field.removeAttribute("aria-invalid");
+    field.classList.remove("bny-input-error");
+    var item = field.closest(".form-item");
+    if (item) {
+      var errEl = item.querySelector(".bny-form-error");
+      if (errEl) errEl.remove();
+    } else {
+      var next = field.nextElementSibling;
+      if (next && next.classList.contains("bny-form-error")) {
+        next.remove();
+      }
+    }
+  }
+  htmx.defineExtension("bny-pagination", {
+    onEvent: function(name, evt) {
+      if (name === "htmx:afterProcessNode") {
+        if (!bny.hasExtName(evt.target, "bny-pagination")) return false;
+        setupDelegation();
+        return false;
+      }
+      return true;
+    },
+    // 响应转换：JSON → 分页条 HTML（数据部分保留原样由 htmx swap）
+    transformResponse: function(text, xhr, elt) {
+      var ct = xhr.getResponseHeader("Content-Type") || "";
+      if (!ct.includes("application/json")) return text;
+      var json;
+      try {
+        json = JSON.parse(xhr.responseText);
+      } catch (e) {
+        return text;
+      }
+      var data = json.data || json;
+      var total = parseInt(data.total, 10) || 0;
+      var pageSize = parseInt(data.pageSize || data.size, 10) || parseInt(elt.getAttribute("data-page-size"), 10) || 10;
+      var paramName = elt.getAttribute("data-page-param") || "page";
+      var page = parsePageFromURL(xhr.responseURL, paramName) || parseInt(data.page, 10) || 1;
+      var maxButtons = parseInt(elt.getAttribute("data-max-buttons"), 10) || 7;
+      var showJumper = elt.getAttribute("data-jumper") !== "false";
+      var showTotal = elt.getAttribute("data-total") !== "false";
+      var totalPages = Math.max(1, Math.ceil(total / pageSize));
+      if (page > totalPages) page = totalPages;
+      if (page < 1) page = 1;
+      var h = '<div class="bny-pagination"';
+      h += carryAttrs(elt, [
+        "color",
+        "model",
+        "data-max-buttons",
+        "data-jumper",
+        "data-total",
+        "data-page-size"
+      ]);
+      h += ' data-current="' + page + '"';
+      h += ' data-total-pages="' + totalPages + '"';
+      h += ' data-page-param="' + bny.escapeChars(paramName) + '"';
+      h += ">";
+      if (showTotal) {
+        h += '<span class="bny-pagination-total">共 <em>' + total + "</em> 条</span>";
+      }
+      h += '<a class="bny-pagination-prev' + (page <= 1 ? " disabled" : "") + '"';
+      h += ' data-page="' + Math.max(1, page - 1) + '"';
+      h += ' title="上一页"><i class="bny-icon icon-left"></i></a>';
+      var btns = computeButtons(page, totalPages, maxButtons);
+      for (var i = 0; i < btns.length; i++) {
+        var b = btns[i];
+        if (b === "...") {
+          h += '<span class="bny-pagination-ellipsis">...</span>';
+        } else {
+          h += '<a class="bny-pagination-btn' + (b === page ? " active" : "") + '"';
+          h += ' data-page="' + b + '"';
+          h += ">" + b + "</a>";
+        }
+      }
+      h += '<a class="bny-pagination-next' + (page >= totalPages ? " disabled" : "") + '"';
+      h += ' data-page="' + Math.min(totalPages, page + 1) + '"';
+      h += ' title="下一页"><i class="bny-icon icon-right"></i></a>';
+      if (showJumper && totalPages > 1) {
+        h += '<span class="bny-pagination-jump">';
+        h += '前往 <input type="number" class="bny-pagination-input" min="1" max="' + totalPages + '" value="' + page + '"> 页';
+        h += "</span>";
+      }
+      h += "</div>";
+      if (elt.getAttribute("data-render-list") === "true") {
+        var list = [];
+        var columns = data.columns || [];
+        if (Array.isArray(data.allList)) {
+          var start = (page - 1) * pageSize;
+          list = data.allList.slice(start, start + pageSize);
+        } else if (Array.isArray(data.list)) {
+          list = data.list;
+        }
+        if (list.length && columns.length) {
+          return renderTable(list, columns) + h;
+        } else if (list.length) {
+          var listHtml = '<div class="bny-pagination-list">';
+          list.forEach(function(item) {
+            listHtml += '<div class="bny-pagination-list-item">' + bny.escapeChars(String(item)) + "</div>";
+          });
+          listHtml += "</div>";
+          return listHtml + h;
+        }
+      }
+      return h;
+    }
+  });
+  function renderTable(list, columns) {
+    var h = '<table class="bny-table" style="margin-bottom:16px;">';
+    h += "<thead><tr>";
+    columns.forEach(function(col) {
+      h += "<th>" + bny.escapeChars(col.title || col.field) + "</th>";
+    });
+    h += "</tr></thead><tbody>";
+    list.forEach(function(row) {
+      h += "<tr>";
+      columns.forEach(function(col) {
+        var val = row[col.field];
+        if (val === null || val === void 0) val = "";
+        h += "<td>" + bny.escapeChars(String(val)) + "</td>";
+      });
+      h += "</tr>";
+    });
+    h += "</tbody></table>";
+    return h;
+  }
+  function computeButtons(current, total, max) {
+    if (total <= max) {
+      var arr = [];
+      for (var i = 1; i <= total; i++) arr.push(i);
+      return arr;
+    }
+    if (max < 5) max = 5;
+    var result = [];
+    var remaining = max - 2;
+    var half = Math.floor(remaining / 2);
+    var left = Math.max(2, current - half);
+    var right = Math.min(total - 1, current + half);
+    if (left <= 2) {
+      left = 2;
+      right = Math.min(total - 1, remaining + 1);
+    }
+    if (right >= total - 1) {
+      right = total - 1;
+      left = Math.max(2, total - remaining);
+    }
+    result.push(1);
+    if (left > 2) result.push("...");
+    for (var j = left; j <= right; j++) result.push(j);
+    if (right < total - 1) result.push("...");
+    result.push(total);
+    return result;
+  }
+  function carryAttrs(elt, names) {
+    var s = "";
+    names.forEach(function(n) {
+      var v = elt.getAttribute(n);
+      if (v !== null) {
+        s += " " + n + '="' + bny.escapeChars(v) + '"';
+      }
+    });
+    return s;
+  }
+  function parsePageFromURL(url, paramName) {
+    if (!url) return 0;
+    try {
+      var u = new URL(url, window.location.href);
+      var p = u.searchParams.get(paramName);
+      return parseInt(p, 10) || 0;
+    } catch (e) {
+      var re = new RegExp("[?&]" + encodeURIComponent(paramName) + "=([^&]+)");
+      var m = String(url).match(re);
+      if (m) return parseInt(decodeURIComponent(m[1]), 10) || 0;
+      return 0;
+    }
+  }
+  var _bnyPageDelegated = false;
+  function setupDelegation() {
+    if (_bnyPageDelegated) return;
+    _bnyPageDelegated = true;
+    document.addEventListener("click", function(e) {
+      var btn = e.target.closest && e.target.closest(".bny-pagination-btn, .bny-pagination-prev, .bny-pagination-next");
+      if (!btn) return;
+      var bar = btn.closest(".bny-pagination");
+      if (!bar) return;
+      if (btn.classList.contains("disabled") || btn.classList.contains("active")) {
+        e.preventDefault();
+        return;
+      }
+      var p = btn.getAttribute("data-page");
+      if (!p) return;
+      triggerPageRequest(bar, p);
+    });
+    document.addEventListener("keydown", function(e) {
+      if (e.key !== "Enter") return;
+      var input = e.target;
+      if (!input.classList || !input.classList.contains("bny-pagination-input")) return;
+      e.preventDefault();
+      var bar = input.closest && input.closest(".bny-pagination");
+      if (!bar) return;
+      var totalPages = parseInt(bar.getAttribute("data-total-pages"), 10) || 1;
+      var p = parseInt(input.value, 10);
+      if (isNaN(p) || p < 1) p = 1;
+      if (p > totalPages) p = totalPages;
+      triggerPageRequest(bar, String(p));
+    });
+  }
+  function triggerPageRequest(bar, page) {
+    var container = bar.parentElement;
+    var configDiv = null;
+    if (container && container.id) {
+      configDiv = document.querySelector('[hx-ext~="bny-pagination"][hx-target="#' + container.id + '"]');
+    }
+    var src = configDiv || bar;
+    var url = src.getAttribute("hx-get");
+    if (!url) return;
+    var targetSel = src.getAttribute("hx-target");
+    var swapStyle = src.getAttribute("hx-swap") || "innerHTML";
+    var paramName = src.getAttribute("data-page-param") || "page";
+    var vals = {};
+    vals[paramName] = page;
+    var existingVals = src.getAttribute("hx-vals");
+    if (existingVals) {
+      try {
+        Object.assign(vals, JSON.parse(existingVals));
+      } catch (_) {
+      }
+    }
+    var target = targetSel ? document.querySelector(targetSel) : src;
+    if (targetSel && !target) target = src;
+    htmx.ajax("GET", url, {
+      source: src,
+      target,
+      swap: swapStyle,
+      values: vals
+    });
+  }
+  (function() {
+    var viewer = null;
+    var imgEl = null;
+    var current = {
+      list: [],
+      // 当前组的图片大图 src 列表
+      index: 0,
+      // 当前索引
+      scale: 1,
+      rotate: 0,
+      x: 0,
+      y: 0
+    };
+    function getViewer() {
+      if (viewer) return viewer;
+      viewer = document.createElement("div");
+      viewer.className = "bny-image-viewer";
+      viewer.innerHTML = '<div class="bny-image-mask"></div><div class="bny-image-container"><img class="bny-image-large" alt="preview"></div><div class="bny-image-tools"><a class="bny-image-tool" data-action="prev" title="上一张（←）"><i class="bny-icon icon-left"></i></a><a class="bny-image-tool" data-action="zoom-out" title="缩小（-）"><i class="bny-icon icon-zoom-out"></i></a><a class="bny-image-tool" data-action="zoom-in" title="放大（+）"><i class="bny-icon icon-zoom-in"></i></a><a class="bny-image-tool" data-action="reset" title="重置（0）"><i class="bny-icon icon-refresh"></i></a><a class="bny-image-tool" data-action="rotate-left" title="左旋"><i class="bny-icon icon-undo"></i></a><a class="bny-image-tool" data-action="rotate-right" title="右旋"><i class="bny-icon icon-redo"></i></a><a class="bny-image-tool" data-action="next" title="下一张（→）"><i class="bny-icon icon-right"></i></a></div><a class="bny-image-close" title="关闭（ESC）"><i class="bny-icon icon-close"></i></a><div class="bny-image-counter"></div>';
+      document.body.appendChild(viewer);
+      imgEl = viewer.querySelector(".bny-image-large");
+      viewer.querySelector(".bny-image-mask").addEventListener("click", close);
+      viewer.querySelector(".bny-image-close").addEventListener("click", close);
+      viewer.querySelector(".bny-image-tools").addEventListener("click", function(e) {
+        var tool = e.target.closest(".bny-image-tool");
+        if (!tool) return;
+        var action = tool.getAttribute("data-action");
+        handleAction(action);
+      });
+      viewer.querySelector(".bny-image-container").addEventListener("click", function(e) {
+        e.stopPropagation();
+      });
+      imgEl.addEventListener("wheel", function(e) {
+        e.preventDefault();
+        if (e.deltaY < 0) {
+          setScale(current.scale + 0.1);
+        } else {
+          setScale(current.scale - 0.1);
+        }
+      }, { passive: false });
+      var dragStart = null;
+      imgEl.addEventListener("mousedown", function(e) {
+        if (e.button !== 0) return;
+        dragStart = { x: e.clientX, y: e.clientY, ox: current.x, oy: current.y };
+        imgEl.classList.add("grabbing");
+      });
+      document.addEventListener("mousemove", function(e) {
+        if (!dragStart) return;
+        current.x = dragStart.ox + (e.clientX - dragStart.x);
+        current.y = dragStart.oy + (e.clientY - dragStart.y);
+        applyTransform();
+      });
+      document.addEventListener("mouseup", function() {
+        if (dragStart) {
+          dragStart = null;
+          imgEl.classList.remove("grabbing");
+        }
+      });
+      return viewer;
+    }
+    function open(list, index) {
+      if (!list || !list.length) return;
+      current.list = list;
+      current.index = Math.max(0, Math.min(index, list.length - 1));
+      resetTransform();
+      getViewer();
+      showImage();
+      viewer.classList.add("show");
+      document.addEventListener("keydown", onKeydown);
+      document.body.style.overflow = "hidden";
+    }
+    function close() {
+      if (!viewer) return;
+      viewer.classList.remove("show");
+      document.removeEventListener("keydown", onKeydown);
+      document.body.style.overflow = "";
+    }
+    function showImage() {
+      var src = current.list[current.index];
+      if (!src) return;
+      imgEl.classList.add("loading");
+      var tmp = new Image();
+      tmp.onload = function() {
+        imgEl.src = src;
+        imgEl.classList.remove("loading");
+      };
+      tmp.onerror = function() {
+        imgEl.classList.remove("loading");
+        imgEl.src = "";
+        imgEl.alt = "图片加载失败";
+      };
+      tmp.src = src;
+      var counter = viewer.querySelector(".bny-image-counter");
+      if (current.list.length > 1) {
+        counter.textContent = current.index + 1 + " / " + current.list.length;
+        counter.style.display = "";
+      } else {
+        counter.style.display = "none";
+      }
+      var prevBtn = viewer.querySelector('[data-action="prev"]');
+      var nextBtn = viewer.querySelector('[data-action="next"]');
+      prevBtn.classList.toggle("disabled", current.list.length <= 1);
+      nextBtn.classList.toggle("disabled", current.list.length <= 1);
+    }
+    function handleAction(action) {
+      switch (action) {
+        case "prev":
+          if (current.list.length > 1) {
+            current.index = (current.index - 1 + current.list.length) % current.list.length;
+            resetTransform();
+            showImage();
+          }
+          break;
+        case "next":
+          if (current.list.length > 1) {
+            current.index = (current.index + 1) % current.list.length;
+            resetTransform();
+            showImage();
+          }
+          break;
+        case "zoom-in":
+          setScale(current.scale + 0.2);
+          break;
+        case "zoom-out":
+          setScale(current.scale - 0.2);
+          break;
+        case "rotate-left":
+          current.rotate -= 90;
+          applyTransform();
+          break;
+        case "rotate-right":
+          current.rotate += 90;
+          applyTransform();
+          break;
+        case "reset":
+          resetTransform();
+          applyTransform();
+          break;
+      }
+    }
+    function setScale(s) {
+      current.scale = Math.max(0.2, Math.min(5, s));
+      applyTransform();
+    }
+    function resetTransform() {
+      current.scale = 1;
+      current.rotate = 0;
+      current.x = 0;
+      current.y = 0;
+      applyTransform();
+    }
+    function applyTransform() {
+      if (!imgEl) return;
+      imgEl.style.transform = "translate(" + current.x + "px, " + current.y + "px) scale(" + current.scale + ") rotate(" + current.rotate + "deg)";
+    }
+    function onKeydown(e) {
+      switch (e.key) {
+        case "Escape":
+          e.preventDefault();
+          close();
+          break;
+        case "ArrowLeft":
+          e.preventDefault();
+          handleAction("prev");
+          break;
+        case "ArrowRight":
+          e.preventDefault();
+          handleAction("next");
+          break;
+        case "+":
+        case "=":
+          e.preventDefault();
+          handleAction("zoom-in");
+          break;
+        case "-":
+          e.preventDefault();
+          handleAction("zoom-out");
+          break;
+        case "0":
+          e.preventDefault();
+          handleAction("reset");
+          break;
+      }
+    }
+    function scan(root) {
+      var imgs = (root || document).querySelectorAll("img[data-preview]");
+      Array.prototype.forEach.call(imgs, function(img) {
+        if (img._bnyImageBound) return;
+        img._bnyImageBound = true;
+        img.classList.add("bny-image-thumb");
+        img.addEventListener("click", function() {
+          var group = img.getAttribute("data-preview-group");
+          var fullSrc = img.getAttribute("data-preview-src") || img.src;
+          if (group) {
+            var groupImgs = document.querySelectorAll('img[data-preview][data-preview-group="' + CSS.escape(group) + '"]');
+            var list = [];
+            var idx = 0;
+            Array.prototype.forEach.call(groupImgs, function(g, i) {
+              list.push(g.getAttribute("data-preview-src") || g.src);
+              if (g === img) idx = i;
+            });
+            open(list, idx);
+          } else {
+            open([fullSrc], 0);
+          }
+        });
+      });
+    }
+    if (typeof htmx !== "undefined") {
+      htmx.onLoad(function(content) {
+        scan(content);
+      });
+    }
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", function() {
+        scan(document);
+      });
+    } else {
+      scan(document);
+    }
+  })();
+  (function() {
+    function render(rate) {
+      var max = parseInt(rate.getAttribute("data-max"), 10) || 5;
+      var value = parseFloat(rate.getAttribute("data-value")) || 0;
+      var half = rate.hasAttribute("data-half");
+      var readonly = rate.hasAttribute("data-readonly");
+      var color = rate.getAttribute("color") || "";
+      if (color) rate.setAttribute("color", color);
+      rate.classList.add("bny-rate");
+      if (readonly) rate.classList.add("is-readonly");
+      rate.setAttribute("role", "slider");
+      rate.setAttribute("aria-valuemin", "0");
+      rate.setAttribute("aria-valuemax", String(max));
+      rate.setAttribute("aria-valuenow", String(value));
+      if (!readonly) {
+        rate.setAttribute("tabindex", "0");
+      }
+      rate.innerHTML = "";
+      var starsEl = document.createElement("div");
+      starsEl.className = "bny-rate-stars";
+      for (var i = 1; i <= max; i++) {
+        var star = document.createElement("span");
+        star.className = "bny-rate-star";
+        star.setAttribute("data-index", String(i));
+        star.innerHTML = makeStarSvg(false);
+        starsEl.appendChild(star);
+      }
+      rate.appendChild(starsEl);
+      var showText = rate.hasAttribute("data-show-text");
+      var texts = (rate.getAttribute("data-texts") || "很差,失望,一般,满意,惊喜").split(",");
+      var textEl = null;
+      if (showText) {
+        textEl = document.createElement("span");
+        textEl.className = "bny-rate-text";
+        rate.appendChild(textEl);
+      }
+      var state = {
+        value,
+        // 当前值（已确认）
+        hover: -1,
+        // 当前 hover 索引（-1 表示无）
+        max,
+        half,
+        texts,
+        textEl
+      };
+      setValue(value);
+      if (!readonly) {
+        starsEl.addEventListener("mousemove", function(e) {
+          var star2 = e.target.closest(".bny-rate-star");
+          if (!star2) {
+            if (state.hover !== -1) {
+              state.hover = -1;
+              paint();
+            }
+            return;
+          }
+          var idx = parseInt(star2.getAttribute("data-index"), 10);
+          if (state.half) {
+            var rect = star2.getBoundingClientRect();
+            var isLeft = e.clientX - rect.left < rect.width / 2;
+            idx = isLeft ? idx - 0.5 : idx;
+          }
+          if (state.hover !== idx) {
+            state.hover = idx;
+            paint();
+          }
+        });
+        starsEl.addEventListener("mouseleave", function() {
+          state.hover = -1;
+          paint();
+        });
+        starsEl.addEventListener("click", function(e) {
+          var star2 = e.target.closest(".bny-rate-star");
+          if (!star2) return;
+          var idx = parseInt(star2.getAttribute("data-index"), 10);
+          if (state.half) {
+            var rect = star2.getBoundingClientRect();
+            var isLeft = e.clientX - rect.left < rect.width / 2;
+            idx = isLeft ? idx - 0.5 : idx;
+          }
+          setValue(idx);
+          rate.dispatchEvent(new Event("change", { bubbles: true }));
+        });
+        rate.addEventListener("keydown", function(e) {
+          var step = state.half ? 0.5 : 1;
+          var key = e.key;
+          if (key === "ArrowRight" || key === "ArrowUp") {
+            e.preventDefault();
+            setValue(Math.min(state.max, state.value + step));
+            rate.dispatchEvent(new Event("change", { bubbles: true }));
+          } else if (key === "ArrowLeft" || key === "ArrowDown") {
+            e.preventDefault();
+            setValue(Math.max(0, state.value - step));
+            rate.dispatchEvent(new Event("change", { bubbles: true }));
+          } else if (key === "Enter" || key === " ") {
+            e.preventDefault();
+            rate.dispatchEvent(new Event("change", { bubbles: true }));
+          }
+        });
+      }
+      function setValue(v) {
+        state.value = Math.max(0, Math.min(state.max, v));
+        rate.setAttribute("data-value", String(state.value));
+        rate.setAttribute("aria-valuenow", String(state.value));
+        paint();
+      }
+      function paint() {
+        var activeVal = state.hover !== -1 ? state.hover : state.value;
+        var stars = starsEl.querySelectorAll(".bny-rate-star");
+        Array.prototype.forEach.call(stars, function(star2, i2) {
+          var starVal = i2 + 1;
+          var svg;
+          if (activeVal >= starVal) {
+            svg = makeStarSvg(true);
+          } else if (state.half && activeVal >= starVal - 0.5) {
+            svg = makeStarSvg(true, true);
+          } else {
+            svg = makeStarSvg(false);
+          }
+          star2.innerHTML = svg;
+        });
+        if (state.textEl) {
+          var idx = Math.ceil(activeVal);
+          idx = Math.max(0, Math.min(state.texts.length, idx));
+          state.textEl.textContent = state.texts[idx - 1] || "";
+        }
+      }
+    }
+    function makeStarSvg(active, half) {
+      var fillId = half ? "bny-rate-half-" + Math.random().toString(36).slice(2) : null;
+      var fill;
+      if (active) {
+        fill = "currentColor";
+      } else {
+        fill = "none";
+      }
+      var starPath = "M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z";
+      if (half && fillId) {
+        return '<svg viewBox="0 0 24 24" class="bny-rate-icon is-half"><defs><linearGradient id="' + fillId + '"><stop offset="50%" stop-color="currentColor"/><stop offset="50%" stop-color="none"/></linearGradient></defs><path d="' + starPath + '" fill="url(#' + fillId + ')" stroke="currentColor" stroke-width="1.5"/></svg>';
+      }
+      return '<svg viewBox="0 0 24 24" class="bny-rate-icon' + (active ? " is-active" : "") + '"><path d="' + starPath + '" fill="' + fill + '" stroke="currentColor" stroke-width="1.5"/></svg>';
+    }
+    function scan(root) {
+      var rates = (root || document).querySelectorAll(".bny-rate");
+      Array.prototype.forEach.call(rates, function(rate) {
+        if (rate._bnyRateBound) return;
+        rate._bnyRateBound = true;
+        render(rate);
+      });
+    }
+    if (typeof htmx !== "undefined") {
+      htmx.onLoad(function(content) {
+        scan(content);
+      });
+    }
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", function() {
+        scan(document);
+      });
+    } else {
+      scan(document);
     }
   })();
 })();

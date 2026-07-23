@@ -1,0 +1,182 @@
+/* ========== 图片预览 ========== */
+
+/* 缩略图：可点击的预览触发元素 */
+.bny-image-thumb {
+    cursor: zoom-in;
+    transition: var(--transition);
+
+    &:hover {
+        opacity: 0.85;
+    }
+}
+
+/* Lightbox 容器（遮罩 + 图片 + 工具栏） */
+.bny-image-viewer {
+    position: fixed;
+    inset: 0;
+    z-index: 10000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+
+    /* 显示状态 */
+    &.show {
+        display: flex;
+    }
+
+    /* 遮罩 */
+    & .bny-image-mask {
+        position: absolute;
+        inset: 0;
+        background-color: var(--black-alpha-30);
+        backdrop-filter: blur(6px);
+        animation: bny-image-fade-in 200ms ease-out;
+    }
+
+    /* 图片容器（用于居中，z-index 高于遮罩） */
+    & .bny-image-container {
+        position: relative;
+        z-index: 1;
+        max-width: 90vw;
+        max-height: 90vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    /* 大图 */
+    & .bny-image-large {
+        max-width: 90vw;
+        max-height: 90vh;
+        object-fit: contain;
+        cursor: grab;
+        transition: transform 100ms linear;
+        box-shadow: 0 8px 32px var(--black-alpha-30);
+        border-radius: var(--border-radius-8);
+        animation: bny-image-zoom-in 200ms ease-out;
+
+        &.grabbing {
+            cursor: grabbing;
+            transition: none;
+        }
+
+        &.loading {
+            opacity: 0.5;
+        }
+    }
+
+    /* 工具栏 */
+    & .bny-image-tools {
+        position: absolute;
+        bottom: 32px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 2;
+        display: flex;
+        gap: 8px;
+        padding: 8px 12px;
+        background-color: var(--white-alpha-85);
+        backdrop-filter: blur(8px);
+        border-radius: var(--border-radius-full);
+        box-shadow: var(--box-shadow-055);
+        animation: bny-image-fade-in 300ms ease-out 100ms both;
+
+        & .bny-image-tool {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            color: var(--black);
+            background-color: transparent;
+            font-size: 18px;
+            cursor: pointer;
+            transition: var(--transition-fast);
+
+            &:hover {
+                background-color: var(--default-alpha-10);
+                color: var(--default);
+            }
+
+            &.disabled {
+                opacity: 0.3;
+                cursor: not-allowed;
+
+                &:hover {
+                    background-color: transparent;
+                    color: var(--black);
+                }
+            }
+        }
+    }
+
+    /* 关闭按钮 */
+    & .bny-image-close {
+        position: absolute;
+        top: 24px;
+        right: 32px;
+        z-index: 2;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background-color: var(--white-alpha-85);
+        backdrop-filter: blur(8px);
+        color: var(--black);
+        font-size: 18px;
+        cursor: pointer;
+        transition: var(--transition-fast);
+        box-shadow: var(--box-shadow-005);
+        text-decoration: none;
+
+        &:hover {
+            background-color: var(--red);
+            color: var(--white-common);
+            transform: rotate(90deg);
+        }
+    }
+
+    /* 计数器 */
+    & .bny-image-counter {
+        position: absolute;
+        top: 24px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 2;
+        padding: 4px 14px;
+        background-color: var(--white-alpha-85);
+        backdrop-filter: blur(8px);
+        border-radius: var(--border-radius-full);
+        color: var(--black);
+        font-size: var(--font-size-sm);
+        font-weight: var(--font-weight-medium);
+        box-shadow: var(--box-shadow-005);
+    }
+}
+
+@keyframes bny-image-fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes bny-image-zoom-in {
+    from {
+        opacity: 0;
+        transform: scale(0.92);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* 暗黑模式适配 */
+html.dark .bny-image-viewer .bny-image-tools,
+html.dark .bny-image-viewer .bny-image-close,
+html.dark .bny-image-viewer .bny-image-counter {
+    background-color: var(--white-alpha-15);
+    color: var(--black);
+}

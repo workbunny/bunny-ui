@@ -32,14 +32,14 @@ htmx.defineExtension('bny-code', {
                 evt.target.appendChild(code)
                 // 创建复制按钮
                 const copyBtn = document.createElement('a')
-                copyBtn.setAttribute("title", "复制代码")
+                copyBtn.setAttribute("title", "copy code")
                 copyBtn.classList.add('copy-btn')
                 copyBtn.innerHTML = '<i class="bny-icon icon-file-copy"></i>'
                 evt.target.appendChild(copyBtn)
                 // 复制按钮点击事件
                 copyBtn.addEventListener("click", (e) => {
                     navigator.clipboard.writeText(code.textContent)
-                    bny.alert('复制成功')
+                    bny.alert('copy success')
                 })
             }
         }

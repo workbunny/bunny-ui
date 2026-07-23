@@ -234,6 +234,69 @@
                 </div>
             </div>
 
+            <h2 id="n04a">Loading 状态（HTMX 自动）</h2>
+            <div class="bny-card">
+                <div hx-ext="bny-tab">
+                    <ul class="head">
+                        <li>Preview</li>
+                        <li>Code</li>
+                    </ul>
+                    <div class="body">
+                        <div>
+                            <div class="p-12">
+                                <button class="bny-btn" onclick="bnyDemoLoading(this, 1500)">
+                                    默认 loading
+                                </button>
+                                <button class="bny-btn" color="blue" onclick="bnyDemoLoading(this, 1500)">
+                                    蓝色 loading
+                                </button>
+                                <button class="bny-btn" model="border" onclick="bnyDemoLoading(this, 1500)">
+                                    边框 loading
+                                </button>
+                                <button class="bny-btn" color="red" onclick="bnyDemoLoading(this, 3000)">
+                                    红色 loading (3秒)
+                                </button>
+                                <button class="bny-btn" bny-button-loading="false" onclick="bnyDemoLoading(this, 1500)">
+                                    关闭 loading
+                                </button>
+                            </div>
+                        </div>
+                        <div>
+                            <pre hx-ext="bny-code">
+&lt;!-- 与 htmx 集成：请求期间自动添加 .bny-loading --&gt;
+&lt;button class=&quot;bny-btn&quot; hx-get=&quot;/api/...&quot;&gt;默认 loading&lt;/button&gt;
+
+&lt;!-- 不同颜色 --&gt;
+&lt;button class=&quot;bny-btn&quot; color=&quot;blue&quot; hx-get=&quot;/api/...&quot;&gt;蓝色 loading&lt;/button&gt;
+
+&lt;!-- 边框按钮 --&gt;
+&lt;button class=&quot;bny-btn&quot; model=&quot;border&quot; hx-get=&quot;/api/...&quot;&gt;边框 loading&lt;/button&gt;
+
+&lt;!-- 显式关闭 loading --&gt;
+&lt;button class=&quot;bny-btn&quot; bny-button-loading=&quot;false&quot; hx-get=&quot;/api/...&quot;&gt;关闭 loading&lt;/button&gt;
+
+&lt;!-- 全局关闭 loading（在 body 上设置）--&gt;
+&lt;body data-bny-button-loading-auto=&quot;false&quot;&gt;
+                </pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <script>
+                // 演示用：模拟延迟加载，让 loading 效果可见
+                // 实际使用时无需此函数，bny-btn 会随 htmx 请求自动进入 loading
+                function bnyDemoLoading(btn, ms) {
+                    if (btn.classList.contains('bny-loading')) return;
+                    btn.classList.add('bny-loading');
+                    btn.setAttribute('disabled', 'disabled');
+                    setTimeout(function () {
+                        btn.classList.remove('bny-loading');
+                        btn.removeAttribute('disabled');
+                    }, ms || 1500);
+                }
+            </script>
+
             <h2 id="n05">API</h2>
             <h3>标签属性</h3>
             <table hx-ext="bny-table">

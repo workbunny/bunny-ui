@@ -1,0 +1,215 @@
+<div class="bny-row">
+    <div class="text-content-box col-xs12 col-sm9">
+        <div class="text-content">
+            <h1>回到顶部<div class="bny-tag" color="red">v2.0.6+</div></h1>
+            <hr>
+            <blockquote class="bny-blockquote">
+                回到顶部组件，页面滚动超过阈值后自动显示，点击平滑回到顶部。无需额外配置，引入即用。
+            </blockquote>
+
+            <h2 id="n01">基础用法</h2>
+            <div class="bny-card">
+                <div hx-ext="bny-tab">
+                    <ul class="head">
+                        <li>Preview</li>
+                        <li>Code</li>
+                    </ul>
+                    <div class="body">
+                        <div>
+                            <div class="p-12">
+                                <p>滚动页面，右下角会出现回到顶部按钮</p>
+                                <div style="height: 800px; background: linear-gradient(to bottom, var(--blue-shallow), var(--green-shallow), var(--yellow-shallow), var(--red-shallow)); border-radius: var(--border-radius); display: flex; align-items: center; justify-content: center; color: var(--white); font-size: var(--font-size-20); font-weight: var(--font-weight-semibold);">
+                                    👇 向下滚动查看效果 👇
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <pre hx-ext="bny-code">
+&lt;!-- 无需任何标记，自动创建 --&gt;
+                            </pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h2 id="n02">自定义元素</h2>
+            <div class="bny-card">
+                <div hx-ext="bny-tab">
+                    <ul class="head">
+                        <li>Preview</li>
+                        <li>Code</li>
+                    </ul>
+                    <div class="body">
+                        <div>
+                            <div class="p-12">
+                                <p>通过添加 <code>id="bny-backtop"</code> 可以自定义回到顶部按钮样式</p>
+                                <div id="bny-backtop" style="position:static; opacity:1; visibility:visible; transform:none; margin:0 auto;" title="返回顶部" class="bny-backtop visible">
+                                    <i class="bny-icon icon-arrowup"></i>
+                                </div>
+                                <p class="tc mt-12" style="color:var(--black-shallow);">↑ 示例展示，实际会固定在右下角</p>
+                            </div>
+                        </div>
+                        <div>
+                            <pre hx-ext="bny-code">
+&lt;div id=&quot;bny-backtop&quot;&gt;
+    &lt;i class=&quot;bny-icon icon-arrowup&quot;&gt;&lt;/i&gt;
+&lt;/div&gt;
+                            </pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h2 id="n03">自定义阈值</h2>
+            <div class="bny-card">
+                <div hx-ext="bny-tab">
+                    <ul class="head">
+                        <li>Preview</li>
+                        <li>Code</li>
+                    </ul>
+                    <div class="body">
+                        <div>
+                            <div class="p-12">
+                                <p>通过 <code>data-threshold</code> 属性设置滚动阈值（默认 200px）</p>
+                            </div>
+                        </div>
+                        <div>
+                            <pre hx-ext="bny-code">
+&lt;!-- 滚动 100px 后显示 --&gt;
+&lt;div id=&quot;bny-backtop&quot; data-threshold=&quot;100&quot;&gt;
+    &lt;i class=&quot;bny-icon icon-up&quot;&gt;&lt;/i&gt;
+    &lt;span&gt;Top&lt;/span&gt;
+&lt;/div&gt;
+
+&lt;!-- 或使用 data-bny-backtop 属性 --&gt;
+&lt;div class=&quot;bny-backtop&quot; data-bny-backtop=&quot;300&quot;&gt;
+    &lt;i class=&quot;bny-icon icon-arrowup&quot;&gt;&lt;/i&gt;
+&lt;/div&gt;
+                            </pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h2 id="n04">配合气泡提示</h2>
+            <div class="bny-card">
+                <div hx-ext="bny-tab">
+                    <ul class="head">
+                        <li>Preview</li>
+                        <li>Code</li>
+                    </ul>
+                    <div class="body">
+                        <div>
+                            <div class="p-12">
+                                <p>配合 <code>bny-tip</code> 属性增加悬浮提示</p>
+                            </div>
+                        </div>
+                        <div>
+                            <pre hx-ext="bny-code">
+&lt;!-- 自定义 backtop 元素，带 tooltip 提示 --&gt;
+&lt;div id=&quot;bny-backtop&quot; bny-tip=&quot;回到顶部&quot;&gt;
+    &lt;i class=&quot;bny-icon icon-arrowup&quot;&gt;&lt;/i&gt;
+&lt;/div&gt;
+                            </pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h2 id="n04b">指定滚动容器</h2>
+            <div class="bny-card">
+                <div hx-ext="bny-tab">
+                    <ul class="head">
+                        <li>Preview</li>
+                        <li>Code</li>
+                    </ul>
+                    <div class="body">
+                        <div>
+                            <div class="p-12">
+                                <blockquote class="bny-blockquote">
+                                    默认监听 window 滚动；通过 <code>data-target</code> 指定选择器，可绑定到内部滚动容器；不指定时自动检测 <code>#bny-content</code> 或 <code>[data-scroll-container]</code>。支持页面同时存在多个 backtop 实例。
+                                </blockquote>
+                            </div>
+                        </div>
+                        <div>
+                            <pre hx-ext="bny-code">
+&lt;!-- 指定容器 --&gt;
+&lt;div id=&quot;bny-backtop&quot; data-target=&quot;#my-scroll&quot; data-threshold=&quot;100&quot;&gt;
+    &lt;i class=&quot;bny-icon icon-arrowup&quot;&gt;&lt;/i&gt;
+&lt;/div&gt;
+&lt;div id=&quot;my-scroll&quot; style=&quot;height:300px;overflow:auto;&quot;&gt;...&lt;/div&gt;
+
+&lt;!-- 自动创建（页面无任何 backtop 元素时）--&gt;
+&lt;!-- 脚本会在 body 末尾自动插入 #bny-backtop --&gt;
+            </pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h2 id="n05">API</h2>
+            <h3>属性</h3>
+            <table hx-ext="bny-table">
+                <thead>
+                    <tr>
+                        <th>属性</th>
+                        <th>默认值</th>
+                        <th>必须</th>
+                        <th>描述</th>
+                        <th>版本</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>class</td>
+                        <td>bny-backtop</td>
+                        <td>否</td>
+                        <td>自动添加的类名</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>id</td>
+                        <td>-</td>
+                        <td>否</td>
+                        <td>设置为 bny-backtop 可使用自定义元素</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>data-bny-backtop</td>
+                        <td>-</td>
+                        <td>否</td>
+                        <td>标记为回到顶部元素（值为数值时作为滚动阈值）</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>data-threshold</td>
+                        <td>200</td>
+                        <td>否</td>
+                        <td>滚动阈值（px），超过此值显示按钮</td>
+                        <td></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>行为说明</h3>
+            <ul style="line-height:var(--line-height); color:var(--black-middle);">
+                <li>未自定义时自动创建按钮，追加到 <code>&lt;body&gt;</code> 末尾</li>
+                <li>滚动超过阈值时淡入显示，回到顶部区域时淡出隐藏</li>
+                <li>点击平滑滚动到页面顶部（<code>behavior: smooth</code>）</li>
+                <li>支持 HTMX 动态加载，通过 <code>htmx.onLoad</code> 自动扫描新内容</li>
+                <li>滚动事件使用 <code>requestAnimationFrame</code> 节流</li>
+            </ul>
+        </div>
+    </div>
+    <div class="right-anchor-box hidden-xs col-sm3">
+        <div class="right-anchor">
+            <ul hx-ext="bny-anchor" rail>
+                <li class="link" anchor="#n01">基础用法</li>
+                <li class="link" anchor="#n02">自定义元素</li>
+                <li class="link" anchor="#n03">自定义阈值</li>
+                <li class="link" anchor="#n04">配合气泡提示</li>
+                <li class="link" anchor="#n05">API</li>
+            </ul>
+        </div>
+    </div>
+</div>
