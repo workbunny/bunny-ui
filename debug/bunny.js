@@ -6229,5 +6229,799 @@
       document.addEventListener("DOMContentLoaded", bindListeners);
     }
   })();
+  htmx.defineExtension("bny-validate", {
+    onEvent: function(name, evt) {
+      if (name === "htmx:afterProcessNode") {
+        if (!bny.hasExtName(evt.target, "bny-validate")) return false;
+        var form = evt.target;
+        if (form._bnyValidateInit) return false;
+        form._bnyValidateInit = true;
+        form.setAttribute("novalidate", "");
+        form.addEventListener("submit", function(e) {
+          var ok = validateForm(form);
+          if (!ok) {
+            e.preventDefault();
+            e.stopImmediatePropagation();
+            return false;
+          }
+          var hasHx = form.getAttribute("hx-post") || form.getAttribute("hx-get") || form.getAttribute("hx-put") || form.getAttribute("hx-patch") || form.getAttribute("hx-delete");
+          if (!hasHx) {
+            e.preventDefault();
+            if (typeof bny !== "undefined" && bny.alert) {
+              bny.alert("校验通过");
+            }
+          }
+        }, true);
+        var fields = form.querySelectorAll("input, textarea, select");
+        Array.prototype.forEach.call(fields, function(field) {
+          if (field._bnyValidateBound) return;
+          field._bnyValidateBound = true;
+          field.addEventListener("blur", function() {
+            validateField(field);
+          });
+          field.addEventListener("input", function() {
+            if (field.getAttribute("aria-invalid") === "true") {
+              clearError(field);
+            }
+          });
+        });
+        return false;
+      }
+      return true;
+    }
+  });
+  function validateField(field) {
+    var error = getFieldError(field);
+    if (error) {
+      showError(field, error);
+      return false;
+    }
+    clearError(field);
+    return true;
+  }
+  function validateForm(form) {
+    var fields = form.querySelectorAll("input, textarea, select");
+    var allOk = true;
+    var firstInvalid = null;
+    Array.prototype.forEach.call(fields, function(field) {
+      if (field.disabled || !field.name) return;
+      var ok = validateField(field);
+      if (!ok && !firstInvalid) {
+        firstInvalid = field;
+        allOk = false;
+      }
+    });
+    if (firstInvalid) {
+      try {
+        firstInvalid.focus();
+      } catch (_) {
+      }
+    }
+    return allOk;
+  }
+  function getFieldError(field) {
+    if (typeof field.willValidate !== "undefined" && field.checkValidity) {
+      if (!field.checkValidity()) {
+        var v = field.validity;
+        if (v.valueMissing) {
+          return field.getAttribute("data-msg-required") || field.getAttribute("data-msg") || "该项为必填";
+        }
+        if (v.typeMismatch) {
+          return field.getAttribute("data-msg-type") || field.getAttribute("data-msg") || "格式不正确";
+        }
+        if (v.patternMismatch) {
+          return field.getAttribute("data-msg-pattern") || field.getAttribute("data-msg") || "格式不符合要求";
+        }
+        if (v.tooShort) {
+          return field.getAttribute("data-msg-min") || field.getAttribute("data-msg") || "长度不能少于 " + field.getAttribute("minlength") + " 个字符";
+        }
+        if (v.tooLong) {
+          return field.getAttribute("data-msg-max") || field.getAttribute("data-msg") || "长度不能超过 " + field.getAttribute("maxlength") + " 个字符";
+        }
+        if (v.rangeUnderflow) {
+          return field.getAttribute("data-msg-min") || field.getAttribute("data-msg") || "值不能小于 " + field.getAttribute("min");
+        }
+        if (v.rangeOverflow) {
+          return field.getAttribute("data-msg-max") || field.getAttribute("data-msg") || "值不能大于 " + field.getAttribute("max");
+        }
+        return field.getAttribute("data-msg") || field.validationMessage || "校验未通过";
+      }
+    }
+    var rules = field.getAttribute("data-rules");
+    if (!rules) return null;
+    var val = (field.value || "").trim();
+    if (!val) return null;
+    var ruleList = rules.split(",");
+    var i;
+    for (i = 0; i < ruleList.length; i++) {
+      var pair = ruleList[i].split(":");
+      var key = (pair[0] || "").trim();
+      var arg = pair.slice(1).join(":").trim();
+      var err = null;
+      switch (key) {
+        case "min":
+          if (val.length < parseInt(arg, 10)) {
+            err = field.getAttribute("data-msg-min") || field.getAttribute("data-msg") || "长度不能少于 " + arg + " 个字符";
+          }
+          break;
+        case "max":
+          if (val.length > parseInt(arg, 10)) {
+            err = field.getAttribute("data-msg-max") || field.getAttribute("data-msg") || "长度不能超过 " + arg + " 个字符";
+          }
+          break;
+        case "min-val":
+          if (parseFloat(val) < parseFloat(arg)) {
+            err = field.getAttribute("data-msg-min") || field.getAttribute("data-msg") || "值不能小于 " + arg;
+          }
+          break;
+        case "max-val":
+          if (parseFloat(val) > parseFloat(arg)) {
+            err = field.getAttribute("data-msg-max") || field.getAttribute("data-msg") || "值不能大于 " + arg;
+          }
+          break;
+        case "regexp":
+          try {
+            var re = new RegExp(arg);
+            if (!re.test(val)) {
+              err = field.getAttribute("data-msg-pattern") || field.getAttribute("data-msg") || "格式不符合要求";
+            }
+          } catch (_) {
+          }
+          break;
+        case "equals":
+          var other = document.querySelector('[name="' + arg + '"]');
+          if (other && val !== other.value) {
+            err = field.getAttribute("data-msg-equals") || field.getAttribute("data-msg") || "两次输入不一致";
+          }
+          break;
+      }
+      if (err) return err;
+    }
+    return null;
+  }
+  function showError(field, msg) {
+    field.setAttribute("aria-invalid", "true");
+    field.classList.add("bny-input-error");
+    var item = field.closest(".form-item");
+    if (!item) {
+      var next = field.nextElementSibling;
+      if (!next || !next.classList.contains("bny-form-error")) {
+        var err1 = document.createElement("div");
+        err1.className = "bny-form-error";
+        err1.textContent = msg;
+        field.parentNode.insertBefore(err1, field.nextSibling);
+      } else {
+        next.textContent = msg;
+      }
+      return;
+    }
+    var errEl = item.querySelector(".bny-form-error");
+    if (!errEl) {
+      errEl = document.createElement("div");
+      errEl.className = "bny-form-error";
+      item.appendChild(errEl);
+    }
+    errEl.textContent = msg;
+  }
+  function clearError(field) {
+    field.removeAttribute("aria-invalid");
+    field.classList.remove("bny-input-error");
+    var item = field.closest(".form-item");
+    if (item) {
+      var errEl = item.querySelector(".bny-form-error");
+      if (errEl) errEl.remove();
+    } else {
+      var next = field.nextElementSibling;
+      if (next && next.classList.contains("bny-form-error")) {
+        next.remove();
+      }
+    }
+  }
+  htmx.defineExtension("bny-pagination", {
+    onEvent: function(name, evt) {
+      if (name === "htmx:afterProcessNode") {
+        if (!bny.hasExtName(evt.target, "bny-pagination")) return false;
+        setupDelegation();
+        return false;
+      }
+      return true;
+    },
+    // 响应转换：JSON → 分页条 HTML（数据部分保留原样由 htmx swap）
+    transformResponse: function(text, xhr, elt) {
+      var ct = xhr.getResponseHeader("Content-Type") || "";
+      if (!ct.includes("application/json")) return text;
+      var json;
+      try {
+        json = JSON.parse(xhr.responseText);
+      } catch (e) {
+        return text;
+      }
+      var data = json.data || json;
+      var total = parseInt(data.total, 10) || 0;
+      var pageSize = parseInt(data.pageSize || data.size, 10) || parseInt(elt.getAttribute("data-page-size"), 10) || 10;
+      var paramName = elt.getAttribute("data-page-param") || "page";
+      var page = parsePageFromURL(xhr.responseURL, paramName) || parseInt(data.page, 10) || 1;
+      var maxButtons = parseInt(elt.getAttribute("data-max-buttons"), 10) || 7;
+      var showJumper = elt.getAttribute("data-jumper") !== "false";
+      var showTotal = elt.getAttribute("data-total") !== "false";
+      var totalPages = Math.max(1, Math.ceil(total / pageSize));
+      if (page > totalPages) page = totalPages;
+      if (page < 1) page = 1;
+      var h = '<div class="bny-pagination"';
+      h += carryAttrs(elt, [
+        "color",
+        "model",
+        "data-max-buttons",
+        "data-jumper",
+        "data-total",
+        "data-page-size"
+      ]);
+      h += ' data-current="' + page + '"';
+      h += ' data-total-pages="' + totalPages + '"';
+      h += ' data-page-param="' + bny.escapeChars(paramName) + '"';
+      h += ">";
+      if (showTotal) {
+        h += '<span class="bny-pagination-total">共 <em>' + total + "</em> 条</span>";
+      }
+      h += '<a class="bny-pagination-prev' + (page <= 1 ? " disabled" : "") + '"';
+      h += ' data-page="' + Math.max(1, page - 1) + '"';
+      h += ' title="上一页"><i class="bny-icon icon-left"></i></a>';
+      var btns = computeButtons(page, totalPages, maxButtons);
+      for (var i = 0; i < btns.length; i++) {
+        var b = btns[i];
+        if (b === "...") {
+          h += '<span class="bny-pagination-ellipsis">...</span>';
+        } else {
+          h += '<a class="bny-pagination-btn' + (b === page ? " active" : "") + '"';
+          h += ' data-page="' + b + '"';
+          h += ">" + b + "</a>";
+        }
+      }
+      h += '<a class="bny-pagination-next' + (page >= totalPages ? " disabled" : "") + '"';
+      h += ' data-page="' + Math.min(totalPages, page + 1) + '"';
+      h += ' title="下一页"><i class="bny-icon icon-right"></i></a>';
+      if (showJumper && totalPages > 1) {
+        h += '<span class="bny-pagination-jump">';
+        h += '前往 <input type="number" class="bny-pagination-input" min="1" max="' + totalPages + '" value="' + page + '"> 页';
+        h += "</span>";
+      }
+      h += "</div>";
+      if (elt.getAttribute("data-render-list") === "true") {
+        var list = [];
+        var columns = data.columns || [];
+        if (Array.isArray(data.allList)) {
+          var start = (page - 1) * pageSize;
+          list = data.allList.slice(start, start + pageSize);
+        } else if (Array.isArray(data.list)) {
+          list = data.list;
+        }
+        if (list.length && columns.length) {
+          return renderTable(list, columns) + h;
+        } else if (list.length) {
+          var listHtml = '<div class="bny-pagination-list">';
+          list.forEach(function(item) {
+            listHtml += '<div class="bny-pagination-list-item">' + bny.escapeChars(String(item)) + "</div>";
+          });
+          listHtml += "</div>";
+          return listHtml + h;
+        }
+      }
+      return h;
+    }
+  });
+  function renderTable(list, columns) {
+    var h = '<table class="bny-table" style="margin-bottom:16px;">';
+    h += "<thead><tr>";
+    columns.forEach(function(col) {
+      h += "<th>" + bny.escapeChars(col.title || col.field) + "</th>";
+    });
+    h += "</tr></thead><tbody>";
+    list.forEach(function(row) {
+      h += "<tr>";
+      columns.forEach(function(col) {
+        var val = row[col.field];
+        if (val === null || val === void 0) val = "";
+        h += "<td>" + bny.escapeChars(String(val)) + "</td>";
+      });
+      h += "</tr>";
+    });
+    h += "</tbody></table>";
+    return h;
+  }
+  function computeButtons(current, total, max) {
+    if (total <= max) {
+      var arr = [];
+      for (var i = 1; i <= total; i++) arr.push(i);
+      return arr;
+    }
+    if (max < 5) max = 5;
+    var result = [];
+    var remaining = max - 2;
+    var half = Math.floor(remaining / 2);
+    var left = Math.max(2, current - half);
+    var right = Math.min(total - 1, current + half);
+    if (left <= 2) {
+      left = 2;
+      right = Math.min(total - 1, remaining + 1);
+    }
+    if (right >= total - 1) {
+      right = total - 1;
+      left = Math.max(2, total - remaining);
+    }
+    result.push(1);
+    if (left > 2) result.push("...");
+    for (var j = left; j <= right; j++) result.push(j);
+    if (right < total - 1) result.push("...");
+    result.push(total);
+    return result;
+  }
+  function carryAttrs(elt, names) {
+    var s = "";
+    names.forEach(function(n) {
+      var v = elt.getAttribute(n);
+      if (v !== null) {
+        s += " " + n + '="' + bny.escapeChars(v) + '"';
+      }
+    });
+    return s;
+  }
+  function parsePageFromURL(url, paramName) {
+    if (!url) return 0;
+    try {
+      var u = new URL(url, window.location.href);
+      var p = u.searchParams.get(paramName);
+      return parseInt(p, 10) || 0;
+    } catch (e) {
+      var re = new RegExp("[?&]" + encodeURIComponent(paramName) + "=([^&]+)");
+      var m = String(url).match(re);
+      if (m) return parseInt(decodeURIComponent(m[1]), 10) || 0;
+      return 0;
+    }
+  }
+  var _bnyPageDelegated = false;
+  function setupDelegation() {
+    if (_bnyPageDelegated) return;
+    _bnyPageDelegated = true;
+    document.addEventListener("click", function(e) {
+      var btn = e.target.closest && e.target.closest(".bny-pagination-btn, .bny-pagination-prev, .bny-pagination-next");
+      if (!btn) return;
+      var bar = btn.closest(".bny-pagination");
+      if (!bar) return;
+      if (btn.classList.contains("disabled") || btn.classList.contains("active")) {
+        e.preventDefault();
+        return;
+      }
+      var p = btn.getAttribute("data-page");
+      if (!p) return;
+      triggerPageRequest(bar, p);
+    });
+    document.addEventListener("keydown", function(e) {
+      if (e.key !== "Enter") return;
+      var input = e.target;
+      if (!input.classList || !input.classList.contains("bny-pagination-input")) return;
+      e.preventDefault();
+      var bar = input.closest && input.closest(".bny-pagination");
+      if (!bar) return;
+      var totalPages = parseInt(bar.getAttribute("data-total-pages"), 10) || 1;
+      var p = parseInt(input.value, 10);
+      if (isNaN(p) || p < 1) p = 1;
+      if (p > totalPages) p = totalPages;
+      triggerPageRequest(bar, String(p));
+    });
+  }
+  function triggerPageRequest(bar, page) {
+    var container = bar.parentElement;
+    var configDiv = null;
+    if (container && container.id) {
+      configDiv = document.querySelector('[hx-ext~="bny-pagination"][hx-target="#' + container.id + '"]');
+    }
+    var src = configDiv || bar;
+    var url = src.getAttribute("hx-get");
+    if (!url) return;
+    var targetSel = src.getAttribute("hx-target");
+    var swapStyle = src.getAttribute("hx-swap") || "innerHTML";
+    var paramName = src.getAttribute("data-page-param") || "page";
+    var vals = {};
+    vals[paramName] = page;
+    var existingVals = src.getAttribute("hx-vals");
+    if (existingVals) {
+      try {
+        Object.assign(vals, JSON.parse(existingVals));
+      } catch (_) {
+      }
+    }
+    var target = targetSel ? document.querySelector(targetSel) : src;
+    if (targetSel && !target) target = src;
+    htmx.ajax("GET", url, {
+      source: src,
+      target,
+      swap: swapStyle,
+      values: vals
+    });
+  }
+  (function() {
+    var viewer = null;
+    var imgEl = null;
+    var current = {
+      list: [],
+      // 当前组的图片大图 src 列表
+      index: 0,
+      // 当前索引
+      scale: 1,
+      rotate: 0,
+      x: 0,
+      y: 0
+    };
+    function getViewer() {
+      if (viewer) return viewer;
+      viewer = document.createElement("div");
+      viewer.className = "bny-image-viewer";
+      viewer.innerHTML = '<div class="bny-image-mask"></div><div class="bny-image-container"><img class="bny-image-large" alt="preview"></div><div class="bny-image-tools"><a class="bny-image-tool" data-action="prev" title="上一张（←）"><i class="bny-icon icon-left"></i></a><a class="bny-image-tool" data-action="zoom-out" title="缩小（-）"><i class="bny-icon icon-zoom-out"></i></a><a class="bny-image-tool" data-action="zoom-in" title="放大（+）"><i class="bny-icon icon-zoom-in"></i></a><a class="bny-image-tool" data-action="reset" title="重置（0）"><i class="bny-icon icon-refresh"></i></a><a class="bny-image-tool" data-action="rotate-left" title="左旋"><i class="bny-icon icon-undo"></i></a><a class="bny-image-tool" data-action="rotate-right" title="右旋"><i class="bny-icon icon-redo"></i></a><a class="bny-image-tool" data-action="next" title="下一张（→）"><i class="bny-icon icon-right"></i></a></div><a class="bny-image-close" title="关闭（ESC）"><i class="bny-icon icon-close"></i></a><div class="bny-image-counter"></div>';
+      document.body.appendChild(viewer);
+      imgEl = viewer.querySelector(".bny-image-large");
+      viewer.querySelector(".bny-image-mask").addEventListener("click", close);
+      viewer.querySelector(".bny-image-close").addEventListener("click", close);
+      viewer.querySelector(".bny-image-tools").addEventListener("click", function(e) {
+        var tool = e.target.closest(".bny-image-tool");
+        if (!tool) return;
+        var action = tool.getAttribute("data-action");
+        handleAction(action);
+      });
+      viewer.querySelector(".bny-image-container").addEventListener("click", function(e) {
+        e.stopPropagation();
+      });
+      imgEl.addEventListener("wheel", function(e) {
+        e.preventDefault();
+        if (e.deltaY < 0) {
+          setScale(current.scale + 0.1);
+        } else {
+          setScale(current.scale - 0.1);
+        }
+      }, { passive: false });
+      var dragStart = null;
+      imgEl.addEventListener("mousedown", function(e) {
+        if (e.button !== 0) return;
+        dragStart = { x: e.clientX, y: e.clientY, ox: current.x, oy: current.y };
+        imgEl.classList.add("grabbing");
+      });
+      document.addEventListener("mousemove", function(e) {
+        if (!dragStart) return;
+        current.x = dragStart.ox + (e.clientX - dragStart.x);
+        current.y = dragStart.oy + (e.clientY - dragStart.y);
+        applyTransform();
+      });
+      document.addEventListener("mouseup", function() {
+        if (dragStart) {
+          dragStart = null;
+          imgEl.classList.remove("grabbing");
+        }
+      });
+      return viewer;
+    }
+    function open(list, index) {
+      if (!list || !list.length) return;
+      current.list = list;
+      current.index = Math.max(0, Math.min(index, list.length - 1));
+      resetTransform();
+      getViewer();
+      showImage();
+      viewer.classList.add("show");
+      document.addEventListener("keydown", onKeydown);
+      document.body.style.overflow = "hidden";
+    }
+    function close() {
+      if (!viewer) return;
+      viewer.classList.remove("show");
+      document.removeEventListener("keydown", onKeydown);
+      document.body.style.overflow = "";
+    }
+    function showImage() {
+      var src = current.list[current.index];
+      if (!src) return;
+      imgEl.classList.add("loading");
+      var tmp = new Image();
+      tmp.onload = function() {
+        imgEl.src = src;
+        imgEl.classList.remove("loading");
+      };
+      tmp.onerror = function() {
+        imgEl.classList.remove("loading");
+        imgEl.src = "";
+        imgEl.alt = "图片加载失败";
+      };
+      tmp.src = src;
+      var counter = viewer.querySelector(".bny-image-counter");
+      if (current.list.length > 1) {
+        counter.textContent = current.index + 1 + " / " + current.list.length;
+        counter.style.display = "";
+      } else {
+        counter.style.display = "none";
+      }
+      var prevBtn = viewer.querySelector('[data-action="prev"]');
+      var nextBtn = viewer.querySelector('[data-action="next"]');
+      prevBtn.classList.toggle("disabled", current.list.length <= 1);
+      nextBtn.classList.toggle("disabled", current.list.length <= 1);
+    }
+    function handleAction(action) {
+      switch (action) {
+        case "prev":
+          if (current.list.length > 1) {
+            current.index = (current.index - 1 + current.list.length) % current.list.length;
+            resetTransform();
+            showImage();
+          }
+          break;
+        case "next":
+          if (current.list.length > 1) {
+            current.index = (current.index + 1) % current.list.length;
+            resetTransform();
+            showImage();
+          }
+          break;
+        case "zoom-in":
+          setScale(current.scale + 0.2);
+          break;
+        case "zoom-out":
+          setScale(current.scale - 0.2);
+          break;
+        case "rotate-left":
+          current.rotate -= 90;
+          applyTransform();
+          break;
+        case "rotate-right":
+          current.rotate += 90;
+          applyTransform();
+          break;
+        case "reset":
+          resetTransform();
+          applyTransform();
+          break;
+      }
+    }
+    function setScale(s) {
+      current.scale = Math.max(0.2, Math.min(5, s));
+      applyTransform();
+    }
+    function resetTransform() {
+      current.scale = 1;
+      current.rotate = 0;
+      current.x = 0;
+      current.y = 0;
+      applyTransform();
+    }
+    function applyTransform() {
+      if (!imgEl) return;
+      imgEl.style.transform = "translate(" + current.x + "px, " + current.y + "px) scale(" + current.scale + ") rotate(" + current.rotate + "deg)";
+    }
+    function onKeydown(e) {
+      switch (e.key) {
+        case "Escape":
+          e.preventDefault();
+          close();
+          break;
+        case "ArrowLeft":
+          e.preventDefault();
+          handleAction("prev");
+          break;
+        case "ArrowRight":
+          e.preventDefault();
+          handleAction("next");
+          break;
+        case "+":
+        case "=":
+          e.preventDefault();
+          handleAction("zoom-in");
+          break;
+        case "-":
+          e.preventDefault();
+          handleAction("zoom-out");
+          break;
+        case "0":
+          e.preventDefault();
+          handleAction("reset");
+          break;
+      }
+    }
+    function scan(root) {
+      var imgs = (root || document).querySelectorAll("img[data-preview]");
+      Array.prototype.forEach.call(imgs, function(img) {
+        if (img._bnyImageBound) return;
+        img._bnyImageBound = true;
+        img.classList.add("bny-image-thumb");
+        img.addEventListener("click", function() {
+          var group = img.getAttribute("data-preview-group");
+          var fullSrc = img.getAttribute("data-preview-src") || img.src;
+          if (group) {
+            var groupImgs = document.querySelectorAll('img[data-preview][data-preview-group="' + CSS.escape(group) + '"]');
+            var list = [];
+            var idx = 0;
+            Array.prototype.forEach.call(groupImgs, function(g, i) {
+              list.push(g.getAttribute("data-preview-src") || g.src);
+              if (g === img) idx = i;
+            });
+            open(list, idx);
+          } else {
+            open([fullSrc], 0);
+          }
+        });
+      });
+    }
+    if (typeof htmx !== "undefined") {
+      htmx.onLoad(function(content) {
+        scan(content);
+      });
+    }
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", function() {
+        scan(document);
+      });
+    } else {
+      scan(document);
+    }
+  })();
+  (function() {
+    function render(rate) {
+      var max = parseInt(rate.getAttribute("data-max"), 10) || 5;
+      var value = parseFloat(rate.getAttribute("data-value")) || 0;
+      var half = rate.hasAttribute("data-half");
+      var readonly = rate.hasAttribute("data-readonly");
+      var color = rate.getAttribute("color") || "";
+      if (color) rate.setAttribute("color", color);
+      rate.classList.add("bny-rate");
+      if (readonly) rate.classList.add("is-readonly");
+      rate.setAttribute("role", "slider");
+      rate.setAttribute("aria-valuemin", "0");
+      rate.setAttribute("aria-valuemax", String(max));
+      rate.setAttribute("aria-valuenow", String(value));
+      if (!readonly) {
+        rate.setAttribute("tabindex", "0");
+      }
+      rate.innerHTML = "";
+      var starsEl = document.createElement("div");
+      starsEl.className = "bny-rate-stars";
+      for (var i = 1; i <= max; i++) {
+        var star = document.createElement("span");
+        star.className = "bny-rate-star";
+        star.setAttribute("data-index", String(i));
+        star.innerHTML = makeStarSvg(false);
+        starsEl.appendChild(star);
+      }
+      rate.appendChild(starsEl);
+      var showText = rate.hasAttribute("data-show-text");
+      var texts = (rate.getAttribute("data-texts") || "很差,失望,一般,满意,惊喜").split(",");
+      var textEl = null;
+      if (showText) {
+        textEl = document.createElement("span");
+        textEl.className = "bny-rate-text";
+        rate.appendChild(textEl);
+      }
+      var state = {
+        value,
+        // 当前值（已确认）
+        hover: -1,
+        // 当前 hover 索引（-1 表示无）
+        max,
+        half,
+        texts,
+        textEl
+      };
+      setValue(value);
+      if (!readonly) {
+        starsEl.addEventListener("mousemove", function(e) {
+          var star2 = e.target.closest(".bny-rate-star");
+          if (!star2) {
+            if (state.hover !== -1) {
+              state.hover = -1;
+              paint();
+            }
+            return;
+          }
+          var idx = parseInt(star2.getAttribute("data-index"), 10);
+          if (state.half) {
+            var rect = star2.getBoundingClientRect();
+            var isLeft = e.clientX - rect.left < rect.width / 2;
+            idx = isLeft ? idx - 0.5 : idx;
+          }
+          if (state.hover !== idx) {
+            state.hover = idx;
+            paint();
+          }
+        });
+        starsEl.addEventListener("mouseleave", function() {
+          state.hover = -1;
+          paint();
+        });
+        starsEl.addEventListener("click", function(e) {
+          var star2 = e.target.closest(".bny-rate-star");
+          if (!star2) return;
+          var idx = parseInt(star2.getAttribute("data-index"), 10);
+          if (state.half) {
+            var rect = star2.getBoundingClientRect();
+            var isLeft = e.clientX - rect.left < rect.width / 2;
+            idx = isLeft ? idx - 0.5 : idx;
+          }
+          setValue(idx);
+          rate.dispatchEvent(new Event("change", { bubbles: true }));
+        });
+        rate.addEventListener("keydown", function(e) {
+          var step = state.half ? 0.5 : 1;
+          var key = e.key;
+          if (key === "ArrowRight" || key === "ArrowUp") {
+            e.preventDefault();
+            setValue(Math.min(state.max, state.value + step));
+            rate.dispatchEvent(new Event("change", { bubbles: true }));
+          } else if (key === "ArrowLeft" || key === "ArrowDown") {
+            e.preventDefault();
+            setValue(Math.max(0, state.value - step));
+            rate.dispatchEvent(new Event("change", { bubbles: true }));
+          } else if (key === "Enter" || key === " ") {
+            e.preventDefault();
+            rate.dispatchEvent(new Event("change", { bubbles: true }));
+          }
+        });
+      }
+      function setValue(v) {
+        state.value = Math.max(0, Math.min(state.max, v));
+        rate.setAttribute("data-value", String(state.value));
+        rate.setAttribute("aria-valuenow", String(state.value));
+        paint();
+      }
+      function paint() {
+        var activeVal = state.hover !== -1 ? state.hover : state.value;
+        var stars = starsEl.querySelectorAll(".bny-rate-star");
+        Array.prototype.forEach.call(stars, function(star2, i2) {
+          var starVal = i2 + 1;
+          var svg;
+          if (activeVal >= starVal) {
+            svg = makeStarSvg(true);
+          } else if (state.half && activeVal >= starVal - 0.5) {
+            svg = makeStarSvg(true, true);
+          } else {
+            svg = makeStarSvg(false);
+          }
+          star2.innerHTML = svg;
+        });
+        if (state.textEl) {
+          var idx = Math.ceil(activeVal);
+          idx = Math.max(0, Math.min(state.texts.length, idx));
+          state.textEl.textContent = state.texts[idx - 1] || "";
+        }
+      }
+    }
+    function makeStarSvg(active, half) {
+      var fillId = half ? "bny-rate-half-" + Math.random().toString(36).slice(2) : null;
+      var fill;
+      if (active) {
+        fill = "currentColor";
+      } else {
+        fill = "none";
+      }
+      var starPath = "M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z";
+      if (half && fillId) {
+        return '<svg viewBox="0 0 24 24" class="bny-rate-icon is-half"><defs><linearGradient id="' + fillId + '"><stop offset="50%" stop-color="currentColor"/><stop offset="50%" stop-color="none"/></linearGradient></defs><path d="' + starPath + '" fill="url(#' + fillId + ')" stroke="currentColor" stroke-width="1.5"/></svg>';
+      }
+      return '<svg viewBox="0 0 24 24" class="bny-rate-icon' + (active ? " is-active" : "") + '"><path d="' + starPath + '" fill="' + fill + '" stroke="currentColor" stroke-width="1.5"/></svg>';
+    }
+    function scan(root) {
+      var rates = (root || document).querySelectorAll(".bny-rate");
+      Array.prototype.forEach.call(rates, function(rate) {
+        if (rate._bnyRateBound) return;
+        rate._bnyRateBound = true;
+        render(rate);
+      });
+    }
+    if (typeof htmx !== "undefined") {
+      htmx.onLoad(function(content) {
+        scan(content);
+      });
+    }
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", function() {
+        scan(document);
+      });
+    } else {
+      scan(document);
+    }
+  })();
 })();
 //# sourceMappingURL=bunny.js.map

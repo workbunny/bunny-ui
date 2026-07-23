@@ -1,0 +1,110 @@
+/* ========== 空状态 ========== */
+.bny-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+    text-align: center;
+    color: var(--black-shallow);
+
+    /* 图标区 */
+    & .bny-empty-icon {
+        margin-bottom: 16px;
+        color: var(--gray);
+
+        /* 内置 SVG 图标 */
+        svg {
+            width: 80px;
+            height: 80px;
+            display: block;
+        }
+    }
+
+    /* 描述文本 */
+    & .bny-empty-desc {
+        font-size: var(--font-size);
+        color: var(--black-shallow);
+        line-height: 1.6;
+        max-width: 360px;
+        margin-bottom: 16px;
+    }
+
+    /* 副描述（次要文案） */
+    & .bny-empty-sub {
+        font-size: var(--font-size-sm);
+        color: var(--gray);
+        line-height: 1.5;
+        margin-bottom: 20px;
+    }
+
+    /* 操作区（按钮） */
+    & .bny-empty-actions {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+    }
+
+    /* ============ 尺寸变体 ============ */
+    &.is-sm {
+        padding: 20px 10px;
+
+        & .bny-empty-icon svg {
+            width: 56px;
+            height: 56px;
+        }
+
+        & .bny-empty-desc {
+            font-size: var(--font-size-sm);
+        }
+    }
+
+    &.is-lg {
+        padding: 60px 20px;
+
+        & .bny-empty-icon svg {
+            width: 120px;
+            height: 120px;
+        }
+
+        & .bny-empty-desc {
+            font-size: var(--font-size-16);
+        }
+    }
+
+    /* ============ 主题色变体 ============
+     * -shallow 色在白底上过浅几乎不可见，改用主题主色让图标与描述都鲜明可辨 */
+    &[color="default"] .bny-empty-icon,
+    &[color="default"] .bny-empty-desc {
+        color: var(--default);
+    }
+
+    &[color="green"] .bny-empty-icon,
+    &[color="green"] .bny-empty-desc {
+        color: var(--green);
+    }
+
+    &[color="blue"] .bny-empty-icon,
+    &[color="blue"] .bny-empty-desc {
+        color: var(--blue);
+    }
+
+    &[color="yellow"] .bny-empty-icon,
+    &[color="yellow"] .bny-empty-desc {
+        color: var(--yellow);
+    }
+
+    &[color="red"] .bny-empty-icon,
+    &[color="red"] .bny-empty-desc {
+        color: var(--red);
+    }
+
+    /* ============ 简洁模式：仅文字 ============ */
+    &.is-simple {
+        padding: 24px 16px;
+
+        & .bny-empty-icon {
+            display: none;
+        }
+    }
+}

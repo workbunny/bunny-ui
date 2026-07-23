@@ -1,0 +1,99 @@
+/* ========== 评分 ========== */
+.bny-rate {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--default);
+    font-size: var(--font-size);
+    outline: none;
+    user-select: none;
+
+    /* 星星容器 */
+    & .bny-rate-stars {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+    }
+
+    & .bny-rate-star {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: transform var(--transition-fast);
+
+        &:hover {
+            transform: scale(1.15);
+        }
+    }
+
+    &.is-readonly .bny-rate-star {
+        cursor: default;
+
+        &:hover {
+            transform: none;
+        }
+    }
+
+    /* 星星图标 */
+    & .bny-rate-icon {
+        width: 22px;
+        height: 22px;
+        color: var(--gray-middle);
+        transition: color var(--transition-fast);
+
+        &.is-active {
+            color: var(--default);
+        }
+
+        &.is-half {
+            color: var(--default);
+        }
+    }
+
+    /* 文本 */
+    & .bny-rate-text {
+        color: var(--black-middle);
+        font-size: var(--font-size-sm);
+        font-weight: var(--font-weight-medium);
+        min-width: 32px;
+    }
+
+    /* 键盘聚焦态 */
+    &:focus-visible {
+        box-shadow: var(--focus-ring);
+        border-radius: var(--border-radius-sm);
+    }
+}
+
+/* 主题色变体 */
+.bny-rate[color="green"] .bny-rate-icon.is-active,
+.bny-rate[color="green"] .bny-rate-icon.is-half {
+    color: var(--green);
+}
+
+.bny-rate[color="blue"] .bny-rate-icon.is-active,
+.bny-rate[color="blue"] .bny-rate-icon.is-half {
+    color: var(--blue);
+}
+
+.bny-rate[color="yellow"] .bny-rate-icon.is-active,
+.bny-rate[color="yellow"] .bny-rate-icon.is-half {
+    color: var(--yellow);
+}
+
+.bny-rate[color="red"] .bny-rate-icon.is-active,
+.bny-rate[color="red"] .bny-rate-icon.is-half {
+    color: var(--red);
+}
+
+/* 尺寸变体 */
+.bny-rate[size="sm"] .bny-rate-icon {
+    width: 16px;
+    height: 16px;
+}
+
+.bny-rate[size="lg"] .bny-rate-icon {
+    width: 28px;
+    height: 28px;
+}

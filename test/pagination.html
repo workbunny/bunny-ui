@@ -1,0 +1,204 @@
+<div class="bny-row">
+    <div class="text-content-box col-xs12 col-sm9">
+        <div class="text-content">
+            <h1>Pagination 分页<div class="bny-tag" color="red">v2.0.6+</div></h1>
+            <hr>
+            <blockquote class="bny-blockquote">
+                分页组件，服务端返回 JSON 自动渲染分页条。与 htmx 集成，点击页码通过 hx-get 请求新数据。
+            </blockquote>
+
+            <h2 id="n01">基础用法</h2>
+            <div class="bny-card">
+                <div hx-ext="bny-tab">
+                    <ul class="head">
+                        <li>Preview</li>
+                        <li>Code</li>
+                    </ul>
+                    <div class="body">
+                        <div>
+                            <div class="p-12">
+                                <div hx-ext="bny-pagination"
+                                     hx-get="/test/data/pagination.json"
+                                     hx-target="#pagination-demo"
+                                     hx-swap="innerHTML"
+                                     hx-trigger="load"
+                                     data-max-buttons="7">
+                                </div>
+                                <div id="pagination-demo"></div>
+                                <blockquote class="bny-blockquote" style="margin-top:14px;">
+                                    点击页码按钮触发请求（这里返回静态 JSON 仅用于演示渲染）。
+                                </blockquote>
+                            </div>
+                        </div>
+                        <div>
+                            <pre hx-ext="bny-code">
+&lt;div hx-ext=&quot;bny-pagination&quot;
+     hx-get=&quot;/api/users&quot;
+     hx-target=&quot;#user-list&quot;
+     hx-swap=&quot;innerHTML&quot;
+     data-max-buttons=&quot;7&quot;&gt;
+&lt;/div&gt;
+&lt;div id=&quot;user-list&quot;&gt;&lt;/div&gt;
+
+&lt;!-- 服务端返回 JSON： --&gt;
+&lt;!-- { &quot;total&quot;: 100, &quot;page&quot;: 1, &quot;pageSize&quot;: 10 } --&gt;
+                            </pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h2 id="n02">简洁模式 + 主题色</h2>
+            <div class="bny-card">
+                <div hx-ext="bny-tab">
+                    <ul class="head">
+                        <li>Preview</li>
+                        <li>Code</li>
+                    </ul>
+                    <div class="body">
+                        <div>
+                            <div class="p-12">
+                                <div hx-ext="bny-pagination"
+                                     hx-get="/test/data/pagination.json"
+                                     hx-target="#pagination-demo2"
+                                     hx-swap="innerHTML"
+                                     hx-trigger="load"
+                                     color="blue"
+                                     model="simple"
+                                     data-max-buttons="5"
+                                     data-jumper="false"
+                                     data-total="false">
+                                </div>
+                                <div id="pagination-demo2"></div>
+                            </div>
+                        </div>
+                        <div>
+                            <pre hx-ext="bny-code">
+&lt;div hx-ext=&quot;bny-pagination&quot;
+     color=&quot;blue&quot; model=&quot;simple&quot;
+     data-max-buttons=&quot;5&quot;
+     data-jumper=&quot;false&quot;
+     data-total=&quot;false&quot;&gt;
+&lt;/div&gt;
+                            </pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h2 id="n-table">与表格组合</h2>
+            <div class="bny-card">
+                <div hx-ext="bny-tab">
+                    <ul class="head">
+                        <li>Preview</li>
+                        <li>Code</li>
+                    </ul>
+                    <div class="body">
+                        <div>
+                            <div class="p-12">
+                                <div hx-ext="bny-pagination"
+                                     hx-get="/test/data/pagination-table.json"
+                                     hx-target="#pagination-table-demo"
+                                     hx-swap="innerHTML"
+                                     hx-trigger="load"
+                                     data-render-list="true"
+                                     data-page-size="5"
+                                     data-max-buttons="5">
+                                </div>
+                                <div id="pagination-table-demo"></div>
+                                <blockquote class="bny-blockquote" style="margin-top:14px;">
+                                    <code>data-render-list="true"</code> 配合 JSON 中的 <code>columns</code> 与 <code>allList</code>，自动渲染表格 + 分页条，点击页码切换数据（前端分页）。
+                                </blockquote>
+                            </div>
+                        </div>
+                        <div>
+                            <pre hx-ext="bny-code">
+&lt;div hx-ext=&quot;bny-pagination&quot;
+     hx-get=&quot;/api/users&quot;
+     hx-target=&quot;#table-demo&quot;
+     hx-swap=&quot;innerHTML&quot;
+     hx-trigger=&quot;load&quot;
+     data-render-list=&quot;true&quot;
+     data-page-size=&quot;5&quot;&gt;
+&lt;/div&gt;
+&lt;div id=&quot;table-demo&quot;&gt;&lt;/div&gt;
+
+&lt;!-- 服务端返回 JSON： --&gt;
+&lt;!-- { &quot;total&quot;: 30, &quot;pageSize&quot;: 5, --&gt;
+&lt;!--   &quot;columns&quot;: [{&quot;field&quot;:&quot;id&quot;,&quot;title&quot;:&quot;ID&quot;},...], --&gt;
+&lt;!--   &quot;allList&quot;: [{&quot;id&quot;:1,...},...] } --&gt;
+                            </pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h2 id="n03">配置项</h2>
+            <div class="bny-card">
+                <div hx-ext="bny-tab">
+                    <ul class="head">
+                        <li>Preview</li>
+                        <li>Code</li>
+                    </ul>
+                    <div class="body">
+                        <div>
+                            <div class="p-12">
+                                <blockquote class="bny-blockquote">
+                                    常用配置：<br>
+                                    <code>data-max-buttons</code>：最多页码按钮数（默认 7）<br>
+                                    <code>data-page-size</code>：每页条数（默认 10）<br>
+                                    <code>data-jumper="false"</code>：隐藏跳转框<br>
+                                    <code>data-total="false"</code>：隐藏总数<br>
+                                    <code>data-page-param</code>：URL 参数名（默认 page）<br>
+                                    <code>color</code>：主题色（default/green/blue/yellow/red）<br>
+                                    <code>model="simple"</code>：无边框简洁模式
+                                </blockquote>
+                            </div>
+                        </div>
+                        <div>
+                            <pre hx-ext="bny-code">
+&lt;div hx-ext=&quot;bny-pagination&quot;
+     hx-get=&quot;/api/list&quot;
+     hx-target=&quot;#demo&quot;
+     data-page-size=&quot;20&quot;
+     data-max-buttons=&quot;9&quot;
+     data-page-param=&quot;p&quot;
+     color=&quot;green&quot;&gt;
+&lt;/div&gt;
+                            </pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h2 id="n04">API</h2>
+            <h3>属性</h3>
+            <table hx-ext="bny-table">
+                <thead><tr><th>属性</th><th>说明</th></tr></thead>
+                <tbody>
+                    <tr><td><code>hx-ext="bny-pagination"</code></td><td>启用分页</td></tr>
+                    <tr><td><code>hx-get</code></td><td>请求数据的 URL</td></tr>
+                    <tr><td><code>hx-target</code></td><td>列表容器选择器</td></tr>
+                    <tr><td><code>data-max-buttons</code></td><td>最多页码按钮数，默认 7</td></tr>
+                    <tr><td><code>data-page-size</code></td><td>每页条数，默认 10</td></tr>
+                    <tr><td><code>data-jumper</code></td><td>设为 false 隐藏跳转框</td></tr>
+                    <tr><td><code>data-total</code></td><td>设为 false 隐藏总数</td></tr>
+                    <tr><td><code>data-page-param</code></td><td>URL 参数名，默认 page</td></tr>
+                    <tr><td><code>color</code></td><td>主题色：default/green/blue/yellow/red</td></tr>
+                    <tr><td><code>model="simple"</code></td><td>无边框简洁模式</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="right-anchor-box hidden-xs col-sm3">
+        <div class="right-anchor">
+            <ul hx-ext="bny-anchor" rail>
+                <li class="link" anchor="#n01">基础用法</li>
+                <li class="link" anchor="#n02">简洁模式</li>
+                <li class="link" anchor="#n-table">与表格组合</li>
+                <li class="link" anchor="#n03">配置项</li>
+                <li class="link" anchor="#n04">API</li>
+            </ul>
+        </div>
+    </div>
+</div>

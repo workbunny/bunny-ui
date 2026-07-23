@@ -1,5 +1,5 @@
 /* ========== 表格 ========== */
-table[hx-ext~="bny-table"] {
+table.bny-table, table[hx-ext~="bny-table"] {
     width: 100%;
     border-collapse: collapse;
     box-shadow: var(--box-shadow-005);

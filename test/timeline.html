@@ -1,0 +1,217 @@
+<div class="bny-row">
+    <div class="text-content-box col-xs12 col-sm9">
+        <div class="text-content">
+            <h1>Timeline 时间线<div class="bny-tag" color="red">v2.0.6+</div></h1>
+            <hr>
+            <blockquote class="bny-blockquote">
+                时间线组件，纯 CSS 实现。可视化时间顺序，支持左/右/交错布局、节点颜色与图标。
+            </blockquote>
+
+            <h2 id="n01">基础用法</h2>
+            <div class="bny-card">
+                <div hx-ext="bny-tab">
+                    <ul class="head">
+                        <li>Preview</li>
+                        <li>Code</li>
+                    </ul>
+                    <div class="body">
+                        <div>
+                            <div class="p-12">
+                                <div class="bny-timeline">
+                                    <div class="bny-timeline-item is-primary">
+                                        <div class="bny-timeline-node"></div>
+                                        <div class="bny-timestamp">2026-07-20 10:32</div>
+                                        <div class="bny-timeline-title">创建订单</div>
+                                        <div class="bny-timeline-content">用户提交了订单，等待支付</div>
+                                    </div>
+                                    <div class="bny-timeline-item is-info">
+                                        <div class="bny-timeline-node"></div>
+                                        <div class="bny-timestamp">2026-07-20 10:45</div>
+                                        <div class="bny-timeline-title">支付完成</div>
+                                        <div class="bny-timeline-content">订单已支付，等待发货</div>
+                                    </div>
+                                    <div class="bny-timeline-item is-success">
+                                        <div class="bny-timeline-node"></div>
+                                        <div class="bny-timestamp">2026-07-21 08:15</div>
+                                        <div class="bny-timeline-title">已发货</div>
+                                        <div class="bny-timeline-content">物流单号 SF1234567890</div>
+                                    </div>
+                                    <div class="bny-timeline-item is-hollow">
+                                        <div class="bny-timeline-node"></div>
+                                        <div class="bny-timestamp">待更新</div>
+                                        <div class="bny-timeline-title">确认收货</div>
+                                        <div class="bny-timeline-content">等待用户确认</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <pre hx-ext="bny-code">
+&lt;div class=&quot;bny-timeline&quot;&gt;
+    &lt;div class=&quot;bny-timeline-item is-primary&quot;&gt;
+        &lt;div class=&quot;bny-timeline-node&quot;&gt;&lt;/div&gt;
+        &lt;div class=&quot;bny-timestamp&quot;&gt;2026-07-20 10:32&lt;/div&gt;
+        &lt;div class=&quot;bny-timeline-title&quot;&gt;创建订单&lt;/div&gt;
+        &lt;div class=&quot;bny-timeline-content&quot;&gt;用户提交了订单&lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div class=&quot;bny-timeline-item is-success&quot;&gt;...&lt;/div&gt;
+&lt;/div&gt;
+                            </pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h2 id="n02">右侧布局</h2>
+            <div class="bny-card">
+                <div hx-ext="bny-tab">
+                    <ul class="head">
+                        <li>Preview</li>
+                        <li>Code</li>
+                    </ul>
+                    <div class="body">
+                        <div>
+                            <div class="p-12" style="max-width:480px; margin-left:auto;">
+                                <div class="bny-timeline" mode="right">
+                                    <div class="bny-timeline-item is-info">
+                                        <div class="bny-timeline-node"></div>
+                                        <div class="bny-timestamp">2026-07-21 09:00</div>
+                                        <div class="bny-timeline-title">版本发布</div>
+                                        <div class="bny-timeline-content">v2.0.5 发布</div>
+                                    </div>
+                                    <div class="bny-timeline-item is-warning">
+                                        <div class="bny-timeline-node"></div>
+                                        <div class="bny-timestamp">2026-07-22 14:00</div>
+                                        <div class="bny-timeline-title">发现 Bug</div>
+                                        <div class="bny-timeline-content">影响部分用户，已定位</div>
+                                    </div>
+                                    <div class="bny-timeline-item is-success">
+                                        <div class="bny-timeline-node"></div>
+                                        <div class="bny-timestamp">2026-07-23 11:00</div>
+                                        <div class="bny-timeline-title">修复并发布</div>
+                                        <div class="bny-timeline-content">v2.0.6 已修复</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <pre hx-ext="bny-code">
+&lt;div class=&quot;bny-timeline&quot; mode=&quot;right&quot;&gt;...&lt;/div&gt;
+                            </pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h2 id="n03">交错布局</h2>
+            <div class="bny-card">
+                <div hx-ext="bny-tab">
+                    <ul class="head">
+                        <li>Preview</li>
+                        <li>Code</li>
+                    </ul>
+                    <div class="body">
+                        <div>
+                            <div class="p-12">
+                                <div class="bny-timeline" mode="alternate">
+                                    <div class="bny-timeline-item is-primary">
+                                        <div class="bny-timeline-node"></div>
+                                        <div class="bny-timestamp">2026-07-20</div>
+                                        <div class="bny-timeline-title">设计阶段</div>
+                                        <div class="bny-timeline-content">UI 设计稿完成</div>
+                                    </div>
+                                    <div class="bny-timeline-item is-info">
+                                        <div class="bny-timeline-node"></div>
+                                        <div class="bny-timestamp">2026-07-21</div>
+                                        <div class="bny-timeline-title">开发阶段</div>
+                                        <div class="bny-timeline-content">前端 + 后端并行</div>
+                                    </div>
+                                    <div class="bny-timeline-item is-warning">
+                                        <div class="bny-timeline-node"></div>
+                                        <div class="bny-timestamp">2026-07-22</div>
+                                        <div class="bny-timeline-title">测试阶段</div>
+                                        <div class="bny-timeline-content">QA 验证中</div>
+                                    </div>
+                                    <div class="bny-timeline-item is-success">
+                                        <div class="bny-timeline-node"></div>
+                                        <div class="bny-timestamp">2026-07-23</div>
+                                        <div class="bny-timeline-title">上线</div>
+                                        <div class="bny-timeline-content">正式发布</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <pre hx-ext="bny-code">
+&lt;div class=&quot;bny-timeline&quot; mode=&quot;alternate&quot;&gt;...&lt;/div&gt;
+                            </pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h2 id="n04">主题色</h2>
+            <div class="bny-card">
+                <div hx-ext="bny-tab">
+                    <ul class="head">
+                        <li>Preview</li>
+                        <li>Code</li>
+                    </ul>
+                    <div class="body">
+                        <div>
+                            <div class="p-12">
+                                <div class="bny-timeline" color="green">
+                                    <div class="bny-timeline-item">
+                                        <div class="bny-timeline-node"></div>
+                                        <div class="bny-timestamp">2026-07-23</div>
+                                        <div class="bny-timeline-title">全绿色节点</div>
+                                    </div>
+                                    <div class="bny-timeline-item">
+                                        <div class="bny-timeline-node"></div>
+                                        <div class="bny-timestamp">2026-07-23</div>
+                                        <div class="bny-timeline-title">统一主题色</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <pre hx-ext="bny-code">
+&lt;div class=&quot;bny-timeline&quot; color=&quot;green&quot;&gt;...&lt;/div&gt;
+                            </pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h2 id="n05">API</h2>
+            <h3>CSS 类</h3>
+            <table hx-ext="bny-table">
+                <thead><tr><th>类名/属性</th><th>说明</th></tr></thead>
+                <tbody>
+                    <tr><td><code>bny-timeline</code></td><td>时间线容器</td></tr>
+                    <tr><td><code>mode="right"</code></td><td>右侧布局</td></tr>
+                    <tr><td><code>mode="alternate"</code></td><td>交错布局</td></tr>
+                    <tr><td><code>color="green/blue/yellow/red"</code></td><td>主题色变体</td></tr>
+                    <tr><td><code>bny-timeline-item</code></td><td>时间线项</td></tr>
+                    <tr><td><code>bny-timeline-node</code></td><td>节点圆点</td></tr>
+                    <tr><td><code>bny-timestamp</code></td><td>时间戳</td></tr>
+                    <tr><td><code>bny-timeline-title</code></td><td>标题</td></tr>
+                    <tr><td><code>bny-timeline-content</code></td><td>内容</td></tr>
+                    <tr><td><code>is-primary/success/warning/danger/info</code></td><td>节点状态色</td></tr>
+                    <tr><td><code>is-hollow</code></td><td>空心节点</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="right-anchor-box hidden-xs col-sm3">
+        <div class="right-anchor">
+            <ul hx-ext="bny-anchor" rail>
+                <li class="link" anchor="#n01">基础用法</li>
+                <li class="link" anchor="#n02">右侧布局</li>
+                <li class="link" anchor="#n03">交错布局</li>
+                <li class="link" anchor="#n04">主题色</li>
+                <li class="link" anchor="#n05">API</li>
+            </ul>
+        </div>
+    </div>
+</div>

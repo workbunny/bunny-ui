@@ -1,0 +1,206 @@
+/* ========== 时间线 ========== */
+.bny-timeline {
+    position: relative;
+    padding: 8px 0;
+    font-size: var(--font-size);
+    color: var(--black);
+
+    /* 主轴（默认在左侧） */
+    &::before {
+        content: "";
+        position: absolute;
+        top: 8px;
+        bottom: 8px;
+        left: 8px;
+        width: 2px;
+        background-color: var(--gray-middle);
+        border-radius: var(--border-radius-full);
+    }
+
+    /* 时间线项 */
+    & .bny-timeline-item {
+        position: relative;
+        padding-left: 32px;
+        padding-bottom: 24px;
+
+        &:last-child {
+            padding-bottom: 0;
+        }
+
+        /* 节点圆点 */
+        & .bny-timeline-node {
+            position: absolute;
+            top: 4px;
+            left: 2px;
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background-color: var(--white);
+            border: 2px solid var(--default);
+            box-sizing: content-box;
+            /* 用一个白色伪元素遮盖主轴（让节点圆点覆盖在轴上方） */
+            z-index: 1;
+        }
+
+        /* 时间戳 */
+        & .bny-timestamp {
+            margin-bottom: 6px;
+            font-size: var(--font-size-sm);
+            color: var(--black-shallow);
+            font-weight: var(--font-weight-medium);
+        }
+
+        /* 标题 */
+        & .bny-timeline-title {
+            margin-bottom: 4px;
+            font-size: var(--font-size);
+            font-weight: var(--font-weight-semibold);
+            color: var(--black);
+            line-height: 1.4;
+        }
+
+        /* 内容 */
+        & .bny-timeline-content {
+            font-size: var(--font-size-sm);
+            color: var(--black-middle);
+            line-height: 1.6;
+        }
+    }
+
+    /* ============ 节点颜色变体 ============ */
+    & .bny-timeline-item.is-primary .bny-timeline-node {
+        border-color: var(--default);
+        background-color: var(--default);
+    }
+
+    & .bny-timeline-item.is-success .bny-timeline-node {
+        border-color: var(--green);
+        background-color: var(--green);
+    }
+
+    & .bny-timeline-item.is-warning .bny-timeline-node {
+        border-color: var(--yellow);
+        background-color: var(--yellow);
+    }
+
+    & .bny-timeline-item.is-danger .bny-timeline-node {
+        border-color: var(--red);
+        background-color: var(--red);
+    }
+
+    & .bny-timeline-item.is-info .bny-timeline-node {
+        border-color: var(--blue);
+        background-color: var(--blue);
+    }
+
+    /* 空心节点（仅边框） */
+    & .bny-timeline-item.is-hollow .bny-timeline-node {
+        background-color: var(--white);
+    }
+
+    /* ============ 主题色变体（默认节点色） ============ */
+    &[color="green"] .bny-timeline-item .bny-timeline-node {
+        border-color: var(--green);
+        background-color: var(--green);
+    }
+
+    &[color="blue"] .bny-timeline-item .bny-timeline-node {
+        border-color: var(--blue);
+        background-color: var(--blue);
+    }
+
+    &[color="yellow"] .bny-timeline-item .bny-timeline-node {
+        border-color: var(--yellow);
+        background-color: var(--yellow);
+    }
+
+    &[color="red"] .bny-timeline-item .bny-timeline-node {
+        border-color: var(--red);
+        background-color: var(--red);
+    }
+
+    /* ============ 右侧布局 ============ */
+    &[mode="right"] {
+        &::before {
+            left: auto;
+            right: 8px;
+        }
+
+        & .bny-timeline-item {
+            padding-left: 0;
+            padding-right: 32px;
+            text-align: right;
+
+            & .bny-timeline-node {
+                left: auto;
+                right: 2px;
+            }
+        }
+    }
+
+    /* ============ 交错布局 ============ */
+    &[mode="alternate"] {
+        &::before {
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        & .bny-timeline-item {
+            padding-left: 0;
+            padding-right: 0;
+
+            /* 第偶数项在左 */
+            &:nth-child(even) {
+                padding-right: calc(50% + 16px);
+                text-align: right;
+
+                & .bny-timeline-node {
+                    left: auto;
+                    right: calc(50% - 8px);
+                }
+            }
+
+            /* 第奇数项在右 */
+            &:nth-child(odd) {
+                padding-left: calc(50% + 16px);
+
+                & .bny-timeline-node {
+                    left: calc(50% - 8px);
+                }
+            }
+        }
+    }
+
+    /* ============ 自定义节点图标 ============ */
+    & .bny-timeline-item.has-icon .bny-timeline-node {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 28px;
+        height: 28px;
+        left: -4px;
+        color: var(--white-common);
+        font-size: 14px;
+
+        & .bny-icon,
+        & i {
+            font-size: 12px;
+        }
+    }
+
+    &[mode="right"] .bny-timeline-item.has-icon .bny-timeline-node {
+        left: auto;
+        right: -4px;
+    }
+
+    &[mode="alternate"] .bny-timeline-item.has-icon .bny-timeline-node {
+        &:nth-child(even) {
+            left: auto;
+            right: calc(50% - 14px);
+        }
+
+        &:nth-child(odd) {
+            left: calc(50% - 14px);
+        }
+    }
+}

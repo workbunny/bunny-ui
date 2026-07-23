@@ -1,0 +1,147 @@
+<div class="bny-row">
+    <div class="text-content-box col-xs12 col-sm9">
+        <div class="text-content">
+            <h1>Rate 评分<div class="bny-tag" color="red">v2.0.6+</div></h1>
+            <hr>
+            <blockquote class="bny-blockquote">
+                评分组件，鼠标 hover 预览、click 选中、键盘方向键调整。支持半星、只读、主题色与文本提示。
+            </blockquote>
+
+            <h2 id="n01">基础用法</h2>
+            <div class="bny-card">
+                <div hx-ext="bny-tab">
+                    <ul class="head">
+                        <li>Preview</li>
+                        <li>Code</li>
+                    </ul>
+                    <div class="body">
+                        <div>
+                            <div class="p-12">
+                                <div class="bny-rate" data-value="3"></div>
+                                <blockquote class="bny-blockquote" style="margin-top:14px;">
+                                    鼠标移入星星预览，点击选中。
+                                </blockquote>
+                            </div>
+                        </div>
+                        <div>
+                            <pre hx-ext="bny-code">
+&lt;div class=&quot;bny-rate&quot; data-value=&quot;3&quot;&gt;&lt;/div&gt;
+                            </pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h2 id="n02">半星 + 文本</h2>
+            <div class="bny-card">
+                <div hx-ext="bny-tab">
+                    <ul class="head">
+                        <li>Preview</li>
+                        <li>Code</li>
+                    </ul>
+                    <div class="body">
+                        <div>
+                            <div class="p-12">
+                                <div class="bny-rate"
+                                     data-value="3.5"
+                                     data-half
+                                     data-show-text></div>
+                            </div>
+                        </div>
+                        <div>
+                            <pre hx-ext="bny-code">
+&lt;div class=&quot;bny-rate&quot;
+     data-value=&quot;3.5&quot;
+     data-half
+     data-show-text&gt;
+&lt;/div&gt;
+                            </pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h2 id="n03">只读 + 主题色</h2>
+            <div class="bny-card">
+                <div hx-ext="bny-tab">
+                    <ul class="head">
+                        <li>Preview</li>
+                        <li>Code</li>
+                    </ul>
+                    <div class="body">
+                        <div>
+                            <div class="p-12 flex gap-16 flex-wrap" style="align-items:center;">
+                                <div class="bny-rate" data-value="4" data-readonly color="blue"></div>
+                                <div class="bny-rate" data-value="5" data-readonly color="red"></div>
+                                <div class="bny-rate" data-value="2.5" data-half data-readonly color="yellow"></div>
+                            </div>
+                        </div>
+                        <div>
+                            <pre hx-ext="bny-code">
+&lt;div class=&quot;bny-rate&quot; data-value=&quot;4&quot;
+     data-readonly color=&quot;blue&quot;&gt;
+&lt;/div&gt;
+                            </pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h2 id="n04">配合 HTMX</h2>
+            <div class="bny-card">
+                <div hx-ext="bny-tab">
+                    <ul class="head">
+                        <li>Preview</li>
+                        <li>Code</li>
+                    </ul>
+                    <div class="body">
+                        <div>
+                            <div class="p-12">
+                                <blockquote class="bny-blockquote">
+                                    选值后会派发 <code>change</code> 事件，配合 <code>hx-trigger="change"</code> 即可提交到服务端。
+                                </blockquote>
+                            </div>
+                        </div>
+                        <div>
+                            <pre hx-ext="bny-code">
+&lt;div class=&quot;bny-rate&quot;
+     data-value=&quot;0&quot;
+     hx-post=&quot;/api/rate&quot;
+     hx-trigger=&quot;change&quot;
+     hx-vals='{\&quot;id\&quot;: 123}'&gt;
+&lt;/div&gt;
+                            </pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h2 id="n05">API</h2>
+            <h3>属性</h3>
+            <table hx-ext="bny-table">
+                <thead><tr><th>属性</th><th>说明</th></tr></thead>
+                <tbody>
+                    <tr><td><code>data-value</code></td><td>当前分值，支持小数</td></tr>
+                    <tr><td><code>data-max</code></td><td>最大值，默认 5</td></tr>
+                    <tr><td><code>data-half</code></td><td>启用半星</td></tr>
+                    <tr><td><code>data-readonly</code></td><td>只读模式</td></tr>
+                    <tr><td><code>data-show-text</code></td><td>显示文本提示</td></tr>
+                    <tr><td><code>data-texts</code></td><td>文本数组，逗号分隔</td></tr>
+                    <tr><td><code>color</code></td><td>主题色：default/green/blue/yellow/red</td></tr>
+                    <tr><td><code>size="sm/lg"</code></td><td>尺寸变体</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="right-anchor-box hidden-xs col-sm3">
+        <div class="right-anchor">
+            <ul hx-ext="bny-anchor" rail>
+                <li class="link" anchor="#n01">基础用法</li>
+                <li class="link" anchor="#n02">半星 + 文本</li>
+                <li class="link" anchor="#n03">只读</li>
+                <li class="link" anchor="#n04">配合 HTMX</li>
+                <li class="link" anchor="#n05">API</li>
+            </ul>
+        </div>
+    </div>
+</div>

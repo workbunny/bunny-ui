@@ -1,0 +1,153 @@
+/* ========== 分页 ========== */
+.bny-pagination {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 6px;
+    padding: 12px 0;
+    font-size: var(--font-size);
+    color: var(--black);
+
+    /* 总数 */
+    & .bny-pagination-total {
+        margin-right: 8px;
+        color: var(--black-shallow);
+        font-size: var(--font-size-sm);
+
+        & em {
+            font-style: normal;
+            color: var(--default);
+            font-weight: var(--font-weight-semibold);
+            margin: 0 2px;
+        }
+    }
+
+    /* 页码按钮 & 上下一页 */
+    & .bny-pagination-btn,
+    & .bny-pagination-prev,
+    & .bny-pagination-next {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 32px;
+        height: 32px;
+        padding: 0 8px;
+        border: 1.5px solid var(--gray-middle);
+        border-radius: var(--border-radius-sm);
+        background-color: var(--white);
+        color: var(--black-middle);
+        font-size: var(--font-size-sm);
+        line-height: 1;
+        cursor: pointer;
+        user-select: none;
+        transition: var(--transition-fast);
+        text-decoration: none;
+
+        &:hover:not(.disabled):not(.active) {
+            border-color: var(--default);
+            color: var(--default);
+            background-color: var(--default-alpha-10);
+        }
+
+        &.active {
+            background-color: var(--default);
+            border-color: var(--default);
+            color: var(--white-common);
+            cursor: default;
+        }
+
+        &.disabled {
+            color: var(--gray-middle);
+            cursor: not-allowed;
+            opacity: 0.6;
+            background-color: var(--white-shallow);
+        }
+    }
+
+    /* 省略号 */
+    & .bny-pagination-ellipsis {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 32px;
+        height: 32px;
+        color: var(--gray);
+        font-size: var(--font-size-sm);
+        letter-spacing: 1px;
+    }
+
+    /* 跳转输入框 */
+    & .bny-pagination-jump {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        margin-left: 8px;
+        color: var(--black-shallow);
+        font-size: var(--font-size-sm);
+
+        & .bny-pagination-input {
+            width: 52px;
+            height: 32px;
+            padding: 0 8px;
+            text-align: center;
+            border: 1.5px solid var(--gray-middle);
+            border-radius: var(--border-radius-sm);
+            background-color: var(--white);
+            color: var(--black);
+            font-size: var(--font-size-sm);
+            transition: var(--transition-fast);
+
+            /* 隐藏 number 控件自带的上下箭头 */
+            &::-webkit-inner-spin-button,
+            &::-webkit-outer-spin-button {
+                -webkit-appearance: none;
+                margin: 0;
+            }
+            -moz-appearance: textfield;
+
+            &:hover {
+                border-color: var(--gray);
+            }
+
+            &:focus {
+                border-color: var(--default);
+                box-shadow: var(--focus-ring);
+                outline: none;
+            }
+        }
+    }
+}
+
+/* 主题色变体 */
+.bny-pagination[color="green"] .bny-pagination-btn.active,
+.bny-pagination[color="green"] .bny-pagination-prev.active,
+.bny-pagination[color="green"] .bny-pagination-next.active {
+    background-color: var(--green);
+    border-color: var(--green);
+}
+
+.bny-pagination[color="blue"] .bny-pagination-btn.active,
+.bny-pagination[color="blue"] .bny-pagination-prev.active,
+.bny-pagination[color="blue"] .bny-pagination-next.active {
+    background-color: var(--blue);
+    border-color: var(--blue);
+}
+
+.bny-pagination[color="red"] .bny-pagination-btn.active,
+.bny-pagination[color="red"] .bny-pagination-prev.active,
+.bny-pagination[color="red"] .bny-pagination-next.active {
+    background-color: var(--red);
+    border-color: var(--red);
+}
+
+/* 简洁模式：无边框 */
+.bny-pagination[model="simple"] .bny-pagination-btn,
+.bny-pagination[model="simple"] .bny-pagination-prev,
+.bny-pagination[model="simple"] .bny-pagination-next {
+    border: none;
+    background-color: transparent;
+
+    &:hover:not(.disabled):not(.active) {
+        background-color: var(--default-alpha-10);
+    }
+}

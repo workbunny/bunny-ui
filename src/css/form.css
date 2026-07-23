@@ -396,3 +396,48 @@
 [hx-ext="bny-select"]:disabled {
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23B0B7C0' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
 }
+
+/* ========== 表单校验 ========== */
+/* 错误状态：input/textarea/select 边框变红 */
+.bny-input.bny-input-error,
+.bny-textarea.bny-input-error,
+.bny-select.bny-input-error,
+[hx-ext="bny-input"].bny-input-error,
+[hx-ext="bny-textarea"].bny-input-error,
+[hx-ext="bny-select"].bny-input-error {
+    border-color: var(--red);
+
+    &:focus {
+        border-color: var(--red);
+        box-shadow: 0 0 0 3px var(--red-alpha-10);
+    }
+}
+
+/* 错误提示文本 */
+.bny-form-error {
+    display: block;
+    margin-top: 6px;
+    color: var(--red);
+    font-size: var(--font-size-sm);
+    line-height: 1.4;
+    font-weight: var(--font-weight-medium);
+    animation: bny-form-error-in 200ms ease-out;
+}
+
+@keyframes bny-form-error-in {
+    from {
+        opacity: 0;
+        transform: translateY(-4px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* 校验通过状态的视觉提示（可选，配合 data-valid-feedback="true" 启用） */
+.form-item.is-valid .bny-input,
+.form-item.is-valid .bny-textarea,
+.form-item.is-valid .bny-select {
+    border-color: var(--green);
+}

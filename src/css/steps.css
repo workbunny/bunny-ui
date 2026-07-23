@@ -1,0 +1,218 @@
+/* ========== 步骤条 ========== */
+.bny-steps {
+    display: flex;
+    width: 100%;
+    font-size: var(--font-size);
+
+    /* 横向（默认） */
+    & .bny-step {
+        position: relative;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        padding-right: 32px;
+
+        /* 连接线 */
+        &:not(:last-child)::after {
+            content: "";
+            position: absolute;
+            top: 18px;
+            left: 38px;
+            right: 8px;
+            height: 2px;
+            background-color: var(--gray-middle);
+            transition: background-color var(--transition);
+        }
+
+        /* 已完成步骤的连接线变主色 */
+        &.is-finish:not(:last-child)::after {
+            background-color: var(--default);
+        }
+
+        &.is-error:not(:last-child)::after {
+            background-color: var(--red);
+        }
+
+        /* 头部：图标 + 标题/描述 */
+        & .bny-step-head {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        & .bny-step-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background-color: var(--white);
+            border: 2px solid var(--gray-middle);
+            color: var(--gray);
+            font-size: var(--font-size-sm);
+            font-weight: var(--font-weight-semibold);
+            transition: var(--transition);
+            flex-shrink: 0;
+        }
+
+        & .bny-step-content {
+            margin-left: 12px;
+        }
+
+        & .bny-step-title {
+            font-size: var(--font-size);
+            font-weight: var(--font-weight-medium);
+            color: var(--black);
+            line-height: 1.4;
+        }
+
+        & .bny-step-desc {
+            margin-top: 2px;
+            font-size: var(--font-size-sm);
+            color: var(--black-shallow);
+            line-height: 1.4;
+        }
+    }
+
+    /* 状态：等待 */
+    & .bny-step.is-wait .bny-step-icon {
+        background-color: var(--white);
+        border-color: var(--gray-middle);
+        color: var(--gray);
+    }
+
+    /* 状态：进行中 */
+    & .bny-step.is-process .bny-step-icon {
+        background-color: var(--default);
+        border-color: var(--default);
+        color: var(--white-common);
+        box-shadow: var(--focus-ring);
+    }
+
+    /* 状态：完成 */
+    & .bny-step.is-finish .bny-step-icon {
+        background-color: var(--default);
+        border-color: var(--default);
+        color: var(--white-common);
+    }
+
+    /* 状态：错误 */
+    & .bny-step.is-error .bny-step-icon {
+        background-color: var(--red);
+        border-color: var(--red);
+        color: var(--white-common);
+    }
+
+    /* 已完成时图标显示对勾 */
+    & .bny-step.is-finish .bny-step-icon::after {
+        content: "";
+        width: 8px;
+        height: 14px;
+        border: solid var(--white-common);
+        border-width: 0 2px 2px 0;
+        transform: rotate(45deg) translate(-1px, -1px);
+    }
+
+    /* 错误时图标显示 × */
+    & .bny-step.is-error .bny-step-icon::after {
+        content: "×";
+        font-size: 22px;
+        font-weight: var(--font-weight-bold);
+        line-height: 1;
+    }
+
+    /* 隐藏序号文字（用 ::after 替代） */
+    & .bny-step.is-finish .bny-step-num,
+    & .bny-step.is-error .bny-step-num {
+        display: none;
+    }
+
+    /* ============ 纵向 ============ */
+    &[direction="vertical"] {
+        flex-direction: column;
+        gap: 0;
+
+        & .bny-step {
+            flex: none;
+            flex-direction: row;
+            align-items: flex-start;
+            padding-right: 0;
+            padding-bottom: 28px;
+
+            /* 连接线（纵向） */
+            &:not(:last-child)::after {
+                top: 38px;
+                left: 17px;
+                right: auto;
+                width: 2px;
+                height: calc(100% - 38px);
+            }
+
+            & .bny-step-head {
+                flex-direction: column;
+                align-items: center;
+                margin-bottom: 0;
+                margin-right: 12px;
+            }
+
+            & .bny-step-content {
+                margin-left: 0;
+                padding-top: 6px;
+            }
+        }
+    }
+
+    /* ============ 简洁模式 ============ */
+    &[model="simple"] .bny-step {
+        & .bny-step-icon {
+            width: 28px;
+            height: 28px;
+            font-size: var(--font-size-xs);
+        }
+
+        &:not(:last-child)::after {
+            top: 14px;
+            left: 32px;
+        }
+    }
+
+    /* ============ 主题色变体 ============ */
+    &[color="green"] .bny-step.is-process .bny-step-icon,
+    &[color="green"] .bny-step.is-finish .bny-step-icon,
+    &[color="green"] .bny-step.is-finish:not(:last-child)::after {
+        background-color: var(--green);
+        border-color: var(--green);
+    }
+
+    &[color="green"] .bny-step.is-process .bny-step-icon {
+        box-shadow: 0 0 0 3px var(--green-alpha-10);
+    }
+
+    &[color="blue"] .bny-step.is-process .bny-step-icon,
+    &[color="blue"] .bny-step.is-finish .bny-step-icon,
+    &[color="blue"] .bny-step.is-finish:not(:last-child)::after {
+        background-color: var(--blue);
+        border-color: var(--blue);
+    }
+
+    &[color="blue"] .bny-step.is-process .bny-step-icon {
+        box-shadow: 0 0 0 3px var(--blue-alpha-10);
+    }
+
+    &[color="red"] .bny-step.is-finish:not(:last-child)::after {
+        background-color: var(--red);
+    }
+
+    /* 可点击 */
+    &.bny-steps-clickable .bny-step {
+        cursor: pointer;
+
+        &:hover .bny-step-icon {
+            transform: scale(1.08);
+        }
+    }
+}
