@@ -6246,6 +6246,7 @@
           }
           var hasHx = form.getAttribute("hx-post") || form.getAttribute("hx-get") || form.getAttribute("hx-put") || form.getAttribute("hx-patch") || form.getAttribute("hx-delete");
           if (!hasHx) {
+            if (form.closest('[hx-ext~="bny-spa"]')) return;
             e.preventDefault();
             if (typeof bny !== "undefined" && bny.alert) {
               bny.alert("校验通过");
