@@ -1,0 +1,20 @@
+/* ========== SPA 单页面应用扩展 ========== */
+
+/* 顶部加载进度条 */
+.bny-spa-progress {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 2px;
+    width: 0%;
+    background-color: var(--default);
+    z-index: 99999;
+    box-shadow: 0 0 8px var(--default-alpha-30);
+    opacity: 0;
+    pointer-events: none;
+}
+
+/* 暗黑模式 */
+html.dark .bny-spa-progress {
+    background-color: var(--default-shallow);
+}

@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SPA 首页 - BunnyUI</title>
+    <!-- 核心库 -->
+    <link rel="stylesheet" href="/debug/bunny.css?v=4">
+    <script src="/debug/bunny.js?v=4"></script>
+    <!-- SPA 外部扩展 -->
+    <link rel="stylesheet" href="./spa.css">
+    <script src="./spa.js"></script>
+    <style>
+        body { font-family: var(--font-size); }
+        .spa-header {
+            position: sticky; top: 0; z-index: 100;
+            background: var(--white); box-shadow: var(--box-shadow-005);
+            padding: 0 24px; height: 60px;
+            display: flex; align-items: center; justify-content: space-between;
+        }
+        .spa-header .logo {
+            font-size: var(--font-size-20); font-weight: var(--font-weight-bold); color: var(--default);
+        }
+        .spa-header nav { display: flex; gap: 20px; }
+        .spa-header nav a {
+            color: var(--black-middle); text-decoration: none;
+            padding: 8px 16px; border-radius: var(--border-radius); transition: var(--transition-fast);
+        }
+        .spa-header nav a:hover { background: var(--default-alpha-10); color: var(--default); }
+        .spa-main {
+            max-width: 960px; margin: 0 auto; padding: 40px 24px; min-height: calc(100vh - 120px);
+        }
+        .spa-footer {
+            text-align: center; padding: 20px; color: var(--black-shallow);
+            font-size: var(--font-size-sm); border-top: 1px solid var(--gray-shallow);
+        }
+        .demo-card {
+            background: var(--white-middle); border-radius: var(--border-radius-8);
+            padding: 24px; margin-bottom: 20px; box-shadow: var(--box-shadow-005);
+        }
+    </style>
+</head>
+
+<body hx-ext="bny-spa">
+    <header class="spa-header">
+        <div class="logo">BunnyUI SPA</div>
+        <nav>
+            <a href="/ext/spa/index.html">首页</a>
+            <a href="/ext/spa/users.html">用户列表</a>
+            <a href="/ext/spa/settings.html">设置</a>
+            <a href="/ext/spa/index.html" bny-spa-skip>跳过SPA</a>
+        </nav>
+    </header>
+
+    <main class="spa-main" bny-view>
+        <h1>SPA 首页</h1>
+        <p>这是一个单页面应用演示。点击上方导航链接，页面不会刷新，只有内容区域会交换。</p>
+
+        <div class="demo-card">
+            <h3>核心特性</h3>
+            <ul>
+                <li>无刷新导航 — 点击链接后页面不刷新</li>
+                <li>URL 变更 — 浏览器地址栏实时更新</li>
+                <li>前进/后退 — 浏览器历史记录正常工作</li>
+                <li>滚动记忆 — 回退时恢复之前的滚动位置</li>
+                <li>标题更新 — 每个页面的 title 自动同步</li>
+                <li>渐进增强 — 禁用 JS 后链接照常跳转</li>
+            </ul>
+        </div>
+
+        <div class="demo-card">
+            <h3>表单测试（GET）</h3>
+            <form action="/ext/spa/users.html" method="get">
+                <input type="text" name="keyword" class="bny-input" placeholder="搜索用户..." style="display:inline-block;width:200px;">
+                <button type="submit" class="bny-btn" color="blue">搜索</button>
+            </form>
+            <blockquote class="bny-blockquote" style="margin-top:12px;">
+                表单提交也会走 SPA 导航（GET 序列化到 URL，POST 通过 fetch）。
+            </blockquote>
+        </div>
+
+        <div class="demo-card">
+            <h3>锚点测试</h3>
+            <p>向下滚动后点击导航到其他页面，再点浏览器后退，滚动位置会被恢复。</p>
+            <div style="height:800px;background:var(--gray-shallow);border-radius:var(--border-radius);display:flex;align-items:center;justify-content:center;color:var(--black-shallow);">
+                滚动区域（用于测试滚动记忆）
+            </div>
+        </div>
+
+        <div class="demo-card">
+            <h3>HTMX 集成</h3>
+            <p>SPA 导航后的新内容会自动调用 <code>htmx.process()</code>，所以其他 HTMX 扩展照常工作：</p>
+            <button class="bny-btn" color="green" onclick="bny.alert('SPA 内的 bny.alert 正常工作！')">测试 Alert</button>
+            <button class="bny-btn" color="blue" onclick="bny.confirm('SPA 内的 confirm 也正常吗？')">测试 Confirm</button>
+        </div>
+    </main>
+
+    <footer class="spa-footer">
+        BunnyUI SPA Extension — 服务端零改造的单页面方案
+    </footer>
+</body>
+
+</html>

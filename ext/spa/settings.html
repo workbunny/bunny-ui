@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>设置 - BunnyUI</title>
+    <link rel="stylesheet" href="/debug/bunny.css?v=4">
+    <script src="/debug/bunny.js?v=4"></script>
+    <link rel="stylesheet" href="./spa.css">
+    <script src="./spa.js"></script>
+    <style>
+        body { font-family: var(--font-size); }
+        .spa-header {
+            position: sticky; top: 0; z-index: 100;
+            background: var(--white); box-shadow: var(--box-shadow-005);
+            padding: 0 24px; height: 60px;
+            display: flex; align-items: center; justify-content: space-between;
+        }
+        .spa-header .logo {
+            font-size: var(--font-size-20); font-weight: var(--font-weight-bold); color: var(--default);
+        }
+        .spa-header nav { display: flex; gap: 20px; }
+        .spa-header nav a {
+            color: var(--black-middle); text-decoration: none;
+            padding: 8px 16px; border-radius: var(--border-radius); transition: var(--transition-fast);
+        }
+        .spa-header nav a:hover { background: var(--default-alpha-10); color: var(--default); }
+        .spa-main {
+            max-width: 960px; margin: 0 auto; padding: 40px 24px; min-height: calc(100vh - 120px);
+        }
+        .spa-footer {
+            text-align: center; padding: 20px; color: var(--black-shallow);
+            font-size: var(--font-size-sm); border-top: 1px solid var(--gray-shallow);
+        }
+        .demo-card {
+            background: var(--white-middle); border-radius: var(--border-radius-8);
+            padding: 24px; margin-bottom: 20px; box-shadow: var(--box-shadow-005);
+        }
+    </style>
+</head>
+
+<body hx-ext="bny-spa">
+    <header class="spa-header">
+        <div class="logo">BunnyUI SPA</div>
+        <nav>
+            <a href="/ext/spa/index.html">首页</a>
+            <a href="/ext/spa/users.html">用户列表</a>
+            <a href="/ext/spa/settings.html">设置</a>
+            <a href="/ext/spa/index.html" bny-spa-skip>跳过SPA</a>
+        </nav>
+    </header>
+
+    <main class="spa-main" bny-view>
+        <h1>设置</h1>
+        <p>这是设置页面。如果你是从用户列表的 POST 表单跳转过来的，说明 POST 导航也正常工作了。</p>
+
+        <div class="demo-card">
+            <h3>基本设置</h3>
+            <form>
+                <div style="margin-bottom:12px;">
+                    <label>站点名称</label>
+                    <input type="text" class="bny-input" value="BunnyUI" style="width:300px;">
+                </div>
+                <div style="margin-bottom:12px;">
+                    <label>描述</label>
+                    <textarea class="bny-input" style="width:300px;height:80px;">轻量级 HTMX 拓展 Web UI 组件库</textarea>
+                </div>
+                <div style="margin-bottom:12px;">
+                    <label>主题</label>
+                    <select class="bny-input" style="width:150px;">
+                        <option>浅色</option>
+                        <option>深色</option>
+                    </select>
+                </div>
+                <button type="submit" class="bny-btn" color="blue">保存</button>
+            </form>
+        </div>
+
+        <div class="demo-card">
+            <h3>导航测试</h3>
+            <p>现在试试浏览器的<strong>后退</strong>按钮，你应该能回到之前的页面，并且滚动位置会被恢复。</p>
+            <p>也可以点击下面的链接测试不同方向的导航：</p>
+            <div style="display:flex;gap:12px;">
+                <a href="/ext/spa/index.html" class="bny-btn">回到首页</a>
+                <a href="/ext/spa/users.html" class="bny-btn" color="blue">去用户列表</a>
+            </div>
+        </div>
+    </main>
+
+    <footer class="spa-footer">
+        BunnyUI SPA Extension — 服务端零改造的单页面方案
+    </footer>
+</body>
+
+</html>
