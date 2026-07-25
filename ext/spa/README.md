@@ -117,14 +117,17 @@ class SpaMiddleware
 
 导航时只更新变化的部分，未变化的不碰：
 
-| head 元素 | 行为 |
-|-----------|------|
-| `<title>` | 比较文本，不同才更新 |
-| `<meta name="...">` | 按 name 做 key，比对 content，变了才更新 |
-| `<link bny-spa>` | 按 href 做 diff，新增的加，消失的删 |
-| `<script bny-spa>` | 按 src 做 diff，新增的加并执行 |
-| `<style bny-spa>` | 按 textContent 做 diff |
-| 不带 `bny-spa` 的元素 | 绝不碰，全局资源安全不动 |
+| head 元素 | 行为 | 用途 |
+|-----------|------|------|
+| `<title>` | 比较文本，不同才更新 | SEO |
+| `<meta name="...">` | 按 name 做 key，比对 content，变了才更新/新增 | SEO：keywords/description/robots |
+| `<meta property="og:*">` | 按 property 做 key，同上 | Open Graph：社交分享 |
+| `<link rel="canonical">` | 比较 href，不同才更新/新增 | SEO：规范 URL |
+| `<script type="application/ld+json">` | 全量比对，有变化才替换 | GEO：AI 搜索引擎结构化数据 |
+| `<link bny-spa>` | 按 href 做 diff，新增的加，消失的删 | 页面特有 CSS |
+| `<script bny-spa>` | 按 src 做 diff，新增的加并执行 | 页面特有 JS |
+| `<style bny-spa>` | 按 textContent 做 diff | 页面特有内联样式 |
+| 不带 `bny-spa` 的元素 | 绝不碰，全局资源安全不动 | 全局 CSS/JS |
 
 ### 页面特有资源示例
 

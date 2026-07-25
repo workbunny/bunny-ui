@@ -369,7 +369,10 @@
      *
      * 策略：
      * - title：比较 textContent，不同才更新
-     * - meta[name]：按 name 做 key，比较 content，不同才更新/新增
+     * - meta[name]：按 name 做 key，比较 content，不同才更新/新增（SEO：keywords/description/robots 等）
+     * - meta[property]：按 property 做 key，同上（Open Graph：og:title/og:description/og:image 等）
+     * - canonical：比较 href，不同才更新/新增
+     * - JSON-LD（结构化数据）：全量比对，有变化才替换
      * - link/script/style：只处理带 bny-spa 标记的元素做 diff
      *   - 新的有但当前没有 → 添加
      *   - 当前有但新的没有 → 移除
@@ -385,13 +388,36 @@
             document.title = newTitle.textContent;
         }
 
-        // ===== meta[name]：逐个比对，变了才更新 =====
-        var newMetas = doc.querySelectorAll('meta[name]');
+        // ===== meta[name]（SEO：keywords/description/robots 等）=====
+        syncMetaTags(doc, 'name');
+
+        // ===== meta[property]（Open Graph：og:title/og:description/og:image 等）=====
+        syncMetaTags(doc, 'property');
+
+        // ===== canonical（SEO：规范 URL）=====
+        syncCanonical(doc);
+
+        // ===== JSON-LD 结构化数据（GEO：AI 搜索引擎依赖）=====
+        syncJsonLd(doc);
+
+        // ===== 带 bny-spa 标记的 link/script/style：做 diff =====
+        diffHeadAssets(doc, 'link', 'href');
+        diffHeadAssets(doc, 'script', 'src');
+        diffHeadAssets(doc, 'style', null);
+    }
+
+    /**
+     * 同步 meta 标签（通用，支持 name 和 property 两种 key 属性）
+     * @param {Document} doc
+     * @param {string} keyAttr 'name' 或 'property'
+     */
+    function syncMetaTags(doc, keyAttr) {
+        var newMetas = doc.querySelectorAll('meta[' + keyAttr + ']');
         Array.prototype.forEach.call(newMetas, function (newMeta) {
-            var name = newMeta.getAttribute('name');
-            if (!name) return;
+            var key = newMeta.getAttribute(keyAttr);
+            if (!key) return;
             var newContent = newMeta.getAttribute('content') || '';
-            var curMeta = document.querySelector('meta[name="' + name + '"]');
+            var curMeta = document.querySelector('meta[' + keyAttr + '="' + key + '"]');
             if (curMeta) {
                 // 有 → 内容不同才更新
                 if (curMeta.getAttribute('content') !== newContent) {
@@ -400,16 +426,66 @@
             } else {
                 // 没有 → 新增
                 var m = document.createElement('meta');
-                m.setAttribute('name', name);
+                m.setAttribute(keyAttr, key);
                 m.setAttribute('content', newContent);
                 document.head.appendChild(m);
             }
         });
+    }
 
-        // ===== 带 bny-spa 标记的 link/script/style：做 diff =====
-        diffHeadAssets(doc, 'link', 'href');
-        diffHeadAssets(doc, 'script', 'src');
-        diffHeadAssets(doc, 'style', null);
+    /**
+     * 同步 canonical link
+     * @param {Document} doc
+     */
+    function syncCanonical(doc) {
+        var newCanonical = doc.querySelector('link[rel="canonical"]');
+        if (!newCanonical) return;
+        var newHref = newCanonical.getAttribute('href');
+        if (!newHref) return;
+        var curCanonical = document.querySelector('link[rel="canonical"]');
+        if (curCanonical) {
+            if (curCanonical.getAttribute('href') !== newHref) {
+                curCanonical.setAttribute('href', newHref);
+            }
+        } else {
+            var c = document.createElement('link');
+            c.setAttribute('rel', 'canonical');
+            c.setAttribute('href', newHref);
+            document.head.appendChild(c);
+        }
+    }
+
+    /**
+     * 同步 JSON-LD 结构化数据
+     * 比较新旧集合，内容有变化时全量替换（JSON-LD 不执行 JS，移除/添加安全）
+     * @param {Document} doc
+     */
+    function syncJsonLd(doc) {
+        var newLds = doc.querySelectorAll('script[type="application/ld+json"]');
+        var curLds = document.querySelectorAll('script[type="application/ld+json"]');
+
+        // 数量相同且内容一致 → 不做任何操作
+        if (newLds.length === curLds.length) {
+            var same = true;
+            for (var i = 0; i < newLds.length; i++) {
+                if (newLds[i].textContent !== curLds[i].textContent) {
+                    same = false;
+                    break;
+                }
+            }
+            if (same) return;
+        }
+
+        // 移除当前所有 JSON-LD
+        Array.prototype.forEach.call(curLds, function (el) { el.remove(); });
+
+        // 添加新的 JSON-LD
+        Array.prototype.forEach.call(newLds, function (el) {
+            var s = document.createElement('script');
+            s.setAttribute('type', 'application/ld+json');
+            s.textContent = el.textContent;
+            document.head.appendChild(s);
+        });
     }
 
     /**
