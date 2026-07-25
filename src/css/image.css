@@ -85,18 +85,18 @@
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            width: 36px;
-            height: 36px;
+            width: 38px;
+            height: 38px;
             border-radius: 50%;
             color: var(--black);
-            background-color: transparent;
+            background-color: var(--black-alpha-08);
             font-size: 18px;
             cursor: pointer;
             transition: var(--transition-fast);
 
             &:hover {
-                background-color: var(--default-alpha-10);
-                color: var(--default);
+                background-color: var(--default);
+                color: var(--white-common);
             }
 
             &.disabled {
@@ -104,7 +104,7 @@
                 cursor: not-allowed;
 
                 &:hover {
-                    background-color: transparent;
+                    background-color: var(--black-alpha-08);
                     color: var(--black);
                 }
             }

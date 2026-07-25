@@ -50,6 +50,8 @@ htmx.defineExtension('bny-validate', {
                 var hasHx = form.getAttribute('hx-post') || form.getAttribute('hx-get') ||
                     form.getAttribute('hx-put') || form.getAttribute('hx-patch') || form.getAttribute('hx-delete');
                 if (!hasHx) {
+                    // 在 SPA 上下文中，放行让 SPA 接管导航（不 preventDefault）
+                    if (form.closest('[hx-ext~="bny-spa"]')) return;
                     e.preventDefault();
                     if (typeof bny !== 'undefined' && bny.alert) {
                         bny.alert('校验通过');

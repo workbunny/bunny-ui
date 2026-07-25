@@ -4455,6 +4455,30 @@
       }
     }
   });
+  function closeDropdown(target) {
+    var isShow = target.classList.contains("show");
+    var isUp = target.classList.contains("up");
+    if (isShow || isUp) {
+      target.classList.remove("show", "up");
+    }
+    target.style.visibility = "hidden";
+    target.style.opacity = 0;
+  }
+  var _dropdownDelegated = false;
+  function ensureDropdownDelegation() {
+    if (_dropdownDelegated) return;
+    _dropdownDelegated = true;
+    document.addEventListener("click", function(e) {
+      var openList = document.querySelectorAll(".bny-dropdown.show");
+      for (var i = 0; i < openList.length; i++) {
+        var dropdown = openList[i];
+        if (dropdown.contains(e.target)) continue;
+        var trigger = dropdown._bnyDropdownTrigger;
+        if (trigger && trigger.contains(e.target)) continue;
+        closeDropdown(dropdown);
+      }
+    });
+  }
   htmx.defineExtension("bny-dropdown", {
     // 事件
     onEvent: function(name, evt) {
@@ -4468,13 +4492,7 @@
         target.style.opacity = 1;
       }
       function close(target) {
-        const isShow = target.classList.contains("show");
-        const isUp = target.classList.contains("up");
-        if (isShow || isUp) {
-          target.classList.remove("show", "up");
-        }
-        target.style.visibility = "hidden";
-        target.style.opacity = 0;
+        closeDropdown(target);
       }
       function clean(target) {
         target.style.top = "";
@@ -4483,8 +4501,8 @@
         target.style.bottom = "";
       }
       function toggle(parent, target) {
-        const isShow = target.classList.contains("show");
-        const isUp = target.classList.contains("up");
+        var isShow = target.classList.contains("show");
+        var isUp = target.classList.contains("up");
         if (isShow || isUp) {
           close(target);
         } else {
@@ -4492,14 +4510,17 @@
         }
       }
       function position(parent, target) {
-        const parentRect = parent.getBoundingClientRect();
-        const targetRect = target.getBoundingClientRect();
-        const viewportWidth = window.innerWidth;
-        const viewportHeight = window.innerHeight;
-        const gap = 8;
+        var parentRect = parent.getBoundingClientRect();
+        var targetRect = target.getBoundingClientRect();
+        var viewportWidth = window.innerWidth;
+        var viewportHeight = window.innerHeight;
+        var gap = 8;
         target.classList.remove("up");
-        let top, bottom;
-        if (parentRect.top + parentRect.bottom < viewportHeight) {
+        var top, bottom;
+        var spaceBelow = viewportHeight - parentRect.bottom;
+        var spaceAbove = parentRect.top;
+        var needHeight = targetRect.height + gap;
+        if (spaceBelow >= needHeight || spaceBelow >= spaceAbove) {
           top = parentRect.bottom + gap;
           bottom = "auto";
         } else {
@@ -4507,64 +4528,65 @@
           bottom = viewportHeight - parentRect.top + gap;
           target.classList.add("up");
         }
-        let left = parentRect.left;
-        let right = "auto";
+        var left = parentRect.left;
+        var right = "auto";
         if (left + targetRect.width > viewportWidth - gap) {
           left = "auto";
           right = viewportWidth - parentRect.right;
         }
-        if (left !== "auto" && right < gap) {
+        if (left !== "auto" && left < gap) {
           left = gap;
         }
-        target.style.top = top === "auto" ? "auto" : `${top}px`;
-        target.style.bottom = bottom === "auto" ? "auto" : `${bottom}px`;
-        target.style.left = left === "auto" ? "auto" : `${left}px`;
-        target.style.right = right === "auto" ? "auto" : `${right}px`;
+        if (right !== "auto" && right < gap) {
+          right = gap;
+        }
+        target.style.top = top === "auto" ? "auto" : top + "px";
+        target.style.bottom = bottom === "auto" ? "auto" : bottom + "px";
+        target.style.left = left === "auto" ? "auto" : left + "px";
+        target.style.right = right === "auto" ? "auto" : right + "px";
       }
       function add(target) {
-        let dropdown = bny.queryChild(target, ".bny-dropdown");
-        if (!dropdown) {
-          dropdown = document.createElement("div");
-          dropdown.classList.add("bny-dropdown");
-          target.appendChild(dropdown);
+        var dropdown2 = bny.queryChild(target, ".bny-dropdown");
+        if (!dropdown2) {
+          dropdown2 = document.createElement("div");
+          dropdown2.classList.add("bny-dropdown");
+          target.appendChild(dropdown2);
         }
-        return dropdown;
+        return dropdown2;
       }
       if (name === "htmx:afterProcessNode") {
         if (bny.hasExtName(evt.target, "bny-dropdown")) {
-          const dropdown = add(evt.target);
-          evt.target.addEventListener("click", (e) => {
+          var dropdown = add(evt.target);
+          dropdown._bnyDropdownTrigger = evt.target;
+          evt.target.addEventListener("click", function(e) {
             if (e.target.closest(".bny-dropdown")) {
               return;
             }
             e.stopPropagation();
             toggle(evt.target, dropdown);
           });
-          document.addEventListener("click", (e) => {
-            if (e.target.closest(".bny-dropdown")) {
-              return;
-            }
-            if (evt.target.contains(e.target)) {
-              return;
-            }
-            close(dropdown);
-          });
+          ensureDropdownDelegation();
           return false;
         }
         return true;
       }
       if (name === "htmx:beforeSwap") {
         if (bny.hasExtName(evt.target, "bny-dropdown")) {
-          const dropdown = bny.queryChild(evt.target, ".bny-dropdown");
-          if (!bny.hasClass(dropdown, "show") || dropdown.innerHTML.trim() === "") {
+          var dd = bny.queryChild(evt.target, ".bny-dropdown");
+          if (!dd || !bny.hasClass(dd, "show") || dd.innerHTML.trim() === "") {
             htmx.swap(
-              dropdown,
+              dd,
               evt.detail.xhr.responseText,
               { swapStyle: "innerHTML" }
             );
-            open(evt.target, dropdown);
+            open(evt.target, dd);
           }
           return false;
+        }
+      }
+      if (name === "htmx:beforeOnNodeDisposal") {
+        if (evt.target && evt.target._bnyDropdownTrigger !== void 0) {
+          delete evt.target._bnyDropdownTrigger;
         }
       }
       return true;
@@ -5451,6 +5473,40 @@
     var WEEKS = ["日", "一", "二", "三", "四", "五", "六"];
     var MONTHS = ["1月", "2月", "3月", "4月", "5月", "6月", "7月", "8月", "9月", "10月", "11月", "12月"];
     var currentPanel = null;
+    var instances = [];
+    var globalBound = false;
+    function bindGlobalListeners() {
+      if (globalBound) return;
+      globalBound = true;
+      document.addEventListener("click", function(e) {
+        for (var i = instances.length - 1; i >= 0; i--) {
+          var inst = instances[i];
+          if (!inst.input.isConnected) {
+            inst._rawDestroy();
+            instances.splice(i, 1);
+            continue;
+          }
+          if (!inst.panel.classList.contains("show")) continue;
+          if (!inst.panel.contains(e.target) && e.target !== inst.input && (!inst.rangeInput || e.target !== inst.rangeInput)) {
+            inst.close();
+          }
+        }
+      });
+      window.addEventListener("resize", function() {
+        for (var i = 0; i < instances.length; i++) {
+          if (instances[i].panel.classList.contains("show")) {
+            instances[i].position();
+          }
+        }
+      });
+      window.addEventListener("scroll", function() {
+        for (var i = 0; i < instances.length; i++) {
+          if (instances[i].panel.classList.contains("show")) {
+            instances[i].position();
+          }
+        }
+      }, true);
+    }
     function DatePicker(input, options) {
       this.input = input;
       this.mode = options.mode || "date";
@@ -5476,7 +5532,6 @@
       return d.getTime();
     }
     DatePicker.prototype.initPanel = function() {
-      var self = this;
       if (this.panel) return;
       this.wrap = document.createElement("span");
       this.wrap.className = "bny-datepicker-wrap";
@@ -5486,27 +5541,6 @@
       this.panel.className = "bny-datepicker-panel";
       this.panel.innerHTML = this.buildHTML();
       this.wrap.appendChild(this.panel);
-      this.panel.addEventListener("click", function(e) {
-        e.stopPropagation();
-        var el = e.target;
-        if (el.closest(".day-cell")) self.handleDayClick(el.closest(".day-cell"));
-        else if (el.closest(".month-cell")) self.handleMonthClick(el.closest(".month-cell"));
-        else if (el.closest(".year-cell")) self.handleYearClick(el.closest(".year-cell"));
-        else if (el.closest(".bny-datepicker-nav.prev")) self.prevMonth();
-        else if (el.closest(".bny-datepicker-nav.next")) self.nextMonth();
-        else if (el.closest(".bny-datepicker-nav.prev-year")) {
-          self.viewYear--;
-          self.render();
-        } else if (el.closest(".bny-datepicker-nav.next-year")) {
-          self.viewYear++;
-          self.render();
-        } else if (el.closest(".bny-datepicker-title")) self.toggleView();
-        else if (el.closest(".time-btn.up")) self.handleTimeBtn(el.closest(".time-btn.up"));
-        else if (el.closest(".time-btn.down")) self.handleTimeBtn(el.closest(".time-btn.down"));
-        else if (el.closest(".bny-datepicker-btn.today")) self.selectToday();
-        else if (el.closest(".bny-datepicker-btn.confirm")) self.confirm();
-        else if (el.closest(".bny-datepicker-btn.cancel")) self.cancel();
-      });
     };
     DatePicker.prototype.buildHTML = function() {
       var h = "";
@@ -5538,27 +5572,55 @@
     };
     DatePicker.prototype.bindEvents = function() {
       var self = this;
-      this.input.addEventListener("click", function() {
+      this._onClick = function() {
         self.open();
-      });
-      this.input.addEventListener("focus", function() {
+      };
+      this._onFocus = function() {
         self.open();
-      });
-      document.addEventListener("click", function(e) {
-        if (!self.panel.classList.contains("show")) return;
-        if (!self.panel.contains(e.target) && e.target !== self.input && (!self.rangeInput || e.target !== self.rangeInput)) {
-          self.close();
-        }
-      });
-      window.addEventListener("resize", function() {
-        if (self.panel.classList.contains("show")) self.position();
-      });
-      window.addEventListener("scroll", function() {
-        if (self.panel.classList.contains("show")) self.position();
-      }, true);
-      this.panel.addEventListener("keydown", function(e) {
+      };
+      this._onPanelClick = function(e) {
+        e.stopPropagation();
+        var el = e.target;
+        if (el.closest(".day-cell")) self.handleDayClick(el.closest(".day-cell"));
+        else if (el.closest(".month-cell")) self.handleMonthClick(el.closest(".month-cell"));
+        else if (el.closest(".year-cell")) self.handleYearClick(el.closest(".year-cell"));
+        else if (el.closest(".bny-datepicker-nav.prev")) self.prevMonth();
+        else if (el.closest(".bny-datepicker-nav.next")) self.nextMonth();
+        else if (el.closest(".bny-datepicker-nav.prev-year")) {
+          self.viewYear--;
+          self.render();
+        } else if (el.closest(".bny-datepicker-nav.next-year")) {
+          self.viewYear++;
+          self.render();
+        } else if (el.closest(".bny-datepicker-title")) self.toggleView();
+        else if (el.closest(".time-btn.up")) self.handleTimeBtn(el.closest(".time-btn.up"));
+        else if (el.closest(".time-btn.down")) self.handleTimeBtn(el.closest(".time-btn.down"));
+        else if (el.closest(".bny-datepicker-btn.today")) self.selectToday();
+        else if (el.closest(".bny-datepicker-btn.confirm")) self.confirm();
+        else if (el.closest(".bny-datepicker-btn.cancel")) self.cancel();
+      };
+      this._onKeydown = function(e) {
         self.handleKeydown(e);
-      });
+      };
+      this.input.addEventListener("click", this._onClick);
+      this.input.addEventListener("focus", this._onFocus);
+      this.panel.addEventListener("click", this._onPanelClick);
+      this.panel.addEventListener("keydown", this._onKeydown);
+      instances.push(this);
+      bindGlobalListeners();
+    };
+    DatePicker.prototype._rawDestroy = function() {
+      if (this.panel && this.panel.classList.contains("show")) this.close();
+      if (this._onClick) this.input.removeEventListener("click", this._onClick);
+      if (this._onFocus) this.input.removeEventListener("focus", this._onFocus);
+      if (this._onPanelClick && this.panel) this.panel.removeEventListener("click", this._onPanelClick);
+      if (this._onKeydown && this.panel) this.panel.removeEventListener("keydown", this._onKeydown);
+      this.input._bnyDatePicker = false;
+    };
+    DatePicker.prototype.destroy = function() {
+      var idx = instances.indexOf(this);
+      if (idx !== -1) instances.splice(idx, 1);
+      this._rawDestroy();
     };
     DatePicker.prototype.handleKeydown = function(e) {
       var key = e.key;
@@ -6030,6 +6092,10 @@
         }
       };
     }
+    DateRangePicker.prototype.destroy = function() {
+      if (this.picker1) this.picker1.destroy();
+      if (this.picker2) this.picker2.destroy();
+    };
     function scan(root) {
       if (!root.querySelectorAll) return;
       root.querySelectorAll("input[data-picker]").forEach(function(input) {
@@ -6048,9 +6114,18 @@
         }
       });
     }
+    function cleanupDisconnected() {
+      for (var i = instances.length - 1; i >= 0; i--) {
+        if (!instances[i].input.isConnected) {
+          instances[i]._rawDestroy();
+          instances.splice(i, 1);
+        }
+      }
+    }
     if (typeof htmx !== "undefined") {
       htmx.onLoad(function(content) {
         scan(content);
+        cleanupDisconnected();
       });
     } else {
       if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", function() {
@@ -6246,6 +6321,7 @@
           }
           var hasHx = form.getAttribute("hx-post") || form.getAttribute("hx-get") || form.getAttribute("hx-put") || form.getAttribute("hx-patch") || form.getAttribute("hx-delete");
           if (!hasHx) {
+            if (form.closest('[hx-ext~="bny-spa"]')) return;
             e.preventDefault();
             if (typeof bny !== "undefined" && bny.alert) {
               bny.alert("校验通过");
@@ -6656,7 +6732,7 @@
       if (viewer) return viewer;
       viewer = document.createElement("div");
       viewer.className = "bny-image-viewer";
-      viewer.innerHTML = '<div class="bny-image-mask"></div><div class="bny-image-container"><img class="bny-image-large" alt="preview"></div><div class="bny-image-tools"><a class="bny-image-tool" data-action="prev" title="上一张（←）"><i class="bny-icon icon-left"></i></a><a class="bny-image-tool" data-action="zoom-out" title="缩小（-）"><i class="bny-icon icon-zoom-out"></i></a><a class="bny-image-tool" data-action="zoom-in" title="放大（+）"><i class="bny-icon icon-zoom-in"></i></a><a class="bny-image-tool" data-action="reset" title="重置（0）"><i class="bny-icon icon-refresh"></i></a><a class="bny-image-tool" data-action="rotate-left" title="左旋"><i class="bny-icon icon-undo"></i></a><a class="bny-image-tool" data-action="rotate-right" title="右旋"><i class="bny-icon icon-redo"></i></a><a class="bny-image-tool" data-action="next" title="下一张（→）"><i class="bny-icon icon-right"></i></a></div><a class="bny-image-close" title="关闭（ESC）"><i class="bny-icon icon-close"></i></a><div class="bny-image-counter"></div>';
+      viewer.innerHTML = '<div class="bny-image-mask"></div><div class="bny-image-container"><img class="bny-image-large" alt="preview"></div><div class="bny-image-tools"><a class="bny-image-tool" data-action="prev" title="上一张（←）"><i class="bny-icon icon-left"></i></a><a class="bny-image-tool" data-action="zoom-out" title="缩小（-）"><i class="bny-icon icon-minus"></i></a><a class="bny-image-tool" data-action="zoom-in" title="放大（+）"><i class="bny-icon icon-plus"></i></a><a class="bny-image-tool" data-action="reset" title="重置（0）"><i class="bny-icon icon-sync"></i></a><a class="bny-image-tool" data-action="rotate-left" title="左旋"><i class="bny-icon icon-undo"></i></a><a class="bny-image-tool" data-action="rotate-right" title="右旋"><i class="bny-icon icon-redo"></i></a><a class="bny-image-tool" data-action="next" title="下一张（→）"><i class="bny-icon icon-right"></i></a></div><a class="bny-image-close" title="关闭（ESC）"><i class="bny-icon icon-close"></i></a><div class="bny-image-counter"></div>';
       document.body.appendChild(viewer);
       imgEl = viewer.querySelector(".bny-image-large");
       viewer.querySelector(".bny-image-mask").addEventListener("click", close);

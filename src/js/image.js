@@ -42,9 +42,9 @@
             '</div>' +
             '<div class="bny-image-tools">' +
                 '<a class="bny-image-tool" data-action="prev" title="上一张（←）"><i class="bny-icon icon-left"></i></a>' +
-                '<a class="bny-image-tool" data-action="zoom-out" title="缩小（-）"><i class="bny-icon icon-zoom-out"></i></a>' +
-                '<a class="bny-image-tool" data-action="zoom-in" title="放大（+）"><i class="bny-icon icon-zoom-in"></i></a>' +
-                '<a class="bny-image-tool" data-action="reset" title="重置（0）"><i class="bny-icon icon-refresh"></i></a>' +
+                '<a class="bny-image-tool" data-action="zoom-out" title="缩小（-）"><i class="bny-icon icon-minus"></i></a>' +
+                '<a class="bny-image-tool" data-action="zoom-in" title="放大（+）"><i class="bny-icon icon-plus"></i></a>' +
+                '<a class="bny-image-tool" data-action="reset" title="重置（0）"><i class="bny-icon icon-sync"></i></a>' +
                 '<a class="bny-image-tool" data-action="rotate-left" title="左旋"><i class="bny-icon icon-undo"></i></a>' +
                 '<a class="bny-image-tool" data-action="rotate-right" title="右旋"><i class="bny-icon icon-redo"></i></a>' +
                 '<a class="bny-image-tool" data-action="next" title="下一张（→）"><i class="bny-icon icon-right"></i></a>' +

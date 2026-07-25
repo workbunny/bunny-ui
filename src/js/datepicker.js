@@ -6,6 +6,57 @@
     var currentPanel = null;
     var currentInstance = null;
 
+    // ====== 全局实例追踪与事件委托（避免每个实例重复注册 document/window 监听器）======
+
+    var instances = [];
+    var globalBound = false;
+
+    /**
+     * 全局事件委托：只注册一次 document click / window resize / window scroll
+     * 所有 DatePicker 实例共享这三个监听器
+     */
+    function bindGlobalListeners() {
+        if (globalBound) return;
+        globalBound = true;
+
+        // document click：点击面板外部时关闭
+        document.addEventListener('click', function (e) {
+            // 逆序遍历，便于安全清理已断开连接的实例
+            for (var i = instances.length - 1; i >= 0; i--) {
+                var inst = instances[i];
+                // 自清理：input 已从 DOM 移除 → 销毁实例
+                if (!inst.input.isConnected) {
+                    inst._rawDestroy();
+                    instances.splice(i, 1);
+                    continue;
+                }
+                if (!inst.panel.classList.contains('show')) continue;
+                if (!inst.panel.contains(e.target) && e.target !== inst.input &&
+                    (!inst.rangeInput || e.target !== inst.rangeInput)) {
+                    inst.close();
+                }
+            }
+        });
+
+        // window resize：面板打开时重新定位
+        window.addEventListener('resize', function () {
+            for (var i = 0; i < instances.length; i++) {
+                if (instances[i].panel.classList.contains('show')) {
+                    instances[i].position();
+                }
+            }
+        });
+
+        // window scroll（capture）：面板打开时重新定位
+        window.addEventListener('scroll', function () {
+            for (var i = 0; i < instances.length; i++) {
+                if (instances[i].panel.classList.contains('show')) {
+                    instances[i].position();
+                }
+            }
+        }, true);
+    }
+
     // ====== DatePicker 类 ======
 
     function DatePicker(input, options) {
@@ -50,7 +101,6 @@
     }
 
     DatePicker.prototype.initPanel = function () {
-        var self = this;
         if (this.panel) return;
 
         this.wrap = document.createElement('span');
@@ -62,25 +112,7 @@
         this.panel.className = 'bny-datepicker-panel';
         this.panel.innerHTML = this.buildHTML();
         this.wrap.appendChild(this.panel);
-
-        // 绑定面板内事件
-        this.panel.addEventListener('click', function (e) {
-            e.stopPropagation();  // 阻止冒泡到 document，避免 render 替换 DOM 后误触发关闭
-            var el = e.target;
-            if (el.closest('.day-cell')) self.handleDayClick(el.closest('.day-cell'));
-            else if (el.closest('.month-cell')) self.handleMonthClick(el.closest('.month-cell'));
-            else if (el.closest('.year-cell')) self.handleYearClick(el.closest('.year-cell'));
-            else if (el.closest('.bny-datepicker-nav.prev')) self.prevMonth();
-            else if (el.closest('.bny-datepicker-nav.next')) self.nextMonth();
-            else if (el.closest('.bny-datepicker-nav.prev-year')) { self.viewYear--; self.render(); }
-            else if (el.closest('.bny-datepicker-nav.next-year')) { self.viewYear++; self.render(); }
-            else if (el.closest('.bny-datepicker-title')) self.toggleView();
-            else if (el.closest('.time-btn.up')) self.handleTimeBtn(el.closest('.time-btn.up'));
-            else if (el.closest('.time-btn.down')) self.handleTimeBtn(el.closest('.time-btn.down'));
-            else if (el.closest('.bny-datepicker-btn.today')) self.selectToday();
-            else if (el.closest('.bny-datepicker-btn.confirm')) self.confirm();
-            else if (el.closest('.bny-datepicker-btn.cancel')) self.cancel();
-        });
+        // 面板内 click/keydown 事件在 bindEvents 中统一绑定（便于 destroy 时解绑）
     };
 
     DatePicker.prototype.buildHTML = function () {
@@ -114,21 +146,63 @@
 
     DatePicker.prototype.bindEvents = function () {
         var self = this;
-        this.input.addEventListener('click', function () { self.open(); });
-        this.input.addEventListener('focus', function () { self.open(); });
-        document.addEventListener('click', function (e) {
-            if (!self.panel.classList.contains('show')) return;
-            if (!self.panel.contains(e.target) && e.target !== self.input && (!self.rangeInput || e.target !== self.rangeInput)) {
-                self.close();
-            }
-        });
-        window.addEventListener('resize', function () { if (self.panel.classList.contains('show')) self.position(); });
-        window.addEventListener('scroll', function () { if (self.panel.classList.contains('show')) self.position(); }, true);
+        // 存储引用以便 destroy 时解绑
+        this._onClick = function () { self.open(); };
+        this._onFocus = function () { self.open(); };
+        this._onPanelClick = function (e) {
+            e.stopPropagation();  // 阻止冒泡到 document，避免 render 替换 DOM 后误触发关闭
+            var el = e.target;
+            if (el.closest('.day-cell')) self.handleDayClick(el.closest('.day-cell'));
+            else if (el.closest('.month-cell')) self.handleMonthClick(el.closest('.month-cell'));
+            else if (el.closest('.year-cell')) self.handleYearClick(el.closest('.year-cell'));
+            else if (el.closest('.bny-datepicker-nav.prev')) self.prevMonth();
+            else if (el.closest('.bny-datepicker-nav.next')) self.nextMonth();
+            else if (el.closest('.bny-datepicker-nav.prev-year')) { self.viewYear--; self.render(); }
+            else if (el.closest('.bny-datepicker-nav.next-year')) { self.viewYear++; self.render(); }
+            else if (el.closest('.bny-datepicker-title')) self.toggleView();
+            else if (el.closest('.time-btn.up')) self.handleTimeBtn(el.closest('.time-btn.up'));
+            else if (el.closest('.time-btn.down')) self.handleTimeBtn(el.closest('.time-btn.down'));
+            else if (el.closest('.bny-datepicker-btn.today')) self.selectToday();
+            else if (el.closest('.bny-datepicker-btn.confirm')) self.confirm();
+            else if (el.closest('.bny-datepicker-btn.cancel')) self.cancel();
+        };
+        this._onKeydown = function (e) { self.handleKeydown(e); };
 
-        // 键盘导航：方向键移动临时日期、Enter 确认、Escape 取消
-        this.panel.addEventListener('keydown', function (e) {
-            self.handleKeydown(e);
-        });
+        this.input.addEventListener('click', this._onClick);
+        this.input.addEventListener('focus', this._onFocus);
+        this.panel.addEventListener('click', this._onPanelClick);
+        this.panel.addEventListener('keydown', this._onKeydown);
+
+        // 注册到全局实例列表（document/window 监听器由 bindGlobalListeners 统一管理）
+        instances.push(this);
+        bindGlobalListeners();
+    };
+
+    /**
+     * 销毁实例：解绑所有事件监听器，从实例列表移除
+     * 由全局 click 委托在检测到 input 断开连接时自动调用，
+     * 也可手动调用于 htmx:beforeOnNodeDisposal
+     */
+    DatePicker.prototype._rawDestroy = function () {
+        // 关闭面板
+        if (this.panel && this.panel.classList.contains('show')) this.close();
+        // 解绑 input 事件
+        if (this._onClick) this.input.removeEventListener('click', this._onClick);
+        if (this._onFocus) this.input.removeEventListener('focus', this._onFocus);
+        // 解绑 panel 事件
+        if (this._onPanelClick && this.panel) this.panel.removeEventListener('click', this._onPanelClick);
+        if (this._onKeydown && this.panel) this.panel.removeEventListener('keydown', this._onKeydown);
+        // 清除标记，允许重新初始化
+        this.input._bnyDatePicker = false;
+    };
+
+    /**
+     * 公开 destroy 方法：解绑 + 从实例列表移除
+     */
+    DatePicker.prototype.destroy = function () {
+        var idx = instances.indexOf(this);
+        if (idx !== -1) instances.splice(idx, 1);
+        this._rawDestroy();
     };
 
     /**
@@ -613,6 +687,14 @@
         };
     }
 
+    /**
+     * 销毁 DateRangePicker：同时销毁两个子 DatePicker
+     */
+    DateRangePicker.prototype.destroy = function () {
+        if (this.picker1) this.picker1.destroy();
+        if (this.picker2) this.picker2.destroy();
+    };
+
     // ====== 初始化 ======
 
     function scan(root) {
@@ -635,9 +717,26 @@
         });
     }
 
+    /**
+     * 清理已断开连接的实例（htmx 节点销毁时调用）
+     * 遍历 instances，对 input 已移除的实例执行 destroy
+     */
+    function cleanupDisconnected() {
+        for (var i = instances.length - 1; i >= 0; i--) {
+            if (!instances[i].input.isConnected) {
+                instances[i]._rawDestroy();
+                instances.splice(i, 1);
+            }
+        }
+    }
+
     // 页面初始加载
     if (typeof htmx !== 'undefined') {
-        htmx.onLoad(function (content) { scan(content); });
+        htmx.onLoad(function (content) {
+            scan(content);
+            // htmx 内容交换后清理已断开连接的实例
+            cleanupDisconnected();
+        });
     } else {
         if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', function () { scan(document.body); });
         else scan(document.body);
