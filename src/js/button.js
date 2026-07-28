@@ -35,7 +35,9 @@
         var elt = evt.detail && evt.detail.elt;
         if (!shouldShowLoading(elt)) return;
         elt.classList.add('bny-loading');
+        // disabled 对 button/input 有效；aria-disabled 补充 a 标签的语义（a 不支持 disabled 属性）
         elt.setAttribute('disabled', 'disabled');
+        elt.setAttribute('aria-disabled', 'true');
     }
 
     /**
@@ -52,6 +54,7 @@
             if (elt.getAttribute('bny-button-loading') !== null ||
                 !elt.hasAttribute('data-bny-keep-disabled')) {
                 elt.removeAttribute('disabled');
+                elt.removeAttribute('aria-disabled');
             }
         });
     }

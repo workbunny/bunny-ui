@@ -30,6 +30,240 @@
                     </div>
                 </div>
             </div>
+            <h2 id="n-prefix-suffix">前缀/后缀<div class="bny-tag" color="red">v2.0.8+</div></h2>
+            <div hx-ext="bny-tab">
+                <ul class="head">
+                    <li>Preview</li>
+                    <li>Code</li>
+                </ul>
+                <div class="body">
+                    <div>
+                        <div class="p-12">
+                            <div class="bny-input-group">
+                                <span class="bny-input-prefix">@</span>
+                                <input type="text" class="bny-input" placeholder="用户名">
+                            </div>
+                            <br>
+                            <div class="bny-input-group">
+                                <input type="text" class="bny-input" placeholder="网址">
+                                <span class="bny-input-suffix">.bnyui.com</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <pre hx-ext="bny-code">
+&lt;div class=&quot;bny-input-group&quot;&gt;
+    &lt;span class=&quot;bny-input-prefix&quot;&gt;@&lt;/span&gt;
+    &lt;input type=&quot;text&quot; class=&quot;bny-input&quot; placeholder=&quot;用户名&quot;&gt;
+&lt;/div&gt;
+&lt;div class=&quot;bny-input-group&quot;&gt;
+    &lt;input type=&quot;text&quot; class=&quot;bny-input&quot; placeholder=&quot;网址&quot;&gt;
+    &lt;span class=&quot;bny-input-suffix&quot;&gt;.bnyui.com&lt;/span&gt;
+&lt;/div&gt;
+            </pre>
+                    </div>
+                </div>
+            </div>
+            <h3>图标前缀/后缀<div class="bny-tag" color="red">v2.0.8+</div></h3>
+            <div hx-ext="bny-tab">
+                <ul class="head">
+                    <li>Preview</li>
+                    <li>Code</li>
+                </ul>
+                <div class="body">
+                    <div>
+                        <div class="p-12">
+                            <div class="bny-input-group">
+                                <span class="bny-input-prefix"><i class="bny-icon icon-search"></i></span>
+                                <input type="text" class="bny-input" placeholder="搜索...">
+                            </div>
+                            <br>
+                            <div class="bny-input-group">
+                                <input type="text" class="bny-input" placeholder="邮箱">
+                                <span class="bny-input-suffix"><i class="bny-icon icon-mail"></i></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <pre hx-ext="bny-code">
+&lt;div class=&quot;bny-input-group&quot;&gt;
+    &lt;span class=&quot;bny-input-prefix&quot;&gt;&lt;i class=&quot;bny-icon icon-search&quot;&gt;&lt;/i&gt;&lt;/span&gt;
+    &lt;input type=&quot;text&quot; class=&quot;bny-input&quot; placeholder=&quot;搜索...&quot;&gt;
+&lt;/div&gt;
+&lt;div class=&quot;bny-input-group&quot;&gt;
+    &lt;input type=&quot;text&quot; class=&quot;bny-input&quot; placeholder=&quot;邮箱&quot;&gt;
+    &lt;span class=&quot;bny-input-suffix&quot;&gt;&lt;i class=&quot;bny-icon icon-mail&quot;&gt;&lt;/i&gt;&lt;/span&gt;
+&lt;/div&gt;
+            </pre>
+                    </div>
+                </div>
+            </div>
+            <h3>按钮后缀<div class="bny-tag" color="red">v2.0.8+</div></h3>
+            <div hx-ext="bny-tab">
+                <ul class="head">
+                    <li>Preview</li>
+                    <li>Code</li>
+                </ul>
+                <div class="body">
+                    <div>
+                        <div class="p-12">
+                            <div class="bny-input-group">
+                                <input type="text" class="bny-input" placeholder="输入关键字">
+                                <span class="bny-input-suffix">
+                                    <button class="bny-btn" color="blue">搜索</button>
+                                </span>
+                            </div>
+                            <br>
+                            <div class="bny-input-group">
+                                <span class="bny-input-prefix">
+                                    <button class="bny-btn" model="border">检查</button>
+                                </span>
+                                <input type="text" class="bny-input" placeholder="域名">
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <pre hx-ext="bny-code">
+&lt;div class=&quot;bny-input-group&quot;&gt;
+    &lt;input type=&quot;text&quot; class=&quot;bny-input&quot; placeholder=&quot;输入关键字&quot;&gt;
+    &lt;span class=&quot;bny-input-suffix&quot;&gt;
+        &lt;button class=&quot;bny-btn&quot; color=&quot;blue&quot;&gt;搜索&lt;/button&gt;
+    &lt;/span&gt;
+&lt;/div&gt;
+&lt;div class=&quot;bny-input-group&quot;&gt;
+    &lt;span class=&quot;bny-input-prefix&quot;&gt;
+        &lt;button class=&quot;bny-btn&quot; model=&quot;border&quot;&gt;检查&lt;/button&gt;
+    &lt;/span&gt;
+    &lt;input type=&quot;text&quot; class=&quot;bny-input&quot; placeholder=&quot;域名&quot;&gt;
+&lt;/div&gt;
+            </pre>
+                    </div>
+                </div>
+            </div>
+            <h3>前缀 + 后缀组合<div class="bny-tag" color="red">v2.0.8+</div></h3>
+            <div hx-ext="bny-tab">
+                <ul class="head">
+                    <li>Preview</li>
+                    <li>Code</li>
+                </ul>
+                <div class="body">
+                    <div>
+                        <div class="p-12">
+                            <div class="bny-input-group">
+                                <span class="bny-input-prefix">￥</span>
+                                <input type="text" class="bny-input" placeholder="0.00">
+                                <span class="bny-input-suffix">.00</span>
+                            </div>
+                            <br>
+                            <div class="bny-input-group">
+                                <span class="bny-input-prefix">http://</span>
+                                <input type="text" class="bny-input" placeholder="example.com">
+                                <span class="bny-input-suffix">
+                                    <button class="bny-btn" color="green">前往</button>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <pre hx-ext="bny-code">
+&lt;div class=&quot;bny-input-group&quot;&gt;
+    &lt;span class=&quot;bny-input-prefix&quot;&gt;￥&lt;/span&gt;
+    &lt;input type=&quot;text&quot; class=&quot;bny-input&quot; placeholder=&quot;0.00&quot;&gt;
+    &lt;span class=&quot;bny-input-suffix&quot;&gt;.00&lt;/span&gt;
+&lt;/div&gt;
+&lt;div class=&quot;bny-input-group&quot;&gt;
+    &lt;span class=&quot;bny-input-prefix&quot;&gt;http://&lt;/span&gt;
+    &lt;input type=&quot;text&quot; class=&quot;bny-input&quot; placeholder=&quot;example.com&quot;&gt;
+    &lt;span class=&quot;bny-input-suffix&quot;&gt;
+        &lt;button class=&quot;bny-btn&quot; color=&quot;green&quot;&gt;前往&lt;/button&gt;
+    &lt;/span&gt;
+&lt;/div&gt;
+            </pre>
+                    </div>
+                </div>
+            </div>
+            <h3>尺寸变体<div class="bny-tag" color="red">v2.0.8+</div></h3>
+            <div hx-ext="bny-tab">
+                <ul class="head">
+                    <li>Preview</li>
+                    <li>Code</li>
+                </ul>
+                <div class="body">
+                    <div>
+                        <div class="p-12">
+                            <div class="bny-input-group" size="sm">
+                                <span class="bny-input-prefix"><i class="bny-icon icon-search"></i></span>
+                                <input type="text" class="bny-input" placeholder="size=sm">
+                            </div>
+                            <br>
+                            <div class="bny-input-group">
+                                <span class="bny-input-prefix"><i class="bny-icon icon-search"></i></span>
+                                <input type="text" class="bny-input" placeholder="默认">
+                            </div>
+                            <br>
+                            <div class="bny-input-group" size="lg">
+                                <span class="bny-input-prefix"><i class="bny-icon icon-search"></i></span>
+                                <input type="text" class="bny-input" placeholder="size=lg">
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <pre hx-ext="bny-code">
+&lt;div class=&quot;bny-input-group&quot; size=&quot;sm&quot;&gt;
+    &lt;span class=&quot;bny-input-prefix&quot;&gt;&lt;i class=&quot;bny-icon icon-search&quot;&gt;&lt;/i&gt;&lt;/span&gt;
+    &lt;input type=&quot;text&quot; class=&quot;bny-input&quot; placeholder=&quot;size=sm&quot;&gt;
+&lt;/div&gt;
+&lt;div class=&quot;bny-input-group&quot;&gt;
+    &lt;!-- 默认尺寸 --&gt;
+    &lt;span class=&quot;bny-input-prefix&quot;&gt;&lt;i class=&quot;bny-icon icon-search&quot;&gt;&lt;/i&gt;&lt;/span&gt;
+    &lt;input type=&quot;text&quot; class=&quot;bny-input&quot; placeholder=&quot;默认&quot;&gt;
+&lt;/div&gt;
+&lt;div class=&quot;bny-input-group&quot; size=&quot;lg&quot;&gt;
+    &lt;span class=&quot;bny-input-prefix&quot;&gt;&lt;i class=&quot;bny-icon icon-search&quot;&gt;&lt;/i&gt;&lt;/span&gt;
+    &lt;input type=&quot;text&quot; class=&quot;bny-input&quot; placeholder=&quot;size=lg&quot;&gt;
+&lt;/div&gt;
+            </pre>
+                    </div>
+                </div>
+            </div>
+            <h3>禁用态<div class="bny-tag" color="red">v2.0.8+</div></h3>
+            <div hx-ext="bny-tab">
+                <ul class="head">
+                    <li>Preview</li>
+                    <li>Code</li>
+                </ul>
+                <div class="body">
+                    <div>
+                        <div class="p-12">
+                            <div class="bny-input-group">
+                                <span class="bny-input-prefix"><i class="bny-icon icon-search"></i></span>
+                                <input type="text" class="bny-input" placeholder="禁用" disabled>
+                            </div>
+                            <br>
+                            <div class="bny-input-group" data-disabled="true">
+                                <span class="bny-input-prefix">￥</span>
+                                <input type="text" class="bny-input" placeholder="0.00">
+                                <span class="bny-input-suffix">.00</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <pre hx-ext="bny-code">
+&lt;!-- 通过 input disabled 触发 --&gt;
+&lt;div class=&quot;bny-input-group&quot;&gt;
+    &lt;span class=&quot;bny-input-prefix&quot;&gt;&lt;i class=&quot;bny-icon icon-search&quot;&gt;&lt;/i&gt;&lt;/span&gt;
+    &lt;input type=&quot;text&quot; class=&quot;bny-input&quot; placeholder=&quot;禁用&quot; disabled&gt;
+&lt;/div&gt;
+&lt;!-- 通过容器 data-disabled 声明 --&gt;
+&lt;div class=&quot;bny-input-group&quot; data-disabled=&quot;true&quot;&gt;
+    &lt;span class=&quot;bny-input-prefix&quot;&gt;￥&lt;/span&gt;
+    &lt;input type=&quot;text&quot; class=&quot;bny-input&quot; placeholder=&quot;0.00&quot;&gt;
+    &lt;span class=&quot;bny-input-suffix&quot;&gt;.00&lt;/span&gt;
+&lt;/div&gt;
+            </pre>
+                    </div>
+                </div>
+            </div>
             <h2 id="n02a">尺寸变体</h2>
             <div hx-ext="bny-tab">
                 <ul class="head">

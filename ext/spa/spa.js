@@ -104,6 +104,66 @@
                document.getElementById('bny-view');
     }
 
+    /**
+     * 计算视口在视图树中的路径（数组坐标）
+     *
+     * 路径定义：
+     * - 根级视口（最近祖先 [bny-view] 为 null）按文档顺序编号为 [0]、[1]…
+     * - 父视口 [0] 内的第一个直接子视口为 [0, 0]，第二个为 [0, 1]
+     * - 直接子视口定义：视口 V 的最近祖先 [bny-view] === P
+     *
+     * @param {HTMLElement} view 目标视口元素
+     * @returns {number[]} 路径数组，如 [0]、[0, 1]、[0, 0, 0]
+     */
+    function getViewPath(view) {
+        var path = [];
+        var cur = view;
+        while (cur) {
+            var parentView = cur.parentElement.closest('[bny-view]');
+            // 收集所有同级视口（最近祖先 [bny-view] 相同的视口）
+            var allViews = Array.prototype.slice.call(document.querySelectorAll('[bny-view]'));
+            var siblings = allViews.filter(function (v) {
+                return v.parentElement.closest('[bny-view]') === parentView;
+            });
+            var idx = siblings.indexOf(cur);
+            if (idx === -1) break;
+            path.unshift(idx);
+            cur = parentView;
+        }
+        return path;
+    }
+
+    /**
+     * 按路径在指定文档中定位视口元素
+     *
+     * 算法：
+     * - path[0] 选取第 N 个根级视口（最近祖先 [bny-view] 为 null 的视口）
+     * - 之后每一段在当前视口的直接子视口中按索引选取
+     * - 任一段越界返回 null
+     *
+     * @param {Document} doc 响应文档或当前 document
+     * @param {number[]} path 视口路径
+     * @returns {HTMLElement|null}
+     */
+    function findViewByPath(doc, path) {
+        if (!path || !path.length) return null;
+        // 根级视口：所有最近祖先 [bny-view] 为 null 的视口
+        var rootViews = Array.prototype.slice.call(doc.querySelectorAll('[bny-view]')).filter(function (v) {
+            return v.parentElement.closest('[bny-view]') === null;
+        });
+        var cur = rootViews[path[0]];
+        if (!cur) return null;
+        for (var i = 1; i < path.length; i++) {
+            // cur 的直接子视口
+            var children = Array.prototype.slice.call(cur.querySelectorAll('[bny-view]')).filter(function (v) {
+                return v.parentElement.closest('[bny-view]') === cur;
+            });
+            cur = children[path[i]];
+            if (!cur) return null;
+        }
+        return cur;
+    }
+
     // ==================== 事件拦截 ====================
 
     /**
@@ -141,7 +201,10 @@
         if (url.origin !== location.origin) return;
 
         e.preventDefault();
-        navigate(url.href);
+        // 计算目标视图路径
+        var ancestorView = link.closest('[bny-view]');
+        var viewPath = ancestorView ? getViewPath(ancestorView) : [0];
+        navigate(url.href, viewPath);
     }
 
     /**
@@ -171,14 +234,17 @@
 
         e.preventDefault();
 
+        var ancestorView = form.closest('[bny-view]');
+        var viewPath = ancestorView ? getViewPath(ancestorView) : [0];
+
         if (method === 'GET') {
             // GET 表单：序列化到 URL 查询串
             var params = new URLSearchParams(new FormData(form)).toString();
             var target = url.pathname + (params ? '?' + params : '') + url.hash;
-            navigate(target);
+            navigate(target, viewPath);
         } else {
             // POST 表单
-            navigatePost(url.href, new FormData(form));
+            navigatePost(url.href, new FormData(form), viewPath);
         }
     }
 
@@ -187,8 +253,10 @@
     /**
      * 导航到 URL（GET）
      * @param {string} url 目标 URL
+     * @param {number[]} [viewPath] 目标视口路径，默认 [0]
      */
-    function navigate(url) {
+    function navigate(url, viewPath) {
+        viewPath = viewPath || [0];
         // 解析 hash（用于导航后滚动到锚点）
         var urlObj = new URL(url, location.href);
         var hash = urlObj.hash;
@@ -230,10 +298,10 @@
             return res.text();
         })
         .then(function (html) {
-            swapContent(html, url);
+            swapContent(html, url, viewPath);
             // 更新浏览器历史
             history.pushState(
-                { url: _currentUrl, title: document.title },
+                { url: _currentUrl, title: document.title, viewPath: viewPath },
                 document.title,
                 _currentUrl
             );
@@ -262,8 +330,10 @@
      * POST 导航
      * @param {string} url 目标 URL
      * @param {FormData} formData 表单数据
+     * @param {number[]} [viewPath] 目标视口路径，默认 [0]
      */
-    function navigatePost(url, formData) {
+    function navigatePost(url, formData, viewPath) {
+        viewPath = viewPath || [0];
         if (_controller) _controller.abort();
 
         _scrollCache[_currentUrl] = { x: window.scrollX, y: window.scrollY };
@@ -288,10 +358,10 @@
             return res.text();
         })
         .then(function (html) {
-            swapContent(html, url);
+            swapContent(html, url, viewPath);
             // POST 后通常是 PRG 重定向，用 pushState 更新 URL
             history.pushState(
-                { url: _currentUrl, title: document.title },
+                { url: _currentUrl, title: document.title, viewPath: viewPath },
                 document.title,
                 _currentUrl
             );
@@ -319,29 +389,46 @@
      *    - 从中提取 [bny-view] 区域
      *    - 同步 head 中的 title、keywords、description
      *
+     * 视口嵌套：按 viewPath 在响应文档与当前文档中分别定位对应视口；
+     * 找不到时回退到根视口 [0]，再找不到用 body / 第一个 [bny-view]
+     *
      * @param {string} html 响应 HTML
      * @param {string} fallbackUrl 出错时的回退 URL
+     * @param {number[]} [viewPath] 目标视口路径，默认 [0]
      */
-    function swapContent(html, fallbackUrl) {
+    function swapContent(html, fallbackUrl, viewPath) {
         var doc = new DOMParser().parseFromString(html, 'text/html');
 
         // ===== 同步 head 信息（title / keywords / description） =====
         syncHead(doc);
 
-        var view = findView();
-        if (!view) {
-            location.href = fallbackUrl;
-            return;
-        }
+        viewPath = viewPath || [0];
 
-        // 优先提取 bny-view（完整模式），否则用整个 body（精简模式）
-        var newView = doc.querySelector('[bny-view]') || doc.getElementById('bny-view');
+        // 在响应文档中按路径查找视口；找不到回退到根视口 [0]；再找不到用 body
+        var newView = findViewByPath(doc, viewPath);
+        if (!newView && viewPath.length > 1) {
+            // 路径无效，回退到根视口
+            newView = findViewByPath(doc, [0]);
+        }
         var content;
         if (newView) {
             content = newView.innerHTML;
         } else if (doc.body) {
             content = doc.body.innerHTML;
         } else {
+            location.href = fallbackUrl;
+            return;
+        }
+
+        // 在当前文档中按路径查找交换目标；找不到回退到第一个 [bny-view]
+        var view = findViewByPath(document, viewPath);
+        if (!view && viewPath.length > 1) {
+            view = findViewByPath(document, [0]);
+        }
+        if (!view) {
+            view = document.querySelector('[bny-view]');
+        }
+        if (!view) {
             location.href = fallbackUrl;
             return;
         }
@@ -360,7 +447,7 @@
         // 触发自定义事件，便于外部监听
         view.dispatchEvent(new CustomEvent('bny:spa:loaded', {
             bubbles: true,
-            detail: { url: _currentUrl }
+            detail: { url: _currentUrl, viewPath: viewPath }
         }));
     }
 
@@ -563,6 +650,7 @@
      */
     function onPopState(e) {
         var url = (e.state && e.state.url) || location.href;
+        var viewPath = (e.state && e.state.viewPath) || [0]; // 兼容旧历史记录
         if (url === _currentUrl) return;
 
         _currentUrl = url;
@@ -586,7 +674,7 @@
             return res.text();
         })
         .then(function (html) {
-            swapContent(html, url);
+            swapContent(html, url, viewPath);
             // 恢复滚动位置
             var saved = _scrollCache[url];
             if (saved) {

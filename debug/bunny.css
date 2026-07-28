@@ -323,7 +323,12 @@ textarea {
 }
 
 /* ========== 标题 ========== */
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
     font-weight: var(--font-weight-semibold);
     line-height: var(--line-height-heading);
     color: var(--black);
@@ -3047,7 +3052,7 @@ p {
 
             & .sub-menu {
                 top: -6px;
-                left: calc(100% + 6px);
+                left: calc(100% + 10px);
             }
         }
     }
@@ -3060,7 +3065,7 @@ p {
         & > .sub-menu {
             opacity: 1;
             visibility: visible;
-            transform: translateY(0);
+            transform: translateY(4px);
         }
     }
 
@@ -3201,12 +3206,17 @@ p {
     outline: none;
 
     &:hover {
+        /* 显式声明 color：a 标签的 a:hover 优先级 (0,1,1) 高于 .bny-btn (0,1,0)，
+           不声明会被 a:hover 默认色覆盖；此处 (0,2,0) 压制 a:hover，保持文字色一致 */
+        color: var(--white-common);
         background-color: var(--default-middle);
         border-color: var(--default-middle);
         box-shadow: var(--box-shadow-hover-005);
     }
 
     &:active {
+        /* 同上，压制 a:active 的默认 color */
+        color: var(--white-common);
         background-color: var(--default);
         border-color: var(--default);
         box-shadow: none;
@@ -3214,6 +3224,13 @@ p {
 
     &:focus-visible {
         box-shadow: var(--focus-ring);
+    }
+
+    /* a 标签按钮：覆盖浏览器默认 a:visited 颜色，保持按钮文字色一致
+       优先级 (0,2,0) 高于 a:visited (0,1,1)，避免访问后变紫色
+       实色按钮文字均为 white-common；border 模式的 color 由后续 &[model~="border"] 覆盖 */
+    &:visited {
+        color: var(--white-common);
     }
 
     /* 绿色 */
@@ -3359,8 +3376,8 @@ p {
         border-radius: var(--border-radius-8);
     }
 
-    /* 禁用 */
-    &[disabled] {
+    /* 禁用 — disabled 用于 button/input，aria-disabled 用于 a 标签（HTML 规范中 a 不支持 disabled） */
+    &[disabled], &[aria-disabled="true"] {
         cursor: not-allowed;
         opacity: 0.45;
         transform: none !important;
@@ -5130,6 +5147,151 @@ html.dark table[hx-ext~="bny-table"] tbody tr.bny-table-empty td {
 .form-item.is-valid .bny-textarea,
 .form-item.is-valid .bny-select {
     border-color: var(--green);
+}
+
+/* ========== 输入框组合（前缀/后缀）========== */
+.bny-input-group {
+    display: inline-flex;
+    vertical-align: middle;
+    width: 100%;
+    background-color: var(--white);
+    /* 在容器上声明 color，切断按钮 color:white 的异常继承链，
+       确保内部 input 的文字色与 caret 始终与背景对比 */
+    color: var(--black);
+    border: 1.5px solid var(--gray-middle);
+    border-radius: var(--border-radius);
+    overflow: hidden;
+    transition: var(--transition);
+
+    &:hover {
+        border-color: var(--gray);
+    }
+
+    /* 内部 input 聚焦时，容器统一响应 */
+    &:focus-within {
+        border-color: var(--default);
+        box-shadow: var(--focus-ring);
+    }
+}
+
+.bny-input-prefix,
+.bny-input-suffix {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 12px;
+    background-color: var(--white-shallow);
+    color: var(--black-middle);
+    font-size: var(--font-size);
+    white-space: nowrap;
+    flex-shrink: 0;
+    line-height: 1.5;
+}
+
+/* 内含图标时，图标尺寸跟随字号 */
+.bny-input-prefix .bny-icon,
+.bny-input-suffix .bny-icon {
+    font-size: inherit;
+}
+
+/* 内含按钮时，按钮贴边填满高度 */
+.bny-input-prefix .bny-btn,
+.bny-input-suffix .bny-btn {
+    height: 100%;
+    border: none;              /* 去掉所有边框，避免贴边处出现竖杠 */
+    border-radius: 0;          /* 由容器统一管理圆角 */
+    box-shadow: none;          /* 去掉阴影，避免视觉溢出 */
+    margin: 0;
+    padding: 0 16px;           /* 按钮自身内边距，撑开可点击区域 */
+
+    /* hover/active 也去掉阴影，防止 .bny-btn:hover 的 box-shadow 溢出容器
+       （.bny-input-prefix .bny-btn 与 .bny-btn:hover 优先级同为 (0,2,0)，
+        需在此显式重置 hover 态） */
+    &:hover,
+    &:active {
+        box-shadow: none;
+    }
+}
+
+/* 当 prefix/suffix 内含按钮时，去掉外层 wrapper 的 padding 与背景色，
+   避免按钮周围出现灰色光晕（背景溢出） */
+.bny-input-prefix:has(.bny-btn),
+.bny-input-suffix:has(.bny-btn) {
+    padding: 0;
+    background-color: transparent;
+}
+
+/* 容器内的输入框：去除自身边框与圆角，由容器统一管理 */
+.bny-input-group .bny-input,
+.bny-input-group .bny-textarea {
+    flex: 1 1 auto;
+    width: 1%;  /* 让 flex 能正确收缩 */
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
+    background: transparent;
+    color: var(--black);
+    caret-color: var(--black);
+
+    &:hover,
+    &:focus {
+        border: none;
+        box-shadow: none;
+    }
+
+    &::placeholder {
+        color: var(--gray);
+    }
+}
+
+/* 尺寸变体 — 在容器上声明，子元素自动继承 */
+.bny-input-group[size="sm"] {
+    height: 30px;
+    font-size: var(--font-size-sm);
+    border-radius: var(--border-radius-sm);
+
+    & .bny-input-prefix,
+    & .bny-input-suffix {
+        padding: 0 8px;
+        font-size: var(--font-size-sm);
+    }
+
+    & .bny-input {
+        font-size: var(--font-size-sm);
+        padding: 0 8px;
+    }
+}
+
+.bny-input-group[size="lg"] {
+    height: 46px;
+    font-size: var(--font-size-16);
+    border-radius: var(--border-radius-8);
+
+    & .bny-input-prefix,
+    & .bny-input-suffix {
+        padding: 0 16px;
+        font-size: var(--font-size-16);
+    }
+
+    & .bny-input {
+        font-size: var(--font-size-16);
+        padding: 0 16px;
+    }
+}
+
+/* 禁用态 — 容器声明或内部 input disabled 均整体置灰 */
+.bny-input-group[data-disabled="true"],
+.bny-input-group:has(.bny-input:disabled) {
+    background-color: var(--white-shallow);
+    opacity: 0.6;
+    cursor: not-allowed;
+
+    & .bny-input,
+    & .bny-input-prefix,
+    & .bny-input-suffix,
+    & .bny-btn {
+        cursor: not-allowed;
+    }
 }
 .bny-container {
     margin: 0 auto;

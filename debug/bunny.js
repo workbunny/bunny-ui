@@ -6278,6 +6278,7 @@
       if (!shouldShowLoading(elt)) return;
       elt.classList.add("bny-loading");
       elt.setAttribute("disabled", "disabled");
+      elt.setAttribute("aria-disabled", "true");
     }
     function stopLoading(evt) {
       var elt = evt.detail && evt.detail.elt;
@@ -6286,6 +6287,7 @@
         elt.classList.remove("bny-loading");
         if (elt.getAttribute("bny-button-loading") !== null || !elt.hasAttribute("data-bny-keep-disabled")) {
           elt.removeAttribute("disabled");
+          elt.removeAttribute("aria-disabled");
         }
       });
     }
