@@ -4677,11 +4677,14 @@
             str2 = Prism.highlight(str2, Prism.languages[lang], lang);
             break;
         }
+        if (mode == null || mode === "") {
+          str2 = bny.escapeChars(str2);
+        }
         return str2;
       }
       if (name === "htmx:afterProcessNode") {
         if (bny.hasExtName(evt.target, "bny-code")) {
-          const content = evt.target.innerHTML;
+          const content = evt.target.textContent;
           evt.target.innerHTML = "";
           const code = document.createElement("code");
           code.innerHTML = getCode(evt.target, content.trim());
@@ -4704,10 +4707,6 @@
           if (evt.detail.xhr.getResponseHeader("Content-Type").includes("application/json")) {
             const json = JSON.parse(content);
             content = json.data;
-          }
-          const mode = evt.target.getAttribute("mode");
-          if (!mode) {
-            content = bny.escapeChars(content);
           }
           htmx.swap(code, getCode(evt.target, content), { swapStyle: "innerHTML" });
         }
@@ -6278,6 +6277,7 @@
       if (!shouldShowLoading(elt)) return;
       elt.classList.add("bny-loading");
       elt.setAttribute("disabled", "disabled");
+      elt.setAttribute("aria-disabled", "true");
     }
     function stopLoading(evt) {
       var elt = evt.detail && evt.detail.elt;
@@ -6286,6 +6286,7 @@
         elt.classList.remove("bny-loading");
         if (elt.getAttribute("bny-button-loading") !== null || !elt.hasAttribute("data-bny-keep-disabled")) {
           elt.removeAttribute("disabled");
+          elt.removeAttribute("aria-disabled");
         }
       });
     }

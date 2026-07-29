@@ -21,12 +21,17 @@
     outline: none;
 
     &:hover {
+        /* 显式声明 color：a 标签的 a:hover 优先级 (0,1,1) 高于 .bny-btn (0,1,0)，
+           不声明会被 a:hover 默认色覆盖；此处 (0,2,0) 压制 a:hover，保持文字色一致 */
+        color: var(--white-common);
         background-color: var(--default-middle);
         border-color: var(--default-middle);
         box-shadow: var(--box-shadow-hover-005);
     }
 
     &:active {
+        /* 同上，压制 a:active 的默认 color */
+        color: var(--white-common);
         background-color: var(--default);
         border-color: var(--default);
         box-shadow: none;
@@ -34,6 +39,13 @@
 
     &:focus-visible {
         box-shadow: var(--focus-ring);
+    }
+
+    /* a 标签按钮：覆盖浏览器默认 a:visited 颜色，保持按钮文字色一致
+       优先级 (0,2,0) 高于 a:visited (0,1,1)，避免访问后变紫色
+       实色按钮文字均为 white-common；border 模式的 color 由后续 &[model~="border"] 覆盖 */
+    &:visited {
+        color: var(--white-common);
     }
 
     /* 绿色 */
@@ -179,8 +191,8 @@
         border-radius: var(--border-radius-8);
     }
 
-    /* 禁用 */
-    &[disabled] {
+    /* 禁用 — disabled 用于 button/input，aria-disabled 用于 a 标签（HTML 规范中 a 不支持 disabled） */
+    &[disabled], &[aria-disabled="true"] {
         cursor: not-allowed;
         opacity: 0.45;
         transform: none !important;

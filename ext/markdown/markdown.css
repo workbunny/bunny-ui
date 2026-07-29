@@ -1,0 +1,121 @@
+/**
+ * bny-md 补充样式
+ *
+ * 为 Markdown 渲染产物中不被 bny-ui 主样式覆盖的元素提供补充样式：
+ * - 脚注列表 .bny-md-footnotes
+ * - 脚注引用上标
+ * - <mark> 高亮标记
+ * - 定义列表 <dl>
+ * - 图片标题 <figcaption>
+ * - 任务列表 checkbox 对齐
+ */
+
+/* ==================== 脚注 ==================== */
+
+/* 脚注引用（上标数字） */
+.bny-md-fn-ref {
+    font-size: 0.75em;
+    vertical-align: super;
+    line-height: 0;
+}
+
+.bny-md-fn-ref a {
+    text-decoration: none;
+    color: var(--default, #3b82f6);
+}
+
+/* 脚注定义列表（文档底部） */
+.bny-md-footnotes {
+    margin-top: 2em;
+    padding-top: 1em;
+    border-top: 1px solid var(--gray-middle, #e5e7eb);
+    font-size: 0.875em;
+    color: var(--gray, #6b7280);
+}
+
+.bny-md-footnotes li {
+    margin-bottom: 0.25em;
+}
+
+.bny-md-footnotes a {
+    text-decoration: none;
+}
+
+/* 脚注回链 */
+.bny-md-footnote-backref {
+    text-decoration: none;
+    margin-left: 0.25em;
+}
+
+/* ==================== 高亮标记 <mark> ==================== */
+
+mark {
+    background-color: #fef08a;
+    color: inherit;
+    padding: 0.1em 0.2em;
+    border-radius: 2px;
+}
+
+/* 暗黑模式适配 */
+html.dark mark {
+    background-color: #854d0e;
+    color: #fef08a;
+}
+
+/* ==================== 定义列表 <dl> ==================== */
+
+dl {
+    margin: 1em 0;
+}
+
+dt {
+    font-weight: 600;
+    margin-top: 0.5em;
+}
+
+dd {
+    margin-left: 1.5em;
+    margin-bottom: 0.25em;
+}
+
+/* ==================== 图片标题 <figcaption> ==================== */
+
+figure {
+    margin: 1em 0;
+    text-align: center;
+}
+
+figure img {
+    max-width: 100%;
+    height: auto;
+}
+
+figcaption {
+    margin-top: 0.5em;
+    font-size: 0.875em;
+    color: var(--gray, #6b7280);
+    font-style: italic;
+}
+
+/* ==================== 任务列表 ==================== */
+
+/* 任务列表项的 checkbox 垂直对齐 */
+li > input[type="checkbox"].bny-checkbox {
+    margin-right: 0.5em;
+    vertical-align: middle;
+    position: relative;
+    top: -1px;
+}
+
+/* ==================== 表格内对齐（GFM 对齐标记） ==================== */
+
+.bny-table th[style*="text-align"],
+.bny-table td[style*="text-align"] {
+    /* 尊重 GFM 对齐标记生成的 inline style */
+}
+
+/* ==================== 暗黑模式 ==================== */
+
+html.dark .bny-md-footnotes {
+    border-top-color: var(--gray, #374151);
+}

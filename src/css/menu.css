@@ -60,7 +60,7 @@
 
             & .sub-menu {
                 top: -6px;
-                left: calc(100% + 6px);
+                left: calc(100% + 10px);
             }
         }
     }
@@ -73,7 +73,7 @@
         & > .sub-menu {
             opacity: 1;
             visibility: visible;
-            transform: translateY(0);
+            transform: translateY(4px);
         }
     }
 

@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>账户设置 - 嵌套视口演示</title>
+    <link rel="stylesheet" href="/debug/bunny.css?v=4">
+    <script src="/debug/bunny.js?v=4"></script>
+    <link rel="stylesheet" href="./spa.css">
+    <script src="./spa.js"></script>
+    <style>
+        body { font-family: system-ui, sans-serif; margin: 0; padding: 20px; background: #f5f5f5; }
+        .demo-header { background: #fff; padding: 16px 24px; border-radius: 8px; margin-bottom: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        .demo-header h1 { margin: 0 0 8px 0; font-size: 20px; }
+        .demo-header p { margin: 0; color: #666; font-size: 14px; }
+        .demo-layout { background: #fff; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); overflow: hidden; }
+        .demo-layout .layout-header { background: #1f2937; color: #fff; padding: 16px 24px; }
+        .demo-layout .layout-header h2 { margin: 0; font-size: 18px; }
+        .demo-layout .layout-content { padding: 24px; min-height: 300px; }
+        .demo-footer { margin-top: 16px; padding: 12px 24px; background: #fff; border-radius: 8px; color: #666; font-size: 13px; text-align: center; }
+        .demo-footer a { color: #3b82f6; text-decoration: none; }
+        .demo-footer a:hover { text-decoration: underline; }
+        .demo-badge { display: inline-block; padding: 2px 8px; background: #10b981; color: #fff; border-radius: 4px; font-size: 12px; margin-left: 8px; }
+        .child-view { background: #f9fafb; border: 2px dashed #d1d5db; border-radius: 6px; padding: 20px; min-height: 200px; }
+        .child-nav { display: flex; gap: 12px; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid #e5e7eb; }
+        .child-nav a { padding: 6px 14px; background: #fff; border: 1px solid #d1d5db; border-radius: 4px; text-decoration: none; color: #374151; font-size: 14px; transition: all 0.2s; }
+        .child-nav a:hover { background: #f3f4f6; }
+        .child-nav a.active { background: #3b82f6; color: #fff; border-color: #3b82f6; }
+        .detail-card { background: #fff; padding: 16px; border-radius: 6px; margin-top: 12px; }
+        .detail-row { display: flex; padding: 8px 0; border-bottom: 1px solid #f3f4f6; }
+        .detail-row:last-child { border-bottom: none; }
+        .detail-label { width: 100px; color: #6b7280; font-size: 14px; }
+        .detail-value { flex: 1; color: #111827; font-size: 14px; }
+        .post-list { margin-top: 12px; }
+        .post-item { background: #fff; padding: 14px; border-radius: 6px; margin-bottom: 10px; border-left: 3px solid #3b82f6; }
+        .post-item h4 { margin: 0 0 6px 0; font-size: 15px; color: #111827; }
+        .post-item p { margin: 0 0 6px 0; font-size: 13px; color: #6b7280; }
+        .post-item small { color: #9ca3af; font-size: 12px; }
+        .form-row { margin-bottom: 14px; }
+        .form-row label { display: block; margin-bottom: 4px; font-size: 13px; color: #374151; }
+        .form-row input[type="email"], .form-row select { width: 100%; padding: 8px; border: 1px solid #d1d5db; border-radius: 4px; font-size: 14px; box-sizing: border-box; }
+        button[type="submit"] { background: #3b82f6; color: #fff; border: none; padding: 8px 20px; border-radius: 4px; cursor: pointer; font-size: 14px; }
+        button[type="submit"]:hover { background: #2563eb; }
+    </style>
+</head>
+
+<body hx-ext="bny-spa">
+    <div class="demo-header">
+        <h1>嵌套视口演示 <span class="demo-badge">bny-spa</span></h1>
+        <p>父级布局保持不变，仅子视口（虚线框内）刷新。</p>
+    </div>
+
+    <div class="demo-layout" bny-view>
+        <!-- 根视口 [0]：父级布局（与 nested.html 完全一致，导航时保持不变） -->
+        <div class="layout-header">
+            <h2>用户中心 - 父级布局（路径 [0]）</h2>
+        </div>
+        <div class="layout-content">
+            <!-- 子视口 [0, 0]：仅此区域被交换 -->
+            <div class="child-view" bny-view>
+                <nav class="child-nav">
+                    <a href="./nested-detail.html">详情</a>
+                    <a href="./nested-posts.html">帖子</a>
+                    <a href="./nested-settings.html" class="active">设置</a>
+                </nav>
+                <h3>账户设置</h3>
+                <form action="/settings/save" method="post">
+                    <div class="form-row">
+                        <label>通知邮箱</label>
+                        <input type="email" value="bunny@example.com">
+                    </div>
+                    <div class="form-row">
+                        <label>语言</label>
+                        <select>
+                            <option>简体中文</option>
+                            <option>English</option>
+                        </select>
+                    </div>
+                    <div class="form-row">
+                        <label>
+                            <input type="checkbox" checked> 接收每周摘要邮件
+                        </label>
+                    </div>
+                    <button type="submit">保存设置</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="demo-footer">
+        <a href="./index.html">← 返回 SPA 演示首页</a>
+    </div>
+</body>
+
+</html>

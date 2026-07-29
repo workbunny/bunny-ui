@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Markdown 演示 - BunnyUI</title>
+    <link rel="shortcut icon" href="../../bunny.png" type="image/x-icon">
+    <!-- prism.js 代码高亮（用于 bny-md 渲染出的代码块） -->
+    <link rel="stylesheet" href="/prismjs/prism.css">
+    <script src="/prismjs/prism.js"></script>
+    <!-- 核心库 -->
+    <link rel="stylesheet" href="../../debug/bunny.css?v=4">
+    <script src="../../debug/bunny.js?v=4"></script>
+    <!-- bny-md 扩展 -->
+    <link rel="stylesheet" href="./markdown.css">
+    <script src="./markdown.js"></script>
+    <style>
+        body {
+            margin: 0;
+            background: var(--white-middle);
+            color: var(--black);
+            line-height: 1.6;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        }
+
+        /* ========== 顶部导航 ========== */
+        .md-header {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: var(--white);
+            box-shadow: var(--box-shadow-005);
+            padding: 0 24px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .md-header .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: var(--font-size-20);
+            font-weight: var(--font-weight-bold);
+            color: var(--default);
+        }
+
+        .md-header .logo img {
+            width: 32px;
+            height: 32px;
+            border-radius: var(--border-radius);
+        }
+
+        .md-header nav {
+            display: flex;
+            gap: 4px;
+            align-items: center;
+        }
+
+        .md-header nav a {
+            color: var(--black-middle);
+            text-decoration: none;
+            padding: 8px 14px;
+            border-radius: var(--border-radius);
+            transition: var(--transition-fast);
+            font-size: var(--font-size);
+        }
+
+        .md-header nav a:hover {
+            background: var(--default-alpha-10);
+            color: var(--default);
+        }
+
+        #mode-btn {
+            margin-left: 12px;
+            background: none;
+            border: 1px solid var(--gray-middle);
+            padding: 6px 14px;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-size: var(--font-size-sm);
+            color: var(--black-middle);
+            transition: var(--transition-fast);
+            line-height: 1.4;
+        }
+
+        #mode-btn:hover {
+            border-color: var(--default);
+            color: var(--default);
+        }
+
+        /* ========== 主区域 ========== */
+        .md-main {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 40px 24px 60px;
+        }
+
+        .md-main > h1 {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--black);
+            margin: 0 0 8px;
+        }
+
+        .md-main > .intro {
+            color: var(--black-shallow);
+            font-size: var(--font-size-16);
+            margin: 0 0 32px;
+        }
+
+        /* ========== 演示卡片 ========== */
+        .demo-card {
+            background: var(--white);
+            border: 1px solid var(--gray-shallow);
+            border-radius: var(--border-radius-8);
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: var(--box-shadow-005);
+        }
+
+        .demo-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            gap: 12px;
+        }
+
+        .demo-head h3 {
+            font-size: var(--font-size-18);
+            font-weight: 600;
+            color: var(--black);
+            margin: 0;
+        }
+
+        .demo-tag {
+            font-size: 12px;
+            color: var(--default);
+            background: var(--default-alpha-10);
+            padding: 3px 10px;
+            border-radius: var(--border-radius-full);
+            font-family: "JetBrains Mono", Consolas, monospace;
+            white-space: nowrap;
+        }
+
+        .demo-desc {
+            color: var(--black-shallow);
+            font-size: var(--font-size);
+            margin: 0 0 16px;
+        }
+
+        .demo-desc code {
+            font-size: 0.9em;
+        }
+
+        /* ========== Tab 容器 ========== */
+        .demo-tab {
+            border: 1px solid var(--gray-shallow);
+            border-radius: var(--border-radius);
+            overflow: hidden;
+        }
+
+        /* ========== 预览区 ========== */
+        .preview-pane {
+            padding: 20px;
+            background: var(--white-middle);
+            min-height: 120px;
+        }
+
+        .preview-pane :is(h1, h2, h3, h4, h5, h6) {
+            margin: 0.8em 0 0.4em;
+            color: var(--black);
+            font-weight: 600;
+        }
+
+        .preview-pane h1 { font-size: 1.7em; }
+        .preview-pane h2 { font-size: 1.45em; }
+        .preview-pane h3 { font-size: 1.25em; }
+        .preview-pane h4 { font-size: 1.1em; }
+        .preview-pane h5, .preview-pane h6 { font-size: 1em; }
+
+        .preview-pane p { margin: 0.5em 0; }
+
+        .preview-pane :is(ul, ol) {
+            padding-left: 1.6em;
+            margin: 0.5em 0;
+        }
+
+        .preview-pane li { margin: 0.2em 0; }
+
+        .preview-pane a { color: var(--default); }
+
+        .preview-pane blockquote { margin: 0.8em 0; }
+
+        .preview-pane table {
+            margin: 0.8em 0;
+            max-width: 100%;
+        }
+
+        .preview-pane pre { margin: 0.8em 0; }
+
+        .preview-pane hr { margin: 1em 0; }
+
+        .preview-pane img {
+            max-width: 100%;
+            border-radius: var(--border-radius);
+        }
+
+        /* ========== 代码区 ========== */
+        .code-pane {
+            margin: 0;
+            padding: 16px;
+            background: var(--white-shallow);
+            overflow: auto;
+            font-family: "JetBrains Mono", "Fira Code", Consolas, monospace;
+            font-size: var(--font-size-sm);
+            line-height: 1.6;
+            color: var(--black);
+            max-height: 480px;
+        }
+
+        .code-pane code {
+            background: none;
+            border: none;
+            color: inherit;
+            padding: 0;
+            margin: 0;
+            font-size: inherit;
+            font-family: inherit;
+            white-space: pre;
+        }
+
+        /* ========== 命令式 demo ========== */
+        .imperative-area {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .imperative-area .bny-textarea {
+            min-height: 150px;
+            font-family: "JetBrains Mono", Consolas, monospace;
+            font-size: var(--font-size-sm);
+            line-height: 1.6;
+        }
+
+        .imperative-output {
+            border: 1px dashed var(--gray-middle);
+            border-radius: var(--border-radius);
+            padding: 16px;
+            background: var(--white);
+            min-height: 80px;
+        }
+
+        /* ========== 加载 .md demo ========== */
+        .md-load-area {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        #md-output {
+            border: 1px dashed var(--gray-middle);
+            border-radius: var(--border-radius);
+            padding: 16px;
+            background: var(--white);
+            min-height: 80px;
+        }
+
+        #md-output:empty::before {
+            content: "点击上方按钮加载 sample.md";
+            color: var(--black-shallow);
+            font-style: italic;
+        }
+
+        /* ========== 页脚 ========== */
+        .md-footer {
+            text-align: center;
+            padding: 24px;
+            color: var(--black-shallow);
+            font-size: var(--font-size-sm);
+            border-top: 1px solid var(--gray-shallow);
+            background: var(--white);
+        }
+
+        /* ========== 暗黑模式适配 ========== */
+        html.dark .code-pane {
+            background: #1e1e1e;
+            color: #e0e0e0;
+        }
+
+        html.dark .preview-pane {
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        /* ========== 响应式 ========== */
+        @media screen and (max-width: 768px) {
+            .md-header {
+                padding: 0 16px;
+                height: auto;
+                flex-direction: column;
+                align-items: stretch;
+                gap: 8px;
+                padding: 12px 16px;
+            }
+
+            .md-header .logo {
+                justify-content: center;
+            }
+
+            .md-header nav {
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 2px;
+            }
+
+            .md-header nav a {
+                padding: 6px 10px;
+                font-size: var(--font-size-sm);
+            }
+
+            #mode-btn {
+                margin-left: 0;
+            }
+
+            .md-main {
+                padding: 24px 16px 40px;
+            }
+
+            .md-main > h1 {
+                font-size: 24px;
+            }
+
+            .demo-card {
+                padding: 16px;
+            }
+
+            .demo-head {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 6px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header class="md-header">
+        <div class="logo">
+            <img src="../../bunny.png" alt="logo">
+            <span>BunnyUI Markdown</span>
+        </div>
+        <nav>
+            <a href="#demo-element">元素触发</a>
+            <a href="#demo-load">加载 .md</a>
+            <a href="#demo-api">命令式</a>
+            <a href="#demo-plugin">自定义插件</a>
+            <button id="mode-btn">🌙 暗黑</button>
+        </nav>
+    </header>
+
+    <main class="md-main">
+        <h1>bny-md Markdown 扩展</h1>
+        <p class="intro">
+            基于 HTMX 扩展模式的 Markdown 运行时渲染器。无需构建步骤，将 Markdown 文本实时渲染为 bny-ui 组件。
+            支持基本语法、GFM 扩展、常用 hack 语法、自定义插件，并与 HTMX 响应无缝集成。
+        </p>
+
+        <!-- ========== Demo 1: 元素触发 ========== -->
+        <section class="demo-card" id="demo-element">
+            <div class="demo-head">
+                <h3>1. 元素触发</h3>
+                <span class="demo-tag">hx-ext="bny-md"</span>
+            </div>
+            <p class="demo-desc">
+                直接在容器元素上写 <code>hx-ext="bny-md"</code>，该元素的 <code>textContent</code> 会被解析为 Markdown
+                并替换为渲染后的 HTML。<code>bny-md-config</code> 属性写在与 <code>hx-ext</code> 相同的标签上即可作为元素级配置。
+            </p>
+            <div hx-ext="bny-tab" class="demo-tab">
+                <ul class="head">
+                    <li class="this"><span>预览</span></li>
+                    <li><span>代码</span></li>
+                </ul>
+                <div class="body">
+                    <div class="show">
+                        <div class="preview-pane">
+                            <div hx-ext="bny-md">
+# 内联 Markdown
+
+这段内容会被 **bny-md** 自动渲染。
+
+- 列表项 1
+- 列表项 2
+- [x] 已完成
+- [ ] 待办
+
+> 引用块也支持
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+<pre class="code-pane"><code>&lt;div hx-ext="bny-md"&gt;
+# 内联 Markdown
+
+这段内容会被 **bny-md** 自动渲染。
+
+- 列表项 1
+- 列表项 2
+&lt;/div&gt;</code></pre>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========== Demo 2: 加载 .md 文件 ========== -->
+        <section class="demo-card" id="demo-load">
+            <div class="demo-head">
+                <h3>2. 加载 .md 文件</h3>
+                <span class="demo-tag">hx-get + .md 响应</span>
+            </div>
+            <p class="demo-desc">
+                当 HTMX 请求的 URL 以 <code>.md</code> 结尾（或响应头 <code>Content-Type: text/markdown</code>）时，
+                bny-md 会自动将响应体解析为 HTML 再交换到目标元素。
+            </p>
+            <div hx-ext="bny-tab" class="demo-tab">
+                <ul class="head">
+                    <li class="this"><span>预览</span></li>
+                    <li><span>代码</span></li>
+                </ul>
+                <div class="body">
+                    <div class="show">
+                        <div class="preview-pane">
+                            <div class="md-load-area">
+                                <button class="bny-btn" color="blue"
+                                        hx-get="sample.md"
+                                        hx-target="#md-output"
+                                        hx-ext="bny-md"
+                                        bny-md-config='{"html":true}'>
+                                    加载 sample.md
+                                </button>
+                                <div id="md-output"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+<pre class="code-pane"><code>&lt;button hx-get="sample.md"
+        hx-target="#md-output"
+        hx-ext="bny-md"
+        bny-md-config='{"html":true}'
+        class="bny-btn" color="blue"&gt;
+    加载 sample.md
+&lt;/button&gt;
+
+&lt;div id="md-output"&gt;&lt;/div&gt;</code></pre>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========== Demo 3: 命令式调用 ========== -->
+        <section class="demo-card" id="demo-api">
+            <div class="demo-head">
+                <h3>3. 命令式调用</h3>
+                <span class="demo-tag">bny.markdown(text)</span>
+            </div>
+            <p class="demo-desc">
+                通过全局 API <code>bny.markdown(text, options)</code> 在任意 JavaScript 中将 Markdown 文本渲染为 HTML 字符串，
+                可用于动态内容、表单预览等场景。修改下方文本框内容后点击「渲染」按钮查看效果。
+            </p>
+            <div hx-ext="bny-tab" class="demo-tab">
+                <ul class="head">
+                    <li class="this"><span>预览</span></li>
+                    <li><span>代码</span></li>
+                </ul>
+                <div class="body">
+                    <div class="show">
+                        <div class="preview-pane">
+                            <div class="imperative-area">
+                                <textarea id="md-input" class="bny-textarea"># Hello Markdown
+
+支持 **粗体**、*斜体*、~~删除线~~、==高亮==
+
+- 列表项 1
+- 列表项 2
+- [x] 已完成
+- [ ] 待办
+
+&gt; 引用块示例
+
+`内联代码` 与 [链接](http://bnyui.kllxs.top/)
+
+H~2~O 与 X^2^</textarea>
+                                <div>
+                                    <button class="bny-btn" color="green" onclick="renderMd()">渲染</button>
+                                </div>
+                                <div class="imperative-output" id="md-output-2"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+<pre class="code-pane"><code>&lt;textarea id="md-input"&gt;# 输入 Markdown&lt;/textarea&gt;
+&lt;button onclick="render()"&gt;渲染&lt;/button&gt;
+&lt;div id="md-output-2"&gt;&lt;/div&gt;
+
+&lt;script&gt;
+function render() {
+    document.getElementById('md-output-2').innerHTML =
+        bny.markdown(document.getElementById('md-input').value);
+}
+&lt;/script&gt;</code></pre>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========== Demo 4: 自定义插件 ========== -->
+        <section class="demo-card" id="demo-plugin">
+            <div class="demo-head">
+                <h3>4. 自定义插件</h3>
+                <span class="demo-tag">bny.md.block()</span>
+            </div>
+            <p class="demo-desc">
+                通过 <code>bny.md.block()</code> 注册自定义块级规则，无需修改核心解析器。
+                下方示例注册了一个 <code>:::callout</code> 语法，将其渲染为 bny-alert 组件。
+            </p>
+            <div hx-ext="bny-tab" class="demo-tab">
+                <ul class="head">
+                    <li class="this"><span>预览</span></li>
+                    <li><span>代码</span></li>
+                </ul>
+                <div class="body">
+                    <div class="show">
+                        <div class="preview-pane">
+                            <script>
+                                // 注册自定义块级规则（在 htmx 处理 bny-md 节点前执行）
+                                // multiline 模式下，ctx.__lines 收集了从开始标记到结束标记的所有行
+                                bny.md.block({
+                                    name: 'callout',
+                                    test: /^:::callout\s*$/,
+                                    multiline: true,
+                                    render: function (match, ctx) {
+                                        // 去掉首行（:::callout）和末行（:::），取中间内容
+                                        var lines = (ctx.__lines || []).slice(1, -1);
+                                        var body = lines.join('\n').trim();
+                                        return '<div class="bny-alert" color="blue">' +
+                                            ctx.inline(body) + '</div>';
+                                    }
+                                });
+                            </script>
+                            <div hx-ext="bny-md">
+:::callout
+这是一个自定义 callout 块
+:::
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+<pre class="code-pane"><code>&lt;script&gt;
+// multiline 模式下 ctx.__lines 收集从开始到结束的所有行
+bny.md.block({
+    name: 'callout',
+    test: /^:::callout\s*$/,
+    multiline: true,
+    render: function(match, ctx) {
+        var lines = (ctx.__lines || []).slice(1, -1);
+        var body = lines.join('\n').trim();
+        return '&lt;div class="bny-alert" color="blue"&gt;' +
+            ctx.inline(body) + '&lt;/div&gt;';
+    }
+});
+&lt;/script&gt;
+
+&lt;div hx-ext="bny-md"&gt;
+:::callout
+这是一个自定义 callout 块
+:::
+&lt;/div&gt;</code></pre>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="md-footer">
+        BunnyUI Markdown Extension — bny-md · 运行时 Markdown 渲染器
+    </footer>
+
+    <script>
+        // 暗黑模式切换
+        var modeBtn = document.getElementById('mode-btn');
+        modeBtn.addEventListener('click', function () {
+            document.documentElement.classList.toggle('dark');
+            this.textContent = document.documentElement.classList.contains('dark')
+                ? '☀️ 明亮'
+                : '🌙 暗黑';
+        });
+
+        // 命令式调用 demo
+        function renderMd() {
+            var input = document.getElementById('md-input').value;
+            document.getElementById('md-output-2').innerHTML = bny.markdown(input);
+        }
+    </script>
+</body>
+
+</html>

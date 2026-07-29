@@ -16,6 +16,9 @@ htmx.defineExtension('bny-code', {
                     str = Prism.highlight(str, Prism.languages[lang], lang)
                     break;
             }
+            if ((mode == null || mode === "")) {
+                str = bny.escapeChars(str)
+            }
             return str
         }
 
@@ -24,7 +27,7 @@ htmx.defineExtension('bny-code', {
         if (name === "htmx:afterProcessNode") {
             if (bny.hasExtName(evt.target, 'bny-code')) {
                 // 处理代码内容
-                const content = evt.target.innerHTML
+                const content = evt.target.textContent
                 evt.target.innerHTML = ""
                 // 创建code元素
                 const code = document.createElement('code')
@@ -53,11 +56,6 @@ htmx.defineExtension('bny-code', {
                     .includes('application/json')) {
                     const json = JSON.parse(content)
                     content = json.data
-                }
-                // 获取mode属性
-                const mode = evt.target.getAttribute('mode')
-                if (!mode) {
-                    content = bny.escapeChars(content)
                 }
                 htmx.swap(code, getCode(evt.target, content), { swapStyle: 'innerHTML' })
             }

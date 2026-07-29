@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BunnyUI - 拓展</title>
+    <meta name="keywords" content="BunnyUI, 拓展, SPA, Markdown">
+    <meta name="description" content="BunnyUI 外部扩展功能介绍">
+    <link rel="shortcut icon" href="/bunny.png" type="image/x-icon">
+    <!-- 防闪白脚本 -->
+    <script>
+        (function () {
+            var t;
+            try { t = localStorage.getItem('bny-theme'); } catch (e) { }
+            if (!t) {
+                t = (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) ? 'dark' : 'light';
+            }
+            if (t === 'dark') document.documentElement.classList.add('dark');
+        })();
+    </script>
+    <!-- highlight -->
+    <link rel="stylesheet" href="/highlight/styles/atom-one-dark.min.css">
+    <script src="/highlight/highlight.min.js"></script>
+    <script src="/highlight/languages/javascript.min.js"></script>
+    <script src="/highlight/languages/php.min.js"></script>
+    <script src="/highlight/languages/css.min.js"></script>
+    <!-- prismjs -->
+    <link rel="stylesheet" href="/prismjs/prism.css">
+    <script src="/prismjs/prism.js"></script>
+    <!-- bunny -->
+    <link rel="stylesheet" href="/debug/bunny.css?v=2">
+    <script src="/debug/bunny.js?v=2"></script>
+    <!-- SPA 扩展 -->
+    <link rel="stylesheet" href="/ext/spa/spa.css">
+    <script src="/ext/spa/spa.js"></script>
+    <!-- 文档站共享样式 -->
+    <link rel="stylesheet" href="/doc/doc.css">
+</head>
+<body hx-ext="bny-spa">
+<header class="site-header">
+    <div hx-ext="bny-nav" color="white">
+        <div class="head">
+            <a class="logo-box" href="/doc/home.html">
+                <span class="logo"><img src="/bunny.png" alt="BunnyUI"></span>
+                <span>BunnyUI</span>
+            </a>
+        </div>
+        <ul class="menu">
+            <li><a class="trigger" href="/doc/home.html"><i class="bny-icon icon-home"></i><span>首页</span></a></li>
+            <li><a class="trigger" href="/doc/docs.html"><i class="bny-icon icon-book"></i><span>文档</span></a></li>
+            <li><a class="trigger" href="/doc/ext.html"><i class="bny-icon icon-rocket"></i><span>拓展</span></a></li>
+            <li><a class="trigger" href="javascript:void(0)" id="mode-btn" bny-spa-skip title="切换主题">
+                <span class="mode-icons">
+                    <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4.5"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.5 4.5l1.8 1.8M17.7 17.7l1.8 1.8M19.5 4.5l-1.8 1.8M6.3 17.7l-1.8 1.8"/></svg>
+                    <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/></svg>
+                </span>
+            </a></li>
+            <li><a class="trigger" href="https://github.com/workbunny/bunny.ui" target="_blank" bny-spa-skip><i class="bny-icon icon-github-fill"></i><span>GitHub</span></a></li>
+        </ul>
+    </div>
+</header>
+
+<main bny-view>
+<!-- ==================== 拓展页内容 ==================== -->
+
+<!-- 页头 -->
+<section class="page-hero">
+    <div class="doc-container">
+        <span class="eyebrow"><i class="bny-icon icon-rocket"></i> Extensions</span>
+        <h1 class="section-title">拓展功能</h1>
+        <p class="section-subtitle">BunnyUI 的外部扩展模块，按需引入，增强核心能力。</p>
+    </div>
+</section>
+
+<!-- 扩展卡片 -->
+<section class="section section--tight">
+    <div class="doc-container">
+        <div class="grid-2">
+            <!-- SPA 扩展卡片 -->
+            <div class="bny-card" model="transition">
+                <div class="body">
+                    <span class="bny-tag" color="blue">SPA</span>
+                    <h3 class="title">bny-spa 单页面应用</h3>
+                    <p class="content">基于 HTMX 的轻量级 SPA 扩展。服务端零改造，获得无刷新导航、URL 同步、前进后退、SEO/GEO head 同步等 SPA 体验。支持多层嵌套视口。</p>
+                    <div class="flex gap-12 mt-16">
+                        <a class="bny-btn" target="_blank" model="border" size="sm" href="/ext/spa/index.html" bny-spa-skip>查看示例</a>
+                        <a class="bny-btn" model="border" size="sm" href="https://github.com/workbunny/bunny.ui/tree/2.x/ext/spa" target="_blank" bny-spa-skip>源码</a>
+                    </div>
+                </div>
+            </div>
+            <!-- Markdown 扩展卡片 -->
+            <div class="bny-card" model="transition">
+                <div class="body">
+                    <span class="bny-tag" color="green">Markdown</span>
+                    <h3 class="title">bny-md Markdown 渲染</h3>
+                    <p class="content">运行时 Markdown 渲染扩展。纯 JS 实现，无需预编译，直接将 Markdown 解析为 HTML 并映射到 bny-ui 组件样式。支持 GFM 扩展、XSS 防护、代码高亮。</p>
+                    <div class="flex gap-12 mt-16">
+                        <a class="bny-btn" target="_blank" model="border" size="sm" href="/ext/markdown/index.html" bny-spa-skip>查看示例</a>
+                        <a class="bny-btn" model="border" size="sm" href="https://github.com/workbunny/bunny.ui/tree/2.x/ext/markdown" target="_blank" bny-spa-skip>源码</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+</main>
+
+<footer class="site-footer">
+    <div class="doc-container">
+        <div class="footer-grid">
+            <div class="footer-brand">
+                <div class="logo-line"><img src="/bunny.png" alt="BunnyUI"><span>BunnyUI</span></div>
+                <p>基于 HTMX 拓展的轻量级 Web UI 组件库，服务端渲染友好，声明式编程。</p>
+                <div class="footer-social">
+                    <a class="bny-btn" model="border circle" href="https://github.com/workbunny/bunny.ui" target="_blank" bny-spa-skip title="GitHub"><i class="bny-icon icon-github-fill"></i></a>
+                </div>
+            </div>
+            <div class="footer-links">
+                <div class="footer-col"><h4>导航</h4><a href="/doc/home.html">首页</a><a href="/doc/docs.html">文档</a><a href="/doc/ext.html">拓展</a></div>
+                <div class="footer-col"><h4>资源</h4><a href="https://github.com/workbunny/bunny.ui" target="_blank" bny-spa-skip>GitHub</a><a href="/test/base.html">快速开始</a></div>
+                <div class="footer-col"><h4>拓展</h4><a href="/ext/spa/index.html" bny-spa-skip>SPA</a><a href="/ext/markdown/index.html" bny-spa-skip>Markdown</a></div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <span>© 2026 BunnyUI. MIT Licensed.</span>
+            <span><i class="bny-icon icon-code"></i> Built with HTMX.</span>
+        </div>
+    </div>
+</footer>
+
+<script>
+    document.getElementById('mode-btn').addEventListener('click', function () {
+        var isDark = document.documentElement.classList.toggle('dark');
+        try { localStorage.setItem('bny-theme', isDark ? 'dark' : 'light'); } catch (e) { }
+    });
+</script>
+</body>
+</html>
