@@ -60,6 +60,7 @@
     var _scrollCache = {};   // url → {x, y}
     var _currentUrl = '';
     var _controller = null;  // AbortController，用于中止上一个请求
+    var _readyCallbacks = []; // SPA 初始化完成回调队列
 
     // ==================== 初始化 ====================
 
@@ -71,8 +72,11 @@
         if (!findView()) return; // 没有找到视口，不初始化
         _spaInited = true;
 
+        // 初始 URL：直接用 location.href（可能带 hash）
+        // 不调用 getUrlFromLocation()，避免 _currentUrl 被设为 hash 对应的内容 URL
+        // 否则自动导航到该内容 URL 时会因"相同 URL"被跳过
         _currentUrl = location.href;
-        // 记录初始状态，使 popstate 能正确回退到首页
+        // 记录初始状态，地址栏保持不变
         history.replaceState(
             { url: _currentUrl, title: document.title },
             document.title,
@@ -92,6 +96,86 @@
         window.addEventListener('beforeunload', function () {
             _scrollCache[_currentUrl] = { x: window.scrollX, y: window.scrollY };
         });
+
+        // 触发 ready 回调：通知外部 SPA 已就绪
+        // 用于解决页面加载时序问题（如自动导航需等 SPA 初始化完成）
+        var callbacks = _readyCallbacks;
+        _readyCallbacks = [];
+        callbacks.forEach(function (cb) {
+            try { cb(); } catch (e) { console.error('[bny-spa] ready callback error:', e); }
+        });
+    }
+
+    /**
+     * 注册 SPA 就绪回调
+     * - 已初始化：同步立即执行
+     * - 未初始化：加入队列，init() 完成后执行
+     * 用于页面需要在 SPA 就绪后执行的操作（如文档页自动导航）
+     * @param {Function} cb
+     */
+    function onReady(cb) {
+        if (_spaInited) {
+            try { cb(); } catch (e) { console.error('[bny-spa] ready callback error:', e); }
+        } else {
+            _readyCallbacks.push(cb);
+        }
+    }
+
+    // 暴露到 bny 对象，供外部调用
+    if (typeof bny !== 'undefined') {
+        bny.spaReady = onReady;
+    }
+
+    /**
+     * 获取 SPA base URL（用于文档页等需要保持框架 URL 的场景）
+     *
+     * 当页面有 .docs-layout 元素且 head 中有 meta[name="bny-spa-base"] 时启用：
+     * - 导航后地址栏 URL 为 base + '#' + 实际内容 URL（如 /doc/docs.html#/test/base.html）
+     * - 刷新时浏览器加载 base 页面（docs.html），再通过 hash 自动导航到对应内容
+     * - 从其他页面导航离开后 .docs-layout 不存在，自动失效
+     *
+     * @returns {string} base URL，如 "/doc/docs.html"；未启用时返回空串
+     */
+    function getSpaBase() {
+        if (!document.querySelector('.docs-layout')) return '';
+        var meta = document.querySelector('meta[name="bny-spa-base"]');
+        return meta ? (meta.getAttribute('content') || '') : '';
+    }
+
+    /**
+     * 计算 pushState/replaceState 用的地址栏 URL
+     * - 启用 base 时：base + '#' + 路径（如 /doc/docs.html#/test/base.html）
+     * - 未启用时：直接用 fetchUrl
+     * @param {string} fetchUrl 实际内容 URL（用于 fetch 请求，可能是完整 URL 或路径）
+     * @returns {string} 地址栏 URL
+     */
+    function getHistoryUrl(fetchUrl) {
+        var base = getSpaBase();
+        if (!base) return fetchUrl;
+        // 从完整 URL 提取路径+查询串，使 hash 简洁（如 #/test/base.html）
+        try {
+            var u = new URL(fetchUrl, location.href);
+            return base + '#' + u.pathname + u.search;
+        } catch (_) {
+            return base + '#' + fetchUrl;
+        }
+    }
+
+    /**
+     * 从当前 location 提取实际内容 URL（逆操作）
+     * - 有 hash 路径（如 #/test/base.html）时转为完整 URL
+     * - 否则返回 location.href
+     * @returns {string}
+     */
+    function getUrlFromLocation() {
+        if (location.hash && location.hash.length > 1) {
+            var hashPath = location.hash.substring(1);
+            if (hashPath.charAt(0) === '/') {
+                // hash 是路径，结合 origin 转为完整 URL
+                return location.origin + hashPath;
+            }
+        }
+        return location.href;
     }
 
     /**
@@ -202,8 +286,16 @@
 
         e.preventDefault();
         // 计算目标视图路径
-        var ancestorView = link.closest('[bny-view]');
-        var viewPath = ancestorView ? getViewPath(ancestorView) : [0];
+        // 优先使用 bny-view-target 属性指定的目标视口
+        var viewPath;
+        var targetSel = link.getAttribute('bny-view-target');
+        if (targetSel) {
+            var targetView = document.querySelector(targetSel);
+            viewPath = targetView ? getViewPath(targetView) : [0];
+        } else {
+            var ancestorView = link.closest('[bny-view]');
+            viewPath = ancestorView ? getViewPath(ancestorView) : [0];
+        }
         navigate(url.href, viewPath);
     }
 
@@ -300,10 +392,11 @@
         .then(function (html) {
             swapContent(html, url, viewPath);
             // 更新浏览器历史
+            // 地址栏 URL：启用 base 时用 base + '#' + fetchUrl，保持框架页 URL
             history.pushState(
                 { url: _currentUrl, title: document.title, viewPath: viewPath },
                 document.title,
-                _currentUrl
+                getHistoryUrl(_currentUrl)
             );
             // 滚动行为：有 hash 滚到锚点，否则回到顶部
             if (hash) {
@@ -363,7 +456,7 @@
             history.pushState(
                 { url: _currentUrl, title: document.title, viewPath: viewPath },
                 document.title,
-                _currentUrl
+                getHistoryUrl(_currentUrl)
             );
             window.scrollTo(0, 0);
         })
@@ -443,6 +536,15 @@
         if (typeof htmx !== 'undefined' && htmx.process) {
             htmx.process(view);
         }
+
+        // 触发 htmx:load 事件，使通过 htmx.onLoad 注册的组件初始化回调执行
+        // htmx.process() 只触发 htmx:afterProcessNode，不触发 htmx:load
+        // htmx:load 仅在 htmx 自身的 ajax 加载（makeAjaxLoadTask）中触发
+        // SPA 交换内容后需手动触发，否则 image/datepicker/tooltip 等组件不会重新初始化
+        view.dispatchEvent(new CustomEvent('htmx:load', {
+            bubbles: true,
+            detail: { elt: view }
+        }));
 
         // 触发自定义事件，便于外部监听
         view.dispatchEvent(new CustomEvent('bny:spa:loaded', {
@@ -649,8 +751,15 @@
      * popstate 处理（浏览器前进/后退）
      */
     function onPopState(e) {
-        var url = (e.state && e.state.url) || location.href;
-        var viewPath = (e.state && e.state.viewPath) || [0]; // 兼容旧历史记录
+        var url, viewPath;
+        if (e.state && e.state.url) {
+            url = e.state.url;
+            viewPath = e.state.viewPath || [0];
+        } else {
+            // 没有 state（直接访问或刷新带 hash），从 location 提取
+            url = getUrlFromLocation();
+            viewPath = [0];
+        }
         if (url === _currentUrl) return;
 
         _currentUrl = url;

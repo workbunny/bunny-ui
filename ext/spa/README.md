@@ -14,6 +14,7 @@
 - 内联脚本执行 — 新页面中的 `<script>` 正常运行
 - 渐进增强 — 禁用 JS 时链接照常跳转，不影响 SEO
 - 错误降级 — fetch 失败时自动回退到整页跳转
+- 框架页 URL 保持 — 可选的 `bny-spa-base` 机制，刷新不丢失框架（向后兼容）
 
 ## 引入
 
@@ -82,8 +83,29 @@ bny-spa 支持多个 `[bny-view]` 嵌套并存，**无需命名**，按 DOM 位�
 | 属性 | 作用于 | 说明 |
 |------|--------|------|
 | `bny-view` | 任意元素 | 标记内容交换区域 |
+| `bny-view-target` | `<a>` / `<form>` | 显式指定目标视口（CSS 选择器），覆盖默认的"最近祖先视口"查找 |
 | `bny-spa-skip` | `<a>` / `<form>` | 排除该元素，不走 SPA 导航，走普通跳转 |
 | `bny-spa` | head 中的 `<link>`/`<script>`/`<style>` | 标记为页面特有资源，导航时自动 diff |
+| `bny-spa-base` | `<meta name="bny-spa-base">` | 框架页 URL 保持，详见下方"框架页 URL 保持" |
+
+### bny-view-target
+
+默认情况下，链接点击会定位**最近祖先** `[bny-view]` 作为交换目标。当链接在视口外（如固定 header、侧边栏菜单）但需要更新某个嵌套视口时，用 `bny-view-target` 显式指定：
+
+```html
+<header>
+    <!-- 链接在 header 中（视口外），但应更新右侧 #docs-view -->
+    <a href="/docs/intro" bny-view-target="#docs-view">介绍</a>
+</header>
+
+<main bny-view>
+    <section bny-view id="docs-view">
+        <!-- 这里会被交换 -->
+    </section>
+</main>
+```
+
+未指定时回退到默认逻辑（最近祖先视口，视口外链接走根视口 `[0]`）。
 
 ## 服务端响应模式
 
@@ -220,6 +242,72 @@ POST 表单通过 fetch 提交，支持 PRG 模式：
 
 自动排除的链接：跨域、`mailto:`、`tel:`、`javascript:`、`#` 锚点、`target="_blank"`。
 
+## 框架页 URL 保持
+
+**适用场景**：文档站、帮助中心等"框架页 + 片段内容"组织方式。框架页（如 `/doc/docs.html`）提供导航/侧边栏布局，子内容（如 `/test/base.html`）只是片段，直接访问会丢失框架。
+
+**问题**：默认 SPA 导航后地址栏是 `/test/base.html`，刷新时浏览器直接加载片段，丢失框架布局。
+
+**解决**：在框架页 head 中加 `<meta name="bny-spa-base">`，启用后：
+
+- 导航后地址栏 URL 变为 `框架页 + '#' + 内容路径`（如 `/doc/docs.html#/test/base.html`）
+- 刷新时浏览器加载框架页，再通过 hash 自动导航到对应内容
+- **纯客户端机制，服务端零感知**，仍然只返回普通 HTML
+
+```html
+<head>
+    <!-- content 为框架页自身的路径 -->
+    <meta name="bny-spa-base" content="/doc/docs.html">
+</head>
+```
+
+框架页配合自动导航脚本读取 hash：
+
+```html
+<main bny-view>
+    <section bny-view id="docs-view">
+        <a href="/test/base.html" id="docs-auto-nav" bny-view-target="#docs-view" style="display:none"></a>
+        <script>
+            function triggerAutoNav() {
+                var autoNav = document.getElementById('docs-auto-nav');
+                if (!autoNav) return;
+                // 读取 hash 路径，默认 /test/base.html
+                var target = '/test/base.html';
+                if (location.hash.length > 1 && location.hash.charAt(1) === '/') {
+                    target = location.hash.substring(1);
+                }
+                autoNav.href = target;
+                autoNav.click();
+            }
+            // 用 bny.spaReady 确保 SPA 初始化完成后再触发
+            if (typeof bny !== 'undefined' && bny.spaReady) {
+                bny.spaReady(triggerAutoNav);
+            } else {
+                window.addEventListener('DOMContentLoaded', triggerAutoNav);
+            }
+        </script>
+    </section>
+</main>
+```
+
+**向后兼容**：未加 `<meta name="bny-spa-base">` 的页面，行为与原来完全一致（地址栏直接显示内容 URL）。启用条件是页面同时存在 `.docs-layout` 元素和该 meta 标签，普通页面不受影响。
+
+## SPA 就绪回调
+
+`bny.spaReady(callback)` — 在 SPA 扩展初始化完成后执行回调。
+
+- 已初始化：同步立即执行
+- 未初始化：加入队列，`init()` 完成后执行
+
+用于解决页面加载时序问题（如 `DOMContentLoaded` 早于 SPA 初始化，导致自动导航点击未被拦截）。
+
+```javascript
+bny.spaReady(function () {
+    // SPA 已就绪，可以安全触发自动导航
+    document.getElementById('auto-nav').click();
+});
+```
+
 ## 事件
 
 ### bny:spa:loaded
@@ -278,3 +366,5 @@ document.querySelector('[bny-view]').addEventListener('bny:spa:loaded', function
 5. 内联脚本 — 新页面中的 `<script>` 正常执行
 6. `bny-spa-skip` — 标记的链接走普通跳转
 7. 嵌套视口 — 父级布局保持，子视口独立交换，后退精确还原
+8. `bny-view-target` — 视口外链接显式指定目标视口
+9. `bny-spa-base` — 框架页 URL 保持，刷新不丢失框架，地址栏为 `/框架页#/内容路径`

@@ -5,9 +5,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BunnyUI</title>
-    <meta name="keywords" content="BunnyUI, HTMX, Web UI, javascript,组件库">
+    <meta name="keywords" content="BunnyUI, HTMX, Web UI, javascript, 组件库">
     <meta name="description" content="BunnyUI 是一个基于 HTMX 拓展的 Web UI 组件库.">
-    <link rel="shortcut icon" href="bunny.png" type="image/x-icon">
+    <link rel="shortcut icon" href="/bunny.png" type="image/x-icon">
+    <!-- 防闪白脚本（在所有 CSS 之前） -->
+    <script>
+        (function () {
+            var t;
+            try { t = localStorage.getItem('bny-theme'); } catch (e) { }
+            // 默认亮色，仅当用户手动选过 dark 时才使用暗色
+            if (t === 'dark') document.documentElement.classList.add('dark');
+        })();
+    </script>
     <!-- highlight -->
     <link rel="stylesheet" href="/highlight/styles/atom-one-dark.min.css">
     <script src="/highlight/highlight.min.js"></script>
@@ -17,142 +26,102 @@
     <!-- prismjs -->
     <link rel="stylesheet" href="/prismjs/prism.css">
     <script src="/prismjs/prism.js"></script>
-
+    <!-- bunny -->
     <link rel="stylesheet" href="/debug/bunny.css?v=2">
     <script src="/debug/bunny.js?v=2"></script>
+    <!-- SPA 扩展 -->
+    <link rel="stylesheet" href="/ext/spa/spa.css">
+    <script src="/ext/spa/spa.js"></script>
+    <!-- 文档站共享样式 -->
+    <link rel="stylesheet" href="/doc/doc.css">
 </head>
-<style>
-    header {
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        z-index: 999;
-        width: 100%;
-        background: var(--white);
-        box-shadow: var(--box-shadow-005);
 
-        & [hx-ext~="bny-nav"] {
-            box-shadow: none;
-        }
-    }
-
-    #bny-content {
-        padding-top: 70px;
-        overflow: auto;
-        padding-bottom: 80px;
-    }
-
-    footer {
-        position: fixed;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        width: 100%;
-        background: rgba(249, 250, 251, 0.72);
-        backdrop-filter: blur(12px);
-        -webkit-backdrop-filter: blur(12px);
-        border-top: 1px solid var(--gray-shallow);
-        height: 64px;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-
-        & * {
-            color: var(--black-shallow);
-            font-size: var(--font-size-sm);
-        }
-    }
-
-    html.dark footer {
-        background: rgba(26, 26, 26, 0.72);
-        border-top-color: rgba(255, 255, 255, 0.06);
-    }
-
-    #tab-load {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        z-index: 99999;
-    }
-
-    .htmx-indicator {
-        display: none;
-        transition: all 0.3s ease-in-out;
-        visibility: hidden;
-        opacity: 0;
-    }
-
-    .htmx-request .htmx-indicator {
-        display: inline;
-        visibility: visible;
-    }
-
-    .htmx-request.htmx-indicator {
-        display: inline;
-        visibility: visible;
-    }
-</style>
-<body hx-indicator="#tab-load">
-    <!-- 头部 -->
-    <header>
-        <div class="bny-container">
-            <div hx-ext="bny-nav" color="white">
-                <div class="head">
-                    <div class="logo-box">
-                        <div class="logo">
-                            <img src="/bunny.png" alt="logo">
-                        </div>
-                        <span>BunnyUI</span>
-                    </div>
-                </div>
-                <ul class="menu">
-                    <li hx-get="/doc/home.html" hx-target="#bny-content">
-                        <div class="trigger">
-                            <span>首页</span>
-                        </div>
-                    </li>
-                    <li hx-get="/doc/iframe.html" hx-target="#bny-content">
-                        <div class="trigger">
-                            <span>组件</span>
-                        </div>
-                    </li>
-                    <li id="mode-btn">
-                        <div class="trigger">
-                            <span>模式</span>
-                        </div>
-                    </li>
-                    <li>
-                        <a class="trigger" href="https://github.com/workbunny/bunny.ui" target="_blank">
-                            <i class="bny-icon icon-github-fill"></i>
-                            <span>GitHub</span>
-                        </a>
-                    </li>
-                </ul>
+<body hx-ext="bny-spa">
+    <!-- ==================== 共享 Shell ==================== -->
+    <header class="site-header">
+        <div hx-ext="bny-nav" color="white">
+            <div class="head">
+                <a class="logo-box" href="/doc/home.html">
+                    <span class="logo"><img src="/bunny.png" alt="BunnyUI"></span>
+                    <span>BunnyUI</span>
+                </a>
             </div>
+            <ul class="menu">
+                <li><a class="trigger" href="/doc/home.html"><i class="bny-icon icon-home"></i><span>首页</span></a></li>
+                <li><a class="trigger" href="/doc/docs.html"><i class="bny-icon icon-book"></i><span>文档</span></a></li>
+                <li><a class="trigger" href="/doc/ext.html"><i class="bny-icon icon-rocket"></i><span>拓展</span></a></li>
+                <li><a class="trigger" href="javascript:void(0)" id="mode-btn" bny-spa-skip title="切换主题">
+                        <span class="mode-icons">
+                            <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="4.5" />
+                                <path
+                                    d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.5 4.5l1.8 1.8M17.7 17.7l1.8 1.8M19.5 4.5l-1.8 1.8M6.3 17.7l-1.8 1.8" />
+                            </svg>
+                            <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z" />
+                            </svg>
+                        </span>
+                    </a></li>
+                <li><a class="trigger" href="https://github.com/workbunny/bunny.ui" target="_blank" bny-spa-skip><i
+                            class="bny-icon icon-github-fill"></i><span>立即下载</span></a></li>
+            </ul>
         </div>
     </header>
-    <div id="bny-content" hx-get="/doc/home.html" hx-trigger="load"></div>
-    <footer>
-        <div class="bny-container">
-            <div class="info tc">
-                <span>Copyright © 2026 <a href="https://github.com/workbunny/bunny.ui" target="_blank"
-                        rel="noopener noreferrer">BunnyUI</a> MIT Licensed</span>
+
+    <main bny-view>
+        <a href="/doc/home.html" id="auto-nav" style="display:none"></a>
+    </main>
+
+    <!-- ==================== 共享页脚 ==================== -->
+    <footer class="site-footer">
+        <div class="doc-container">
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <div class="logo-line"><img src="/bunny.png" alt="BunnyUI"><span>BunnyUI</span></div>
+                    <p>基于 HTMX 拓展的轻量级 Web UI 组件库，服务端渲染友好，声明式编程。</p>
+                    <div class="footer-social">
+                        <a class="bny-btn" model="border circle" href="https://github.com/workbunny/bunny.ui"
+                            target="_blank" bny-spa-skip title="GitHub"><i class="bny-icon icon-github-fill"></i></a>
+                    </div>
+                </div>
+                <div class="footer-links">
+                    <div class="footer-col">
+                        <h4>导航</h4><a href="/doc/home.html">首页</a><a href="/doc/docs.html">文档</a><a
+                            href="/doc/ext.html">拓展</a>
+                    </div>
+                    <div class="footer-col">
+                        <h4>资源</h4><a href="https://github.com/workbunny/bunny.ui" target="_blank"
+                            bny-spa-skip>GitHub</a><a href="/test/base.html">快速开始</a>
+                    </div>
+                    <div class="footer-col">
+                        <h4>拓展</h4><a href="/ext/spa/index.html" bny-spa-skip>SPA</a><a href="/ext/markdown/index.html"
+                            bny-spa-skip>Markdown</a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <span>© 2026 BunnyUI. MIT Licensed.</span>
+                <span><i class="bny-icon icon-code"></i> Built with HTMX.</span>
             </div>
         </div>
     </footer>
+
+    <script>
+        window.addEventListener('DOMContentLoaded', function () {
+            if (location.pathname === '/' || location.pathname === '/index.html' || location.pathname === '') {
+                var link = document.getElementById('auto-nav');
+                if (link) link.click();
+            }
+        });
+    </script>
+    <script>
+        document.getElementById('mode-btn').addEventListener('click', function () {
+            var isDark = document.documentElement.classList.toggle('dark');
+            try { localStorage.setItem('bny-theme', isDark ? 'dark' : 'light'); } catch (e) { }
+        });
+    </script>
 </body>
-<!-- 加载指示器 -->
-<div id="tab-load">
-    <div class="htmx-indicator">
-        <div class="bny-load-health" color="green">
-            <div></div>
-        </div>
-    </div>
-</div>
-<script>
-    document.getElementById('mode-btn').addEventListener('click', function () {
-        document.documentElement.classList.toggle('dark');
-    });
-</script>
+
+</html>

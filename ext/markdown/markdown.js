@@ -614,14 +614,26 @@
      * 解析围栏代码块
      *
      * 输出 <pre hx-ext="bny-code"> + 转义后的代码文本，不嵌套 <code> 标签。
-     * 原因：bny-code 扩展（code.js）在 afterProcessNode 时会读取 pre.innerHTML
-     * 作为代码内容并自行创建 <code> 元素。若 markdown.js 预先包裹 <code>，
-     * bny-code 会把 <code> 字符串当作代码内容再解析一次，导致标签嵌套与转义丢失。
+     *
+     * bny-code 扩展（code.js）的行为：
+     * - 通过 pre.textContent 读取代码内容（浏览器自动反转义 HTML 实体，得到原始代码）
+     * - 有 mode 属性时，由高亮库（hljs/prismjs）负责转义 + 高亮
+     * - 无 mode 属性时，由 bny-code 调用 bny.escapeChars 自行转义
+     *
+     * 为什么 markdown.js 要转义：
+     * - 若输出原始 HTML 标签（如 <article>），浏览器会将其解析为真实元素，
+     *   textContent 只能得到纯文本（标签信息丢失），code 组件无法还原代码
+     * - 转义后（&lt;article&gt;），浏览器将其作为文本节点，textContent 读取时
+     *   浏览器自动反转义回原始代码（<article>），code 组件正常处理
+     *
+     * 不会双重转义：
+     * - 有高亮库时，高亮库对原始代码做转义 + 高亮
+     * - 无高亮库时，bny-code 对原始代码做 escapeChars 转义
+     * - 两者都是对 textContent（原始代码）操作，不是对已转义字符串操作
      *
      * 围栏语言通过 pre 的 lang 属性传递（如 <pre lang="js">），
-     * bny-code 扩展可据此调用 hljs 高亮（需配合 mode="highlight"）。
      * 自动检测运行环境中是否引入了 highlight.js 或 prismjs，
-     * 若存在则在 pre 上输出对应的 mode 属性，交由 bny-code 调用高亮。
+     * 若存在则在 pre 上输出对应的 mode 属性。
      */
     function parseFencedCode(lines, i) {
         var m = lines[i].match(/^```(\S*)\s*$/);
@@ -639,17 +651,16 @@
 
         var code = codeLines.join('\n');
         var langAttr = lang ? ' lang="' + lang + '"' : '';
-        // 自动检测代码高亮库：优先 highlight.js，其次 prismjs
+        // 自动检测代码高亮库：优先 prismjs，其次 highlight.js
         var modeAttr = '';
-        if (typeof hljs !== 'undefined') {
-            modeAttr = ' mode="highlight"';
-        } else if (typeof Prism !== 'undefined') {
+        if (typeof Prism !== 'undefined') {
             modeAttr = ' mode="prismjs"';
+        } else if (typeof hljs !== 'undefined') {
+            modeAttr = ' mode="highlight"';
         }
-        // 有高亮库时，bny-code 期望 pre 内是原始代码（未转义），
-        // 由高亮库负责转义+高亮（见 code.js：有 mode 时不调用 escapeChars）。
-        // 无高亮库时，由 markdown.js 转义，bny-code 直接显示。
-        var content = modeAttr ? code : escapeHtml(code);
+        // 转义 HTML：防止浏览器将代码中的标签解析为真实元素
+        // bny-code 通过 textContent 读取时会自动反转义回原始代码
+        var content = escapeHtml(code);
         var html = '<pre hx-ext="bny-code"' + modeAttr + langAttr + '>' + content + '</pre>';
         return { html: html, next: j };
     }

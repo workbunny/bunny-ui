@@ -1,237 +1,198 @@
-<style>
-    .home-page {
+<!DOCTYPE html>
+<html lang="zh-CN">
 
-        /* ========== Hero ========== */
-        & .hero {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-            padding: 130px 24px 110px;
-            background: linear-gradient(180deg, var(--white-middle) 0%, var(--white) 100%);
-
-            & h1 {
-                font-size: clamp(48px, 8vw, 88px);
-                font-weight: 800;
-                line-height: 1.08;
-                margin: 0;
-                letter-spacing: -0.04em;
-                color: var(--black);
-
-                &>span {
-                    background: linear-gradient(135deg, var(--default) 0%, var(--default-middle) 100%);
-                    -webkit-background-clip: text;
-                    background-clip: text;
-                    color: transparent;
-                }
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BunnyUI - 首页</title>
+    <meta name="keywords" content="BunnyUI, HTMX, Web UI, javascript, 组件库">
+    <meta name="description" content="BunnyUI 是一个基于 HTMX 拓展的 Web UI 组件库.">
+    <link rel="shortcut icon" href="/bunny.png" type="image/x-icon">
+    <!-- 防闪白脚本 -->
+    <script>
+        (function () {
+            var t;
+            try { t = localStorage.getItem('bny-theme'); } catch (e) { }
+            if (!t) {
+                t = (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) ? 'dark' : 'light';
             }
+            if (t === 'dark') document.documentElement.classList.add('dark');
+        })();
+    </script>
+    <!-- highlight -->
+    <link rel="stylesheet" href="/highlight/styles/atom-one-dark.min.css">
+    <script src="/highlight/highlight.min.js"></script>
+    <script src="/highlight/languages/javascript.min.js"></script>
+    <script src="/highlight/languages/php.min.js"></script>
+    <script src="/highlight/languages/css.min.js"></script>
+    <!-- prismjs -->
+    <link rel="stylesheet" href="/prismjs/prism.css">
+    <script src="/prismjs/prism.js"></script>
+    <!-- bunny -->
+    <link rel="stylesheet" href="/debug/bunny.css?v=2">
+    <script src="/debug/bunny.js?v=2"></script>
+    <!-- SPA 扩展 -->
+    <link rel="stylesheet" href="/ext/spa/spa.css">
+    <script src="/ext/spa/spa.js"></script>
+    <!-- 文档站共享样式 -->
+    <link rel="stylesheet" href="/doc/doc.css">
+</head>
 
-            & .version {
-                display: inline-flex;
-                align-items: center;
-                gap: 8px;
-                padding: 5px 16px;
-                background: var(--default-alpha-10);
-                border: 1px solid var(--default-shallow);
-                border-radius: var(--border-radius-full);
-                font-size: 12px;
-                font-weight: var(--font-weight-semibold);
-                color: var(--default);
-                margin-bottom: 28px;
-
-                &::before {
-                    content: "";
-                    width: 7px;
-                    height: 7px;
-                    background: var(--default);
-                    border-radius: 50%;
-                }
-            }
-
-            & .desc {
-                font-size: clamp(var(--font-size-16), 2vw, 19px);
-                color: var(--black-shallow);
-                line-height: 1.55;
-                max-width: 520px;
-                margin: 18px auto 32px;
-            }
-
-            & .actions {
-                display: flex;
-                gap: 12px;
-
-                & .bny-btn {
-                    height: 44px;
-                    padding: 0 26px;
-                    font-size: var(--font-size);
-                    font-weight: var(--font-weight-semibold);
-                }
-            }
-
-            & .meta {
-                display: flex;
-                align-items: center;
-                gap: 18px;
-                margin-top: 32px;
-                font-size: 12px;
-                color: var(--black-shallow);
-
-                & a {
-                    color: var(--black-shallow);
-                }
-
-                & a:hover {
-                    color: var(--default);
-                    text-decoration: none;
-                }
-
-                & .sep {
-                    width: 1px;
-                    height: 12px;
-                    background: var(--gray-middle);
-                }
-            }
-        }
-
-        /* ========== Feature Cards ========== */
-        & .features {
-            max-width: 1060px;
-            margin: 0 auto;
-            padding: 0 24px 64px;
-
-            & .grid {
-                display: grid;
-                grid-template-columns: repeat(3, 1fr);
-                gap: 20px;
-
-                & .card {
-                    padding: 28px 26px;
-                    background: var(--white);
-                    border: 1px solid var(--gray-shallow);
-                    border-radius: 12px;
-                    transition: var(--transition);
-
-                    &:hover {
-                        border-color: var(--default-shallow);
-                        box-shadow: var(--box-shadow-055);
-                    }
-
-                    & .icon {
-                        width: 40px;
-                        height: 40px;
-                        display: flex;
-                        align-items: center;
-                        justify-content: center;
-                        border-radius: 10px;
-                        background: var(--default-alpha-15);
-                        color: var(--default);
-                        font-size: 20px;
-                        margin-bottom: 16px;
-                        transition: var(--transition);
-                    }
-
-                    &:hover .icon {
-                        background: var(--default);
-                        color: var(--white);
-                    }
-
-                    & h3 {
-                        font-size: var(--font-size-16);
-                        font-weight: var(--font-weight-semibold);
-                        color: var(--black);
-                        margin: 0 0 6px;
-                    }
-
-                    & p {
-                        font-size: var(--font-size-sm);
-                        color: var(--black-shallow);
-                        line-height: 1.6;
-                        margin: 0;
-                    }
-                }
-            }
-        }
-
-        /* ========== CTA ========== */
-        & .cta {
-            text-align: center;
-            padding: 0 24px 80px;
-
-            & p {
-                font-size: var(--font-size);
-                color: var(--black-shallow);
-                margin: 0 0 24px;
-            }
-
-            & .bny-btn {
-                height: 44px;
-                padding: 0 32px;
-                font-size: var(--font-size);
-                font-weight: var(--font-weight-semibold);
-            }
-        }
-    }
-
-    @media screen and (max-width: 768px) {
-        .home-page {
-            & .hero {
-                padding: 48px 20px 48px;
-
-                & h1 {
-                    font-size: 40px;
-                }
-            }
-
-            & .features {
-                padding: 0 20px 48px;
-
-                & .grid {
-                    grid-template-columns: 1fr;
-                }
-            }
-        }
-    }
-</style>
-
-<div class="home-page">
-    <div class="hero">
-        <div class="version">v2.x</div>
-        <h1><span>BunnyUI</span></h1>
-        <p class="desc">
-            轻量级 HTMX 拓展 Web UI 组件库——通过属性构建现代界面，融合超文本的简洁与组件的强大。
-        </p>
-        <div class="actions">
-            <a class="bny-btn" hx-get="/doc/iframe.html" hx-target="#bny-content">开始使用</a>
-            <a href="https://github.com/workbunny/bunny.ui/releases/latest/download/bunny.zip" target="_blank"
-                class="bny-btn" model="border">直接下载</a>
-        </div>
-        <div class="meta">
-            <img src="https://badgen.net/github/release/workbunny/bunny.ui" alt="Version">
-            <span class="sep"></span>
-            <a href="https://github.com/workbunny/bunny.ui/releases/" target="_blank">更新日志</a>
-            <span class="sep"></span>
-            <a href="https://github.com/workbunny/bunny.ui/blob/main/LICENSE" target="_blank">MIT License</a>
-        </div>
-    </div>
-
-    <div class="features">
-        <div class="grid">
-            <div class="card">
-                <div class="icon"><i class="bny-icon icon-bunny"></i></div>
-                <h3>轻量 · 零依赖</h3>
-                <p>原生 JavaScript + CSS，无外部框架依赖，模块化按需引入。</p>
+<body hx-ext="bny-spa">
+    <header class="site-header">
+        <div hx-ext="bny-nav" color="white">
+            <div class="head">
+                <a class="logo-box" href="/doc/home.html">
+                    <span class="logo"><img src="/bunny.png" alt="BunnyUI"></span>
+                    <span>BunnyUI</span>
+                </a>
             </div>
-            <div class="card">
-                <div class="icon"><i class="bny-icon icon-alert-fill"></i></div>
-                <h3>HTMX 深度集成</h3>
-                <p>hx-ext 属性声明式注入，零侵入增强 HTMX 超文本驱动架构。</p>
+            <ul class="menu">
+                <li><a class="trigger" href="/doc/home.html"><i class="bny-icon icon-home"></i><span>首页</span></a></li>
+                <li><a class="trigger" href="/doc/docs.html"><i class="bny-icon icon-book"></i><span>文档</span></a></li>
+                <li><a class="trigger" href="/doc/ext.html"><i class="bny-icon icon-rocket"></i><span>拓展</span></a></li>
+                <li><a class="trigger" href="javascript:void(0)" id="mode-btn" bny-spa-skip title="切换主题">
+                        <span class="mode-icons">
+                            <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="4.5" />
+                                <path
+                                    d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.5 4.5l1.8 1.8M17.7 17.7l1.8 1.8M19.5 4.5l-1.8 1.8M6.3 17.7l-1.8 1.8" />
+                            </svg>
+                            <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z" />
+                            </svg>
+                        </span>
+                    </a></li>
+                <li><a class="trigger" href="https://github.com/workbunny/bunny.ui" target="_blank" bny-spa-skip><i
+                            class="bny-icon icon-github-fill"></i><span>GitHub</span></a></li>
+            </ul>
+        </div>
+    </header>
+
+    <main bny-view>
+        <!-- ==================== 首页内容 ==================== -->
+
+        <!-- Hero -->
+        <section class="hero">
+            <div class="doc-container">
+                <div class="hero-inner">
+                    <span class="hero-version">v2.+</span>
+                    <h1 class="hero-title">BunnyUI</h1>
+                    <p class="hero-subtitle">基于 HTMX 拓展的轻量级 Web UI 组件库。服务端渲染友好，声明式编程，零框架依赖。</p>
+                    <div class="hero-actions">
+                        <a class="bny-btn" href="/doc/docs.html">开始使用</a>
+                        <a class="bny-btn" model="border" href="https://github.com/workbunny/bunny.ui/releases/latest/download/bunny.zip" target="_blank"
+                            bny-spa-skip>立即下载</a>
+                    </div>
+                    <div class="hero-meta">
+                        <div class="meta-item">
+                            <span class="meta-num">30+</span>
+                            <span class="meta-label">组件</span>
+                        </div>
+                        <div class="meta-item">
+                            <span class="meta-num">HTMX</span>
+                            <span class="meta-label">框架依赖</span>
+                        </div>
+                        <div class="meta-item">
+                            <span class="meta-num">MIT</span>
+                            <span class="meta-label">开源协议</span>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="card">
-                <div class="icon"><i class="bny-icon icon-edit-fill"></i></div>
-                <h3>组件丰富 · 响应式</h3>
-                <p>20+ 组件开箱即用，内置动画系统，暗黑模式一键切换。</p>
+        </section>
+
+        <!-- 特性 -->
+        <section class="section">
+            <div class="doc-container">
+                <div class="section-head">
+                    <h2 class="section-title">为什么选择 BunnyUI</h2>
+                    <p class="section-subtitle">轻量、高效、服务端渲染友好的现代 UI 组件库</p>
+                </div>
+                <div class="grid-3">
+                    <div class="bny-card">
+                        <div class="body">
+                            <h3 class="title">HTMX 扩展机制</h3>
+                            <p class="content">基于 HTMX 扩展，通过 HTML 属性驱动组件行为，无需编写 JavaScript。声明式编程，拥抱超文本。</p>
+                        </div>
+                    </div>
+                    <div class="bny-card">
+                        <div class="body">
+                            <h3 class="title">服务端零改造</h3>
+                            <p class="content">ThinkPHP / Laravel / Django 照常返回 HTML，不需要写 JSON API。后端完全不需要知道前端在用什么。</p>
+                        </div>
+                    </div>
+                    <div class="bny-card">
+                        <div class="body">
+                            <h3 class="title">完整设计系统</h3>
+                            <p class="content">CSS 变量、暗黑模式、响应式一应俱全。完整的设计令牌体系，轻松定制主题。</p>
+                        </div>
+                    </div>
+                    <div class="bny-card">
+                        <div class="body">
+                            <h3 class="title">XSS 防护</h3>
+                            <p class="content">用户输入统一经过 escapeChars 转义，防止跨站脚本攻击。</p>
+                        </div>
+                    </div>
+                    <div class="bny-card">
+                        <div class="body">
+                            <h3 class="title">SPA 扩展</h3>
+                            <p class="content">可选的 SPA 扩展，为传统服务端渲染项目提供无刷新导航、URL 同步、SEO/GEO head 同步。</p>
+                        </div>
+                    </div>
+                    <div class="bny-card">
+                        <div class="body">
+                            <h3 class="title">渐进增强</h3>
+                            <p class="content">禁用 JavaScript 时链接照常跳转，不破坏可访问性和 SEO 爬虫抓取。</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="site-footer">
+        <div class="doc-container">
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <div class="logo-line"><img src="/bunny.png" alt="BunnyUI"><span>BunnyUI</span></div>
+                    <p>基于 HTMX 拓展的轻量级 Web UI 组件库，服务端渲染友好，声明式编程。</p>
+                    <div class="footer-social">
+                        <a class="bny-btn" model="border circle" href="https://github.com/workbunny/bunny.ui"
+                            target="_blank" bny-spa-skip title="GitHub"><i class="bny-icon icon-github-fill"></i></a>
+                    </div>
+                </div>
+                <div class="footer-links">
+                    <div class="footer-col">
+                        <h4>导航</h4><a href="/doc/home.html">首页</a><a href="/doc/docs.html">文档</a><a
+                            href="/doc/ext.html">拓展</a>
+                    </div>
+                    <div class="footer-col">
+                        <h4>资源</h4><a href="https://github.com/workbunny/bunny.ui" target="_blank"
+                            bny-spa-skip>GitHub</a><a href="/test/base.html">快速开始</a>
+                    </div>
+                    <div class="footer-col">
+                        <h4>拓展</h4><a href="/ext/spa/index.html" bny-spa-skip>SPA</a><a href="/ext/markdown/index.html"
+                            bny-spa-skip>Markdown</a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <span>© 2026 BunnyUI. MIT Licensed.</span>
+                <span><i class="bny-icon icon-code"></i> Built with HTMX.</span>
             </div>
         </div>
-    </div>
-</div>
+    </footer>
+
+    <script>
+        document.getElementById('mode-btn').addEventListener('click', function () {
+            var isDark = document.documentElement.classList.toggle('dark');
+            try { localStorage.setItem('bny-theme', isDark ? 'dark' : 'light'); } catch (e) { }
+        });
+    </script>
+</body>
+
+</html>
