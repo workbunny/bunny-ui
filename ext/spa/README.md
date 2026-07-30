@@ -14,7 +14,7 @@
 - 内联脚本执行 — 新页面中的 `<script>` 正常运行
 - 渐进增强 — 禁用 JS 时链接照常跳转，不影响 SEO
 - 错误降级 — fetch 失败时自动回退到整页跳转
-- 框架页 URL 保持 — 可选的 `bny-spa-base` 机制，刷新不丢失框架（向后兼容）
+- 两种导航模式 — history（真实 URL，适配任意后端）和 hash（hash 路由，无后端也能用）
 
 ## 引入
 
@@ -86,7 +86,7 @@ bny-spa 支持多个 `[bny-view]` 嵌套并存，**无需命名**，按 DOM 位�
 | `bny-view-target` | `<a>` / `<form>` | 显式指定目标视口（CSS 选择器），覆盖默认的"最近祖先视口"查找 |
 | `bny-spa-skip` | `<a>` / `<form>` | 排除该元素，不走 SPA 导航，走普通跳转 |
 | `bny-spa` | head 中的 `<link>`/`<script>`/`<style>` | 标记为页面特有资源，导航时自动 diff |
-| `bny-spa-base` | `<meta name="bny-spa-base">` | 框架页 URL 保持，详见下方"框架页 URL 保持" |
+| `bny-spa-mode` | `<body>` 或 `<meta name="bny-spa-mode">` | 导航模式：`history`（默认）或 `hash`，详见下方"导航模式" |
 
 ### bny-view-target
 
@@ -242,26 +242,48 @@ POST 表单通过 fetch 提交，支持 PRG 模式：
 
 自动排除的链接：跨域、`mailto:`、`tel:`、`javascript:`、`#` 锚点、`target="_blank"`。
 
-## 框架页 URL 保持
+## 导航模式
 
-**适用场景**：文档站、帮助中心等"框架页 + 片段内容"组织方式。框架页（如 `/doc/docs.html`）提供导航/侧边栏布局，子内容（如 `/test/base.html`）只是片段，直接访问会丢失框架。
+通过 `bny-spa-mode` 全局配置，支持两种 URL 策略。模式在 SPA 初始化时读取，全站统一。
 
-**问题**：默认 SPA 导航后地址栏是 `/test/base.html`，刷新时浏览器直接加载片段，丢失框架布局。
+### 配置方式
 
-**解决**：在框架页 head 中加 `<meta name="bny-spa-base">`，启用后：
+二选一（body 属性优先）：
 
-- 导航后地址栏 URL 变为 `框架页 + '#' + 内容路径`（如 `/doc/docs.html#/test/base.html`）
-- 刷新时浏览器加载框架页，再通过 hash 自动导航到对应内容
-- **纯客户端机制，服务端零感知**，仍然只返回普通 HTML
+```html
+<!-- 方式一：body 属性 -->
+<body hx-ext="bny-spa" bny-spa-mode="hash">
+
+<!-- 方式二：meta 标签 -->
+<meta name="bny-spa-mode" content="hash">
+```
+
+### history 模式（默认）
+
+地址栏使用真实 URL（如 `/doc/docs.html`、`/test/base.html`）。
+
+- 适配任意后端，刷新时后端返回对应页面即可，无需特殊配置
+- 适合服务端渲染项目（ThinkPHP / Laravel / Django 等）
+
+### hash 模式
+
+地址栏使用 hash 路由（如 `/doc/docs.html#/test/base.html`）。
+
+- 刷新时浏览器加载入口页（SPA 启动时的页面），通过 hash 自动导航到目标内容
+- 适用于无后端的纯前端部署（如 `file://` 协议、静态托管、GitHub Pages）
+- 也适用于"框架页 + 片段内容"的文档站：刷新不丢失框架布局
+
+### hash 模式示例：文档站
+
+框架页（如 `/doc/docs.html`）设置 hash 模式：
 
 ```html
 <head>
-    <!-- content 为框架页自身的路径 -->
-    <meta name="bny-spa-base" content="/doc/docs.html">
+    <meta name="bny-spa-mode" content="hash">
 </head>
 ```
 
-框架页配合自动导航脚本读取 hash：
+导航到 `/test/base.html` 后，地址栏为 `/doc/docs.html#/test/base.html`。刷新时浏览器加载 docs.html，配合自动导航脚本读取 hash 恢复内容：
 
 ```html
 <main bny-view>
@@ -271,15 +293,13 @@ POST 表单通过 fetch 提交，支持 PRG 模式：
             function triggerAutoNav() {
                 var autoNav = document.getElementById('docs-auto-nav');
                 if (!autoNav) return;
-                // 读取 hash 路径，默认 /test/base.html
-                var target = '/test/base.html';
+                var target = '/test/base.html'; // 默认
                 if (location.hash.length > 1 && location.hash.charAt(1) === '/') {
                     target = location.hash.substring(1);
                 }
                 autoNav.href = target;
                 autoNav.click();
             }
-            // 用 bny.spaReady 确保 SPA 初始化完成后再触发
             if (typeof bny !== 'undefined' && bny.spaReady) {
                 bny.spaReady(triggerAutoNav);
             } else {
@@ -290,7 +310,7 @@ POST 表单通过 fetch 提交，支持 PRG 模式：
 </main>
 ```
 
-**向后兼容**：未加 `<meta name="bny-spa-base">` 的页面，行为与原来完全一致（地址栏直接显示内容 URL）。启用条件是页面同时存在 `.docs-layout` 元素和该 meta 标签，普通页面不受影响。
+**注意**：hash 模式的入口页是 SPA 启动时的页面。如果从 A 页面（history 模式）导航到 B 页面（hash 模式），SPA 已在 A 页面初始化为 history 模式，不会切换。要全站使用 hash 模式，需在所有页面（或入口页）统一配置。
 
 ## SPA 就绪回调
 
@@ -306,6 +326,25 @@ bny.spaReady(function () {
     // SPA 已就绪，可以安全触发自动导航
     document.getElementById('auto-nav').click();
 });
+```
+
+## 辅助 API
+
+### bny.spaReplaceNext()
+
+标记下一次 `navigate` 使用 `replaceState` 而非 `pushState`。用于初始自动导航：避免入口页与内容页产生两条相同的历史记录（否则点击后退会回到空入口页，再次触发自动导航，形成后退陷阱）。
+
+```javascript
+bny.spaReplaceNext();  // 标记下一次导航用 replaceState
+document.getElementById('auto-nav').click();  // 触发导航
+```
+
+### bny.spaIsPopstate()
+
+返回当前是否正在处理 `popstate`（浏览器前进/后退）。自动导航脚本据此跳过，避免回退到框架页时再次触发自动导航形成后退陷阱。
+
+```javascript
+if (bny.spaIsPopstate()) return;  // popstate 回退时跳过自动导航
 ```
 
 ## 事件
@@ -367,4 +406,4 @@ document.querySelector('[bny-view]').addEventListener('bny:spa:loaded', function
 6. `bny-spa-skip` — 标记的链接走普通跳转
 7. 嵌套视口 — 父级布局保持，子视口独立交换，后退精确还原
 8. `bny-view-target` — 视口外链接显式指定目标视口
-9. `bny-spa-base` — 框架页 URL 保持，刷新不丢失框架，地址栏为 `/框架页#/内容路径`
+9. `bny-spa-mode` — history 模式地址栏为真实 URL；hash 模式地址栏为 `/入口页#/内容路径`，刷新不丢失框架
