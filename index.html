@@ -36,7 +36,7 @@
     <link rel="stylesheet" href="/doc/doc.css">
 </head>
 
-<body hx-ext="bny-spa">
+<body hx-ext="bny-spa" bny-spa-mode="hash">
     <!-- ==================== 共享 Shell ==================== -->
     <header class="site-header">
         <div hx-ext="bny-nav" color="white">
@@ -65,13 +65,45 @@
                         </span>
                     </a></li>
                 <li><a class="trigger" href="https://github.com/workbunny/bunny.ui" target="_blank" bny-spa-skip><i
-                            class="bny-icon icon-github-fill"></i><span>立即下载</span></a></li>
+                            class="bny-icon icon-github-fill"></i><span></span></a></li>
             </ul>
         </div>
     </header>
 
     <main bny-view>
         <a href="/doc/home.html" id="auto-nav" style="display:none"></a>
+        <script>
+            // 首页自动导航：根据 hash 加载对应内容，默认加载 /doc/home.html
+            // 全站 hash 模式：刷新时浏览器加载 index.html（入口页），
+            // 通过 hash 路由（如 #/doc/home.html、#/doc/docs.html）自动导航到对应内容
+            // 放在 main bny-view 内，确保脚本随视口内容一起加载执行
+            // 使用 bny.spaReady 确保 SPA 扩展初始化完成后再触发点击
+            function triggerAutoNav() {
+                var autoNav = document.getElementById('auto-nav');
+                if (!autoNav) return;
+                // popstate 回退到入口页时不重新触发自动导航，避免后退陷阱
+                if (typeof bny !== 'undefined' && bny.spaIsPopstate && bny.spaIsPopstate()) return;
+                var targetUrl = '/doc/home.html'; // 默认
+                if (location.hash && location.hash.length > 1) {
+                    var path = location.hash.substring(1);
+                    if (path.charAt(0) === '/') {
+                        targetUrl = path;
+                    }
+                }
+                autoNav.href = targetUrl;
+                // 初始导航用 replaceState，避免入口页与内容页产生两条相同历史记录
+                if (typeof bny !== 'undefined' && bny.spaReplaceNext) {
+                    bny.spaReplaceNext();
+                }
+                autoNav.click();
+            }
+
+            if (typeof bny !== 'undefined' && bny.spaReady) {
+                bny.spaReady(triggerAutoNav);
+            } else {
+                window.addEventListener('DOMContentLoaded', triggerAutoNav);
+            }
+        </script>
     </main>
 
     <!-- ==================== 共享页脚 ==================== -->
@@ -108,14 +140,6 @@
         </div>
     </footer>
 
-    <script>
-        window.addEventListener('DOMContentLoaded', function () {
-            if (location.pathname === '/' || location.pathname === '/index.html' || location.pathname === '') {
-                var link = document.getElementById('auto-nav');
-                if (link) link.click();
-            }
-        });
-    </script>
     <script>
         document.getElementById('mode-btn').addEventListener('click', function () {
             var isDark = document.documentElement.classList.toggle('dark');

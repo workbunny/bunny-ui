@@ -29,6 +29,15 @@
  * 属性：
  *   bny-view         — 标记内容交换区域（必须）
  *   bny-spa-skip    — 排除特定链接，不走 SPA 导航
+ *   bny-spa-mode     — 导航模式：'history'（默认，真实 URL）或 'hash'（hash 路由）
+ *
+ * 导航模式：
+ *   history（默认）— 地址栏使用真实 URL（如 /doc/docs.html）
+ *     适配任意后端，刷新时后端返回对应页面即可，无需特殊配置
+ *   hash           — 地址栏使用 hash 路由（如 /doc/docs.html#/test/base.html）
+ *     刷新时浏览器加载入口页（SPA 启动时的页面），通过 hash 自动导航到目标内容
+ *     适用于无后端的纯前端部署（如 file:// 协议、静态托管）
+ *   两种模式均为全局配置，行为统一，不针对特定页面
  */
 (function () {
     'use strict';
@@ -61,6 +70,10 @@
     var _currentUrl = '';
     var _controller = null;  // AbortController，用于中止上一个请求
     var _readyCallbacks = []; // SPA 初始化完成回调队列
+    var _mode = 'history';   // 导航模式：'history' 或 'hash'
+    var _entryPath = '';     // hash 模式下的入口页路径（pathname + search）
+    var _replaceNext = false; // 下一次 navigate 用 replaceState（初始自动导航用，避免重复历史记录）
+    var _isPopstate = false;  // 正在处理 popstate（自动导航脚本据此跳过，避免后退陷阱）
 
     // ==================== 初始化 ====================
 
@@ -72,9 +85,12 @@
         if (!findView()) return; // 没有找到视口，不初始化
         _spaInited = true;
 
+        // 读取导航模式
+        _mode = getSpaMode();
+        // hash 模式下记录入口页路径（SPA 启动时的页面）
+        _entryPath = location.pathname + location.search;
+
         // 初始 URL：直接用 location.href（可能带 hash）
-        // 不调用 getUrlFromLocation()，避免 _currentUrl 被设为 hash 对应的内容 URL
-        // 否则自动导航到该内容 URL 时会因"相同 URL"被跳过
         _currentUrl = location.href;
         // 记录初始状态，地址栏保持不变
         history.replaceState(
@@ -124,55 +140,61 @@
     // 暴露到 bny 对象，供外部调用
     if (typeof bny !== 'undefined') {
         bny.spaReady = onReady;
+        // 标记下一次 navigate 用 replaceState（初始自动导航用，避免产生重复历史记录）
+        bny.spaReplaceNext = function () { _replaceNext = true; };
+        // 是否正在处理 popstate（自动导航脚本据此跳过，避免后退陷阱）
+        bny.spaIsPopstate = function () { return _isPopstate; };
     }
 
     /**
-     * 获取 SPA base URL（用于文档页等需要保持框架 URL 的场景）
-     *
-     * 当页面有 .docs-layout 元素且 head 中有 meta[name="bny-spa-base"] 时启用：
-     * - 导航后地址栏 URL 为 base + '#' + 实际内容 URL（如 /doc/docs.html#/test/base.html）
-     * - 刷新时浏览器加载 base 页面（docs.html），再通过 hash 自动导航到对应内容
-     * - 从其他页面导航离开后 .docs-layout 不存在，自动失效
-     *
-     * @returns {string} base URL，如 "/doc/docs.html"；未启用时返回空串
+     * 读取 SPA 导航模式
+     * 优先级：body[bny-spa-mode] > meta[name="bny-spa-mode"] > 默认 'history'
+     * @returns {string} 'history' 或 'hash'
      */
-    function getSpaBase() {
-        if (!document.querySelector('.docs-layout')) return '';
-        var meta = document.querySelector('meta[name="bny-spa-base"]');
-        return meta ? (meta.getAttribute('content') || '') : '';
+    function getSpaMode() {
+        var body = document.body;
+        if (body && body.hasAttribute('bny-spa-mode')) {
+            var m = body.getAttribute('bny-spa-mode');
+            if (m === 'hash' || m === 'history') return m;
+        }
+        var meta = document.querySelector('meta[name="bny-spa-mode"]');
+        if (meta) {
+            var mv = meta.getAttribute('content');
+            if (mv === 'hash' || mv === 'history') return mv;
+        }
+        return 'history';
     }
 
     /**
      * 计算 pushState/replaceState 用的地址栏 URL
-     * - 启用 base 时：base + '#' + 路径（如 /doc/docs.html#/test/base.html）
-     * - 未启用时：直接用 fetchUrl
-     * @param {string} fetchUrl 实际内容 URL（用于 fetch 请求，可能是完整 URL 或路径）
+     * - history 模式：直接用真实 URL（如 /doc/docs.html）
+     * - hash 模式：入口页路径 + '#' + 目标路径（如 /doc/docs.html#/test/base.html）
+     * @param {string} fetchUrl 实际内容 URL（用于 fetch 请求）
      * @returns {string} 地址栏 URL
      */
     function getHistoryUrl(fetchUrl) {
-        var base = getSpaBase();
-        if (!base) return fetchUrl;
-        // 从完整 URL 提取路径+查询串，使 hash 简洁（如 #/test/base.html）
+        if (_mode !== 'hash') return fetchUrl;
         try {
             var u = new URL(fetchUrl, location.href);
-            return base + '#' + u.pathname + u.search;
+            return _entryPath + '#' + u.pathname + u.search;
         } catch (_) {
-            return base + '#' + fetchUrl;
+            return _entryPath + '#' + fetchUrl;
         }
     }
 
     /**
-     * 从当前 location 提取实际内容 URL（逆操作）
-     * - 有 hash 路径（如 #/test/base.html）时转为完整 URL
-     * - 否则返回 location.href
+     * 从当前 location 提取实际内容 URL（getHistoryUrl 的逆操作）
+     * - history 模式：直接返回 location.href
+     * - hash 模式：从 hash 提取路径，结合 origin 转为完整 URL
      * @returns {string}
      */
     function getUrlFromLocation() {
-        if (location.hash && location.hash.length > 1) {
-            var hashPath = location.hash.substring(1);
-            if (hashPath.charAt(0) === '/') {
-                // hash 是路径，结合 origin 转为完整 URL
-                return location.origin + hashPath;
+        if (_mode === 'hash') {
+            if (location.hash && location.hash.length > 1) {
+                var hashPath = location.hash.substring(1);
+                if (hashPath.charAt(0) === '/') {
+                    return location.origin + hashPath;
+                }
             }
         }
         return location.href;
@@ -349,6 +371,9 @@
      */
     function navigate(url, viewPath) {
         viewPath = viewPath || [0];
+        // 捕获并重置 replaceNext 标志（初始自动导航用 replaceState 避免重复历史记录）
+        var useReplace = _replaceNext;
+        _replaceNext = false;
         // 解析 hash（用于导航后滚动到锚点）
         var urlObj = new URL(url, location.href);
         var hash = urlObj.hash;
@@ -390,10 +415,18 @@
             return res.text();
         })
         .then(function (html) {
+            // 捕获本次 fetch 的最终 URL；swapContent 可能触发嵌套导航（如自动导航脚本
+            // 调用 navigate），嵌套导航会修改 _currentUrl，此处需用捕获值判断
+            var fetchUrl = _currentUrl;
             swapContent(html, url, viewPath);
+            // 若 swapContent 触发了嵌套导航，_currentUrl 已变，
+            // 嵌套导航会自行更新历史和滚动，此处跳过避免重复/错误的历史记录
+            if (_currentUrl !== fetchUrl) return;
             // 更新浏览器历史
-            // 地址栏 URL：启用 base 时用 base + '#' + fetchUrl，保持框架页 URL
-            history.pushState(
+            // history 模式：地址栏为真实 URL
+            // hash 模式：地址栏为 入口页路径 + '#' + 目标路径
+            // 初始自动导航用 replaceState，避免入口页与内容页产生两条相同历史记录
+            history[useReplace ? 'replaceState' : 'pushState'](
                 { url: _currentUrl, title: document.title, viewPath: viewPath },
                 document.title,
                 getHistoryUrl(_currentUrl)
@@ -427,6 +460,8 @@
      */
     function navigatePost(url, formData, viewPath) {
         viewPath = viewPath || [0];
+        var useReplace = _replaceNext;
+        _replaceNext = false;
         if (_controller) _controller.abort();
 
         _scrollCache[_currentUrl] = { x: window.scrollX, y: window.scrollY };
@@ -451,9 +486,12 @@
             return res.text();
         })
         .then(function (html) {
+            var fetchUrl = _currentUrl;
             swapContent(html, url, viewPath);
+            // 嵌套导航已自行更新历史，跳过避免重复
+            if (_currentUrl !== fetchUrl) return;
             // POST 后通常是 PRG 重定向，用 pushState 更新 URL
-            history.pushState(
+            history[useReplace ? 'replaceState' : 'pushState'](
                 { url: _currentUrl, title: document.title, viewPath: viewPath },
                 document.title,
                 getHistoryUrl(_currentUrl)
@@ -756,13 +794,16 @@
             url = e.state.url;
             viewPath = e.state.viewPath || [0];
         } else {
-            // 没有 state（直接访问或刷新带 hash），从 location 提取
+            // 没有 state（直接访问或刷新），从 location 提取实际内容 URL
             url = getUrlFromLocation();
             viewPath = [0];
         }
         if (url === _currentUrl) return;
 
         _currentUrl = url;
+        // 标记正在处理 popstate：swapContent 中重新执行的自动导航脚本据此跳过，
+        // 避免回退到框架页时自动导航再次触发，形成后退陷阱
+        _isPopstate = true;
 
         if (_controller) _controller.abort();
         showProgress();
@@ -799,6 +840,7 @@
         .finally(function () {
             hideProgress();
             _controller = null;
+            _isPopstate = false;
         });
     }
 

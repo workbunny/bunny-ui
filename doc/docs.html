@@ -7,8 +7,6 @@
     <title>BunnyUI - 文档</title>
     <meta name="keywords" content="BunnyUI, 文档, 组件, HTMX">
     <meta name="description" content="BunnyUI 组件库文档">
-    <!-- SPA base URL：导航后地址栏保持 /doc/docs.html#/test/xxx.html，刷新不丢失框架 -->
-    <meta name="bny-spa-base" content="/doc/docs.html">
     <link rel="shortcut icon" href="/bunny.png" type="image/x-icon">
     <!-- 防闪白脚本 -->
     <script>
@@ -40,7 +38,7 @@
     <link rel="stylesheet" href="/doc/doc.css">
 </head>
 
-<body hx-ext="bny-spa">
+<body hx-ext="bny-spa" bny-spa-mode="hash">
 <header class="site-header">
     <div hx-ext="bny-nav" color="white">
         <div class="head">
@@ -59,7 +57,7 @@
                     <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/></svg>
                 </span>
             </a></li>
-            <li><a class="trigger" href="https://github.com/workbunny/bunny.ui" target="_blank" bny-spa-skip><i class="bny-icon icon-github-fill"></i><span>GitHub</span></a></li>
+            <li><a class="trigger" href="https://github.com/workbunny/bunny.ui" target="_blank" bny-spa-skip><i class="bny-icon icon-github-fill"></i><span></span></a></li>
         </ul>
     </div>
 </header>
@@ -164,17 +162,22 @@
                 <a href="/test/base.html" id="docs-auto-nav" bny-view-target="#docs-view" style="display:none"></a>
                 <script>
                     // 文档页自动导航：根据 hash 加载对应内容，默认加载"开始使用"
+                    // 全站 hash 模式：刷新时浏览器加载 index.html（入口页），
+                    // 通过 hash 路由自动导航到 docs.html，再由本脚本加载 #docs-view 内容
                     // 放在 #docs-view 内，确保从其他页面 SPA 导航到 docs.html 时
                     // 随 main 视口替换一起被 executeScripts 执行
                     // 使用 bny.spaReady 确保 SPA 扩展初始化完成后再触发点击
                     function triggerAutoNav() {
                         var autoNav = document.getElementById('docs-auto-nav');
                         if (!autoNav) return; // autoNav 不存在说明 #docs-view 已被内容替换
-                        // 读取 hash 路径（如 #/test/button.html），有则导航到对应内容
+                        // popstate 回退时不重新触发自动导航，避免后退陷阱
+                        if (typeof bny !== 'undefined' && bny.spaIsPopstate && bny.spaIsPopstate()) return;
+                        // 读取 hash 路径，仅接受 /test/ 内容页作为目标
+                        // 避免将框架页（如 /doc/docs.html）误加载进 #docs-view
                         var targetUrl = '/test/base.html'; // 默认
                         if (location.hash && location.hash.length > 1) {
                             var path = location.hash.substring(1);
-                            if (path.charAt(0) === '/') {
+                            if (path.charAt(0) === '/' && path.indexOf('/test/') === 0) {
                                 targetUrl = path;
                             }
                         }
@@ -223,7 +226,7 @@
 </footer>
 
 <script>
-    // 文档页自动导航脚本已移至 #docs-view 内部，确保 SPA 导航到本页时能随视口替换一起执行
+    // 文档页自动导航脚本在 #docs-view 内部，确保 SPA 导航到本页时能随视口替换一起执行
 </script>
 <script>
     document.getElementById('mode-btn').addEventListener('click', function () {
