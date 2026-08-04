@@ -132,7 +132,7 @@
     }
 
     /* ============ 纵向 ============ */
-    &[direction="vertical"] {
+    &[step-direction="vertical"] {
         flex-direction: column;
         gap: 0;
 
@@ -167,7 +167,7 @@
     }
 
     /* ============ 简洁模式 ============ */
-    &[model="simple"] .bny-step {
+    &[step-model="simple"] .bny-step {
         & .bny-step-icon {
             width: 28px;
             height: 28px;
@@ -181,29 +181,29 @@
     }
 
     /* ============ 主题色变体 ============ */
-    &[color="green"] .bny-step.is-process .bny-step-icon,
-    &[color="green"] .bny-step.is-finish .bny-step-icon,
-    &[color="green"] .bny-step.is-finish:not(:last-child)::after {
+    &[step-color="green"] .bny-step.is-process .bny-step-icon,
+    &[step-color="green"] .bny-step.is-finish .bny-step-icon,
+    &[step-color="green"] .bny-step.is-finish:not(:last-child)::after {
         background-color: var(--green);
         border-color: var(--green);
     }
 
-    &[color="green"] .bny-step.is-process .bny-step-icon {
+    &[step-color="green"] .bny-step.is-process .bny-step-icon {
         box-shadow: 0 0 0 3px var(--green-alpha-10);
     }
 
-    &[color="blue"] .bny-step.is-process .bny-step-icon,
-    &[color="blue"] .bny-step.is-finish .bny-step-icon,
-    &[color="blue"] .bny-step.is-finish:not(:last-child)::after {
+    &[step-color="blue"] .bny-step.is-process .bny-step-icon,
+    &[step-color="blue"] .bny-step.is-finish .bny-step-icon,
+    &[step-color="blue"] .bny-step.is-finish:not(:last-child)::after {
         background-color: var(--blue);
         border-color: var(--blue);
     }
 
-    &[color="blue"] .bny-step.is-process .bny-step-icon {
+    &[step-color="blue"] .bny-step.is-process .bny-step-icon {
         box-shadow: 0 0 0 3px var(--blue-alpha-10);
     }
 
-    &[color="red"] .bny-step.is-finish:not(:last-child)::after {
+    &[step-color="red"] .bny-step.is-finish:not(:last-child)::after {
         background-color: var(--red);
     }
 

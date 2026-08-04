@@ -1,7 +1,7 @@
 <div class="bny-row">
     <div class="text-content-box col-xs12 col-sm9">
         <div class="text-content">
-            <h1>头像 & 徽标<div class="bny-tag" color="red">v2.0.5+</div></h1>
+            <h1>头像 & 徽标<div class="bny-tag" tag-color="red">v2.0.5+</div></h1>
             <hr>
             <blockquote class="bny-blockquote">
                 头像和徽标是常用的 UI 装饰组件。头像支持图片、文字首字母、状态指示点；徽标支持红点、数字计数、颜色变体。纯 CSS 实现。
@@ -20,21 +20,21 @@
                         <div>
                             <div class="p-24">
                                 <div class="flex gap-12 flex-wrap">
-                                    <div class="bny-avatar" size="xs">A</div>
-                                    <div class="bny-avatar" size="sm">B</div>
+                                    <div class="bny-avatar" avatar-size="xs">A</div>
+                                    <div class="bny-avatar" avatar-size="sm">B</div>
                                     <div class="bny-avatar">C</div>
-                                    <div class="bny-avatar" size="lg">D</div>
-                                    <div class="bny-avatar" size="xl">E</div>
+                                    <div class="bny-avatar" avatar-size="lg">D</div>
+                                    <div class="bny-avatar" avatar-size="xl">E</div>
                                 </div>
                             </div>
                         </div>
                         <div>
                             <pre hx-ext="bny-code">
-&lt;div class="bny-avatar" size="xs"&gt;A&lt;/div&gt;
-&lt;div class="bny-avatar" size="sm"&gt;B&lt;/div&gt;
+&lt;div class="bny-avatar" avatar-size="xs"&gt;A&lt;/div&gt;
+&lt;div class="bny-avatar" avatar-size="sm"&gt;B&lt;/div&gt;
 &lt;div class="bny-avatar"&gt;C&lt;/div&gt;
-&lt;div class="bny-avatar" size="lg"&gt;D&lt;/div&gt;
-&lt;div class="bny-avatar" size="xl"&gt;E&lt;/div&gt;
+&lt;div class="bny-avatar" avatar-size="lg"&gt;D&lt;/div&gt;
+&lt;div class="bny-avatar" avatar-size="xl"&gt;E&lt;/div&gt;
                 </pre>
                         </div>
                     </div>
@@ -53,30 +53,30 @@
                             <div class="p-24">
                                 <p class="fw-medium" style="margin-bottom:10px; font-size:13px; color:var(--black-shallow);">图片头像</p>
                                 <div class="flex gap-12 flex-wrap" style="margin-bottom:24px;">
-                                    <div class="bny-avatar" size="sm">
+                                    <div class="bny-avatar" avatar-size="sm">
                                         <img src="/bunny.png" alt="avatar">
                                     </div>
                                     <div class="bny-avatar">
                                         <img src="/bunny.png" alt="avatar">
                                     </div>
-                                    <div class="bny-avatar" size="lg">
+                                    <div class="bny-avatar" avatar-size="lg">
                                         <img src="/bunny.png" alt="avatar">
                                     </div>
                                 </div>
 
-                                <p class="fw-medium" style="margin-bottom:10px; font-size:13px; color:var(--black-shallow);">方形 <code>shape="square"</code></p>
+                                <p class="fw-medium" style="margin-bottom:10px; font-size:13px; color:var(--black-shallow);">方形 <code>avatar-shape="square"</code></p>
                                 <div class="flex gap-12 flex-wrap" style="margin-bottom:24px;">
-                                    <div class="bny-avatar" shape="square" size="sm">A</div>
-                                    <div class="bny-avatar" shape="square">B</div>
-                                    <div class="bny-avatar" shape="square" size="lg">C</div>
+                                    <div class="bny-avatar" avatar-shape="square" avatar-size="sm">A</div>
+                                    <div class="bny-avatar" avatar-shape="square">B</div>
+                                    <div class="bny-avatar" avatar-shape="square" avatar-size="lg">C</div>
                                 </div>
 
-                                <p class="fw-medium" style="margin-bottom:10px; font-size:13px; color:var(--black-shallow);">彩色 <code>color="green"</code></p>
+                                <p class="fw-medium" style="margin-bottom:10px; font-size:13px; color:var(--black-shallow);">彩色 <code>avatar-color="green"</code></p>
                                 <div class="flex gap-12 flex-wrap">
-                                    <div class="bny-avatar" color="green">G</div>
-                                    <div class="bny-avatar" color="blue">B</div>
-                                    <div class="bny-avatar" color="yellow">Y</div>
-                                    <div class="bny-avatar" color="red">R</div>
+                                    <div class="bny-avatar" avatar-color="green">G</div>
+                                    <div class="bny-avatar" avatar-color="blue">B</div>
+                                    <div class="bny-avatar" avatar-color="yellow">Y</div>
+                                    <div class="bny-avatar" avatar-color="red">R</div>
                                 </div>
                             </div>
                         </div>
@@ -88,13 +88,13 @@
 &lt;/div&gt;
 
 &lt;!-- 方形 --&gt;
-&lt;div class="bny-avatar" shape="square"&gt;A&lt;/div&gt;
+&lt;div class="bny-avatar" avatar-shape="square"&gt;A&lt;/div&gt;
 
 &lt;!-- 彩色 --&gt;
-&lt;div class="bny-avatar" color="green"&gt;G&lt;/div&gt;
-&lt;div class="bny-avatar" color="blue"&gt;B&lt;/div&gt;
-&lt;div class="bny-avatar" color="yellow"&gt;Y&lt;/div&gt;
-&lt;div class="bny-avatar" color="red"&gt;R&lt;/div&gt;
+&lt;div class="bny-avatar" avatar-color="green"&gt;G&lt;/div&gt;
+&lt;div class="bny-avatar" avatar-color="blue"&gt;B&lt;/div&gt;
+&lt;div class="bny-avatar" avatar-color="yellow"&gt;Y&lt;/div&gt;
+&lt;div class="bny-avatar" avatar-color="red"&gt;R&lt;/div&gt;
                 </pre>
                         </div>
                     </div>
@@ -112,19 +112,19 @@
                         <div>
                             <div class="p-24">
                                 <div class="flex gap-16 flex-wrap">
-                                    <div class="bny-avatar" size="lg">
+                                    <div class="bny-avatar" avatar-size="lg">
                                         <img src="/bunny.png" alt="avatar">
                                         <span class="bny-avatar-status online"></span>
                                     </div>
-                                    <div class="bny-avatar" size="lg">
+                                    <div class="bny-avatar" avatar-size="lg">
                                         <img src="/bunny.png" alt="avatar">
                                         <span class="bny-avatar-status busy"></span>
                                     </div>
-                                    <div class="bny-avatar" size="lg">
+                                    <div class="bny-avatar" avatar-size="lg">
                                         <img src="/bunny.png" alt="avatar">
                                         <span class="bny-avatar-status away"></span>
                                     </div>
-                                    <div class="bny-avatar" size="lg">
+                                    <div class="bny-avatar" avatar-size="lg">
                                         <img src="/bunny.png" alt="avatar">
                                         <span class="bny-avatar-status"></span>
                                     </div>
@@ -133,15 +133,15 @@
                         </div>
                         <div>
                             <pre hx-ext="bny-code">
-&lt;div class="bny-avatar" size="lg"&gt;
+&lt;div class="bny-avatar" avatar-size="lg"&gt;
     &lt;img src="/bunny.png" alt="avatar"&gt;
     &lt;span class="bny-avatar-status online"&gt;&lt;/span&gt;
 &lt;/div&gt;
-&lt;div class="bny-avatar" size="lg"&gt;
+&lt;div class="bny-avatar" avatar-size="lg"&gt;
     &lt;img src="/bunny.png" alt="avatar"&gt;
     &lt;span class="bny-avatar-status busy"&gt;&lt;/span&gt;
 &lt;/div&gt;
-&lt;div class="bny-avatar" size="lg"&gt;
+&lt;div class="bny-avatar" avatar-size="lg"&gt;
     &lt;img src="/bunny.png" alt="avatar"&gt;
     &lt;span class="bny-avatar-status away"&gt;&lt;/span&gt;
 &lt;/div&gt;
@@ -163,10 +163,10 @@
                             <div class="p-24">
                                 <div class="bny-avatar-group">
                                     <div class="bny-avatar">+3</div>
-                                    <div class="bny-avatar" color="red">H</div>
-                                    <div class="bny-avatar" color="yellow">I</div>
-                                    <div class="bny-avatar" color="blue">J</div>
-                                    <div class="bny-avatar" color="green">K</div>
+                                    <div class="bny-avatar" avatar-color="red">H</div>
+                                    <div class="bny-avatar" avatar-color="yellow">I</div>
+                                    <div class="bny-avatar" avatar-color="blue">J</div>
+                                    <div class="bny-avatar" avatar-color="green">K</div>
                                 </div>
                             </div>
                         </div>
@@ -174,10 +174,10 @@
                             <pre hx-ext="bny-code">
 &lt;div class="bny-avatar-group"&gt;
     &lt;div class="bny-avatar"&gt;+3&lt;/div&gt;
-    &lt;div class="bny-avatar" color="red"&gt;H&lt;/div&gt;
-    &lt;div class="bny-avatar" color="yellow"&gt;I&lt;/div&gt;
-    &lt;div class="bny-avatar" color="blue"&gt;J&lt;/div&gt;
-    &lt;div class="bny-avatar" color="green"&gt;K&lt;/div&gt;
+    &lt;div class="bny-avatar" avatar-color="red"&gt;H&lt;/div&gt;
+    &lt;div class="bny-avatar" avatar-color="yellow"&gt;I&lt;/div&gt;
+    &lt;div class="bny-avatar" avatar-color="blue"&gt;J&lt;/div&gt;
+    &lt;div class="bny-avatar" avatar-color="green"&gt;K&lt;/div&gt;
 &lt;/div&gt;
                 </pre>
                         </div>
@@ -216,13 +216,13 @@
                                 <p class="fw-medium" style="margin-bottom:12px; font-size:13px; color:var(--black-shallow);">头像上的徽标</p>
                                 <div class="flex gap-16 flex-wrap">
                                     <span class="bny-badge">
-                                        <div class="bny-avatar" size="lg">
+                                        <div class="bny-avatar" avatar-size="lg">
                                             <img src="/bunny.png" alt="avatar">
                                         </div>
                                         <span class="bny-badge-dot"></span>
                                     </span>
                                     <span class="bny-badge">
-                                        <div class="bny-avatar" size="lg">
+                                        <div class="bny-avatar" avatar-size="lg">
                                             <img src="/bunny.png" alt="avatar">
                                         </div>
                                         <span class="bny-badge-count">3</span>
@@ -246,7 +246,7 @@
 
 &lt;!-- 头像 + 徽标 --&gt;
 &lt;span class="bny-badge"&gt;
-    &lt;div class="bny-avatar" size="lg"&gt;...&lt;/div&gt;
+    &lt;div class="bny-avatar" avatar-size="lg"&gt;...&lt;/div&gt;
     &lt;span class="bny-badge-count"&gt;3&lt;/span&gt;
 &lt;/span&gt;
                 </pre>
@@ -273,22 +273,22 @@
                                     <span class="bny-badge-standalone" size="lg">999+</span>
                                 </div>
 
-                                <p class="fw-medium" style="margin-bottom:12px; font-size:13px; color:var(--black-shallow);">彩色徽标 <code>color="green"</code></p>
+                                <p class="fw-medium" style="margin-bottom:12px; font-size:13px; color:var(--black-shallow);">彩色徽标 <code>avatar-color="green"</code></p>
                                 <div class="flex gap-8 flex-wrap" style="margin-bottom:24px;">
-                                    <span class="bny-badge-standalone" color="green">新</span>
-                                    <span class="bny-badge-standalone" color="blue">热</span>
-                                    <span class="bny-badge-standalone" color="yellow">顶</span>
-                                    <span class="bny-badge-standalone" color="red">99+</span>
-                                    <span class="bny-badge-standalone" color="gray">off</span>
+                                    <span class="bny-badge-standalone" avatar-color="green">新</span>
+                                    <span class="bny-badge-standalone" avatar-color="blue">热</span>
+                                    <span class="bny-badge-standalone" avatar-color="yellow">顶</span>
+                                    <span class="bny-badge-standalone" avatar-color="red">99+</span>
+                                    <span class="bny-badge-standalone" avatar-color="gray">off</span>
                                 </div>
 
                                 <p class="fw-medium" style="margin-bottom:12px; font-size:13px; color:var(--black-shallow);">圆点徽标 <code>.dot</code></p>
                                 <div class="flex gap-8 flex-wrap">
                                     <span class="bny-badge-standalone dot"></span>
-                                    <span class="bny-badge-standalone dot" color="green"></span>
-                                    <span class="bny-badge-standalone dot" color="blue"></span>
-                                    <span class="bny-badge-standalone dot" color="yellow"></span>
-                                    <span class="bny-badge-standalone dot" color="red"></span>
+                                    <span class="bny-badge-standalone dot" avatar-color="green"></span>
+                                    <span class="bny-badge-standalone dot" avatar-color="blue"></span>
+                                    <span class="bny-badge-standalone dot" avatar-color="yellow"></span>
+                                    <span class="bny-badge-standalone dot" avatar-color="red"></span>
                                 </div>
                             </div>
                         </div>
@@ -299,12 +299,12 @@
 &lt;span class="bny-badge-standalone" size="lg"&gt;128&lt;/span&gt;
 
 &lt;!-- 彩色 --&gt;
-&lt;span class="bny-badge-standalone" color="green"&gt;新&lt;/span&gt;
-&lt;span class="bny-badge-standalone" color="red"&gt;99+&lt;/span&gt;
+&lt;span class="bny-badge-standalone" avatar-color="green"&gt;新&lt;/span&gt;
+&lt;span class="bny-badge-standalone" avatar-color="red"&gt;99+&lt;/span&gt;
 
 &lt;!-- 圆点 --&gt;
-&lt;span class="bny-badge-standalone dot" color="red"&gt;&lt;/span&gt;
-&lt;span class="bny-badge-standalone dot" color="green"&gt;&lt;/span&gt;
+&lt;span class="bny-badge-standalone dot" avatar-color="red"&gt;&lt;/span&gt;
+&lt;span class="bny-badge-standalone dot" avatar-color="green"&gt;&lt;/span&gt;
                 </pre>
                         </div>
                     </div>
@@ -323,24 +323,19 @@
                 </thead>
                 <tbody>
                     <tr>
-                        <td><code>size</code></td>
+                        <td><code>avatar-size</code></td>
                         <td>xs / sm / (default) / lg / xl</td>
                         <td>24px / 32px / 40px / 56px / 72px</td>
                     </tr>
                     <tr>
-                        <td><code>shape</code></td>
+                        <td><code>avatar-shape</code></td>
                         <td>square</td>
                         <td>方形圆角，默认圆形</td>
                     </tr>
                     <tr>
-                        <td><code>color</code></td>
+                        <td><code>avatar-color</code></td>
                         <td>green / blue / yellow / red</td>
                         <td>背景色</td>
-                    </tr>
-                    <tr>
-                        <td><code>bny-avatar-status</code></td>
-                        <td>online / busy / away / (default)</td>
-                        <td>状态指示点，绿 / 红 / 黄 / 灰</td>
                     </tr>
                 </tbody>
             </table>
@@ -376,18 +371,34 @@
                     </tr>
                 </tbody>
             </table>
+
+            <h3>状态指示点类名</h3>
+            <table hx-ext="bny-table">
+                <thead>
+                    <tr>
+                        <th>类名</th>
+                        <th>说明</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>bny-avatar-status</code></td>
+                        <td>状态指示点；加 <code>.online</code> 绿 / <code>.busy</code> 红 / <code>.away</code> 黄 / 无修饰灰</td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
     </div>
     <div class="right-anchor-box hidden-xs col-sm3">
         <div class="right-anchor">
-            <ul hx-ext="bny-anchor" rail>
-                <li class="link" anchor="#n01">头像 — 基础</li>
-                <li class="link" anchor="#n02">头像 — 形状颜色</li>
-                <li class="link" anchor="#n03">头像 — 状态指示</li>
-                <li class="link" anchor="#n04">头像组</li>
-                <li class="link" anchor="#n05">徽标 — 附属</li>
-                <li class="link" anchor="#n06">徽标 — 独立</li>
-                <li class="link" anchor="#n07">API</li>
+            <ul hx-ext="bny-anchor" anchor-rail>
+                <li class="link" anchor-target="#n01">头像 — 基础</li>
+                <li class="link" anchor-target="#n02">头像 — 形状颜色</li>
+                <li class="link" anchor-target="#n03">头像 — 状态指示</li>
+                <li class="link" anchor-target="#n04">头像组</li>
+                <li class="link" anchor-target="#n05">徽标 — 附属</li>
+                <li class="link" anchor-target="#n06">徽标 — 独立</li>
+                <li class="link" anchor-target="#n07">API</li>
             </ul>
         </div>
     </div>

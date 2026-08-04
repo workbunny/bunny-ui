@@ -12,7 +12,7 @@ htmx.defineExtension('bny-collapse', {
                         const accordion = e.target
                             .parentElement
                             .parentElement
-                            .getAttribute('mode') === 'accordion'
+                            .getAttribute('collapse-mode') === 'accordion'
                         if (accordion) {
                             const isShow = item.classList.contains('show')
                             bny.removeClass(item
@@ -44,7 +44,7 @@ htmx.defineExtension('bny-collapse', {
             let html = ''
             arr.forEach(item => {
                 html += `
-                    <div class="item" bny-id="${item.id}">
+                    <div class="item" collapse-id="${item.id}">
                         <div class="title" ${bny.parAttrStr(item.attr)}>
                             ${item.title}
                         </div>

@@ -35,7 +35,7 @@ htmx.defineExtension('bny-menu', {
             arr.forEach(v => {
                 const attrStr = bny.parAttrStr(v.attr)
                 html += `<div class="item" ${attrStr}>`
-                html += `<div class="trigger" bny-id="${bny.escapeChars(String(v.id))}">`
+                html += `<div class="trigger" menu-id="${bny.escapeChars(String(v.id))}">`
                 html += `<span>${bny.escapeChars(v.name)}</span>`
                 if (v.child) {
                     html += `<i class="bny-icon icon-right"></i>`
@@ -102,7 +102,7 @@ function getMenuOrientation(item) {
     // 顶级 menu：检查 mode 属性或 vertical 类
     const menuRoot = item.closest('[hx-ext~="bny-menu"]')
     if (menuRoot) {
-        if (menuRoot.getAttribute('mode') === 'vertical' ||
+        if (menuRoot.getAttribute('menu-mode') === 'vertical' ||
             menuRoot.classList.contains('vertical')) {
             return 'vertical'
         }

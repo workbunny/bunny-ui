@@ -14,8 +14,8 @@
  *        hx-target="#user-list"
  *        hx-swap="innerHTML"
  *        hx-trigger="load"
- *        data-page-size="10"
- *        data-max-buttons="7">
+ *        pg-page-size="10"
+ *        pg-max-buttons="7">
  *   </div>
  *   <div id="user-list"></div>
  *
@@ -54,20 +54,20 @@ htmx.defineExtension('bny-pagination', {
         // 兼容 {data: {...}} 包裹与平铺两种结构
         var data = json.data || json;
         var total = parseInt(data.total, 10) || 0;
-        var pageSize = parseInt(data.pageSize || data.size, 10) || parseInt(elt.getAttribute('data-page-size'), 10) || 10;
+        var pageSize = parseInt(data.pageSize || data.size, 10) || parseInt(elt.getAttribute('pg-page-size'), 10) || 10;
 
         // 参数名：默认 page
-        var paramName = elt.getAttribute('data-page-param') || 'page';
+        var paramName = elt.getAttribute('pg-page-param') || 'page';
 
         // 优先从 responseURL 解析 page 参数（支持静态 JSON 测试数据反映点击的页码）
         var page = parsePageFromURL(xhr.responseURL, paramName) || parseInt(data.page, 10) || 1;
 
         // 配置：最多显示多少个页码按钮（默认 7）
-        var maxButtons = parseInt(elt.getAttribute('data-max-buttons'), 10) || 7;
+        var maxButtons = parseInt(elt.getAttribute('pg-max-buttons'), 10) || 7;
         // 是否显示跳转输入框
-        var showJumper = elt.getAttribute('data-jumper') !== 'false';
+        var showJumper = elt.getAttribute('pg-jumper') !== 'false';
         // 是否显示总数
-        var showTotal = elt.getAttribute('data-total') !== 'false';
+        var showTotal = elt.getAttribute('pg-total') !== 'false';
 
         var totalPages = Math.max(1, Math.ceil(total / pageSize));
         if (page > totalPages) page = totalPages;
@@ -80,9 +80,9 @@ htmx.defineExtension('bny-pagination', {
         var h = '<div class="bny-pagination"';
         h += carryAttrs(elt, ['color', 'model',
             'data-max-buttons', 'data-jumper', 'data-total', 'data-page-size']);
-        h += ' data-current="' + page + '"';
-        h += ' data-total-pages="' + totalPages + '"';
-        h += ' data-page-param="' + bny.escapeChars(paramName) + '"';
+        h += ' pg-current="' + page + '"';
+        h += ' pg-total-pages="' + totalPages + '"';
+        h += ' pg-page-param="' + bny.escapeChars(paramName) + '"';
         h += '>';
 
         // 总数
@@ -92,7 +92,7 @@ htmx.defineExtension('bny-pagination', {
 
         // 上一页
         h += '<a class="bny-pagination-prev' + (page <= 1 ? ' disabled' : '') + '"';
-        h += ' data-page="' + Math.max(1, page - 1) + '"';
+        h += ' pg-page="' + Math.max(1, page - 1) + '"';
         h += ' title="上一页"><i class="bny-icon icon-left"></i></a>';
 
         // 页码按钮
@@ -103,14 +103,14 @@ htmx.defineExtension('bny-pagination', {
                 h += '<span class="bny-pagination-ellipsis">...</span>';
             } else {
                 h += '<a class="bny-pagination-btn' + (b === page ? ' active' : '') + '"';
-                h += ' data-page="' + b + '"';
+                h += ' pg-page="' + b + '"';
                 h += '>' + b + '</a>';
             }
         }
 
         // 下一页
         h += '<a class="bny-pagination-next' + (page >= totalPages ? ' disabled' : '') + '"';
-        h += ' data-page="' + Math.min(totalPages, page + 1) + '"';
+        h += ' pg-page="' + Math.min(totalPages, page + 1) + '"';
         h += ' title="下一页"><i class="bny-icon icon-right"></i></a>';
 
         // 跳转
@@ -126,7 +126,7 @@ htmx.defineExtension('bny-pagination', {
         // - allList：前端分页，从全量数据截取当前页（静态 JSON 测试场景）
         // - list：服务端已分页的数据
         // - columns：表格列定义，有则渲染表格，否则渲染简单列表
-        if (elt.getAttribute('data-render-list') === 'true') {
+        if (elt.getAttribute('pg-render-list') === 'true') {
             var list = [];
             var columns = data.columns || [];
 
@@ -287,7 +287,7 @@ function setupDelegation() {
             e.preventDefault();
             return;
         }
-        var p = btn.getAttribute('data-page');
+        var p = btn.getAttribute('pg-page');
         if (!p) return;
         triggerPageRequest(bar, p);
     });
@@ -300,7 +300,7 @@ function setupDelegation() {
         e.preventDefault();
         var bar = input.closest && input.closest('.bny-pagination');
         if (!bar) return;
-        var totalPages = parseInt(bar.getAttribute('data-total-pages'), 10) || 1;
+        var totalPages = parseInt(bar.getAttribute('pg-total-pages'), 10) || 1;
         var p = parseInt(input.value, 10);
         if (isNaN(p) || p < 1) p = 1;
         if (p > totalPages) p = totalPages;
@@ -328,7 +328,7 @@ function triggerPageRequest(bar, page) {
     if (!url) return;
     var targetSel = src.getAttribute('hx-target');
     var swapStyle = src.getAttribute('hx-swap') || 'innerHTML';
-    var paramName = src.getAttribute('data-page-param') || 'page';
+    var paramName = src.getAttribute('pg-page-param') || 'page';
     var vals = {};
     vals[paramName] = page;
     // 同时保留原有 hx-vals

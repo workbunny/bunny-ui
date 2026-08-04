@@ -3843,7 +3843,7 @@
       const color = type(code);
       const alert = document.createElement("div");
       alert.classList.add("bny-alert", `bny-anim-${anim}`);
-      alert.setAttribute("color", color);
+      alert.setAttribute("alert-color", color);
       alert.style.width = "auto";
       alert.innerHTML = bny.escapeChars(msg);
       const closeBtn = document.createElement("i");
@@ -3905,7 +3905,7 @@
       confirm_btn.classList.add("btn");
       const confirm_yes = document.createElement("button");
       confirm_yes.classList.add("bny-btn");
-      confirm_yes.setAttribute("color", "blue");
+      confirm_yes.setAttribute("btn-color", "blue");
       confirm_yes.innerHTML = "确认";
       const confirm_no = document.createElement("button");
       confirm_no.classList.add("bny-btn");
@@ -4207,11 +4207,11 @@
       load.className = `bny-load-shade`;
       switch (style) {
         case 1:
-          load.innerHTML = `<div class="bny-load" color="${color}" size="${size}"></div>`;
+          load.innerHTML = `<div class="bny-load" load-color="${color}" load-size="${size}"></div>`;
           break;
         case 2:
           load.innerHTML = `
-                <div class="bny-load-ball" color="${color}" size="${size}">
+                <div class="bny-load-ball" load-color="${color}" load-size="${size}">
                     <div></div>
                     <div></div>
                     <div></div>
@@ -4251,7 +4251,7 @@
         arr.forEach((v) => {
           const attrStr = bny.parAttrStr(v.attr);
           html += `<div class="item" ${attrStr}>`;
-          html += `<div class="trigger" bny-id="${bny.escapeChars(String(v.id))}">`;
+          html += `<div class="trigger" menu-id="${bny.escapeChars(String(v.id))}">`;
           html += `<span>${bny.escapeChars(v.name)}</span>`;
           if (v.child) {
             html += `<i class="bny-icon icon-right"></i>`;
@@ -4291,7 +4291,7 @@
     }
     const menuRoot = item.closest('[hx-ext~="bny-menu"]');
     if (menuRoot) {
-      if (menuRoot.getAttribute("mode") === "vertical" || menuRoot.classList.contains("vertical")) {
+      if (menuRoot.getAttribute("menu-mode") === "vertical" || menuRoot.classList.contains("vertical")) {
         return "vertical";
       }
     }
@@ -4406,7 +4406,7 @@
             const title = e.target.closest(".title");
             if (title) {
               const item = title.parentElement;
-              const accordion = e.target.parentElement.parentElement.getAttribute("mode") === "accordion";
+              const accordion = e.target.parentElement.parentElement.getAttribute("collapse-mode") === "accordion";
               if (accordion) {
                 const isShow = item.classList.contains("show");
                 bny.removeClass(item.parentElement.querySelectorAll(".item"), "show");
@@ -4428,7 +4428,7 @@
         let html = "";
         arr.forEach((item) => {
           html += `
-                    <div class="item" bny-id="${item.id}">
+                    <div class="item" collapse-id="${item.id}">
                         <div class="title" ${bny.parAttrStr(item.attr)}>
                             ${item.title}
                         </div>
@@ -4598,7 +4598,7 @@
         if (bny.hasExtName(evt.target, "bny-confirm")) {
           const msg = evt.target.getAttribute("hx-confirm");
           const title = evt.target.getAttribute("title") || "提示";
-          const anim = evt.target.getAttribute("anim") || "scale";
+          const anim = evt.target.getAttribute("confirm-anim") || "scale";
           bny.confirm(msg, {
             title,
             anim,
@@ -4651,11 +4651,11 @@
               data.title = title;
             }
           }
-          data.shade = elt.getAttribute("shade") !== null ? true : false;
-          if (elt.hasAttribute("anim")) data.anim = elt.getAttribute("anim");
-          if (elt.hasAttribute("width")) data.width = elt.getAttribute("width");
-          if (elt.hasAttribute("height")) data.height = elt.getAttribute("height");
-          if (elt.hasAttribute("offset")) data.offset = elt.getAttribute("offset");
+          data.shade = elt.getAttribute("page-shade") !== null ? true : false;
+          if (elt.hasAttribute("page-anim")) data.anim = elt.getAttribute("page-anim");
+          if (elt.hasAttribute("page-width")) data.width = elt.getAttribute("page-width");
+          if (elt.hasAttribute("page-height")) data.height = elt.getAttribute("page-height");
+          if (elt.hasAttribute("page-offset")) data.offset = elt.getAttribute("page-offset");
           const page = bny.page(text, data);
           htmx.process(page);
         }
@@ -4667,8 +4667,8 @@
     // 事件
     onEvent: function(name, evt) {
       function getCode(target, str2) {
-        const mode = target.getAttribute("mode");
-        const lang = target.getAttribute("lang");
+        const mode = target.getAttribute("code-mode");
+        const lang = target.getAttribute("code-lang");
         switch (mode) {
           case "highlight":
             str2 = hljs.highlight(str2, { language: lang }).value;
@@ -4719,7 +4719,7 @@
     // 事件
     onEvent: function(name, evt) {
       function sortVal(td) {
-        return td.getAttribute("data-sort-val") || td.textContent.trim();
+        return td.getAttribute("table-sort-val") || td.textContent.trim();
       }
       function sortRows(tbody, colIndex, type, asc) {
         const rows = Array.from(tbody.querySelectorAll("tr"));
@@ -4744,12 +4744,9 @@
         });
       }
       function initSort(table) {
-        let ths = table.querySelectorAll("thead th[data-sort]");
-        if (!ths.length) {
-          ths = table.querySelectorAll("thead th[sortable]");
-        }
+        let ths = table.querySelectorAll("thead th[table-sort]");
         if (!ths.length) return;
-        const tableKey = table.getAttribute("data-table-key") || "";
+        const tableKey = table.getAttribute("table-key") || "";
         const storeKey = tableKey ? "bny-table-sort:" + tableKey : "";
         function persistSort(colIndex, type, asc) {
           if (!storeKey) return;
@@ -4787,7 +4784,7 @@
             } else {
               th.classList.add("sort-asc");
             }
-            const type = th.getAttribute("data-sort") || "string";
+            const type = th.getAttribute("table-sort") || "string";
             const asc = th.classList.contains("sort-asc");
             const tbody = table.querySelector("tbody");
             if (tbody) {
@@ -4818,7 +4815,7 @@
         for (let j = 0; j < tbodyTrs.length; j++) {
           const tds = tbodyTrs[j].querySelectorAll("td");
           for (let k = 0; k < tds.length; k++) {
-            tds[k].setAttribute("label", titles[tds[k].cellIndex] || "");
+            tds[k].setAttribute("table-label", titles[tds[k].cellIndex] || "");
           }
         }
       }
@@ -4831,7 +4828,7 @@
           const tds = evt.target.querySelectorAll("td");
           for (let i = 0; i < tds.length; i++) {
             const label = evt.target.parentElement.parentElement.querySelector("th:nth-child(" + (tds[i].cellIndex + 1) + ")");
-            tds[i].setAttribute("label", label ? label.textContent : "");
+            tds[i].setAttribute("table-label", label ? label.textContent : "");
           }
         }
       }
@@ -4849,8 +4846,11 @@
         if (col !== null && typeof col === "object") {
           var name = bny.escapeChars(String(col.name ?? ""));
           var attrs = "";
-          if (col.sortable) attrs += " sortable";
-          if (col.sort) attrs += ' data-sort="' + bny.escapeChars(String(col.sort)) + '"';
+          if (col.sort) {
+            attrs += ' table-sort="' + bny.escapeChars(String(col.sort)) + '"';
+          } else if (col.sortable) {
+            attrs += " table-sort";
+          }
           return "<th" + attrs + ">" + name + "</th>";
         }
         return "<th>" + bny.escapeChars(String(col)) + "</th>";
@@ -4862,8 +4862,8 @@
         const emptyText = data.empty || "暂无数据";
         const tableKey = data.key || color || "";
         let h = "";
-        h += '<table hx-ext="bny-table"' + (color ? ' color="' + color + '"' : "");
-        if (tableKey) h += ' data-table-key="' + bny.escapeChars(tableKey) + '"';
+        h += '<table hx-ext="bny-table"' + (color ? ' table-color="' + color + '"' : "");
+        if (tableKey) h += ' table-key="' + bny.escapeChars(tableKey) + '"';
         h += ">";
         h += "<thead><tr>";
         cols.forEach(function(col) {
@@ -5034,8 +5034,8 @@
         const heads = bny.queryChildAll(target, ".head>li");
         const bodys = bny.queryChildAll(target, ".body>div");
         const trigger = target.getAttribute("hx-trigger") ?? "click";
-        const mode = target.getAttribute("mode") ?? "normal";
-        const index = Number(target.getAttribute("index") ?? 0);
+        const mode = target.getAttribute("tab-mode") ?? "normal";
+        const index = Number(target.getAttribute("tab-index") ?? 0);
         const addBody = heads.length - bodys.length;
         for (let i = 0; i < addBody; i++) {
           const body = document.createElement("div");
@@ -5044,7 +5044,7 @@
         }
         for (let i = 0; i < heads.length; i++) {
           heads[i].setAttribute("hx-trigger", trigger);
-          if (heads[i].getAttribute("closable") !== null && !heads[i].querySelector(":scope>i.icon-close")) {
+          if (heads[i].getAttribute("tab-closable") !== null && !heads[i].querySelector(":scope>i.icon-close")) {
             addCloseBtn(heads[i]);
           }
           htmx.process(heads[i]);
@@ -5092,7 +5092,7 @@
             }
             const trigger = tab.getAttribute("hx-trigger") ?? "click";
             evt.target.setAttribute("hx-trigger", trigger);
-            if (evt.target.getAttribute("closable") !== null && !bny.queryChild(evt.target, "i.icon-close")) {
+            if (evt.target.getAttribute("tab-closable") !== null && !bny.queryChild(evt.target, "i.icon-close")) {
               addCloseBtn(evt.target);
             }
             const body = document.createElement("div");
@@ -5141,11 +5141,11 @@
     onEvent: function(name, evt) {
       function onToggle(btn, nav) {
         btn.addEventListener("click", (e) => {
-          const collapsed = nav.hasAttribute("collapsed") ?? false;
+          const collapsed = nav.hasAttribute("nav-collapsed") ?? false;
           if (collapsed) {
-            nav.removeAttribute("collapsed");
+            nav.removeAttribute("nav-collapsed");
           } else {
-            nav.setAttribute("collapsed", "");
+            nav.setAttribute("nav-collapsed", "");
           }
           const isShow = nav.querySelectorAll("li.show");
           if (isShow.length > 0) {
@@ -5155,8 +5155,8 @@
       }
       if (name === "htmx:afterProcessNode") {
         if (bny.hasExtName(evt.target, "bny-nav")) {
-          const side = evt.target.hasAttribute("side") ?? false;
-          const toggle = evt.target.hasAttribute("toggle") ?? false;
+          const side = evt.target.hasAttribute("nav-side") ?? false;
+          const toggle = evt.target.hasAttribute("nav-toggle") ?? false;
           if (side && toggle || !side) {
             const head = bny.queryChild(evt.target, ".head");
             const toggleBtn = document.createElement("div");
@@ -5171,7 +5171,7 @@
             const trigger = bny.queryChild(item, ".trigger");
             if (item) {
               if (subMenu) {
-                const collapsed = evt.target.hasAttribute("collapsed") ?? false;
+                const collapsed = evt.target.hasAttribute("nav-collapsed") ?? false;
                 if (!side || collapsed) {
                   const parent = item.parentElement;
                   if (parent.classList.contains("menu")) {
@@ -5210,7 +5210,7 @@
       }
       if (name === "htmx:afterProcessNode") {
         if (bny.hasExtName(evt.target, "bny-anchor")) {
-          const rail = evt.target.getAttribute("rail") !== null ? true : false;
+          const rail = evt.target.getAttribute("anchor-rail") !== null ? true : false;
           if (rail) {
             const slider = document.createElement("div");
             slider.classList.add("slider");
@@ -5220,7 +5220,7 @@
             const link = e.target.closest(".link");
             if (link) {
               bny.removeClass(evt.target.querySelectorAll(".link"), "active");
-              const anchor = link.getAttribute("anchor");
+              const anchor = link.getAttribute("anchor-target");
               const section = htmx.find(anchor);
               if (section) {
                 section.scrollIntoView({
@@ -5251,7 +5251,7 @@
               const links = evt.target.querySelectorAll(".link");
               let currentLink = null;
               links.forEach((link) => {
-                const anchor = link.getAttribute("anchor");
+                const anchor = link.getAttribute("anchor-target");
                 const section = htmx.find(anchor);
                 if (section) {
                   const rect = section.getBoundingClientRect();
@@ -5296,7 +5296,7 @@
     function ensure() {
       if (tip) return;
       tip = document.createElement("div");
-      tip.className = "bny-tooltip";
+      tip.className = "tip";
       document.body.appendChild(tip);
     }
     function attr(elt, attr2) {
@@ -5306,15 +5306,15 @@
       ensure();
       clearTimeout(showTimer);
       clearTimeout(hideTimer);
-      var delay = parseInt(attr(elt, "data-tip-delay")) || 0;
+      var delay = parseInt(attr(elt, "tip-delay")) || 0;
       showTimer = setTimeout(function() {
         _show(elt);
       }, delay);
     }
     function _show(elt) {
       current = elt;
-      var html = attr(elt, "bny-tip-html");
-      var text = attr(elt, "bny-tip");
+      var html = attr(elt, "tip-html");
+      var text = attr(elt, "tip");
       if (html) {
         tip.innerHTML = html;
       } else if (text) {
@@ -5322,16 +5322,16 @@
       } else {
         return;
       }
-      var width = attr(elt, "data-tip-width");
+      var width = attr(elt, "tip-width");
       tip.style.maxWidth = width ? width : "";
-      var theme = attr(elt, "data-tip-theme");
-      var themeClass = theme === "light" ? "bny-tooltip-light" : "";
-      tip.className = "bny-tooltip " + themeClass;
+      var theme = attr(elt, "tip-theme");
+      var themeClass = theme === "light" ? "tip-light" : "";
+      tip.className = "tip " + themeClass;
       tip.style.display = "block";
       tip.style.visibility = "hidden";
       tip.offsetHeight;
       var tw = tip.offsetWidth, th = tip.offsetHeight;
-      var placement = attr(elt, "data-tip-placement");
+      var placement = attr(elt, "tip-placement");
       var best;
       if (placement) {
         best = placement;
@@ -5445,8 +5445,8 @@
     }
     function scan(root) {
       if (root.nodeType !== 1) return;
-      if (root.hasAttribute && (root.hasAttribute("bny-tip") || root.hasAttribute("bny-tip-html"))) bind(root);
-      if (root.querySelectorAll) root.querySelectorAll("[bny-tip], [bny-tip-html]").forEach(bind);
+      if (root.hasAttribute && (root.hasAttribute("tip") || root.hasAttribute("tip-html"))) bind(root);
+      if (root.querySelectorAll) root.querySelectorAll("[tip], [tip-html]").forEach(bind);
     }
     if (typeof htmx !== "undefined") {
       htmx.onLoad(function(content) {
@@ -5555,11 +5555,11 @@
       }
       if (this.needsTime()) {
         h += '<div class="bny-datepicker-time">';
-        h += '<div class="time-col"><button class="time-btn up" data-field="H">&#9650;</button><span class="time-val" data-field="H">00</span><button class="time-btn down" data-field="H">&#9660;</button></div>';
+        h += '<div class="time-col"><button class="time-btn up" dt-field="H">&#9650;</button><span class="time-val" dt-field="H">00</span><button class="time-btn down" dt-field="H">&#9660;</button></div>';
         h += '<span class="time-sep">:</span>';
-        h += '<div class="time-col"><button class="time-btn up" data-field="M">&#9650;</button><span class="time-val" data-field="M">00</span><button class="time-btn down" data-field="M">&#9660;</button></div>';
+        h += '<div class="time-col"><button class="time-btn up" dt-field="M">&#9650;</button><span class="time-val" dt-field="M">00</span><button class="time-btn down" dt-field="M">&#9660;</button></div>';
         h += '<span class="time-sep">:</span>';
-        h += '<div class="time-col"><button class="time-btn up" data-field="S">&#9650;</button><span class="time-val" data-field="S">00</span><button class="time-btn down" data-field="S">&#9660;</button></div>';
+        h += '<div class="time-col"><button class="time-btn up" dt-field="S">&#9650;</button><span class="time-val" dt-field="S">00</span><button class="time-btn down" dt-field="S">&#9660;</button></div>';
         h += "</div>";
       }
       h += '<div class="bny-datepicker-footer">';
@@ -5897,7 +5897,7 @@
             if (tY === this.viewYear && tM === this.viewMonth && tD === num) cls += " today";
             if (this.isDisabled(this.viewYear, this.viewMonth, num)) cls += " disabled";
           }
-          h += '<td><span class="' + cls + '" data-day="' + num + '">' + num + "</span></td>";
+          h += '<td><span class="' + cls + '" dt-day="' + num + '">' + num + "</span></td>";
         }
         h += "</tr>";
         if (day > daysInMonth) break;
@@ -5911,7 +5911,7 @@
       for (var i = 0; i < 12; i++) {
         var cls = "month-cell";
         if (this.temp.m === i && this.temp.y === this.viewYear) cls += " selected";
-        h += '<span class="' + cls + '" data-month="' + i + '">' + MONTHS[i] + "</span>";
+        h += '<span class="' + cls + '" dt-month="' + i + '">' + MONTHS[i] + "</span>";
       }
       h += "</div>";
       body.innerHTML = h;
@@ -5922,7 +5922,7 @@
       for (var i = start - 1; i <= start + 10; i++) {
         var cls = "year-cell";
         if (i === this.temp.y) cls += " selected";
-        h += '<span class="' + cls + '" data-year="' + i + '">' + i + "</span>";
+        h += '<span class="' + cls + '" dt-year="' + i + '">' + i + "</span>";
       }
       h += "</div>";
       body.innerHTML = h;
@@ -5932,7 +5932,7 @@
       var panel = this.panel;
       var fields = ["H", "M", "S"];
       fields.forEach(function(f) {
-        var el = panel.querySelector('.time-val[data-field="' + f + '"]');
+        var el = panel.querySelector('.time-val[dt-field="' + f + '"]');
         if (el) el.textContent = (self.temp[f] < 10 ? "0" : "") + self.temp[f];
       });
     };
@@ -5942,7 +5942,7 @@
     };
     DatePicker.prototype.handleDayClick = function(el) {
       if (el.classList.contains("disabled")) return;
-      var day = +el.getAttribute("data-day");
+      var day = +el.getAttribute("dt-day");
       if (el.classList.contains("other-month")) {
         if (day > 15) this.viewMonth--;
         else this.viewMonth++;
@@ -5962,7 +5962,7 @@
       this.render();
     };
     DatePicker.prototype.handleMonthClick = function(el) {
-      this.temp.m = +el.getAttribute("data-month");
+      this.temp.m = +el.getAttribute("dt-month");
       if (this.needsMonthOnly()) {
         this.temp.y = this.viewYear;
         this.render();
@@ -5973,12 +5973,12 @@
       }
     };
     DatePicker.prototype.handleYearClick = function(el) {
-      this.viewYear = +el.getAttribute("data-year");
+      this.viewYear = +el.getAttribute("dt-year");
       this.viewType = "months";
       this.render();
     };
     DatePicker.prototype.handleTimeBtn = function(el) {
-      var field = el.getAttribute("data-field");
+      var field = el.getAttribute("dt-field");
       var max = field === "H" ? 23 : 59;
       var delta = el.classList.contains("up") ? 1 : -1;
       this.temp[field] = (this.temp[field] + delta + max + 1) % (max + 1);
@@ -6097,11 +6097,11 @@
     };
     function scan(root) {
       if (!root.querySelectorAll) return;
-      root.querySelectorAll("input[data-picker]").forEach(function(input) {
+      root.querySelectorAll("input[dt-picker]").forEach(function(input) {
         if (input._bnyDatePicker) return;
         input._bnyDatePicker = true;
-        var mode = input.getAttribute("data-picker");
-        var rangeTarget = input.getAttribute("data-picker-range");
+        var mode = input.getAttribute("dt-picker");
+        var rangeTarget = input.getAttribute("dt-picker-range");
         if (rangeTarget) {
           var other = document.querySelector(rangeTarget);
           if (other && !other._bnyDatePicker) {
@@ -6137,11 +6137,11 @@
     var ticking = false;
     var instances = [];
     function getConfig(elt) {
-      var t = elt.getAttribute("data-threshold") || elt.getAttribute("data-bny-backtop");
+      var t = elt.getAttribute("top-threshold") || elt.getAttribute("top");
       var th = t && !isNaN(parseInt(t, 10)) ? parseInt(t, 10) : 200;
       var container = window;
       var isWindow = true;
-      var target = elt.getAttribute("data-target");
+      var target = elt.getAttribute("top-target");
       if (target) {
         var el = document.querySelector(target);
         if (el && el.scrollHeight > el.clientHeight) {
@@ -6150,7 +6150,7 @@
         }
       }
       if (isWindow) {
-        var candidates = document.querySelectorAll("#bny-content, [data-scroll-container]");
+        var candidates = document.querySelectorAll("#bny-content, [top-scroll-container]");
         for (var i = 0; i < candidates.length; i++) {
           if (candidates[i].scrollHeight > candidates[i].clientHeight) {
             container = candidates[i];
@@ -6221,15 +6221,15 @@
     function scan(root) {
       var customBtns = [];
       if (root && root.nodeType === 1) {
-        if (root.id === "bny-backtop" || root.hasAttribute && root.hasAttribute("data-bny-backtop")) {
+        if (root.id === "bny-backtop" || root.hasAttribute && root.hasAttribute("top")) {
           customBtns.push(root);
         }
         if (root.querySelectorAll) {
-          var found = root.querySelectorAll("[data-bny-backtop]");
+          var found = root.querySelectorAll("[top]");
           for (var i = 0; i < found.length; i++) customBtns.push(found[i]);
         }
       } else {
-        var all = document.querySelectorAll("[data-bny-backtop]");
+        var all = document.querySelectorAll("[top]");
         for (var j = 0; j < all.length; j++) customBtns.push(all[j]);
         var byId = document.getElementById("bny-backtop");
         if (byId && customBtns.indexOf(byId) === -1) customBtns.push(byId);
@@ -6267,9 +6267,9 @@
     if (typeof htmx === "undefined") return;
     function shouldShowLoading(elt) {
       if (!elt || !elt.classList || !elt.classList.contains("bny-btn")) return false;
-      if (elt.getAttribute("bny-button-loading") === "false") return false;
-      if (elt.getAttribute("bny-button-loading") !== null) return true;
-      var global = document.body.getAttribute("data-bny-button-loading-auto");
+      if (elt.getAttribute("btn-loading") === "false") return false;
+      if (elt.getAttribute("btn-loading") !== null) return true;
+      var global = document.body.getAttribute("btn-loading-auto");
       return global !== "false";
     }
     function startLoading(evt) {
@@ -6284,7 +6284,7 @@
       if (!elt) return;
       requestAnimationFrame(function() {
         elt.classList.remove("bny-loading");
-        if (elt.getAttribute("bny-button-loading") !== null || !elt.hasAttribute("data-bny-keep-disabled")) {
+        if (elt.getAttribute("btn-loading") !== null || !elt.hasAttribute("btn-keep-disabled")) {
           elt.removeAttribute("disabled");
           elt.removeAttribute("aria-disabled");
         }
@@ -6381,30 +6381,30 @@
       if (!field.checkValidity()) {
         var v = field.validity;
         if (v.valueMissing) {
-          return field.getAttribute("data-msg-required") || field.getAttribute("data-msg") || "该项为必填";
+          return field.getAttribute("valid-msg-required") || field.getAttribute("valid-msg") || "该项为必填";
         }
         if (v.typeMismatch) {
-          return field.getAttribute("data-msg-type") || field.getAttribute("data-msg") || "格式不正确";
+          return field.getAttribute("valid-msg-type") || field.getAttribute("valid-msg") || "格式不正确";
         }
         if (v.patternMismatch) {
-          return field.getAttribute("data-msg-pattern") || field.getAttribute("data-msg") || "格式不符合要求";
+          return field.getAttribute("valid-msg-pattern") || field.getAttribute("valid-msg") || "格式不符合要求";
         }
         if (v.tooShort) {
-          return field.getAttribute("data-msg-min") || field.getAttribute("data-msg") || "长度不能少于 " + field.getAttribute("minlength") + " 个字符";
+          return field.getAttribute("valid-msg-min") || field.getAttribute("valid-msg") || "长度不能少于 " + field.getAttribute("minlength") + " 个字符";
         }
         if (v.tooLong) {
-          return field.getAttribute("data-msg-max") || field.getAttribute("data-msg") || "长度不能超过 " + field.getAttribute("maxlength") + " 个字符";
+          return field.getAttribute("valid-msg-max") || field.getAttribute("valid-msg") || "长度不能超过 " + field.getAttribute("maxlength") + " 个字符";
         }
         if (v.rangeUnderflow) {
-          return field.getAttribute("data-msg-min") || field.getAttribute("data-msg") || "值不能小于 " + field.getAttribute("min");
+          return field.getAttribute("valid-msg-min") || field.getAttribute("valid-msg") || "值不能小于 " + field.getAttribute("min");
         }
         if (v.rangeOverflow) {
-          return field.getAttribute("data-msg-max") || field.getAttribute("data-msg") || "值不能大于 " + field.getAttribute("max");
+          return field.getAttribute("valid-msg-max") || field.getAttribute("valid-msg") || "值不能大于 " + field.getAttribute("max");
         }
-        return field.getAttribute("data-msg") || field.validationMessage || "校验未通过";
+        return field.getAttribute("valid-msg") || field.validationMessage || "校验未通过";
       }
     }
-    var rules = field.getAttribute("data-rules");
+    var rules = field.getAttribute("valid-rules");
     if (!rules) return null;
     var val = (field.value || "").trim();
     if (!val) return null;
@@ -6418,29 +6418,29 @@
       switch (key) {
         case "min":
           if (val.length < parseInt(arg, 10)) {
-            err = field.getAttribute("data-msg-min") || field.getAttribute("data-msg") || "长度不能少于 " + arg + " 个字符";
+            err = field.getAttribute("valid-msg-min") || field.getAttribute("valid-msg") || "长度不能少于 " + arg + " 个字符";
           }
           break;
         case "max":
           if (val.length > parseInt(arg, 10)) {
-            err = field.getAttribute("data-msg-max") || field.getAttribute("data-msg") || "长度不能超过 " + arg + " 个字符";
+            err = field.getAttribute("valid-msg-max") || field.getAttribute("valid-msg") || "长度不能超过 " + arg + " 个字符";
           }
           break;
         case "min-val":
           if (parseFloat(val) < parseFloat(arg)) {
-            err = field.getAttribute("data-msg-min") || field.getAttribute("data-msg") || "值不能小于 " + arg;
+            err = field.getAttribute("valid-msg-min") || field.getAttribute("valid-msg") || "值不能小于 " + arg;
           }
           break;
         case "max-val":
           if (parseFloat(val) > parseFloat(arg)) {
-            err = field.getAttribute("data-msg-max") || field.getAttribute("data-msg") || "值不能大于 " + arg;
+            err = field.getAttribute("valid-msg-max") || field.getAttribute("valid-msg") || "值不能大于 " + arg;
           }
           break;
         case "regexp":
           try {
             var re = new RegExp(arg);
             if (!re.test(val)) {
-              err = field.getAttribute("data-msg-pattern") || field.getAttribute("data-msg") || "格式不符合要求";
+              err = field.getAttribute("valid-msg-pattern") || field.getAttribute("valid-msg") || "格式不符合要求";
             }
           } catch (_) {
           }
@@ -6448,7 +6448,7 @@
         case "equals":
           var other = document.querySelector('[name="' + arg + '"]');
           if (other && val !== other.value) {
-            err = field.getAttribute("data-msg-equals") || field.getAttribute("data-msg") || "两次输入不一致";
+            err = field.getAttribute("valid-msg-equals") || field.getAttribute("valid-msg") || "两次输入不一致";
           }
           break;
       }
@@ -6515,12 +6515,12 @@
       }
       var data = json.data || json;
       var total = parseInt(data.total, 10) || 0;
-      var pageSize = parseInt(data.pageSize || data.size, 10) || parseInt(elt.getAttribute("data-page-size"), 10) || 10;
-      var paramName = elt.getAttribute("data-page-param") || "page";
+      var pageSize = parseInt(data.pageSize || data.size, 10) || parseInt(elt.getAttribute("pg-page-size"), 10) || 10;
+      var paramName = elt.getAttribute("pg-page-param") || "page";
       var page = parsePageFromURL(xhr.responseURL, paramName) || parseInt(data.page, 10) || 1;
-      var maxButtons = parseInt(elt.getAttribute("data-max-buttons"), 10) || 7;
-      var showJumper = elt.getAttribute("data-jumper") !== "false";
-      var showTotal = elt.getAttribute("data-total") !== "false";
+      var maxButtons = parseInt(elt.getAttribute("pg-max-buttons"), 10) || 7;
+      var showJumper = elt.getAttribute("pg-jumper") !== "false";
+      var showTotal = elt.getAttribute("pg-total") !== "false";
       var totalPages = Math.max(1, Math.ceil(total / pageSize));
       if (page > totalPages) page = totalPages;
       if (page < 1) page = 1;
@@ -6533,15 +6533,15 @@
         "data-total",
         "data-page-size"
       ]);
-      h += ' data-current="' + page + '"';
-      h += ' data-total-pages="' + totalPages + '"';
-      h += ' data-page-param="' + bny.escapeChars(paramName) + '"';
+      h += ' pg-current="' + page + '"';
+      h += ' pg-total-pages="' + totalPages + '"';
+      h += ' pg-page-param="' + bny.escapeChars(paramName) + '"';
       h += ">";
       if (showTotal) {
         h += '<span class="bny-pagination-total">共 <em>' + total + "</em> 条</span>";
       }
       h += '<a class="bny-pagination-prev' + (page <= 1 ? " disabled" : "") + '"';
-      h += ' data-page="' + Math.max(1, page - 1) + '"';
+      h += ' pg-page="' + Math.max(1, page - 1) + '"';
       h += ' title="上一页"><i class="bny-icon icon-left"></i></a>';
       var btns = computeButtons(page, totalPages, maxButtons);
       for (var i = 0; i < btns.length; i++) {
@@ -6550,12 +6550,12 @@
           h += '<span class="bny-pagination-ellipsis">...</span>';
         } else {
           h += '<a class="bny-pagination-btn' + (b === page ? " active" : "") + '"';
-          h += ' data-page="' + b + '"';
+          h += ' pg-page="' + b + '"';
           h += ">" + b + "</a>";
         }
       }
       h += '<a class="bny-pagination-next' + (page >= totalPages ? " disabled" : "") + '"';
-      h += ' data-page="' + Math.min(totalPages, page + 1) + '"';
+      h += ' pg-page="' + Math.min(totalPages, page + 1) + '"';
       h += ' title="下一页"><i class="bny-icon icon-right"></i></a>';
       if (showJumper && totalPages > 1) {
         h += '<span class="bny-pagination-jump">';
@@ -6563,7 +6563,7 @@
         h += "</span>";
       }
       h += "</div>";
-      if (elt.getAttribute("data-render-list") === "true") {
+      if (elt.getAttribute("pg-render-list") === "true") {
         var list = [];
         var columns = data.columns || [];
         if (Array.isArray(data.allList)) {
@@ -6668,7 +6668,7 @@
         e.preventDefault();
         return;
       }
-      var p = btn.getAttribute("data-page");
+      var p = btn.getAttribute("pg-page");
       if (!p) return;
       triggerPageRequest(bar, p);
     });
@@ -6679,7 +6679,7 @@
       e.preventDefault();
       var bar = input.closest && input.closest(".bny-pagination");
       if (!bar) return;
-      var totalPages = parseInt(bar.getAttribute("data-total-pages"), 10) || 1;
+      var totalPages = parseInt(bar.getAttribute("pg-total-pages"), 10) || 1;
       var p = parseInt(input.value, 10);
       if (isNaN(p) || p < 1) p = 1;
       if (p > totalPages) p = totalPages;
@@ -6697,7 +6697,7 @@
     if (!url) return;
     var targetSel = src.getAttribute("hx-target");
     var swapStyle = src.getAttribute("hx-swap") || "innerHTML";
-    var paramName = src.getAttribute("data-page-param") || "page";
+    var paramName = src.getAttribute("pg-page-param") || "page";
     var vals = {};
     vals[paramName] = page;
     var existingVals = src.getAttribute("hx-vals");
@@ -6735,7 +6735,7 @@
       if (viewer) return viewer;
       viewer = document.createElement("div");
       viewer.className = "bny-image-viewer";
-      viewer.innerHTML = '<div class="bny-image-mask"></div><div class="bny-image-container"><img class="bny-image-large" alt="preview"></div><div class="bny-image-tools"><a class="bny-image-tool" data-action="prev" title="上一张（←）"><i class="bny-icon icon-left"></i></a><a class="bny-image-tool" data-action="zoom-out" title="缩小（-）"><i class="bny-icon icon-minus"></i></a><a class="bny-image-tool" data-action="zoom-in" title="放大（+）"><i class="bny-icon icon-plus"></i></a><a class="bny-image-tool" data-action="reset" title="重置（0）"><i class="bny-icon icon-sync"></i></a><a class="bny-image-tool" data-action="rotate-left" title="左旋"><i class="bny-icon icon-undo"></i></a><a class="bny-image-tool" data-action="rotate-right" title="右旋"><i class="bny-icon icon-redo"></i></a><a class="bny-image-tool" data-action="next" title="下一张（→）"><i class="bny-icon icon-right"></i></a></div><a class="bny-image-close" title="关闭（ESC）"><i class="bny-icon icon-close"></i></a><div class="bny-image-tags bny-image-tags--viewer"></div><div class="bny-image-counter"></div>';
+      viewer.innerHTML = '<div class="bny-image-mask"></div><div class="bny-image-container"><img class="bny-image-large" alt="preview"></div><div class="bny-image-tools"><a class="bny-image-tool" img-action="prev" title="上一张（←）"><i class="bny-icon icon-left"></i></a><a class="bny-image-tool" img-action="zoom-out" title="缩小（-）"><i class="bny-icon icon-minus"></i></a><a class="bny-image-tool" img-action="zoom-in" title="放大（+）"><i class="bny-icon icon-plus"></i></a><a class="bny-image-tool" img-action="reset" title="重置（0）"><i class="bny-icon icon-sync"></i></a><a class="bny-image-tool" img-action="rotate-left" title="左旋"><i class="bny-icon icon-undo"></i></a><a class="bny-image-tool" img-action="rotate-right" title="右旋"><i class="bny-icon icon-redo"></i></a><a class="bny-image-tool" img-action="next" title="下一张（→）"><i class="bny-icon icon-right"></i></a></div><a class="bny-image-close" title="关闭（ESC）"><i class="bny-icon icon-close"></i></a><div class="bny-image-tags bny-image-tags--viewer"></div><div class="bny-image-counter"></div>';
       document.body.appendChild(viewer);
       imgEl = viewer.querySelector(".bny-image-large");
       viewer.querySelector(".bny-image-mask").addEventListener("click", close);
@@ -6743,7 +6743,7 @@
       viewer.querySelector(".bny-image-tools").addEventListener("click", function(e) {
         var tool = e.target.closest(".bny-image-tool");
         if (!tool) return;
-        var action = tool.getAttribute("data-action");
+        var action = tool.getAttribute("img-action");
         handleAction(action);
       });
       viewer.querySelector(".bny-image-container").addEventListener("click", function(e) {
@@ -6817,8 +6817,8 @@
       } else {
         counter.style.display = "none";
       }
-      var prevBtn = viewer.querySelector('[data-action="prev"]');
-      var nextBtn = viewer.querySelector('[data-action="next"]');
+      var prevBtn = viewer.querySelector('[img-action="prev"]');
+      var nextBtn = viewer.querySelector('[img-action="next"]');
       prevBtn.classList.toggle("disabled", current.list.length <= 1);
       nextBtn.classList.toggle("disabled", current.list.length <= 1);
       var tagBox = viewer.querySelector(".bny-image-tags--viewer");
@@ -6921,7 +6921,7 @@
         var el = document.createElement("span");
         el.className = "bny-tag";
         el.textContent = t.text;
-        if (t.color) el.setAttribute("color", t.color);
+        if (t.color) el.setAttribute("tag-color", t.color);
         box.appendChild(el);
       });
     }
@@ -6932,7 +6932,7 @@
       img.parentNode.insertBefore(item, img);
       item.appendChild(img);
       img._bnyImageWrapped = true;
-      var tags = parseTags(img.getAttribute("data-preview-tags"));
+      var tags = parseTags(img.getAttribute("img-preview-tags"));
       if (tags.length) {
         var box = document.createElement("span");
         box.className = "bny-image-tags";
@@ -6946,39 +6946,39 @@
       var tags = [];
       var idx = 0;
       Array.prototype.forEach.call(groupImgs, function(g, i) {
-        list.push(g.getAttribute("data-preview-src") || g.src);
-        tags.push(parseTags(g.getAttribute("data-preview-tags")));
+        list.push(g.getAttribute("img-preview-src") || g.src);
+        tags.push(parseTags(g.getAttribute("img-preview-tags")));
         if (g === currentImg) idx = i;
       });
       return { list, idx, tags };
     }
     function scan(root) {
-      var sized = (root || document).querySelectorAll(".bny-image-group[data-preview-size]");
+      var sized = (root || document).querySelectorAll(".bny-image-group[img-preview-size]");
       Array.prototype.forEach.call(sized, function(g) {
-        g.style.setProperty("--bny-image-group-size", g.getAttribute("data-preview-size") + "px");
+        g.style.setProperty("--bny-image-group-size", g.getAttribute("img-preview-size") + "px");
       });
-      var imgs = (root || document).querySelectorAll("img[data-preview]");
+      var imgs = (root || document).querySelectorAll("img[img-preview]");
       Array.prototype.forEach.call(imgs, function(img) {
         if (img._bnyImageBound) return;
         img._bnyImageBound = true;
         img.classList.add("bny-image-thumb");
         ensureItem(img);
         img.addEventListener("click", function() {
-          var fullSrc = img.getAttribute("data-preview-src") || img.src;
+          var fullSrc = img.getAttribute("img-preview-src") || img.src;
           var container = img.closest(".bny-image-group");
           if (container) {
-            var r = collectList(container.querySelectorAll("img[data-preview]"), img);
+            var r = collectList(container.querySelectorAll("img[img-preview]"), img);
             open(r.list, r.idx, r.tags);
             return;
           }
-          var group = img.getAttribute("data-preview-group");
+          var group = img.getAttribute("img-preview-group");
           if (group) {
-            var groupImgs = document.querySelectorAll('img[data-preview][data-preview-group="' + CSS.escape(group) + '"]');
+            var groupImgs = document.querySelectorAll('img[img-preview][img-preview-group="' + CSS.escape(group) + '"]');
             var r2 = collectList(groupImgs, img);
             open(r2.list, r2.idx, r2.tags);
             return;
           }
-          open([fullSrc], 0, [parseTags(img.getAttribute("data-preview-tags"))]);
+          open([fullSrc], 0, [parseTags(img.getAttribute("img-preview-tags"))]);
         });
       });
     }
@@ -6997,11 +6997,11 @@
   })();
   (function() {
     function render(rate) {
-      var max = parseInt(rate.getAttribute("data-max"), 10) || 5;
-      var value = parseFloat(rate.getAttribute("data-value")) || 0;
-      var half = rate.hasAttribute("data-half");
-      var readonly = rate.hasAttribute("data-readonly");
-      var color = rate.getAttribute("color") || "";
+      var max = parseInt(rate.getAttribute("rate-max"), 10) || 5;
+      var value = parseFloat(rate.getAttribute("rate-value")) || 0;
+      var half = rate.hasAttribute("rate-half");
+      var readonly = rate.hasAttribute("rate-readonly");
+      var color = rate.getAttribute("rate-color") || "";
       if (color) rate.setAttribute("color", color);
       rate.classList.add("bny-rate");
       if (readonly) rate.classList.add("is-readonly");
@@ -7023,8 +7023,8 @@
         starsEl.appendChild(star);
       }
       rate.appendChild(starsEl);
-      var showText = rate.hasAttribute("data-show-text");
-      var texts = (rate.getAttribute("data-texts") || "很差,失望,一般,满意,惊喜").split(",");
+      var showText = rate.hasAttribute("rate-show-text");
+      var texts = (rate.getAttribute("rate-texts") || "很差,失望,一般,满意,惊喜").split(",");
       var textEl = null;
       if (showText) {
         textEl = document.createElement("span");
@@ -7052,7 +7052,7 @@
             }
             return;
           }
-          var idx = parseInt(star2.getAttribute("data-index"), 10);
+          var idx = parseInt(star2.getAttribute("rate-index"), 10);
           if (state.half) {
             var rect = star2.getBoundingClientRect();
             var isLeft = e.clientX - rect.left < rect.width / 2;
@@ -7070,7 +7070,7 @@
         starsEl.addEventListener("click", function(e) {
           var star2 = e.target.closest(".bny-rate-star");
           if (!star2) return;
-          var idx = parseInt(star2.getAttribute("data-index"), 10);
+          var idx = parseInt(star2.getAttribute("rate-index"), 10);
           if (state.half) {
             var rect = star2.getBoundingClientRect();
             var isLeft = e.clientX - rect.left < rect.width / 2;

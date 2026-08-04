@@ -129,11 +129,11 @@
         }
         if (this.needsTime()) {
             h += '<div class="bny-datepicker-time">';
-            h += '<div class="time-col"><button class="time-btn up" data-field="H">&#9650;</button><span class="time-val" data-field="H">00</span><button class="time-btn down" data-field="H">&#9660;</button></div>';
+            h += '<div class="time-col"><button class="time-btn up" dt-field="H">&#9650;</button><span class="time-val" dt-field="H">00</span><button class="time-btn down" dt-field="H">&#9660;</button></div>';
             h += '<span class="time-sep">:</span>';
-            h += '<div class="time-col"><button class="time-btn up" data-field="M">&#9650;</button><span class="time-val" data-field="M">00</span><button class="time-btn down" data-field="M">&#9660;</button></div>';
+            h += '<div class="time-col"><button class="time-btn up" dt-field="M">&#9650;</button><span class="time-val" dt-field="M">00</span><button class="time-btn down" dt-field="M">&#9660;</button></div>';
             h += '<span class="time-sep">:</span>';
-            h += '<div class="time-col"><button class="time-btn up" data-field="S">&#9650;</button><span class="time-val" data-field="S">00</span><button class="time-btn down" data-field="S">&#9660;</button></div>';
+            h += '<div class="time-col"><button class="time-btn up" dt-field="S">&#9650;</button><span class="time-val" dt-field="S">00</span><button class="time-btn down" dt-field="S">&#9660;</button></div>';
             h += '</div>';
         }
         h += '<div class="bny-datepicker-footer">';
@@ -476,7 +476,7 @@
                     if (tY === this.viewYear && tM === this.viewMonth && tD === num) cls += ' today';
                     if (this.isDisabled(this.viewYear, this.viewMonth, num)) cls += ' disabled';
                 }
-                h += '<td><span class="' + cls + '" data-day="' + num + '">' + num + '</span></td>';
+                h += '<td><span class="' + cls + '" dt-day="' + num + '">' + num + '</span></td>';
             }
             h += '</tr>';
             if (day > daysInMonth) break;
@@ -492,7 +492,7 @@
         for (var i = 0; i < 12; i++) {
             var cls = 'month-cell';
             if (this.temp.m === i && this.temp.y === this.viewYear) cls += ' selected';
-            h += '<span class="' + cls + '" data-month="' + i + '">' + MONTHS[i] + '</span>';
+            h += '<span class="' + cls + '" dt-month="' + i + '">' + MONTHS[i] + '</span>';
         }
         h += '</div>';
         body.innerHTML = h;
@@ -504,7 +504,7 @@
         for (var i = start - 1; i <= start + 10; i++) {
             var cls = 'year-cell';
             if (i === this.temp.y) cls += ' selected';
-            h += '<span class="' + cls + '" data-year="' + i + '">' + i + '</span>';
+            h += '<span class="' + cls + '" dt-year="' + i + '">' + i + '</span>';
         }
         h += '</div>';
         body.innerHTML = h;
@@ -515,7 +515,7 @@
         var panel = this.panel;
         var fields = ['H', 'M', 'S'];
         fields.forEach(function (f) {
-            var el = panel.querySelector('.time-val[data-field="' + f + '"]');
+            var el = panel.querySelector('.time-val[dt-field="' + f + '"]');
             if (el) el.textContent = (self.temp[f] < 10 ? '0' : '') + self.temp[f];
         });
     };
@@ -529,7 +529,7 @@
 
     DatePicker.prototype.handleDayClick = function (el) {
         if (el.classList.contains('disabled')) return;
-        var day = +el.getAttribute('data-day');
+        var day = +el.getAttribute('dt-day');
         if (el.classList.contains('other-month')) {
             if (day > 15) this.viewMonth--; else this.viewMonth++;
             if (this.viewMonth < 0) { this.viewMonth = 11; this.viewYear--; }
@@ -546,7 +546,7 @@
     };
 
     DatePicker.prototype.handleMonthClick = function (el) {
-        this.temp.m = +el.getAttribute('data-month');
+        this.temp.m = +el.getAttribute('dt-month');
         if (this.needsMonthOnly()) {
             this.temp.y = this.viewYear;
             // 不再自动确认，由"确定/取消"按钮决定
@@ -559,13 +559,13 @@
     };
 
     DatePicker.prototype.handleYearClick = function (el) {
-        this.viewYear = +el.getAttribute('data-year');
+        this.viewYear = +el.getAttribute('dt-year');
         this.viewType = 'months';
         this.render();
     };
 
     DatePicker.prototype.handleTimeBtn = function (el) {
-        var field = el.getAttribute('data-field');
+        var field = el.getAttribute('dt-field');
         var max = field === 'H' ? 23 : 59;
         var delta = el.classList.contains('up') ? 1 : -1;
         this.temp[field] = (this.temp[field] + delta + max + 1) % (max + 1);
@@ -699,11 +699,11 @@
 
     function scan(root) {
         if (!root.querySelectorAll) return;
-        root.querySelectorAll('input[data-picker]').forEach(function (input) {
+        root.querySelectorAll('input[dt-picker]').forEach(function (input) {
             if (input._bnyDatePicker) return;
             input._bnyDatePicker = true;
-            var mode = input.getAttribute('data-picker');
-            var rangeTarget = input.getAttribute('data-picker-range');
+            var mode = input.getAttribute('dt-picker');
+            var rangeTarget = input.getAttribute('dt-picker-range');
 
             if (rangeTarget) {
                 var other = document.querySelector(rangeTarget);

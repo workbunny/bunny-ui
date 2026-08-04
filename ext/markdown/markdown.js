@@ -25,7 +25,7 @@
  *   </div>
  *
  *   <!-- 元素级配置：bny-md-config 写在同一标签 -->
- *   <div hx-ext="bny-md" bny-md-config='{"breaks":true}'>
+ *   <div hx-ext="bny-md" md-config='{"breaks":true}'>
  *   第一行
  *   第二行
  *   </div>
@@ -1140,14 +1140,14 @@
         // title 可能是 "..." 或 &quot;...&quot;（escapeForMarkdown 转义后）
         // 输出 data-preview 启用图片预览，有 title 时加 bny-tip
         text = text.replace(/!\[([^\]]*)\]\(([^)\s]+)(?:\s+(?:"|&quot;)([^"]*)(?:"|&quot;))?\)/g, function (_, alt, url, title) {
-            var tipAttr = title ? ' bny-tip="' + escapeHtml(title) + '"' : '';
+            var tipAttr = title ? ' tip="' + escapeHtml(title) + '"' : '';
             return '<img src="' + escapeHtml(sanitizeUrl(url, true)) + '" alt="' + escapeHtml(alt) + '" data-preview' + tipAttr + '>';
         });
 
         // 3. 链接 [text](url)
         // 有 title 时用 bny-tip（bny-ui 的 tooltip 组件）代替原生 title
         text = text.replace(/\[([^\]]+)\]\(([^)\s]+)(?:\s+(?:"|&quot;)([^"]*)(?:"|&quot;))?\)/g, function (_, linkText, url, title) {
-            var tipAttr = title ? ' bny-tip="' + escapeHtml(title) + '"' : '';
+            var tipAttr = title ? ' tip="' + escapeHtml(title) + '"' : '';
             var target = options.linkTarget ? ' target="' + options.linkTarget + '"' : '';
             return '<a href="' + escapeHtml(sanitizeUrl(url, false)) + '"' + tipAttr + target + '>' + linkText + '</a>';
         });
@@ -1163,7 +1163,7 @@
             var key = (ref || linkText).toLowerCase();
             var def = options.__linkRefs ? options.__linkRefs[key] : null;
             if (!def) return _; // 未找到定义，原样返回
-            var tipAttr = def.title ? ' bny-tip="' + escapeHtml(def.title) + '"' : '';
+            var tipAttr = def.title ? ' tip="' + escapeHtml(def.title) + '"' : '';
             var target = options.linkTarget ? ' target="' + options.linkTarget + '"' : '';
             return '<a href="' + escapeHtml(sanitizeUrl(def.url, false)) + '"' + tipAttr + target + '>' + linkText + '</a>';
         });
@@ -1173,7 +1173,7 @@
             var key = linkText.toLowerCase();
             var def = options.__linkRefs ? options.__linkRefs[key] : null;
             if (!def) return _;
-            var tipAttr = def.title ? ' bny-tip="' + escapeHtml(def.title) + '"' : '';
+            var tipAttr = def.title ? ' tip="' + escapeHtml(def.title) + '"' : '';
             var target = options.linkTarget ? ' target="' + options.linkTarget + '"' : '';
             return '<a href="' + escapeHtml(sanitizeUrl(def.url, false)) + '"' + tipAttr + target + '>' + linkText + '</a>';
         });
@@ -1290,7 +1290,7 @@
     function readConfig(el) {
         var options = {};
         if (!el || !el.getAttribute) return options;
-        var configAttr = el.getAttribute('bny-md-config');
+        var configAttr = el.getAttribute('md-config');
         if (configAttr) {
             try {
                 var parsed = JSON.parse(configAttr);

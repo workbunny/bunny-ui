@@ -89,7 +89,7 @@
                     <div class="body">
                         <div>
                             <div class="p-12">
-                                <table hx-ext="bny-table" color="green">
+                                <table hx-ext="bny-table" table-tab="green">
                                     <thead>
                                         <tr>
                                             <th>人物</th>
@@ -114,7 +114,7 @@
                         </div>
                         <div>
                             <pre hx-ext="bny-code">
-&lt;table hx-ext=&quot;bny-table&quot; color=&quot;green&quot;&gt;
+&lt;table hx-ext=&quot;bny-table&quot; table-color=&quot;green&quot;&gt;
     ...
 &lt;/table&gt;
 
@@ -138,9 +138,9 @@
                                 <table hx-ext="bny-table">
                                     <thead>
                                         <tr>
-                                            <th data-sort>姓名</th>
-                                            <th data-sort="number">年龄</th>
-                                            <th data-sort="number">积分</th>
+                                            <th table-sort>姓名</th>
+                                            <th table-sort="number">年龄</th>
+                                            <th table-sort="number">积分</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -173,9 +173,9 @@
 &lt;table hx-ext=&quot;bny-table&quot;&gt;
     &lt;thead&gt;
         &lt;tr&gt;
-            &lt;th data-sort&gt;姓名&lt;/th&gt;
-            &lt;th data-sort=&quot;number&quot;&gt;年龄&lt;/th&gt;
-            &lt;th data-sort=&quot;number&quot;&gt;积分&lt;/th&gt;
+            &lt;th table-sort&gt;姓名&lt;/th&gt;
+            &lt;th table-sort=&quot;number&quot;&gt;年龄&lt;/th&gt;
+            &lt;th table-sort=&quot;number&quot;&gt;积分&lt;/th&gt;
         &lt;/tr&gt;
     &lt;/thead&gt;
     &lt;tbody&gt;
@@ -201,25 +201,25 @@
                     <div class="body">
                         <div>
                             <div class="p-12">
-                                <p>当单元格显示内容与排序值不一致时，使用 <code>data-sort-val</code> 指定参与排序的值</p>
-                                <table hx-ext="bny-table" color="blue">
+                                <p>当单元格显示内容与排序值不一致时，使用 <code>table-sort-val</code> 指定参与排序的值</p>
+                                <table hx-ext="bny-table" table-color="blue">
                                     <thead>
                                         <tr>
-                                            <th data-sort="number">排名</th>
+                                            <th table-sort="number">排名</th>
                                             <th>选手</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         <tr>
-                                            <td data-sort-val="1">🥇 第一名</td>
+                                            <td table-sort-val="1">🥇 第一名</td>
                                             <td>选手A</td>
                                         </tr>
                                         <tr>
-                                            <td data-sort-val="3">🥉 第三名</td>
+                                            <td table-sort-val="3">🥉 第三名</td>
                                             <td>选手C</td>
                                         </tr>
                                         <tr>
-                                            <td data-sort-val="2">🥈 第二名</td>
+                                            <td table-sort-val="2">🥈 第二名</td>
                                             <td>选手B</td>
                                         </tr>
                                     </tbody>
@@ -231,21 +231,21 @@
 &lt;table hx-ext=&quot;bny-table&quot;&gt;
     &lt;thead&gt;
         &lt;tr&gt;
-            &lt;th data-sort=&quot;number&quot;&gt;排名&lt;/th&gt;
+            &lt;th table-sort=&quot;number&quot;&gt;排名&lt;/th&gt;
             &lt;th&gt;选手&lt;/th&gt;
         &lt;/tr&gt;
     &lt;/thead&gt;
     &lt;tbody&gt;
         &lt;tr&gt;
-            &lt;td data-sort-val=&quot;1&quot;&gt;🥇 第一名&lt;/td&gt;
+            &lt;td table-sort-val=&quot;1&quot;&gt;🥇 第一名&lt;/td&gt;
             &lt;td&gt;选手A&lt;/td&gt;
         &lt;/tr&gt;
         &lt;tr&gt;
-            &lt;td data-sort-val=&quot;2&quot;&gt;🥈 第二名&lt;/td&gt;
+            &lt;td table-sort-val=&quot;2&quot;&gt;🥈 第二名&lt;/td&gt;
             &lt;td&gt;选手B&lt;/td&gt;
         &lt;/tr&gt;
         &lt;tr&gt;
-            &lt;td data-sort-val=&quot;3&quot;&gt;🥉 第三名&lt;/td&gt;
+            &lt;td table-sort-val=&quot;3&quot;&gt;🥉 第三名&lt;/td&gt;
             &lt;td&gt;选手C&lt;/td&gt;
         &lt;/tr&gt;
     &lt;/tbody&gt;
@@ -267,8 +267,11 @@
                     <div class="body">
                         <div>
                             <div class="p-12">
-                                <button class="bny-btn" hx-ext="bny-table" hx-get="/test/data/table01.json" hx-target="#table-demo" hx-swap="innerHTML" hx-trigger="click">加载表格</button>
-                                <button class="bny-btn" hx-ext="bny-table" hx-get="/test/data/table02.json" hx-target="#table-demo" hx-swap="innerHTML" hx-trigger="click" style="margin-left: 8px;">加载蓝色表格</button>
+                                <button class="bny-btn" hx-ext="bny-table" hx-get="/test/data/table01.json"
+                                    hx-target="#table-demo" hx-swap="innerHTML" hx-trigger="click">加载表格</button>
+                                <button class="bny-btn" hx-ext="bny-table" hx-get="/test/data/table02.json"
+                                    hx-target="#table-demo" hx-swap="innerHTML" hx-trigger="click"
+                                    style="margin-left: 8px;">加载蓝色表格</button>
                                 <div id="table-demo" class="mt-16"></div>
                             </div>
                         </div>
@@ -324,12 +327,13 @@
                     <div class="body">
                         <div>
                             <div class="p-12">
-                                <button class="bny-btn" hx-get="/test/data/table-row.html" hx-target="#table-append tbody" hx-swap="beforeend" hx-trigger="click">追加一行</button>
+                                <button class="bny-btn" hx-get="/test/data/table-row.html"
+                                    hx-target="#table-append tbody" hx-swap="beforeend" hx-trigger="click">追加一行</button>
                                 <table hx-ext="bny-table" class="mt-12" id="table-append">
                                     <thead>
                                         <tr>
-                                            <th data-sort>姓名</th>
-                                            <th data-sort="number">年龄</th>
+                                            <th table-sort>姓名</th>
+                                            <th table-sort="number">年龄</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -354,8 +358,8 @@
 &lt;table hx-ext=&quot;bny-table&quot; id=&quot;table-append&quot;&gt;
     &lt;thead&gt;
         &lt;tr&gt;
-            &lt;th data-sort&gt;姓名&lt;/th&gt;
-            &lt;th data-sort=&quot;number&quot;&gt;年龄&lt;/th&gt;
+            &lt;th table-sort&gt;姓名&lt;/th&gt;
+            &lt;th table-sort=&quot;number&quot;&gt;年龄&lt;/th&gt;
         &lt;/tr&gt;
     &lt;/thead&gt;
     &lt;tbody&gt;
@@ -380,10 +384,12 @@
                     <div class="body">
                         <div>
                             <div class="p-12">
-                                <button class="bny-btn" hx-ext="bny-table" hx-get="/test/data/table03.json" hx-target="#table-raw-demo" hx-swap="innerHTML" hx-trigger="click">加载表格</button>
+                                <button class="bny-btn" hx-ext="bny-table" hx-get="/test/data/table03.json"
+                                    hx-target="#table-raw-demo" hx-swap="innerHTML" hx-trigger="click">加载表格</button>
                                 <div id="table-raw-demo" class="mt-12"></div>
                                 <blockquote class="bny-blockquote">
-                                    单元格支持 { "__html": "..." } 渲染原始 HTML（用于链接/按钮等富内容）。点击列头排序后，HTMX 重新加载会从 sessionStorage 恢复排序状态。
+                                    单元格支持 { "__html": "..." } 渲染原始 HTML（用于链接/按钮等富内容）。点击列头排序后，HTMX 重新加载会从 sessionStorage
+                                    恢复排序状态。
                                 </blockquote>
                             </div>
                         </div>
@@ -425,7 +431,8 @@
                     <div class="body">
                         <div>
                             <div class="p-12">
-                                <button class="bny-btn" hx-ext="bny-table" hx-get="/test/data/table04.json" hx-target="#table-empty-demo" hx-swap="innerHTML" hx-trigger="click">加载空数据</button>
+                                <button class="bny-btn" hx-ext="bny-table" hx-get="/test/data/table04.json"
+                                    hx-target="#table-empty-demo" hx-swap="innerHTML" hx-trigger="click">加载空数据</button>
                                 <div id="table-empty-demo" class="mt-12"></div>
                             </div>
                         </div>
@@ -471,28 +478,21 @@
                         <td></td>
                     </tr>
                     <tr>
-                        <td>color</td>
+                        <td>table-color</td>
                         <td>default</td>
                         <td>否</td>
                         <td>表头颜色：green/yellow/red/blue</td>
                         <td></td>
                     </tr>
                     <tr>
-                        <td>data-sort</td>
+                        <td>table-sort</td>
                         <td>string</td>
                         <td>否</td>
                         <td>作用于 th，启用排序。值 number 表示按数字排序，默认为字符串</td>
                         <td></td>
                     </tr>
                     <tr>
-                        <td>sortable</td>
-                        <td>—</td>
-                        <td>否</td>
-                        <td>作用于 th，等同于 data-sort（字符串排序）</td>
-                        <td></td>
-                    </tr>
-                    <tr>
-                        <td>data-sort-val</td>
+                        <td>table-sort-val</td>
                         <td>—</td>
                         <td>否</td>
                         <td>作用于 td，指定该单元格参与排序的值（显示与排序值不同时使用）</td>
@@ -514,7 +514,7 @@
                 </thead>
                 <tbody>
                     <tr>
-                        <td>color</td>
+                        <td>tab </td>
                         <td>—</td>
                         <td>否</td>
                         <td>表头颜色：green/yellow/red/blue</td>
@@ -538,25 +538,25 @@
             </table>
 
             <h3>排序行为</h3>
-            <ol style="line-height:var(--line-height); color:var(--black-middle);">
-                <li>点击带 <code>data-sort</code> 或 <code>sortable</code> 属性的表头即可排序</li>
+            <ol style="line-height:var(--line-height); tab :var(--black-middle);">
+                <li>点击带 <code>table-sort</code> 属性的表头即可排序</li>
                 <li>首次点击 → 升序（▲ 高亮），再次点击 → 降序（▼ 高亮）</li>
-                <li><code>data-sort="number"</code> 按数值排序，否则按字符串排序</li>
-                <li>单元格可通过 <code>data-sort-val</code> 指定参与排序的实际值</li>
+                <li><code>table-sort="number"</code> 按数值排序，否则按字符串排序</li>
+                <li>单元格可通过 <code>table-sort-val</code> 指定参与排序的实际值</li>
                 <li>JSON 响应自动渲染为完整表格，同时支持直接追加 HTML 行</li>
             </ol>
         </div>
     </div>
     <div class="right-anchor-box hidden-xs col-sm3">
         <div class="right-anchor">
-            <ul hx-ext="bny-anchor" rail>
-                <li class="link" anchor="#n01">基础表格</li>
-                <li class="link" anchor="#n02">颜色</li>
-                <li class="link" anchor="#n03">表头排序</li>
-                <li class="link" anchor="#n04">自定义排序值</li>
-                <li class="link" anchor="#n05">Htmx用法</li>
-                <li class="link" anchor="#n06">Htmx-动态追加行</li>
-                <li class="link" anchor="#n07">API</li>
+            <ul hx-ext="bny-anchor" anchor-rail>
+                <li class="link" anchor-target="#n01">基础表格</li>
+                <li class="link" anchor-target="#n02">颜色</li>
+                <li class="link" anchor-target="#n03">表头排序</li>
+                <li class="link" anchor-target="#n04">自定义排序值</li>
+                <li class="link" anchor-target="#n05">Htmx用法</li>
+                <li class="link" anchor-target="#n06">Htmx-动态追加行</li>
+                <li class="link" anchor-target="#n07">API</li>
             </ul>
         </div>
     </div>

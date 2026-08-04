@@ -1,7 +1,7 @@
 <div class="bny-row">
     <div class="text-content-box col-xs12 col-sm9">
         <div class="text-content">
-            <h1 id="anchor1">组件-锚点<div class="bny-tag" color="red">2.0.1+</div></h1>
+            <h1 id="anchor1">组件-锚点<div class="bny-tag" tag-color="red">2.0.1+</div></h1>
             <hr>
             <blockquote class="bny-blockquote">
                 锚点是一种导航元素，用于跳转到页面的指定位置。
@@ -9,43 +9,43 @@
             <h2 id="anchor2">基本用法</h2>
             <h3>演示</h3>
             <ul hx-ext="bny-anchor">
-                <li class="link" anchor="#anchor1">组件</li>
+                <li class="link" anchor-target="#anchor1">组件</li>
                 <ul>
-                    <li class="link" anchor="#anchor2">基础</li>
-                    <li class="link" anchor="#anchor3">轨道</li>
+                    <li class="link" anchor-target="#anchor2">基础</li>
+                    <li class="link" anchor-target="#anchor3">轨道</li>
                 </ul>
-                <li class="link" anchor="#anchor4">API</li>
+                <li class="link" anchor-target="#anchor4">API</li>
             </ul>
             <h3>代码</h3>
             <pre hx-ext="bny-code">
 &lt;ul hx-ext="bny-anchor"&gt;
-    &lt;li class="link" anchor="#anchor1"&gt;组件&lt;/li&gt;
+    &lt;li class="link" anchor-target="#anchor1"&gt;组件&lt;/li&gt;
     &lt;ul&gt;
-        &lt;li class="link" anchor="#anchor2"&gt;基础&lt;/li&gt;
-        &lt;li class="link" anchor="#anchor3"&gt;轨道&lt;/li&gt;
+        &lt;li class="link" anchor-target="#anchor2"&gt;基础&lt;/li&gt;
+        &lt;li class="link" anchor-target="#anchor3"&gt;轨道&lt;/li&gt;
     &lt;/ul&gt;
-    &lt;li class="link" anchor="#anchor4"&gt;API&lt;/li&gt;
+    &lt;li class="link" anchor-target="#anchor4"&gt;API&lt;/li&gt;
 &lt;/ul&gt;
 </pre>
             <h2 id="anchor3">轨道</h2>
             <h3>演示</h3>
-            <ul hx-ext="bny-anchor" rail>
-                <li class="link" anchor="#anchor1">组件</li>
+            <ul hx-ext="bny-anchor" anchor-rail>
+                <li class="link" anchor-target="#anchor1">组件</li>
                 <ul>
-                    <li class="link" anchor="#anchor2">基础</li>
-                    <li class="link" anchor="#anchor3">轨道</li>
+                    <li class="link" anchor-target="#anchor2">基础</li>
+                    <li class="link" anchor-target="#anchor3">轨道</li>
                 </ul>
-                <li class="link" anchor="#anchor4">API</li>
+                <li class="link" anchor-target="#anchor4">API</li>
             </ul>
             <h3>代码</h3>
             <pre hx-ext="bny-code">
-&lt;ul hx-ext="bny-anchor" rail&gt;
-    &lt;li class="link" anchor="#anchor1"&gt;组件&lt;/li&gt;
+&lt;ul hx-ext="bny-anchor" anchor-rail&gt;
+    &lt;li class="link" anchor-target="#anchor1"&gt;组件&lt;/li&gt;
     &lt;ul&gt;
-        &lt;li class="link" anchor="#anchor2"&gt;基础&lt;/li&gt;
-        &lt;li class="link" anchor="#anchor3"&gt;轨道&lt;/li&gt;
+        &lt;li class="link" anchor-target="#anchor2"&gt;基础&lt;/li&gt;
+        &lt;li class="link" anchor-target="#anchor3"&gt;轨道&lt;/li&gt;
     &lt;/ul&gt;
-    &lt;li class="link" anchor="#anchor4"&gt;API&lt;/li&gt;
+    &lt;li class="link" anchor-target="#anchor4"&gt;API&lt;/li&gt;
 &lt;/ul&gt;
 </pre>
             <h2 id="anchor4">API</h2>
@@ -67,14 +67,21 @@
                         <td>是</td>
                         <td>标签类名</td>
                         <td>
-                            <div class="bny-tag" color="red">2.0.1+</div>
+                            <div class="bny-tag" tag-color="red">2.0.1+</div>
                         </td>
                     </tr>
                     <tr>
-                        <td>rail</td>
+                        <td>anchor-rail</td>
                         <td></td>
                         <td>否</td>
                         <td>是否显示轨道</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>anchor-target</td>
+                        <td></td>
+                        <td>是</td>
+                        <td>锚点目标</td>
                         <td></td>
                     </tr>
                 </tbody>
@@ -83,11 +90,11 @@
     </div>
     <div class="right-anchor-box hidden-xs col-sm3">
         <div class="right-anchor">
-            <ul hx-ext="bny-anchor" rail>
-                <li class="link" anchor="#anchor1">组件-锚点</li>
-                <li class="link" anchor="#anchor2">基本用法</li>
-                <li class="link" anchor="#anchor3">轨道</li>
-                <li class="link" anchor="#anchor4">API</li>
+            <ul hx-ext="bny-anchor" anchor-rail>
+                <li class="link" anchor-target="#anchor1">组件-锚点</li>
+                <li class="link" anchor-target="#anchor2">基本用法</li>
+                <li class="link" anchor-target="#anchor3">轨道</li>
+                <li class="link" anchor-target="#anchor4">API</li>
             </ul>
         </div>
     </div>

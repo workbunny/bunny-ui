@@ -11,12 +11,12 @@
  *   <form hx-ext="bny-validate" hx-post="/api/save">
  *     <div class="form-item">
  *       <label>用户名</label>
- *       <input name="user" required data-msg-required="请输入用户名"
- *              data-rules="min:3,max:20" data-msg="用户名长度3-20">
+ *       <input name="user" required valid-msg-required="请输入用户名"
+ *              valid-rules="min:3,max:20" valid-msg="用户名长度3-20">
  *     </div>
  *     <div class="form-item">
  *       <label>邮箱</label>
- *       <input name="email" type="email" required data-msg-required="邮箱必填">
+ *       <input name="email" type="email" required valid-msg-required="邮箱必填">
  *     </div>
  *     <button class="bny-btn">提交</button>
  *   </form>
@@ -135,46 +135,46 @@ function getFieldError(field) {
             // 自定义消息优先
             var v = field.validity;
             if (v.valueMissing) {
-                return field.getAttribute('data-msg-required') ||
-                    field.getAttribute('data-msg') ||
+                return field.getAttribute('valid-msg-required') ||
+                    field.getAttribute('valid-msg') ||
                     '该项为必填';
             }
             if (v.typeMismatch) {
-                return field.getAttribute('data-msg-type') ||
-                    field.getAttribute('data-msg') ||
+                return field.getAttribute('valid-msg-type') ||
+                    field.getAttribute('valid-msg') ||
                     '格式不正确';
             }
             if (v.patternMismatch) {
-                return field.getAttribute('data-msg-pattern') ||
-                    field.getAttribute('data-msg') ||
+                return field.getAttribute('valid-msg-pattern') ||
+                    field.getAttribute('valid-msg') ||
                     '格式不符合要求';
             }
             if (v.tooShort) {
-                return field.getAttribute('data-msg-min') ||
-                    field.getAttribute('data-msg') ||
+                return field.getAttribute('valid-msg-min') ||
+                    field.getAttribute('valid-msg') ||
                     '长度不能少于 ' + field.getAttribute('minlength') + ' 个字符';
             }
             if (v.tooLong) {
-                return field.getAttribute('data-msg-max') ||
-                    field.getAttribute('data-msg') ||
+                return field.getAttribute('valid-msg-max') ||
+                    field.getAttribute('valid-msg') ||
                     '长度不能超过 ' + field.getAttribute('maxlength') + ' 个字符';
             }
             if (v.rangeUnderflow) {
-                return field.getAttribute('data-msg-min') ||
-                    field.getAttribute('data-msg') ||
+                return field.getAttribute('valid-msg-min') ||
+                    field.getAttribute('valid-msg') ||
                     '值不能小于 ' + field.getAttribute('min');
             }
             if (v.rangeOverflow) {
-                return field.getAttribute('data-msg-max') ||
-                    field.getAttribute('data-msg') ||
+                return field.getAttribute('valid-msg-max') ||
+                    field.getAttribute('valid-msg') ||
                     '值不能大于 ' + field.getAttribute('max');
             }
-            return field.getAttribute('data-msg') || field.validationMessage || '校验未通过';
+            return field.getAttribute('valid-msg') || field.validationMessage || '校验未通过';
         }
     }
 
-    // 2) 自定义 data-rules="min:3,max:20,regexp:^[a-z]+$"
-    var rules = field.getAttribute('data-rules');
+    // 2) 自定义 valid-rules="min:3,max:20,regexp:^[a-z]+$"
+    var rules = field.getAttribute('valid-rules');
     if (!rules) return null;
     var val = (field.value || '').trim();
     // required 在原生层已处理，这里只处理空值跳过
@@ -190,29 +190,29 @@ function getFieldError(field) {
         switch (key) {
             case 'min':
                 if (val.length < parseInt(arg, 10)) {
-                    err = field.getAttribute('data-msg-min') ||
-                        field.getAttribute('data-msg') ||
+                    err = field.getAttribute('valid-msg-min') ||
+                        field.getAttribute('valid-msg') ||
                         '长度不能少于 ' + arg + ' 个字符';
                 }
                 break;
             case 'max':
                 if (val.length > parseInt(arg, 10)) {
-                    err = field.getAttribute('data-msg-max') ||
-                        field.getAttribute('data-msg') ||
+                    err = field.getAttribute('valid-msg-max') ||
+                        field.getAttribute('valid-msg') ||
                         '长度不能超过 ' + arg + ' 个字符';
                 }
                 break;
             case 'min-val':
                 if (parseFloat(val) < parseFloat(arg)) {
-                    err = field.getAttribute('data-msg-min') ||
-                        field.getAttribute('data-msg') ||
+                    err = field.getAttribute('valid-msg-min') ||
+                        field.getAttribute('valid-msg') ||
                         '值不能小于 ' + arg;
                 }
                 break;
             case 'max-val':
                 if (parseFloat(val) > parseFloat(arg)) {
-                    err = field.getAttribute('data-msg-max') ||
-                        field.getAttribute('data-msg') ||
+                    err = field.getAttribute('valid-msg-max') ||
+                        field.getAttribute('valid-msg') ||
                         '值不能大于 ' + arg;
                 }
                 break;
@@ -220,8 +220,8 @@ function getFieldError(field) {
                 try {
                     var re = new RegExp(arg);
                     if (!re.test(val)) {
-                        err = field.getAttribute('data-msg-pattern') ||
-                            field.getAttribute('data-msg') ||
+                        err = field.getAttribute('valid-msg-pattern') ||
+                            field.getAttribute('valid-msg') ||
                             '格式不符合要求';
                     }
                 } catch (_) { /* 正则无效则忽略 */ }
@@ -230,8 +230,8 @@ function getFieldError(field) {
                 // 与另一字段值相等
                 var other = document.querySelector('[name="' + arg + '"]');
                 if (other && val !== other.value) {
-                    err = field.getAttribute('data-msg-equals') ||
-                        field.getAttribute('data-msg') ||
+                    err = field.getAttribute('valid-msg-equals') ||
+                        field.getAttribute('valid-msg') ||
                         '两次输入不一致';
                 }
                 break;

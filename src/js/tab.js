@@ -181,9 +181,9 @@ htmx.defineExtension('bny-tab', {
             // 事件
             const trigger = target.getAttribute("hx-trigger") ?? "click";
             // 模式
-            const mode = target.getAttribute("mode") ?? "normal"
+            const mode = target.getAttribute("tab-mode") ?? "normal"
             // 索引
-            const index = Number(target.getAttribute("index") ?? 0)
+            const index = Number(target.getAttribute("tab-index") ?? 0)
             // 补全body
             const addBody = heads.length - bodys.length
             for (let i = 0; i < addBody; i++) {
@@ -195,7 +195,7 @@ htmx.defineExtension('bny-tab', {
             // 处理头
             for (let i = 0; i < heads.length; i++) {
                 heads[i].setAttribute("hx-trigger", trigger)
-                if (heads[i].getAttribute("closable") !== null &&
+                if (heads[i].getAttribute("tab-closable") !== null &&
                     !heads[i].querySelector(":scope>i.icon-close")) {
                     addCloseBtn(heads[i])
                 }
@@ -260,7 +260,7 @@ htmx.defineExtension('bny-tab', {
                     // 事件
                     const trigger = tab.getAttribute("hx-trigger") ?? "click";
                     evt.target.setAttribute("hx-trigger", trigger)
-                    if (evt.target.getAttribute("closable") !== null &&
+                    if (evt.target.getAttribute("tab-closable") !== null &&
                         !bny.queryChild(evt.target, "i.icon-close")) {
                         addCloseBtn(evt.target)
                     }

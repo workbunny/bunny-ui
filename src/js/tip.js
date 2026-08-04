@@ -17,7 +17,7 @@
     function ensure() {
         if (tip) return;
         tip = document.createElement('div');
-        tip.className = 'bny-tooltip';
+        tip.className = 'tip';
         document.body.appendChild(tip);
     }
 
@@ -37,7 +37,7 @@
         clearTimeout(hideTimer);
 
         // 获取延迟时间
-        var delay = parseInt(attr(elt, 'data-tip-delay')) || 0;
+        var delay = parseInt(attr(elt, 'tip-delay')) || 0;
 
         showTimer = setTimeout(function () {
             _show(elt);
@@ -47,9 +47,9 @@
     function _show(elt) {
         current = elt;
 
-        // 内容：优先 bny-tip-html，其次 bny-tip
-        var html = attr(elt, 'bny-tip-html');
-        var text = attr(elt, 'bny-tip');
+        // 内容：优先 tip-html，其次 tip
+        var html = attr(elt, 'tip-html');
+        var text = attr(elt, 'tip');
         if (html) {
             tip.innerHTML = html;
         } else if (text) {
@@ -59,13 +59,13 @@
         }
 
         // 自定义宽度
-        var width = attr(elt, 'data-tip-width');
+        var width = attr(elt, 'tip-width');
         tip.style.maxWidth = width ? width : '';
 
         // 主题
-        var theme = attr(elt, 'data-tip-theme');
-        var themeClass = theme === 'light' ? 'bny-tooltip-light' : '';
-        tip.className = 'bny-tooltip ' + themeClass;
+        var theme = attr(elt, 'tip-theme');
+        var themeClass = theme === 'light' ? 'tip-light' : '';
+        tip.className = 'tip ' + themeClass;
 
         tip.style.display = 'block';
         tip.style.visibility = 'hidden';
@@ -74,7 +74,7 @@
         var tw = tip.offsetWidth, th = tip.offsetHeight;
 
         // 方向：手动指定 > 自动评分
-        var placement = attr(elt, 'data-tip-placement');
+        var placement = attr(elt, 'tip-placement');
         var best;
         if (placement) {
             best = placement;
@@ -174,8 +174,8 @@
 
     function scan(root) {
         if (root.nodeType !== 1) return;
-        if (root.hasAttribute && (root.hasAttribute('bny-tip') || root.hasAttribute('bny-tip-html'))) bind(root);
-        if (root.querySelectorAll) root.querySelectorAll('[bny-tip], [bny-tip-html]').forEach(bind);
+        if (root.hasAttribute && (root.hasAttribute('tip') || root.hasAttribute('tip-html'))) bind(root);
+        if (root.querySelectorAll) root.querySelectorAll('[tip], [tip-html]').forEach(bind);
     }
 
     // 初始化

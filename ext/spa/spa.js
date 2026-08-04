@@ -20,16 +20,16 @@
  *
  *   <body hx-ext="bny-spa">
  *     <header>固定头部</header>
- *     <main bny-view>
+ *     <main spa-view>
  *       <!-- 内容区域，只有这里会被交换 -->
  *     </main>
  *     <footer>固定页脚</footer>
  *   </body>
  *
  * 属性：
- *   bny-view         — 标记内容交换区域（必须）
- *   bny-spa-skip    — 排除特定链接，不走 SPA 导航
- *   bny-spa-mode     — 导航模式：'history'（默认，真实 URL）或 'hash'（hash 路由）
+ *   spa-view         — 标记内容交换区域（必须）
+ *   spa-skip    — 排除特定链接，不走 SPA 导航
+ *   spa-mode     — 导航模式：'history'（默认，真实 URL）或 'hash'（hash 路由）
  *
  * 导航模式：
  *   history（默认）— 地址栏使用真实 URL（如 /doc/docs.html）
@@ -148,16 +148,16 @@
 
     /**
      * 读取 SPA 导航模式
-     * 优先级：body[bny-spa-mode] > meta[name="bny-spa-mode"] > 默认 'history'
+     * 优先级：body[spa-mode] > meta[name="spa-mode"] > 默认 'history'
      * @returns {string} 'history' 或 'hash'
      */
     function getSpaMode() {
         var body = document.body;
-        if (body && body.hasAttribute('bny-spa-mode')) {
-            var m = body.getAttribute('bny-spa-mode');
+        if (body && body.hasAttribute('spa-mode')) {
+            var m = body.getAttribute('spa-mode');
             if (m === 'hash' || m === 'history') return m;
         }
-        var meta = document.querySelector('meta[name="bny-spa-mode"]');
+        var meta = document.querySelector('meta[name="spa-mode"]');
         if (meta) {
             var mv = meta.getAttribute('content');
             if (mv === 'hash' || mv === 'history') return mv;
@@ -202,21 +202,21 @@
 
     /**
      * 查找 SPA 视口元素
-     * 支持 bny-view 属性 或 id="bny-view"
+     * 支持 spa-view 属性 或 id="spa-view"
      * @returns {HTMLElement|null}
      */
     function findView() {
-        return document.querySelector('[bny-view]') ||
-               document.getElementById('bny-view');
+        return document.querySelector('[spa-view]') ||
+               document.getElementById('spa-view');
     }
 
     /**
      * 计算视口在视图树中的路径（数组坐标）
      *
      * 路径定义：
-     * - 根级视口（最近祖先 [bny-view] 为 null）按文档顺序编号为 [0]、[1]…
+     * - 根级视口（最近祖先 [spa-view] 为 null）按文档顺序编号为 [0]、[1]…
      * - 父视口 [0] 内的第一个直接子视口为 [0, 0]，第二个为 [0, 1]
-     * - 直接子视口定义：视口 V 的最近祖先 [bny-view] === P
+     * - 直接子视口定义：视口 V 的最近祖先 [spa-view] === P
      *
      * @param {HTMLElement} view 目标视口元素
      * @returns {number[]} 路径数组，如 [0]、[0, 1]、[0, 0, 0]
@@ -225,11 +225,11 @@
         var path = [];
         var cur = view;
         while (cur) {
-            var parentView = cur.parentElement.closest('[bny-view]');
-            // 收集所有同级视口（最近祖先 [bny-view] 相同的视口）
-            var allViews = Array.prototype.slice.call(document.querySelectorAll('[bny-view]'));
+            var parentView = cur.parentElement.closest('[spa-view]');
+            // 收集所有同级视口（最近祖先 [spa-view] 相同的视口）
+            var allViews = Array.prototype.slice.call(document.querySelectorAll('[spa-view]'));
             var siblings = allViews.filter(function (v) {
-                return v.parentElement.closest('[bny-view]') === parentView;
+                return v.parentElement.closest('[spa-view]') === parentView;
             });
             var idx = siblings.indexOf(cur);
             if (idx === -1) break;
@@ -243,7 +243,7 @@
      * 按路径在指定文档中定位视口元素
      *
      * 算法：
-     * - path[0] 选取第 N 个根级视口（最近祖先 [bny-view] 为 null 的视口）
+     * - path[0] 选取第 N 个根级视口（最近祖先 [spa-view] 为 null 的视口）
      * - 之后每一段在当前视口的直接子视口中按索引选取
      * - 任一段越界返回 null
      *
@@ -253,16 +253,16 @@
      */
     function findViewByPath(doc, path) {
         if (!path || !path.length) return null;
-        // 根级视口：所有最近祖先 [bny-view] 为 null 的视口
-        var rootViews = Array.prototype.slice.call(doc.querySelectorAll('[bny-view]')).filter(function (v) {
-            return v.parentElement.closest('[bny-view]') === null;
+        // 根级视口：所有最近祖先 [spa-view] 为 null 的视口
+        var rootViews = Array.prototype.slice.call(doc.querySelectorAll('[spa-view]')).filter(function (v) {
+            return v.parentElement.closest('[spa-view]') === null;
         });
         var cur = rootViews[path[0]];
         if (!cur) return null;
         for (var i = 1; i < path.length; i++) {
             // cur 的直接子视口
-            var children = Array.prototype.slice.call(cur.querySelectorAll('[bny-view]')).filter(function (v) {
-                return v.parentElement.closest('[bny-view]') === cur;
+            var children = Array.prototype.slice.call(cur.querySelectorAll('[spa-view]')).filter(function (v) {
+                return v.parentElement.closest('[spa-view]') === cur;
             });
             cur = children[path[i]];
             if (!cur) return null;
@@ -291,8 +291,8 @@
         if (href.startsWith('mailto:')) return;
         if (href.startsWith('tel:')) return;
 
-        // bny-spa-skip 排除
-        if (link.hasAttribute('bny-spa-skip')) return;
+        // spa-skip 排除
+        if (link.hasAttribute('spa-skip')) return;
 
         // target=_blank 等排除
         if (link.target && link.target !== '_self') return;
@@ -308,14 +308,14 @@
 
         e.preventDefault();
         // 计算目标视图路径
-        // 优先使用 bny-view-target 属性指定的目标视口
+        // 优先使用 spa-view-target 属性指定的目标视口
         var viewPath;
-        var targetSel = link.getAttribute('bny-view-target');
+        var targetSel = link.getAttribute('spa-view-target');
         if (targetSel) {
             var targetView = document.querySelector(targetSel);
             viewPath = targetView ? getViewPath(targetView) : [0];
         } else {
-            var ancestorView = link.closest('[bny-view]');
+            var ancestorView = link.closest('[spa-view]');
             viewPath = ancestorView ? getViewPath(ancestorView) : [0];
         }
         navigate(url.href, viewPath);
@@ -332,7 +332,7 @@
 
         // 有 htmx 属性的表单交给 htmx 处理
         if (form.hasAttribute('hx-get') || form.hasAttribute('hx-post')) return;
-        if (form.hasAttribute('bny-spa-skip')) return;
+        if (form.hasAttribute('spa-skip')) return;
 
         var action = form.getAttribute('action') || location.href;
         var method = (form.getAttribute('method') || 'get').toUpperCase();
@@ -348,7 +348,7 @@
 
         e.preventDefault();
 
-        var ancestorView = form.closest('[bny-view]');
+        var ancestorView = form.closest('[spa-view]');
         var viewPath = ancestorView ? getViewPath(ancestorView) : [0];
 
         if (method === 'GET') {
@@ -517,11 +517,11 @@
      *    - 从 head 更新 title、keywords、description
      *    - 用 body 内容替换视口
      * 2. 完整模式：服务端返回带布局的完整页面
-     *    - 从中提取 [bny-view] 区域
+     *    - 从中提取 [spa-view] 区域
      *    - 同步 head 中的 title、keywords、description
      *
      * 视口嵌套：按 viewPath 在响应文档与当前文档中分别定位对应视口；
-     * 找不到时回退到根视口 [0]，再找不到用 body / 第一个 [bny-view]
+     * 找不到时回退到根视口 [0]，再找不到用 body / 第一个 [spa-view]
      *
      * @param {string} html 响应 HTML
      * @param {string} fallbackUrl 出错时的回退 URL
@@ -551,13 +551,13 @@
             return;
         }
 
-        // 在当前文档中按路径查找交换目标；找不到回退到第一个 [bny-view]
+        // 在当前文档中按路径查找交换目标；找不到回退到第一个 [spa-view]
         var view = findViewByPath(document, viewPath);
         if (!view && viewPath.length > 1) {
             view = findViewByPath(document, [0]);
         }
         if (!view) {
-            view = document.querySelector('[bny-view]');
+            view = document.querySelector('[spa-view]');
         }
         if (!view) {
             location.href = fallbackUrl;

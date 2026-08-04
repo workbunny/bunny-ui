@@ -54,7 +54,7 @@
                 <div class="body">
                     <div>
                         <div class="p-12">
-                            <div class="bny-row" gap>
+                            <div class="bny-row" grid-gap>
                                 <div class="col-xs6 demo-box">
                                     6/12
                                 </div>
@@ -78,7 +78,7 @@
                     </div>
                     <div>
                         <pre hx-ext="bny-code">
-&lt;div class=&quot;bny-row&quot; gap&gt;
+&lt;div class=&quot;bny-row&quot; grid-gap&gt;
     &lt;div class=&quot;col-xs6&quot;&gt;
         6/12
     &lt;/div&gt;
@@ -111,7 +111,7 @@
                 <div class="body">
                     <div>
                         <div class="p-12">
-                            <div class="bny-row" gap>
+                            <div class="bny-row" grid-gap>
                                 <div class="col-xs12 col-md8 demo-box">
                                     xs:12, md: 8/12
                                 </div>
@@ -126,7 +126,7 @@
                     </div>
                     <div>
                         <pre hx-ext="bny-code">
-&lt;div class=&quot;bny-row&quot; gap&gt;
+&lt;div class=&quot;bny-row&quot; grid-gap&gt;
     &lt;div class=&quot;col-xs12 col-md8&quot;&gt;
         xs:12, md: 8/12
     &lt;/div&gt;
@@ -150,7 +150,7 @@
                 <div class="body">
                     <div>
                         <div class="p-12">
-                            <div class="bny-row" gap>
+                            <div class="bny-row" grid-gap>
                                 <div class="col-xs6 col-sm6 col-md4 demo-box">
                                     xs6, sm: 6/12, md: 4/12
                                 </div>
@@ -171,7 +171,7 @@
                     </div>
                     <div>
                         <pre hx-ext="bny-code">
-&lt;div class=&quot;bny-row&quot; gap&gt;
+&lt;div class=&quot;bny-row&quot; grid-gap&gt;
     &lt;div class=&quot;col-xs6 col-sm6 col-md4&quot;&gt;
         xs6, sm: 6/12, md: 4/12
     &lt;/div&gt;
@@ -192,7 +192,7 @@
                     </div>
                 </div>
             </div>
-            <p>无间隔布局, 不添加 <code>gap</code> 属性 即可:</p>
+            <p>无间隔布局, 不添加 <code>grid-gap</code> 属性 即可:</p>
             <div hx-ext="bny-tab">
                 <ul class="head">
                     <li>Preview</li>
@@ -246,7 +246,7 @@
                 <div class="body">
                     <div>
                         <div class="p-12">
-                            <div class="bny-row" gap>
+                            <div class="bny-row" grid-gap>
                                 <div class="col-xs1 demo-box">
                                     1/12
                                 </div>
@@ -301,7 +301,7 @@
                     </div>
                     <div>
                         <pre hx-ext="bny-code">
-&lt;div class=&quot;bny-row&quot; gap&gt;
+&lt;div class=&quot;bny-row&quot; grid-gap&gt;
     &lt;div class=&quot;col-1 demo-box&quot;&gt;
         1/12
     &lt;/div&gt;
@@ -365,9 +365,9 @@
                 <div class="body">
                     <div>
                         <div class="p-12">
-                            <div class="bny-row" gap>
+                            <div class="bny-row" grid-gap>
                                 <div class="col-xs6 p-12" style="background: var(--gray-shallow);">
-                                    <div class="bny-row" gap>
+                                    <div class="bny-row" grid-gap>
                                         <div class="col-xs3 demo-box">
                                             内部列
                                         </div>
@@ -380,7 +380,7 @@
                                     </div>
                                 </div>
                                 <div class="col-xs6 p-12" style="background: var(--gray-shallow);">
-                                    <div class="bny-row" gap>
+                                    <div class="bny-row" grid-gap>
                                         <div class="col-xs12 demo-box">
                                             内部列
                                         </div>
@@ -397,9 +397,9 @@
                     </div>
                     <div>
                         <pre hx-ext="bny-code">
-&lt;div class=&quot;bny-row&quot; gap&gt;
+&lt;div class=&quot;bny-row&quot; grid-gap&gt;
     &lt;div class=&quot;col-xs6&quot; &gt;
-        &lt;div class=&quot;bny-row&quot; gap&gt;
+        &lt;div class=&quot;bny-row&quot; grid-gap&gt;
             &lt;div class=&quot;col-xs3&quot;&gt;
                 内部列
             &lt;/div&gt;
@@ -412,7 +412,7 @@
         &lt;/div&gt;
     &lt;/div&gt;
     &lt;div class=&quot;col-xs6&quot; &gt;
-        &lt;div class=&quot;bny-row&quot; gap&gt;
+        &lt;div class=&quot;bny-row&quot; grid-gap&gt;
             &lt;div class=&quot;col-xs12&quot;&gt;
                 内部列
             &lt;/div&gt;
@@ -563,7 +563,7 @@
                 </thead>
                 <tbody>
                     <tr>
-                        <td>gap</td>
+                        <td>grid-gap</td>
                         <td>定义网格之间的间距，默认值为 8px。不填写则不添加间距。 可填写 10、12、14、18、22、26</td>
                     </tr>
                     <tr>
@@ -580,9 +580,9 @@
     </div>
     <div class="right-anchor-box hidden-xs col-sm3">
         <div class="right-anchor">
-            <ul hx-ext="bny-anchor" rail>
-                <li class="link" anchor="#n01">自适应容器</li>
-                <li class="link" anchor="#n02">网格布局</li>
+            <ul hx-ext="bny-anchor" anchor-rail>
+                <li class="link" anchor-target="#n01">自适应容器</li>
+                <li class="link" anchor-target="#n02">网格布局</li>
             </ul>
         </div>
     </div>

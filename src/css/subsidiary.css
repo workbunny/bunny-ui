@@ -11,19 +11,19 @@
     color: var(--black-middle);
     font-style: italic;
 
-    &[color="green"] {
+    &[sub-color="green"] {
         border-color: var(--green);
     }
 
-    &[color="yellow"] {
+    &[sub-color="yellow"] {
         border-color: var(--yellow);
     }
 
-    &[color="red"] {
+    &[sub-color="red"] {
         border-color: var(--red);
     }
 
-    &[color="blue"] {
+    &[sub-color="blue"] {
         border-color: var(--blue);
     }
 }
@@ -71,24 +71,24 @@ hr {
     margin: 14px 0;
     padding: 0;
     border: none;
-    border-bottom: 1.5px solid var(--gray-shallow);
+    border-bottom: 1.5px solid var(--default-middle);
     clear: both;
     overflow: hidden;
     background: none;
 
-    &[color="green"] {
+    &[sub-color="green"] {
         border-color: var(--green-middle);
     }
 
-    &[color="yellow"] {
+    &[sub-color="yellow"] {
         border-color: var(--yellow-middle);
     }
 
-    &[color="red"] {
+    &[sub-color="red"] {
         border-color: var(--red-middle);
     }
 
-    &[color="blue"] {
+    &[sub-color="blue"] {
         border-color: var(--blue-middle);
     }
 }

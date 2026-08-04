@@ -99,28 +99,28 @@
     }
 
     /* ============ 主题色变体（默认节点色） ============ */
-    &[color="green"] .bny-timeline-item .bny-timeline-node {
+    &[tl-color="green"] .bny-timeline-item .bny-timeline-node {
         border-color: var(--green);
         background-color: var(--green);
     }
 
-    &[color="blue"] .bny-timeline-item .bny-timeline-node {
+    &[tl-color="blue"] .bny-timeline-item .bny-timeline-node {
         border-color: var(--blue);
         background-color: var(--blue);
     }
 
-    &[color="yellow"] .bny-timeline-item .bny-timeline-node {
+    &[tl-color="yellow"] .bny-timeline-item .bny-timeline-node {
         border-color: var(--yellow);
         background-color: var(--yellow);
     }
 
-    &[color="red"] .bny-timeline-item .bny-timeline-node {
+    &[tl-color="red"] .bny-timeline-item .bny-timeline-node {
         border-color: var(--red);
         background-color: var(--red);
     }
 
     /* ============ 右侧布局 ============ */
-    &[mode="right"] {
+    &[tl-mode="right"] {
         &::before {
             left: auto;
             right: 8px;
@@ -139,7 +139,7 @@
     }
 
     /* ============ 交错布局 ============ */
-    &[mode="alternate"] {
+    &[tl-mode="alternate"] {
         &::before {
             left: 50%;
             transform: translateX(-50%);
@@ -188,12 +188,12 @@
         }
     }
 
-    &[mode="right"] .bny-timeline-item.has-icon .bny-timeline-node {
+    &[tl-mode="right"] .bny-timeline-item.has-icon .bny-timeline-node {
         left: auto;
         right: -4px;
     }
 
-    &[mode="alternate"] .bny-timeline-item.has-icon .bny-timeline-node {
+    &[tl-mode="alternate"] .bny-timeline-item.has-icon .bny-timeline-node {
         &:nth-child(even) {
             left: auto;
             right: calc(50% - 14px);

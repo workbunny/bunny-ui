@@ -10,11 +10,11 @@
     border: 1px solid var(--gray-shallow);
     transition: var(--transition);
 
-    &[model="transition"] {
+    &[card-model="transition"] {
         cursor: pointer;
     }
 
-    &[model="transition"]:hover {
+    &[card-model="transition"]:hover {
         box-shadow: var(--box-shadow-hover-005);
         transform: translateY(-2px);
         border-color: var(--default-shallow);
@@ -29,9 +29,6 @@
     & > .head {
         padding: 14px 18px;
         border-bottom: 1px solid var(--gray-shallow);
-        font-weight: var(--font-weight-semibold);
-        font-size: var(--font-size-16);
-        color: var(--black);
     }
 
     & > .foot {

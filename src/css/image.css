@@ -174,10 +174,10 @@
 }
 
 /* ====== 图片组（卡牌式堆叠） ======
- * 用 <div class="bny-image-group"> 包裹若干 <img data-preview>，
+ * 用 <div class="bny-image-group"> 包裹若干 <img img-preview>，
  * 缩略图像一叠扑克牌层叠排列：背后的卡片依次上移、微旋转，露出层叠边角；
  * 悬停时展开成扇形便于辨认，点击任一张在灯箱内翻页浏览整组。
- * 尺寸可用容器属性 data-preview-size="72" 或 CSS 变量 --bny-image-group-size 调整。
+ * 尺寸可用容器属性 img-preview-size="72" 或 CSS 变量 --bny-image-group-size 调整。
  * 扫描时每张图会被 .bny-image-item 包裹，用于承载左上角标签浮层（见下方 .bny-image-tags）。
  */
 

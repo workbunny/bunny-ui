@@ -8,9 +8,9 @@
  * - 键盘：方向键调整、Enter 确认
  *
  * 用法：
- *   <div class="bny-rate" data-value="3" data-max="5"></div>
- *   <div class="bny-rate" data-value="3.5" data-half></div>
- *   <div class="bny-rate" data-value="4" data-readonly></div>
+ *   <div class="bny-rate" rate-value="3" rate-max="5"></div>
+ *   <div class="bny-rate" rate-value="3.5" rate-half></div>
+ *   <div class="bny-rate" rate-value="4" rate-readonly></div>
  */
 (function () {
     'use strict';
@@ -20,11 +20,11 @@
      * @param {HTMLElement} rate
      */
     function render(rate) {
-        var max = parseInt(rate.getAttribute('data-max'), 10) || 5;
-        var value = parseFloat(rate.getAttribute('data-value')) || 0;
-        var half = rate.hasAttribute('data-half');
-        var readonly = rate.hasAttribute('data-readonly');
-        var color = rate.getAttribute('color') || '';
+        var max = parseInt(rate.getAttribute('rate-max'), 10) || 5;
+        var value = parseFloat(rate.getAttribute('rate-value')) || 0;
+        var half = rate.hasAttribute('rate-half');
+        var readonly = rate.hasAttribute('rate-readonly');
+        var color = rate.getAttribute('rate-color') || '';
         if (color) rate.setAttribute('color', color);
 
         rate.classList.add('bny-rate');
@@ -53,8 +53,8 @@
         rate.appendChild(starsEl);
 
         // 文本（可选）
-        var showText = rate.hasAttribute('data-show-text');
-        var texts = (rate.getAttribute('data-texts') || '很差,失望,一般,满意,惊喜').split(',');
+        var showText = rate.hasAttribute('rate-show-text');
+        var texts = (rate.getAttribute('rate-texts') || '很差,失望,一般,满意,惊喜').split(',');
         var textEl = null;
         if (showText) {
             textEl = document.createElement('span');
@@ -87,7 +87,7 @@
                     }
                     return;
                 }
-                var idx = parseInt(star.getAttribute('data-index'), 10);
+                var idx = parseInt(star.getAttribute('rate-index'), 10);
                 // 半星：根据鼠标位置判断
                 if (state.half) {
                     var rect = star.getBoundingClientRect();
@@ -106,7 +106,7 @@
             starsEl.addEventListener('click', function (e) {
                 var star = e.target.closest('.bny-rate-star');
                 if (!star) return;
-                var idx = parseInt(star.getAttribute('data-index'), 10);
+                var idx = parseInt(star.getAttribute('rate-index'), 10);
                 if (state.half) {
                     var rect = star.getBoundingClientRect();
                     var isLeft = (e.clientX - rect.left) < rect.width / 2;

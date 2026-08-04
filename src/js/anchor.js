@@ -12,7 +12,7 @@ htmx.defineExtension('bny-anchor', {
 
         if (name === "htmx:afterProcessNode") {
             if (bny.hasExtName(evt.target, "bny-anchor")) {
-                const rail = evt.target.getAttribute("rail") !== null ? true : false
+                const rail = evt.target.getAttribute("anchor-rail") !== null ? true : false
                 if (rail) {
                     const slider = document.createElement("div")
                     slider.classList.add("slider")
@@ -24,7 +24,7 @@ htmx.defineExtension('bny-anchor', {
                     const link = e.target.closest(".link")
                     if (link) {
                         bny.removeClass(evt.target.querySelectorAll(".link"), "active")
-                        const anchor = link.getAttribute("anchor")
+                        const anchor = link.getAttribute("anchor-target")
                         const section = htmx.find(anchor)
                         if (section) {
                             section.scrollIntoView({
@@ -61,7 +61,7 @@ htmx.defineExtension('bny-anchor', {
                         let currentLink = null
 
                         links.forEach(link => {
-                            const anchor = link.getAttribute("anchor")
+                            const anchor = link.getAttribute("anchor-target")
                             const section = htmx.find(anchor)
                             if (section) {
                                 const rect = section.getBoundingClientRect()

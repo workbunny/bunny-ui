@@ -338,24 +338,24 @@
  * - 默认      : 38px
  * - size="lg" : 46px 高度
  */
-.bny-input[size="sm"],
-.bny-textarea[size="sm"],
-.bny-select[size="sm"],
-[hx-ext="bny-input"][size="sm"],
-[hx-ext="bny-textarea"][size="sm"],
-[hx-ext="bny-select"][size="sm"] {
+.bny-input[form-size="sm"],
+.bny-textarea[form-size="sm"],
+.bny-select[form-size="sm"],
+[hx-ext="bny-input"][form-size="sm"],
+[hx-ext="bny-textarea"][form-size="sm"],
+[hx-ext="bny-select"][form-size="sm"] {
     height: 30px;
     font-size: var(--font-size-sm);
     padding: 0 8px;
     border-radius: var(--border-radius-sm);
 }
 
-.bny-input[size="lg"],
-.bny-textarea[size="lg"],
-.bny-select[size="lg"],
-[hx-ext="bny-input"][size="lg"],
-[hx-ext="bny-textarea"][size="lg"],
-[hx-ext="bny-select"][size="lg"] {
+.bny-input[form-size="lg"],
+.bny-textarea[form-size="lg"],
+.bny-select[form-size="lg"],
+[hx-ext="bny-input"][form-size="lg"],
+[hx-ext="bny-textarea"][form-size="lg"],
+[hx-ext="bny-select"][form-size="lg"] {
     height: 46px;
     font-size: var(--font-size-16);
     padding: 0 16px;
@@ -363,10 +363,10 @@
 }
 
 /* textarea 不强制固定高度 */
-.bny-textarea[size="sm"],
-.bny-textarea[size="lg"],
-[hx-ext="bny-textarea"][size="sm"],
-[hx-ext="bny-textarea"][size="lg"] {
+.bny-textarea[form-size="sm"],
+.bny-textarea[form-size="lg"],
+[hx-ext="bny-textarea"][form-size="sm"],
+[hx-ext="bny-textarea"][form-size="lg"] {
     height: auto;
     min-height: 80px;
 }
@@ -538,7 +538,7 @@
 }
 
 /* 尺寸变体 — 在容器上声明，子元素自动继承 */
-.bny-input-group[size="sm"] {
+.bny-input-group[form-size="sm"] {
     height: 30px;
     font-size: var(--font-size-sm);
     border-radius: var(--border-radius-sm);
@@ -555,7 +555,7 @@
     }
 }
 
-.bny-input-group[size="lg"] {
+.bny-input-group[form-size="lg"] {
     height: 46px;
     font-size: var(--font-size-16);
     border-radius: var(--border-radius-8);

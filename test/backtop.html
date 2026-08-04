@@ -1,7 +1,7 @@
 <div class="bny-row">
     <div class="text-content-box col-xs12 col-sm9">
         <div class="text-content">
-            <h1>回到顶部<div class="bny-tag" color="red">v2.0.6+</div></h1>
+            <h1>回到顶部<div class="bny-tag" tag-color="red">v2.0.6+</div></h1>
             <hr>
             <blockquote class="bny-blockquote">
                 回到顶部组件，页面滚动超过阈值后自动显示，点击平滑回到顶部。无需额外配置，引入即用。
@@ -70,19 +70,19 @@
                     <div class="body">
                         <div>
                             <div class="p-12">
-                                <p>通过 <code>data-threshold</code> 属性设置滚动阈值（默认 200px）</p>
+                                <p>通过 <code>top-threshold</code> 属性设置滚动阈值（默认 200px）</p>
                             </div>
                         </div>
                         <div>
                             <pre hx-ext="bny-code">
 &lt;!-- 滚动 100px 后显示 --&gt;
-&lt;div id=&quot;bny-backtop&quot; data-threshold=&quot;100&quot;&gt;
+&lt;div id=&quot;bny-backtop&quot; top-threshold=&quot;100&quot;&gt;
     &lt;i class=&quot;bny-icon icon-up&quot;&gt;&lt;/i&gt;
     &lt;span&gt;Top&lt;/span&gt;
 &lt;/div&gt;
 
-&lt;!-- 或使用 data-bny-backtop 属性 --&gt;
-&lt;div class=&quot;bny-backtop&quot; data-bny-backtop=&quot;300&quot;&gt;
+&lt;!-- 或使用 top-threshold 属性 --&gt;
+&lt;div class=&quot;bny-backtop&quot; top-threshold=&quot;300&quot;&gt;
     &lt;i class=&quot;bny-icon icon-arrowup&quot;&gt;&lt;/i&gt;
 &lt;/div&gt;
                             </pre>
@@ -127,14 +127,14 @@
                         <div>
                             <div class="p-12">
                                 <blockquote class="bny-blockquote">
-                                    默认监听 window 滚动；通过 <code>data-target</code> 指定选择器，可绑定到内部滚动容器；不指定时自动检测 <code>#bny-content</code> 或 <code>[data-scroll-container]</code>。支持页面同时存在多个 backtop 实例。
+                                    默认监听 window 滚动；通过 <code>top-target</code> 指定选择器，可绑定到内部滚动容器；不指定时自动检测 <code>#bny-content</code> 或 <code>[top-scroll-container]</code>。支持页面同时存在多个 backtop 实例。
                                 </blockquote>
                             </div>
                         </div>
                         <div>
                             <pre hx-ext="bny-code">
 &lt;!-- 指定容器 --&gt;
-&lt;div id=&quot;bny-backtop&quot; data-target=&quot;#my-scroll&quot; data-threshold=&quot;100&quot;&gt;
+&lt;div id=&quot;bny-backtop&quot; top-target=&quot;#my-scroll&quot; top-threshold=&quot;100&quot;&gt;
     &lt;i class=&quot;bny-icon icon-arrowup&quot;&gt;&lt;/i&gt;
 &lt;/div&gt;
 &lt;div id=&quot;my-scroll&quot; style=&quot;height:300px;overflow:auto;&quot;&gt;...&lt;/div&gt;
@@ -175,14 +175,7 @@
                         <td></td>
                     </tr>
                     <tr>
-                        <td>data-bny-backtop</td>
-                        <td>-</td>
-                        <td>否</td>
-                        <td>标记为回到顶部元素（值为数值时作为滚动阈值）</td>
-                        <td></td>
-                    </tr>
-                    <tr>
-                        <td>data-threshold</td>
+                        <td>top-threshold</td>
                         <td>200</td>
                         <td>否</td>
                         <td>滚动阈值（px），超过此值显示按钮</td>
@@ -203,12 +196,12 @@
     </div>
     <div class="right-anchor-box hidden-xs col-sm3">
         <div class="right-anchor">
-            <ul hx-ext="bny-anchor" rail>
-                <li class="link" anchor="#n01">基础用法</li>
-                <li class="link" anchor="#n02">自定义元素</li>
-                <li class="link" anchor="#n03">自定义阈值</li>
-                <li class="link" anchor="#n04">配合气泡提示</li>
-                <li class="link" anchor="#n05">API</li>
+            <ul hx-ext="bny-anchor" anchor-rail>
+                <li class="link" anchor-target="#n01">基础用法</li>
+                <li class="link" anchor-target="#n02">自定义元素</li>
+                <li class="link" anchor-target="#n03">自定义阈值</li>
+                <li class="link" anchor-target="#n04">配合气泡提示</li>
+                <li class="link" anchor-target="#n05">API</li>
             </ul>
         </div>
     </div>

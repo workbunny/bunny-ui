@@ -17,19 +17,19 @@
                         <div>
                             <div class="p-12">
                                 <div class="bny-tag">标签</div>
-                                <div class="bny-tag" color="green">标签</div>
-                                <div class="bny-tag" color="blue">标签</div>
-                                <div class="bny-tag" color="yellow">标签</div>
-                                <div class="bny-tag" color="red">标签</div>
+                                <div class="bny-tag" tag-color="green">标签</div>
+                                <div class="bny-tag" tag-color="blue">标签</div>
+                                <div class="bny-tag" tag-color="yellow">标签</div>
+                                <div class="bny-tag" tag-color="red">标签</div>
                             </div>
                         </div>
                         <div>
                             <pre hx-ext="bny-code">
 &lt;div class="bny-tag"&gt;标签&lt;/div&gt;
-&lt;div class="bny-tag" color="green"&gt;标签&lt;/div&gt;
-&lt;div class="bny-tag" color="blue"&gt;标签&lt;/div&gt;
-&lt;div class="bny-tag" color="yellow"&gt;标签&lt;/div&gt;
-&lt;div class="bny-tag" color="red"&gt;标签&lt;/div&gt;
+&lt;div class="bny-tag" tag-color="green"&gt;标签&lt;/div&gt;
+&lt;div class="bny-tag" tag-color="blue"&gt;标签&lt;/div&gt;
+&lt;div class="bny-tag" tag-color="yellow"&gt;标签&lt;/div&gt;
+&lt;div class="bny-tag" tag-color="red"&gt;标签&lt;/div&gt;
                 </pre>
                         </div>
                     </div>
@@ -45,20 +45,20 @@
                     <div class="body">
                         <div>
                             <div class="p-12">
-                                <div class="bny-tag" disabled>标签</div>
-                                <div class="bny-tag" disabled color="green">标签</div>
-                                <div class="bny-tag" disabled color="blue">标签</div>
-                                <div class="bny-tag" disabled color="yellow">标签</div>
-                                <div class="bny-tag" disabled color="red">标签</div>
+                                <div class="bny-tag" tag-disabled>标签</div>
+                                <div class="bny-tag" tag-disabled tag-color="green">标签</div>
+                                <div class="bny-tag" tag-disabled tag-color="blue">标签</div>
+                                <div class="bny-tag" tag-disabled tag-color="yellow">标签</div>
+                                <div class="bny-tag" tag-disabled tag-color="red">标签</div>
                             </div>
                         </div>
                         <div>
                             <pre hx-ext="bny-code">
-&lt;div class="bny-tag" disabled&gt;标签&lt;/div&gt;
-&lt;div class="bny-tag" disabled color="green"&gt;标签&lt;/div&gt;
-&lt;div class="bny-tag" disabled color="blue"&gt;标签&lt;/div&gt;
-&lt;div class="bny-tag" disabled color="yellow"&gt;标签&lt;/div&gt;
-&lt;div class="bny-tag" disabled color="red"&gt;标签&lt;/div&gt;
+&lt;div class="bny-tag" tag-disabled&gt;标签&lt;/div&gt;
+&lt;div class="bny-tag" tag-disabled tag-color="green"&gt;标签&lt;/div&gt;
+&lt;div class="bny-tag" tag-disabled tag-color="blue"&gt;标签&lt;/div&gt;
+&lt;div class="bny-tag" tag-disabled tag-color="yellow"&gt;标签&lt;/div&gt;
+&lt;div class="bny-tag" tag-disabled tag-color="red"&gt;标签&lt;/div&gt;
             </pre>
                         </div>
                     </div>
@@ -87,10 +87,17 @@
                         <td></td>
                     </tr>
                     <tr>
-                        <td>color</td>
+                        <td>tag-color</td>
                         <td></td>
                         <td>否</td>
                         <td>标签颜色:'green','blue','yellow','red'</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>tag-disabled</td>
+                        <td></td>
+                        <td>否</td>
+                        <td>标签禁用</td>
                         <td></td>
                     </tr>
                 </tbody>
@@ -99,10 +106,10 @@
     </div>
     <div class="right-anchor-box hidden-xs col-sm3">
         <div class="right-anchor">
-            <ul hx-ext="bny-anchor" rail>
-                <li class="link" anchor="#n01">标签颜色</li>
-                <li class="link" anchor="#n02">标签禁用</li>
-                <li class="link" anchor="#n03">API</li>
+            <ul hx-ext="bny-anchor" anchor-rail>
+                <li class="link" anchor-target="#n01">标签颜色</li>
+                <li class="link" anchor-target="#n02">标签禁用</li>
+                <li class="link" anchor-target="#n03">API</li>
             </ul>
         </div>
     </div>

@@ -127,6 +127,7 @@ bun run build
 ## 拓展组件
 
 - **spa**：[单页面](./ext/spa/)
+- **markdown**：[Markdown](./ext/markdown/)
 
 ## 文档
 

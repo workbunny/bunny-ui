@@ -32,7 +32,7 @@
 ```html
 <body hx-ext="bny-spa">
     <header>固定头部（不参与交换）</header>
-    <main bny-view>
+    <main spa-view>
         <!-- 只有这里会被交换 -->
     </main>
     <footer>固定页脚</footer>
@@ -40,11 +40,11 @@
 ```
 
 - `hx-ext="bny-spa"` — 在任意祖先元素上启用扩展
-- `bny-view` — 标记内容交换区域（必须，页面中至少一个）
+- `spa-view` — 标记内容交换区域（必须，页面中至少一个）
 
 ## 嵌套视口
 
-bny-spa 支持多个 `[bny-view]` 嵌套并存，**无需命名**，按 DOM 位置自动区分。每个视口通过"视图路径"（在视图树中的索引序列）唯一标识。
+bny-spa 支持多个 `[spa-view]` 嵌套并存，**无需命名**，按 DOM 位置自动区分。每个视口通过"视图路径"（在视图树中的索引序列）唯一标识。
 
 路径规则：
 
@@ -54,13 +54,13 @@ bny-spa 支持多个 `[bny-view]` 嵌套并存，**无需命名**，按 DOM 位�
 示例：
 
 ```html
-<main bny-view>              <!-- 路径 [0] -->
+<main spa-view>              <!-- 路径 [0] -->
   <h1>用户中心</h1>
   <nav>
     <a href="/users/123">详情</a>
     <a href="/users/123/posts">帖子</a>
   </nav>
-  <section bny-view>         <!-- 路径 [0, 0] -->
+  <section spa-view>         <!-- 路径 [0, 0] -->
     <!-- 子视口：点击上面的链接只刷新这里 -->
   </section>
 </main>
@@ -68,7 +68,7 @@ bny-spa 支持多个 `[bny-view]` 嵌套并存，**无需命名**，按 DOM 位�
 
 行为说明：
 
-- 链接点击时，自动定位**最近祖先** `[bny-view]` 作为交换目标
+- 链接点击时，自动定位**最近祖先** `[spa-view]` 作为交换目标
 - 视口外的链接（如 header 中的）默认交换根视口（路径 `[0]`）
 - 服务端响应按相同视图路径自动匹配对应视口；响应结构变化时回退到根视口
 - 浏览器前进/后退按历史记录的视图路径精确还原对应视口，父级布局不重新加载
@@ -82,24 +82,24 @@ bny-spa 支持多个 `[bny-view]` 嵌套并存，**无需命名**，按 DOM 位�
 
 | 属性 | 作用于 | 说明 |
 |------|--------|------|
-| `bny-view` | 任意元素 | 标记内容交换区域 |
-| `bny-view-target` | `<a>` / `<form>` | 显式指定目标视口（CSS 选择器），覆盖默认的"最近祖先视口"查找 |
-| `bny-spa-skip` | `<a>` / `<form>` | 排除该元素，不走 SPA 导航，走普通跳转 |
+| `spa-view` | 任意元素 | 标记内容交换区域 |
+| `spa-view-target` | `<a>` / `<form>` | 显式指定目标视口（CSS 选择器），覆盖默认的"最近祖先视口"查找 |
+| `spa-skip` | `<a>` / `<form>` | 排除该元素，不走 SPA 导航，走普通跳转 |
 | `bny-spa` | head 中的 `<link>`/`<script>`/`<style>` | 标记为页面特有资源，导航时自动 diff |
-| `bny-spa-mode` | `<body>` 或 `<meta name="bny-spa-mode">` | 导航模式：`history`（默认）或 `hash`，详见下方"导航模式" |
+| `spa-mode` | `<body>` 或 `<meta name="spa-mode">` | 导航模式：`history`（默认）或 `hash`，详见下方"导航模式" |
 
-### bny-view-target
+### spa-view-target
 
-默认情况下，链接点击会定位**最近祖先** `[bny-view]` 作为交换目标。当链接在视口外（如固定 header、侧边栏菜单）但需要更新某个嵌套视口时，用 `bny-view-target` 显式指定：
+默认情况下，链接点击会定位**最近祖先** `[spa-view]` 作为交换目标。当链接在视口外（如固定 header、侧边栏菜单）但需要更新某个嵌套视口时，用 `spa-view-target` 显式指定：
 
 ```html
 <header>
     <!-- 链接在 header 中（视口外），但应更新右侧 #docs-view -->
-    <a href="/docs/intro" bny-view-target="#docs-view">介绍</a>
+    <a href="/docs/intro" spa-view-target="#docs-view">介绍</a>
 </header>
 
-<main bny-view>
-    <section bny-view id="docs-view">
+<main spa-view>
+    <section spa-view id="docs-view">
         <!-- 这里会被交换 -->
     </section>
 </main>
@@ -113,7 +113,7 @@ bny-spa 支持多个 `[bny-view]` 嵌套并存，**无需命名**，按 DOM 位�
 
 ### 完整模式（零改造）
 
-服务端照常返回完整 HTML 页面，扩展从中提取 `bny-view` 区域：
+服务端照常返回完整 HTML 页面，扩展从中提取 `spa-view` 区域：
 
 ```html
 <html>
@@ -123,7 +123,7 @@ bny-spa 支持多个 `[bny-view]` 嵌套并存，**无需命名**，按 DOM 位�
 </head>
 <body>
     <header>导航栏</header>
-    <main bny-view>
+    <main spa-view>
         <h1>用户列表</h1>
         <table>...</table>
     </main>
@@ -227,14 +227,14 @@ POST 表单通过 fetch 提交，支持 PRG 模式：
 
 ## 链接排除
 
-某些链接需要走普通跳转时，加 `bny-spa-skip`：
+某些链接需要走普通跳转时，加 `spa-skip`：
 
 ```html
 <!-- 外部链接（自动排除，无需标记） -->
 <a href="https://github.com">GitHub</a>
 
 <!-- 下载链接 -->
-<a href="/files/report.pdf" bny-spa-skip>下载报告</a>
+<a href="/files/report.pdf" spa-skip>下载报告</a>
 
 <!-- 新标签页打开（自动排除） -->
 <a href="/page" target="_blank">新窗口</a>
@@ -244,7 +244,7 @@ POST 表单通过 fetch 提交，支持 PRG 模式：
 
 ## 导航模式
 
-通过 `bny-spa-mode` 全局配置，支持两种 URL 策略。模式在 SPA 初始化时读取，全站统一。
+通过 `spa-mode` 全局配置，支持两种 URL 策略。模式在 SPA 初始化时读取，全站统一。
 
 ### 配置方式
 
@@ -252,10 +252,10 @@ POST 表单通过 fetch 提交，支持 PRG 模式：
 
 ```html
 <!-- 方式一：body 属性 -->
-<body hx-ext="bny-spa" bny-spa-mode="hash">
+<body hx-ext="bny-spa" spa-mode="hash">
 
 <!-- 方式二：meta 标签 -->
-<meta name="bny-spa-mode" content="hash">
+<meta name="spa-mode" content="hash">
 ```
 
 ### history 模式（默认）
@@ -279,16 +279,16 @@ POST 表单通过 fetch 提交，支持 PRG 模式：
 
 ```html
 <head>
-    <meta name="bny-spa-mode" content="hash">
+    <meta name="spa-mode" content="hash">
 </head>
 ```
 
 导航到 `/test/base.html` 后，地址栏为 `/doc/docs.html#/test/base.html`。刷新时浏览器加载 docs.html，配合自动导航脚本读取 hash 恢复内容：
 
 ```html
-<main bny-view>
-    <section bny-view id="docs-view">
-        <a href="/test/base.html" id="docs-auto-nav" bny-view-target="#docs-view" style="display:none"></a>
+<main spa-view>
+    <section spa-view id="docs-view">
+        <a href="/test/base.html" id="docs-auto-nav" spa-view-target="#docs-view" style="display:none"></a>
         <script>
             function triggerAutoNav() {
                 var autoNav = document.getElementById('docs-auto-nav');
@@ -354,7 +354,7 @@ if (bny.spaIsPopstate()) return;  // popstate 回退时跳过自动导航
 内容交换完成后触发，可监听执行页面初始化逻辑：
 
 ```javascript
-document.querySelector('[bny-view]').addEventListener('bny:spa:loaded', function (e) {
+document.querySelector('[spa-view]').addEventListener('bny:spa:loaded', function (e) {
     console.log('页面已加载:', e.detail.url);
     // 在这里初始化当前页面的组件
 });
@@ -403,7 +403,7 @@ document.querySelector('[bny-view]').addEventListener('bny:spa:loaded', function
 3. GET 表单 — 搜索参数序列化到 URL
 4. POST 表单 — fetch 提交并交换内容
 5. 内联脚本 — 新页面中的 `<script>` 正常执行
-6. `bny-spa-skip` — 标记的链接走普通跳转
+6. `spa-skip` — 标记的链接走普通跳转
 7. 嵌套视口 — 父级布局保持，子视口独立交换，后退精确还原
-8. `bny-view-target` — 视口外链接显式指定目标视口
-9. `bny-spa-mode` — history 模式地址栏为真实 URL；hash 模式地址栏为 `/入口页#/内容路径`，刷新不丢失框架
+8. `spa-view-target` — 视口外链接显式指定目标视口
+9. `spa-mode` — history 模式地址栏为真实 URL；hash 模式地址栏为 `/入口页#/内容路径`，刷新不丢失框架

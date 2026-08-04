@@ -1,7 +1,7 @@
 <div class="bny-row">
     <div class="text-content-box col-xs12 col-sm9">
         <div class="text-content">
-            <h1>Steps 步骤条<div class="bny-tag" color="red">v2.0.6+</div></h1>
+            <h1>Steps 步骤条<div class="bny-tag" tag-color="red">v2.0.6+</div></h1>
             <hr>
             <blockquote class="bny-blockquote">
                 步骤引导组件，纯 CSS 实现。支持横向/纵向、4 种状态（wait/process/finish/error）、主题色与简洁模式。
@@ -55,6 +55,9 @@
                                         </div>
                                     </div>
                                 </div>
+                                <blockquote class="bny-blockquote" style="margin-top:14px;">
+                                    横向排列（默认）。每一步用 <code>is-finish</code> / <code>is-process</code> / <code>is-wait</code> 标注状态；<code>bny-step-num</code> 是序号，<code>is-finish</code> 自动显示对勾、<code>is-error</code> 自动显示 ×。
+                                </blockquote>
                             </div>
                         </div>
                         <div>
@@ -69,8 +72,33 @@
             &lt;div class=&quot;bny-step-desc&quot;&gt;完成账号登录&lt;/div&gt;
         &lt;/div&gt;
     &lt;/div&gt;
-    &lt;div class=&quot;bny-step is-process&quot;&gt;...&lt;/div&gt;
-    &lt;div class=&quot;bny-step is-wait&quot;&gt;...&lt;/div&gt;
+    &lt;div class=&quot;bny-step is-finish&quot;&gt;
+        &lt;div class=&quot;bny-step-head&quot;&gt;
+            &lt;div class=&quot;bny-step-icon&quot;&gt;&lt;span class=&quot;bny-step-num&quot;&gt;2&lt;/span&gt;&lt;/div&gt;
+        &lt;/div&gt;
+        &lt;div class=&quot;bny-step-content&quot;&gt;
+            &lt;div class=&quot;bny-step-title&quot;&gt;填写信息&lt;/div&gt;
+            &lt;div class=&quot;bny-step-desc&quot;&gt;完善个人资料&lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div class=&quot;bny-step is-process&quot;&gt;
+        &lt;div class=&quot;bny-step-head&quot;&gt;
+            &lt;div class=&quot;bny-step-icon&quot;&gt;&lt;span class=&quot;bny-step-num&quot;&gt;3&lt;/span&gt;&lt;/div&gt;
+        &lt;/div&gt;
+        &lt;div class=&quot;bny-step-content&quot;&gt;
+            &lt;div class=&quot;bny-step-title&quot;&gt;验证&lt;/div&gt;
+            &lt;div class=&quot;bny-step-desc&quot;&gt;邮箱/手机验证中&lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div class=&quot;bny-step is-wait&quot;&gt;
+        &lt;div class=&quot;bny-step-head&quot;&gt;
+            &lt;div class=&quot;bny-step-icon&quot;&gt;&lt;span class=&quot;bny-step-num&quot;&gt;4&lt;/span&gt;&lt;/div&gt;
+        &lt;/div&gt;
+        &lt;div class=&quot;bny-step-content&quot;&gt;
+            &lt;div class=&quot;bny-step-title&quot;&gt;完成&lt;/div&gt;
+            &lt;div class=&quot;bny-step-desc&quot;&gt;注册成功&lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
 &lt;/div&gt;
                             </pre>
                         </div>
@@ -88,7 +116,7 @@
                     <div class="body">
                         <div>
                             <div class="p-12" style="max-width:320px;">
-                                <div class="bny-steps" direction="vertical">
+                                <div class="bny-steps" step-direction="vertical">
                                     <div class="bny-step is-finish">
                                         <div class="bny-step-head">
                                             <div class="bny-step-icon"><span class="bny-step-num">1</span></div>
@@ -126,11 +154,51 @@
                                         </div>
                                     </div>
                                 </div>
+                                <blockquote class="bny-blockquote" style="margin-top:14px;">
+                                    纵向排列：给容器加 <code>step-direction="vertical"</code>，主轴与连接线改为竖向，标题/描述排在图标右侧。
+                                </blockquote>
                             </div>
                         </div>
                         <div>
                             <pre hx-ext="bny-code">
-&lt;div class=&quot;bny-steps&quot; direction=&quot;vertical&quot;&gt;...&lt;/div&gt;
+&lt;div class=&quot;bny-steps&quot; step-direction=&quot;vertical&quot;&gt;
+    &lt;div class=&quot;bny-step is-finish&quot;&gt;
+        &lt;div class=&quot;bny-step-head&quot;&gt;
+            &lt;div class=&quot;bny-step-icon&quot;&gt;&lt;span class=&quot;bny-step-num&quot;&gt;1&lt;/span&gt;&lt;/div&gt;
+        &lt;/div&gt;
+        &lt;div class=&quot;bny-step-content&quot;&gt;
+            &lt;div class=&quot;bny-step-title&quot;&gt;提交申请&lt;/div&gt;
+            &lt;div class=&quot;bny-step-desc&quot;&gt;2026-07-20 10:32&lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div class=&quot;bny-step is-finish&quot;&gt;
+        &lt;div class=&quot;bny-step-head&quot;&gt;
+            &lt;div class=&quot;bny-step-icon&quot;&gt;&lt;span class=&quot;bny-step-num&quot;&gt;2&lt;/span&gt;&lt;/div&gt;
+        &lt;/div&gt;
+        &lt;div class=&quot;bny-step-content&quot;&gt;
+            &lt;div class=&quot;bny-step-title&quot;&gt;主管审批&lt;/div&gt;
+            &lt;div class=&quot;bny-step-desc&quot;&gt;2026-07-21 14:18&lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div class=&quot;bny-step is-process&quot;&gt;
+        &lt;div class=&quot;bny-step-head&quot;&gt;
+            &lt;div class=&quot;bny-step-icon&quot;&gt;&lt;span class=&quot;bny-step-num&quot;&gt;3&lt;/span&gt;&lt;/div&gt;
+        &lt;/div&gt;
+        &lt;div class=&quot;bny-step-content&quot;&gt;
+            &lt;div class=&quot;bny-step-title&quot;&gt;财务复核&lt;/div&gt;
+            &lt;div class=&quot;bny-step-desc&quot;&gt;复核中...&lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div class=&quot;bny-step is-wait&quot;&gt;
+        &lt;div class=&quot;bny-step-head&quot;&gt;
+            &lt;div class=&quot;bny-step-icon&quot;&gt;&lt;span class=&quot;bny-step-num&quot;&gt;4&lt;/span&gt;&lt;/div&gt;
+        &lt;/div&gt;
+        &lt;div class=&quot;bny-step-content&quot;&gt;
+            &lt;div class=&quot;bny-step-title&quot;&gt;完成&lt;/div&gt;
+            &lt;div class=&quot;bny-step-desc&quot;&gt;等待结果&lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
                             </pre>
                         </div>
                     </div>
@@ -147,7 +215,7 @@
                     <div class="body">
                         <div>
                             <div class="p-12">
-                                <div class="bny-steps" color="blue">
+                                <div class="bny-steps" step-color="blue">
                                     <div class="bny-step is-finish">
                                         <div class="bny-step-head">
                                             <div class="bny-step-icon"><span class="bny-step-num">1</span></div>
@@ -174,12 +242,39 @@
                                         </div>
                                     </div>
                                 </div>
+                                <blockquote class="bny-blockquote" style="margin-top:14px;">
+                                    主题色：<code>step-color="blue"</code> 改变进行中/完成态与连接线配色；某一步加 <code>is-error</code> 即显示为红色错误态（图标为 ×）。
+                                </blockquote>
                             </div>
                         </div>
                         <div>
                             <pre hx-ext="bny-code">
-&lt;div class=&quot;bny-steps&quot; color=&quot;blue&quot;&gt;
-    &lt;div class=&quot;bny-step is-error&quot;&gt;...&lt;/div&gt;
+&lt;div class=&quot;bny-steps&quot; step-color=&quot;blue&quot;&gt;
+    &lt;div class=&quot;bny-step is-finish&quot;&gt;
+        &lt;div class=&quot;bny-step-head&quot;&gt;
+            &lt;div class=&quot;bny-step-icon&quot;&gt;&lt;span class=&quot;bny-step-num&quot;&gt;1&lt;/span&gt;&lt;/div&gt;
+        &lt;/div&gt;
+        &lt;div class=&quot;bny-step-content&quot;&gt;
+            &lt;div class=&quot;bny-step-title&quot;&gt;步骤一&lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div class=&quot;bny-step is-error&quot;&gt;
+        &lt;div class=&quot;bny-step-head&quot;&gt;
+            &lt;div class=&quot;bny-step-icon&quot;&gt;&lt;span class=&quot;bny-step-num&quot;&gt;2&lt;/span&gt;&lt;/div&gt;
+        &lt;/div&gt;
+        &lt;div class=&quot;bny-step-content&quot;&gt;
+            &lt;div class=&quot;bny-step-title&quot;&gt;步骤二&lt;/div&gt;
+            &lt;div class=&quot;bny-step-desc&quot; style=&quot;color:var(--red);&quot;&gt;审核失败&lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div class=&quot;bny-step is-wait&quot;&gt;
+        &lt;div class=&quot;bny-step-head&quot;&gt;
+            &lt;div class=&quot;bny-step-icon&quot;&gt;&lt;span class=&quot;bny-step-num&quot;&gt;3&lt;/span&gt;&lt;/div&gt;
+        &lt;/div&gt;
+        &lt;div class=&quot;bny-step-content&quot;&gt;
+            &lt;div class=&quot;bny-step-title&quot;&gt;步骤三&lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
 &lt;/div&gt;
                             </pre>
                         </div>
@@ -188,30 +283,67 @@
             </div>
 
             <h2 id="n04">API</h2>
-            <h3>CSS 类</h3>
+            <h3>Steps 属性</h3>
             <table hx-ext="bny-table">
-                <thead><tr><th>类名/属性</th><th>说明</th></tr></thead>
+                <thead>
+                    <tr>
+                        <th>属性</th>
+                        <th>可选值</th>
+                        <th>说明</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>step-direction</code></td>
+                        <td>vertical</td>
+                        <td>布局方向；默认 horizontal（横向），可选 vertical（纵向）</td>
+                    </tr>
+                    <tr>
+                        <td><code>step-model</code></td>
+                        <td>simple</td>
+                        <td>简洁模式（缩小图标尺寸）</td>
+                    </tr>
+                    <tr>
+                        <td><code>step-color</code></td>
+                        <td>green / blue / red</td>
+                        <td>主题色变体（作用于进行中/完成态与连接线）</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>Steps 类名</h3>
+            <table hx-ext="bny-table">
+                <thead>
+                    <tr>
+                        <th>类名</th>
+                        <th>说明</th>
+                    </tr>
+                </thead>
                 <tbody>
                     <tr><td><code>bny-steps</code></td><td>步骤条容器</td></tr>
-                    <tr><td><code>direction="vertical"</code></td><td>纵向布局</td></tr>
-                    <tr><td><code>color="green/blue/red"</code></td><td>主题色变体</td></tr>
-                    <tr><td><code>model="simple"</code></td><td>简洁模式（小尺寸）</td></tr>
                     <tr><td><code>bny-step</code></td><td>单个步骤项</td></tr>
+                    <tr><td><code>bny-step-head</code></td><td>头部（图标 + 标题/描述容器）</td></tr>
+                    <tr><td><code>bny-step-icon</code></td><td>步骤图标圆点</td></tr>
+                    <tr><td><code>bny-step-num</code></td><td>序号文字（完成/错误态自动隐藏）</td></tr>
+                    <tr><td><code>bny-step-content</code></td><td>内容容器</td></tr>
+                    <tr><td><code>bny-step-title</code></td><td>标题</td></tr>
+                    <tr><td><code>bny-step-desc</code></td><td>描述</td></tr>
                     <tr><td><code>is-wait</code></td><td>等待状态（灰色）</td></tr>
-                    <tr><td><code>is-process</code></td><td>进行中状态（主色实心）</td></tr>
+                    <tr><td><code>is-process</code></td><td>进行中状态（主色实心 + 光环）</td></tr>
                     <tr><td><code>is-finish</code></td><td>完成状态（主色 + 对勾）</td></tr>
                     <tr><td><code>is-error</code></td><td>错误状态（红色 + ×）</td></tr>
+                    <tr><td><code>bny-steps-clickable</code></td><td>可点击（hover 放大图标）</td></tr>
                 </tbody>
             </table>
         </div>
     </div>
     <div class="right-anchor-box hidden-xs col-sm3">
         <div class="right-anchor">
-            <ul hx-ext="bny-anchor" rail>
-                <li class="link" anchor="#n01">基础用法</li>
-                <li class="link" anchor="#n02">纵向</li>
-                <li class="link" anchor="#n03">错误状态</li>
-                <li class="link" anchor="#n04">API</li>
+            <ul hx-ext="bny-anchor" anchor-rail>
+                <li class="link" anchor-target="#n01">基础用法</li>
+                <li class="link" anchor-target="#n02">纵向</li>
+                <li class="link" anchor-target="#n03">错误状态</li>
+                <li class="link" anchor-target="#n04">API</li>
             </ul>
         </div>
     </div>

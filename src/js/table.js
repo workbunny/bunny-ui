@@ -8,7 +8,7 @@ htmx.defineExtension('bny-table', {
          * @returns {string}
          */
         function sortVal(td) {
-            return td.getAttribute('data-sort-val') || td.textContent.trim();
+            return td.getAttribute('table-sort-val') || td.textContent.trim();
         }
 
         /**
@@ -51,14 +51,11 @@ htmx.defineExtension('bny-table', {
          * @param {HTMLElement} table
          */
         function initSort(table) {
-            let ths = table.querySelectorAll('thead th[data-sort]');
-            if (!ths.length) {
-                ths = table.querySelectorAll('thead th[sortable]');
-            }
+            let ths = table.querySelectorAll('thead th[table-sort]');
             if (!ths.length) return;
 
             // 表格唯一标识（用于持久化排序状态到 sessionStorage）
-            const tableKey = table.getAttribute('data-table-key') || '';
+            const tableKey = table.getAttribute('table-key') || '';
             const storeKey = tableKey ? 'bny-table-sort:' + tableKey : '';
 
             /**
@@ -111,7 +108,7 @@ htmx.defineExtension('bny-table', {
                         th.classList.add('sort-asc');
                     }
 
-                    const type = th.getAttribute('data-sort') || 'string';
+                    const type = th.getAttribute('table-sort') || 'string';
                     const asc = th.classList.contains('sort-asc');
                     const tbody = table.querySelector('tbody');
                     if (tbody) {
@@ -150,7 +147,7 @@ htmx.defineExtension('bny-table', {
             for (let j = 0; j < tbodyTrs.length; j++) {
                 const tds = tbodyTrs[j].querySelectorAll('td');
                 for (let k = 0; k < tds.length; k++) {
-                    tds[k].setAttribute('label', titles[tds[k].cellIndex] || '');
+                    tds[k].setAttribute('table-label', titles[tds[k].cellIndex] || '');
                 }
             }
         }
@@ -168,7 +165,7 @@ htmx.defineExtension('bny-table', {
                         .parentElement
                         .parentElement
                         .querySelector('th:nth-child(' + (tds[i].cellIndex + 1) + ')');
-                    tds[i].setAttribute('label', label ? label.textContent : '');
+                    tds[i].setAttribute('table-label', label ? label.textContent : '');
                 }
             }
         }
@@ -204,8 +201,12 @@ htmx.defineExtension('bny-table', {
             if (col !== null && typeof col === 'object') {
                 var name = bny.escapeChars(String(col.name ?? ''))
                 var attrs = ''
-                if (col.sortable) attrs += ' sortable'
-                if (col.sort) attrs += ' data-sort="' + bny.escapeChars(String(col.sort)) + '"'
+                // 列级排序：sort 指定类型；仅 sortable 时按字符串排序
+                if (col.sort) {
+                    attrs += ' table-sort="' + bny.escapeChars(String(col.sort)) + '"'
+                } else if (col.sortable) {
+                    attrs += ' table-sort'
+                }
                 return '<th' + attrs + '>' + name + '</th>'
             }
             return '<th>' + bny.escapeChars(String(col)) + '</th>'
@@ -228,8 +229,8 @@ htmx.defineExtension('bny-table', {
             let h = '';
             // 先拼完所有属性，最后再加 '>' 闭合 <table> 标签
             // 否则 data-table-key 会跑到 table 标签后面变成文本节点（页面多出 '>' 符号）
-            h += '<table hx-ext="bny-table"' + (color ? ' color="' + color + '"' : '');
-            if (tableKey) h += ' data-table-key="' + bny.escapeChars(tableKey) + '"';
+            h += '<table hx-ext="bny-table"' + (color ? ' table-color="' + color + '"' : '');
+            if (tableKey) h += ' table-key="' + bny.escapeChars(tableKey) + '"';
             h += '>';
             h += '<thead><tr>';
             cols.forEach(function (col) {

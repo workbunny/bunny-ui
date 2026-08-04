@@ -22,7 +22,7 @@ const jsFiles = [
   path.resolve(__dirname, 'src/js/tab.js'),
   path.resolve(__dirname, 'src/js/nav.js'),
   path.resolve(__dirname, 'src/js/anchor.js'),
-  path.resolve(__dirname, 'src/js/tooltip.js'),
+  path.resolve(__dirname, 'src/js/tip.js'),
   path.resolve(__dirname, 'src/js/datepicker.js'),
   path.resolve(__dirname, 'src/js/backtop.js'),
   path.resolve(__dirname, 'src/js/button.js'),
@@ -58,7 +58,7 @@ const cssFiles = [
   path.resolve(__dirname, 'src/css/grid.css'),
   path.resolve(__dirname, 'src/css/nav.css'),
   path.resolve(__dirname, 'src/css/anchor.css'),
-  path.resolve(__dirname, 'src/css/tooltip.css'),
+  path.resolve(__dirname, 'src/css/tip.css'),
   path.resolve(__dirname, 'src/css/skeleton.css'),
   path.resolve(__dirname, 'src/css/breadcrumb.css'),
   path.resolve(__dirname, 'src/css/avatar.css'),
@@ -157,7 +157,7 @@ export default defineConfig({
       closeBundle() {
         // 判断临时文件是否存在，存在则删除
         if (fs.existsSync(tempEntryPath)) {
-          fs.unlinkSync(tempEntryPath);
+          try { fs.unlinkSync(tempEntryPath); } catch (e) { /* 沙箱回收站 shim 可能拦截删除，忽略 */ }
         }
       }
     }

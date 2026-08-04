@@ -11,7 +11,7 @@
     color: var(--white);
     font-size: var(--font-size-16);
     font-weight: var(--font-weight-semibold);
-    overflow: hidden;
+    /* 不在此设 overflow:hidden，否则会把溢出的状态指示点裁掉；圆角裁切改由 img 自身 border-radius:inherit 完成 */
     flex-shrink: 0;
     user-select: none;
     position: relative;
@@ -20,29 +20,30 @@
         width: 100%;
         height: 100%;
         object-fit: cover;
+        border-radius: inherit;
     }
 
     /* ====== 尺寸 ====== */
-    &[size="xs"]  { width: 24px; height: 24px; font-size: var(--font-size-xs); }
-    &[size="sm"]  { width: 32px; height: 32px; font-size: var(--font-size-sm); }
+    &[avatar-size="xs"]  { width: 24px; height: 24px; font-size: var(--font-size-xs); }
+    &[avatar-size="sm"]  { width: 32px; height: 32px; font-size: var(--font-size-sm); }
     /* md 为默认 40px */
-    &[size="lg"]  { width: 56px; height: 56px; font-size: var(--font-size-20); }
-    &[size="xl"]  { width: 72px; height: 72px; font-size: var(--font-size-24); }
+    &[avatar-size="lg"]  { width: 56px; height: 56px; font-size: var(--font-size-20); }
+    &[avatar-size="xl"]  { width: 72px; height: 72px; font-size: var(--font-size-24); }
 
     /* ====== 方形 ====== */
-    &[shape="square"] {
+    &[avatar-shape="square"] {
         border-radius: var(--border-radius-sm);
 
-        &[size="lg"], &[size="xl"] { border-radius: var(--border-radius); }
+        &[avatar-size="lg"], &[avatar-size="xl"] { border-radius: var(--border-radius); }
     }
 
     /* ====== 颜色 ====== */
-    &[color="green"]  { background: var(--green); }
-    &[color="blue"]   { background: var(--blue); }
-    &[color="yellow"] { background: var(--yellow); }
-    &[color="red"]    { background: var(--red); }
+    &[avatar-color="green"]  { background: var(--green); }
+    &[avatar-color="blue"]   { background: var(--blue); }
+    &[avatar-color="yellow"] { background: var(--yellow); }
+    &[avatar-color="red"]    { background: var(--red); }
 
-    /* ====== 状态指示点 ====== */
+    /* ====== 状态指示点（贴在头像圆形角落，自然半露在边缘） ====== */
     & .bny-avatar-status {
         position: absolute;
         bottom: 0;
@@ -52,29 +53,30 @@
         border-radius: 50%;
         border: 2px solid var(--white);
         background: var(--gray);
+        z-index: 2;
 
         &.online  { background: var(--green); }
         &.busy    { background: var(--red); }
         &.away    { background: var(--yellow); }
 
-        &[placement="bottom-left"] {
+        &[avatar-placement="bottom-left"] {
             right: auto;
             left: 0;
         }
-        &[placement="top-right"] {
+        &[avatar-placement="top-right"] {
             bottom: auto;
             top: 0;
         }
-        &[placement="top-left"] {
+        &[avatar-placement="top-left"] {
             bottom: auto; right: auto;
             top: 0; left: 0;
         }
     }
 
-    &[size="xs"]  .bny-avatar-status { width: 6px; height: 6px; border-width: 1.5px; }
-    &[size="sm"]  .bny-avatar-status { width: 8px; height: 8px; border-width: 1.5px; }
-    &[size="lg"]  .bny-avatar-status { width: 14px; height: 14px; }
-    &[size="xl"]  .bny-avatar-status { width: 16px; height: 16px; border-width: 3px; }
+    &[avatar-size="xs"]  .bny-avatar-status { width: 6px; height: 6px; border-width: 1.5px; }
+    &[avatar-size="sm"]  .bny-avatar-status { width: 8px; height: 8px; border-width: 1.5px; }
+    &[avatar-size="lg"]  .bny-avatar-status { width: 14px; height: 14px; }
+    &[avatar-size="xl"]  .bny-avatar-status { width: 16px; height: 16px; border-width: 3px; }
 }
 
 /* ====== 头像组（重叠排列） ====== */
@@ -180,7 +182,7 @@
     line-height: 1;
     white-space: nowrap;
 
-    &[size="lg"] {
+    &[avatar-size="lg"] {
         min-width: 26px;
         height: 26px;
         padding: 0 8px;
@@ -196,7 +198,7 @@
         padding: 0;
         border-radius: 50%;
 
-        &[size="lg"] {
+        &[avatar-size="lg"] {
             width: 12px;
             height: 12px;
             min-width: 12px;
@@ -204,9 +206,9 @@
     }
 
     /* 颜色 */
-    &[color="green"]  { background: var(--green); }
-    &[color="blue"]   { background: var(--blue); }
-    &[color="yellow"] { background: var(--yellow); }
-    &[color="red"]    { background: var(--red); }
-    &[color="gray"]   { background: var(--gray); }
+    &[avatar-color="green"]  { background: var(--green); }
+    &[avatar-color="blue"]   { background: var(--blue); }
+    &[avatar-color="yellow"] { background: var(--yellow); }
+    &[avatar-color="red"]    { background: var(--red); }
+    &[avatar-color="gray"]   { background: var(--gray); }
 }

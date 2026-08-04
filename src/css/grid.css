@@ -34,31 +34,31 @@
     max-width: 100%;
 
     /* 网格间距 */
-    &[gap] {
+    &[grid-gap] {
         gap: 8px
     }
 
-    &[gap="10"] {
+    &[grid-gap="10"] {
         gap: 10px
     }
 
-    &[gap="12"] {
+    &[grid-gap="12"] {
         gap: 12px
     }
 
-    &[gap="14"] {
+    &[grid-gap="14"] {
         gap: 14px
     }
 
-    &[gap="18"] {
+    &[grid-gap="18"] {
         gap: 18px
     }
 
-    &[gap="22"] {
+    &[grid-gap="22"] {
         gap: 22px
     }
 
-    &[gap="26"] {
+    &[grid-gap="26"] {
         gap: 26px
     }
 

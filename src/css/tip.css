@@ -1,5 +1,5 @@
-/* ========== Tooltip 气泡提示 ========== */
-.bny-tooltip {
+/* ========== tip 气泡提示 ========== */
+.tip {
     position: fixed;
     z-index: 99999;
     max-width: 280px;
@@ -92,7 +92,7 @@
 
 /* ========== 亮色主题 ========== */
 
-.bny-tooltip.bny-tooltip-light {
+.tip.tip-light {
     background: var(--white);
     color: var(--black);
     box-shadow: var(--box-shadow-055);
@@ -128,7 +128,7 @@
 
 /* ========== 暗黑模式下的亮色主题 ========== */
 
-html.dark .bny-tooltip.bny-tooltip-light {
+html.dark .tip.tip-light {
     background: rgba(255, 255, 255, 0.92);
     color: var(--black);
     backdrop-filter: blur(12px);

@@ -129,7 +129,7 @@
                 overflow: unset;
                 opacity: 1;
                 visibility: visible;
-                transform: translateY(0);
+                transform: translateY(4px);
             }
 
             & > .trigger > i:last-child {
@@ -174,7 +174,7 @@
     /* ========== 颜色变体 ========== */
 
     /* 白色 */
-    &[color="white"] {
+    &[nav-color="white"] {
         background: var(--white);
         color: var(--black-middle);
         border-bottom: 1px solid var(--gray-shallow);
@@ -217,104 +217,104 @@
             border: 1px solid var(--gray-shallow);
         }
 
-        &:not([side]) {
-            &[collapsed] .sub-menu {
+        &:not([nav-side]) {
+            &[nav-collapsed] .sub-menu {
                 background: var(--white-shallow) !important;
             }
         }
 
-        &[side] .sub-menu {
+        &[nav-side] .sub-menu {
             background: var(--white-shallow) !important;
         }
     }
 
     /* 绿色 */
-    &[color="green"] {
+    &[nav-color="green"] {
         background: var(--green);
 
         & li > .trigger::before {
             background: var(--green-shallow) !important;
         }
 
-        &[collapsed] .sub-menu {
+        &[nav-collapsed] .sub-menu {
             background: var(--green) !important;
         }
 
-        &:not([side]) {
+        &:not([nav-side]) {
             & .sub-menu {
                 background: var(--green) !important;
             }
 
-            &[collapsed] .sub-menu {
+            &[nav-collapsed] .sub-menu {
                 background: var(--black-alpha-20) !important;
             }
         }
     }
 
     /* 黄色 */
-    &[color="yellow"] {
+    &[nav-color="yellow"] {
         background: var(--yellow);
 
         & li > .trigger::before {
             background: var(--yellow-shallow) !important;
         }
 
-        &[collapsed] .sub-menu {
+        &[nav-collapsed] .sub-menu {
             background: var(--yellow) !important;
         }
 
-        &:not([side]) {
+        &:not([nav-side]) {
             & .sub-menu {
                 background: var(--yellow) !important;
             }
 
-            &[collapsed] .sub-menu {
+            &[nav-collapsed] .sub-menu {
                 background: var(--black-alpha-20) !important;
             }
         }
     }
 
     /* 红色 */
-    &[color="red"] {
+    &[nav-color="red"] {
         background: var(--red);
 
         & li > .trigger::before {
             background: var(--red-shallow) !important;
         }
 
-        &[collapsed] .sub-menu {
+        &[nav-collapsed] .sub-menu {
             background: var(--red) !important;
         }
 
-        &:not([side]) {
+        &:not([nav-side]) {
             & .sub-menu {
                 background: var(--red) !important;
             }
 
-            &[collapsed] .sub-menu {
+            &[nav-collapsed] .sub-menu {
                 background: var(--black-alpha-20) !important;
             }
         }
     }
 
     /* 蓝色 */
-    &[color="blue"] {
+    &[nav-color="blue"] {
         background: var(--blue);
 
         & li > .trigger::before {
             background: var(--blue-shallow) !important;
         }
 
-        &[collapsed] .sub-menu {
+        &[nav-collapsed] .sub-menu {
             background: var(--blue) !important;
         }
 
-        &:not([side]) {
+        &:not([nav-side]) {
             & .sub-menu {
                 background: var(--blue) !important;
             }
 
-            &[collapsed] .sub-menu {
+            &[nav-collapsed] .sub-menu {
                 background: var(--black-alpha-20) !important;
             }
         }
@@ -322,7 +322,7 @@
 }
 
 /* ========== 顶部导航（非侧边） ========== */
-[hx-ext~="bny-nav"]:not([side]) {
+[hx-ext~="bny-nav"]:not([nav-side]) {
     & > .head > .toggle-btn {
         display: none;
     }
@@ -353,7 +353,7 @@
 
 /* ========== 移动端响应式 ========== */
 @media screen and (max-width: 768px) {
-    [hx-ext~="bny-nav"]:not([side]) {
+    [hx-ext~="bny-nav"]:not([nav-side]) {
         flex-direction: column;
         overflow: hidden;
 
@@ -386,7 +386,7 @@
             width: 100%;
         }
 
-        &[collapsed] {
+        &[nav-collapsed] {
             & > .head {
                 border-bottom: 1px solid var(--white-alpha-15);
 
@@ -416,7 +416,7 @@
 }
 
 /* ========== 侧边导航 ========== */
-[hx-ext~="bny-nav"][side] {
+[hx-ext~="bny-nav"][nav-side] {
     display: flex;
     flex-direction: column;
     width: 240px;
@@ -491,7 +491,7 @@
         border-radius: 0;
     }
 
-    &[collapsed] {
+    &[nav-collapsed] {
         width: 80px;
 
         & > .head {
@@ -561,11 +561,11 @@
     }
 
     /* 侧边栏颜色变体下的 sub-menu */
-    &[color="white"] .sub-menu {
+    &[nav-color="white"] .sub-menu {
         background: var(--white-shallow) !important;
     }
 
-    &[color="white"][collapsed] .sub-menu {
+    &[nav-color="white"][nav-collapsed] .sub-menu {
         background: var(--white) !important;
     }
 }
