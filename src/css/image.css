@@ -173,6 +173,122 @@
     }
 }
 
+/* ====== 图片组（卡牌式堆叠） ======
+ * 用 <div class="bny-image-group"> 包裹若干 <img data-preview>，
+ * 缩略图像一叠扑克牌层叠排列：背后的卡片依次上移、微旋转，露出层叠边角；
+ * 悬停时展开成扇形便于辨认，点击任一张在灯箱内翻页浏览整组。
+ * 尺寸可用容器属性 data-preview-size="72" 或 CSS 变量 --bny-image-group-size 调整。
+ * 扫描时每张图会被 .bny-image-item 包裹，用于承载左上角标签浮层（见下方 .bny-image-tags）。
+ */
+
+/* 包裹层：定位上下文；非组内时为自然尺寸的相对定位内联块 */
+.bny-image-item {
+    position: relative;
+    display: inline-block;
+    line-height: 0;
+
+    & .bny-image-thumb {
+        display: block;
+    }
+}
+
+.bny-image-group {
+    display: inline-block;
+    position: relative;
+    vertical-align: middle;
+    /* 为背后卡片上移露出的边角预留空间，避免压到相邻行 */
+    width: var(--bny-image-group-size, 72px);
+    height: calc(var(--bny-image-group-size, 72px) + 16px);
+    line-height: 1;
+
+    /* 卡片（包裹层）绝对定位在组内容器左下角，靠变换层叠 */
+    & .bny-image-item {
+        position: absolute;
+        left: 0;
+        bottom: 0;
+        width: var(--bny-image-group-size, 72px);
+        height: var(--bny-image-group-size, 72px);
+        /* 显式时长，避免 var(--transition) 里含 all 关键字导致整条 transition 失效 */
+        transition: transform 280ms cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    & .bny-image-item .bny-image-thumb {
+        position: static;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: var(--border-radius-8);
+        border: 2px solid var(--white);
+        box-shadow: 0 2px 8px rgba(15, 23, 42, 0.18);
+        cursor: pointer;
+        background: var(--light);
+    }
+
+    /* 背后的卡片（DOM 中越靠前越靠后）依次上移、错位、微旋转，形成卡牌堆叠 */
+    & .bny-image-item:nth-last-child(2) { transform: translate(-7px, -7px) rotate(-6deg); }
+    & .bny-image-item:nth-last-child(3) { transform: translate(7px, -13px) rotate(6deg); }
+    & .bny-image-item:nth-last-child(4) { transform: translate(-7px, -19px) rotate(-9deg); }
+    & .bny-image-item:nth-last-child(5) { transform: translate(7px, -25px) rotate(9deg); }
+    & .bny-image-item:nth-last-child(n+6) { transform: translate(-7px, -31px) rotate(-11deg); }
+
+    /* 悬停展开成扇形：背后的卡片向两侧散开，最前一张轻微上浮 */
+    &:hover .bny-image-item:nth-last-child(2) { transform: translate(-12px, -4px) rotate(-5deg); }
+    &:hover .bny-image-item:nth-last-child(3) { transform: translate(12px, -4px) rotate(5deg); }
+    &:hover .bny-image-item:nth-last-child(4) { transform: translate(-24px, -2px) rotate(-9deg); }
+    &:hover .bny-image-item:nth-last-child(5) { transform: translate(24px, -2px) rotate(9deg); }
+    &:hover .bny-image-item:nth-last-child(n+6) { transform: translate(-34px, 0) rotate(-12deg); }
+    &:hover .bny-image-item:last-child .bny-image-thumb { transform: translateY(-6px); box-shadow: 0 6px 16px rgba(15, 23, 42, 0.28); }
+
+    /* 暗黑模式下投影用浅色描边增强层次 */
+    html.dark & .bny-image-item .bny-image-thumb {
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.45);
+    }
+    html.dark &:hover .bny-image-item:last-child .bny-image-thumb {
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.6);
+    }
+}
+
+/* ====== 图片标签（左上角浮层，复用 .bny-tag 视觉） ====== */
+.bny-image-tags {
+    position: absolute;
+    top: 4px;
+    left: 4px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 3px;
+    max-width: calc(100% - 8px);
+    z-index: 2;
+    pointer-events: none;
+
+    /* 角落里去掉 ribbon 小三角与多余 margin，并缩小适配缩略图 */
+    & .bny-tag {
+        margin-left: 0;
+        height: auto;
+        padding: 1px 6px;
+        font-size: 11px;
+        line-height: 1.3;
+    }
+    & .bny-tag::before {
+        display: none;
+    }
+}
+
+/* 灯箱大图左上角标签浮层（与计数器/关闭按钮同层级） */
+.bny-image-viewer .bny-image-tags--viewer {
+    position: absolute;
+    top: 24px;
+    left: 32px;
+    z-index: 2;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    pointer-events: none;
+
+    & .bny-tag::before {
+        display: none;
+    }
+}
+
 /* 暗黑模式适配 */
 html.dark .bny-image-viewer .bny-image-tools,
 html.dark .bny-image-viewer .bny-image-close,

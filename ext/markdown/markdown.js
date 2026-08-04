@@ -1080,6 +1080,16 @@
             '<figure>$1<figcaption>$2</figcaption></figure>'
         );
 
+        // 图片堆叠分组：连续 2+ 张图片 → 重叠分组容器（灯箱内翻页浏览整组）
+        // 因预览 JS 按 .bny-image-group 容器就近收集，无需写 data-preview-group 名字
+        html = html.replace(/(<img[^>]*>)(?:\s*<img[^>]*>)+/g,
+            '<div class="bny-image-group">$&</div>');
+
+        // 整段仅为一个块级容器（figure / image-group）时不再用 <p> 包裹，
+        // 避免 <p><div></div></p> 非法嵌套
+        if (/^<(figure|div class="bny-image-group")/.test(html.trim())) {
+            return { html: html, next: j };
+        }
         return { html: '<p>' + html + '</p>', next: j };
     }
 

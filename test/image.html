@@ -1,7 +1,7 @@
 <div class="bny-row">
     <div class="text-content-box col-xs12 col-sm9">
         <div class="text-content">
-            <h1>Image 图片预览</h1>
+            <h1>Image 图片预览<div class="bny-tag" color="red">v2.0.7+</div></h1>
             <hr>
             <blockquote class="bny-blockquote">
                 图片预览组件，给 img 加 <code>data-preview</code> 即可启用点击放大预览。支持分组翻页、滚轮/按钮缩放、旋转、键盘操作。
@@ -140,9 +140,138 @@
                 <tbody>
                     <tr><td><code>data-preview</code></td><td>启用预览</td></tr>
                     <tr><td><code>data-preview-src</code></td><td>大图地址（默认取 src）</td></tr>
-                    <tr><td><code>data-preview-group</code></td><td>分组名，同组可翻页</td></tr>
+                    <tr><td><code>data-preview-group</code></td><td>分组名，同组可翻页（旧版全局分组）</td></tr>
+                    <tr><td><code>.bny-image-group</code></td><td>图片分组容器，包裹多个 <code>&lt;img data-preview&gt;</code> 即形成重叠分组，点击任一张在灯箱内翻页</td></tr>
+                    <tr><td><code>data-preview-size</code></td><td>分组容器缩略图尺寸(px)，默认 56</td></tr>
+                    <tr><td><code>data-preview-tags</code></td><td>左上角标签，逗号分隔；<code>text:color</code> 指定颜色（green/blue/yellow/red），如 <code>"封面:green,实拍"</code>；堆叠中每张图各自显示，灯箱内随当前图切换</td></tr>
                 </tbody>
             </table>
+
+            <h2 id="n06">图片堆叠分组（手写容器）<div class="bny-tag" color="red">v2.0.9+</div></h2>
+            <div class="bny-card">
+                <div hx-ext="bny-tab">
+                    <ul class="head">
+                        <li>Preview</li>
+                        <li>Code</li>
+                    </ul>
+                    <div class="body">
+                        <div>
+                            <div class="p-12">
+                                <div class="bny-image-group" data-preview-size="150">
+                                    <img src="https://picsum.photos/seed/ga/400/300"
+                                         data-preview data-preview-src="https://picsum.photos/seed/ga/1200/900"
+                                         alt="图 A">
+                                    <img src="https://picsum.photos/seed/gb/400/300"
+                                         data-preview data-preview-src="https://picsum.photos/seed/gb/1200/900"
+                                         alt="图 B">
+                                    <img src="https://picsum.photos/seed/gc/400/300"
+                                         data-preview data-preview-src="https://picsum.photos/seed/gc/1200/900"
+                                         alt="图 C">
+                                </div>
+                                <blockquote class="bny-blockquote" style="margin-top:14px;">
+                                    用 <code>.bny-image-group</code> 包裹多张 <code>&lt;img data-preview&gt;</code> 即为重叠分组，
+                                    点击任一张在灯箱内翻页浏览整组。<code>data-preview-size</code> 调整缩略图尺寸（默认 56px）。
+                                </blockquote>
+                            </div>
+                        </div>
+                        <div>
+                            <pre hx-ext="bny-code">
+&lt;div class="bny-image-group" data-preview-size="72"&gt;
+  &lt;img src="a.jpg" data-preview data-preview-src="a-full.jpg"&gt;
+  &lt;img src="b.jpg" data-preview data-preview-src="b-full.jpg"&gt;
+  &lt;img src="c.jpg" data-preview data-preview-src="c-full.jpg"&gt;
+&lt;/div&gt;
+                            </pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h2 id="n07">Markdown 自动成组<div class="bny-tag" color="red">v2.0.9+</div></h2>
+            <div class="bny-card">
+                <div hx-ext="bny-tab">
+                    <ul class="head">
+                        <li>Preview（渲染效果）</li>
+                        <li>Code（Markdown 源）</li>
+                    </ul>
+                    <div class="body">
+                        <div>
+                            <div class="p-12">
+                                <div class="bny-image-group" data-preview-size="150">
+                                    <img src="https://picsum.photos/seed/ma/400/300"
+                                         data-preview data-preview-src="https://picsum.photos/seed/ma/1200/900" alt="图 1">
+                                    <img src="https://picsum.photos/seed/mb/400/300"
+                                         data-preview data-preview-src="https://picsum.photos/seed/mb/1200/900" alt="图 2">
+                                    <img src="https://picsum.photos/seed/mc/400/300"
+                                         data-preview data-preview-src="https://picsum.photos/seed/mc/1200/900" alt="图 3">
+                                </div>
+                                <blockquote class="bny-blockquote" style="margin-top:14px;">
+                                    在 Markdown 中连续写多张图片，渲染时会自动包成
+                                    <code>.bny-image-group</code>（需引入 <code>ext/markdown/markdown.js</code>）。
+                                </blockquote>
+                            </div>
+                        </div>
+                        <div>
+                            <pre hx-ext="bny-code">
+![图1](ma.jpg) ![图2](mb.jpg) ![图3](mc.jpg)
+                            </pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h2 id="n08">图片标签<div class="bny-tag" color="red">v2.0.9+</div></h2>
+            <div class="bny-card">
+                <div hx-ext="bny-tab">
+                    <ul class="head">
+                        <li>Preview</li>
+                        <li>Code</li>
+                    </ul>
+                    <div class="body">
+                        <div>
+                            <div class="p-12">
+                                <div class="bny-image-group" data-preview-size="150">
+                                    <img src="https://picsum.photos/seed/ta/400/300"
+                                         data-preview data-preview-src="https://picsum.photos/seed/ta/1200/900"
+                                         data-preview-tags="封面:green,实拍" alt="图 A">
+                                    <img src="https://picsum.photos/seed/tb/400/300"
+                                         data-preview data-preview-src="https://picsum.photos/seed/tb/1200/900"
+                                         data-preview-tags="风景:blue" alt="图 B">
+                                    <img src="https://picsum.photos/seed/tc/400/300"
+                                         data-preview data-preview-src="https://picsum.photos/seed/tc/1200/900"
+                                         data-preview-tags="人物:red" alt="图 C">
+                                </div>
+                                <div style="margin-top:16px;">
+                                    <img src="https://picsum.photos/seed/tsingle/400/300"
+                                         data-preview data-preview-src="https://picsum.photos/seed/tsingle/1200/900"
+                                         data-preview-tags="封面:green" alt="单图"
+                                         style="width:240px; border-radius:var(--border-radius); cursor:zoom-in;">
+                                </div>
+                                <blockquote class="bny-blockquote" style="margin-top:14px;">
+                                    每张图用 <code>data-preview-tags="标签1:颜色,标签2"</code> 声明左上角小标签（逗号分隔，<code>text:color</code> 指定颜色，可选 green/blue/yellow/red）。
+                                    堆叠中每张卡片显示各自的标签；点击打开灯箱翻页时，大图左上角浮层显示当前图标签。
+                                </blockquote>
+                            </div>
+                        </div>
+                        <div>
+                            <pre hx-ext="bny-code">
+&lt;!-- 堆叠分组：每张卡片各自标签 --&gt;
+&lt;div class="bny-image-group" data-preview-size="72"&gt;
+  &lt;img src="a.jpg" data-preview data-preview-src="a-full.jpg"
+       data-preview-tags="封面:green,实拍"&gt;
+  &lt;img src="b.jpg" data-preview data-preview-src="b-full.jpg"
+       data-preview-tags="风景:blue"&gt;
+&lt;/div&gt;
+
+&lt;!-- 单图标签 --&gt;
+&lt;img src="x.jpg" data-preview data-preview-src="x-full.jpg"
+     data-preview-tags="封面:green"&gt;
+                            </pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
         </div>
     </div>
     <div class="right-anchor-box hidden-xs col-sm3">
@@ -153,6 +282,9 @@
                 <li class="link" anchor="#n03">指定大图</li>
                 <li class="link" anchor="#n04">操作说明</li>
                 <li class="link" anchor="#n05">API</li>
+                <li class="link" anchor="#n06">图片堆叠分组</li>
+                <li class="link" anchor="#n07">Markdown 自动成组</li>
+                <li class="link" anchor="#n08">图片标签</li>
             </ul>
         </div>
     </div>

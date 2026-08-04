@@ -6724,6 +6724,8 @@
       // 当前组的图片大图 src 列表
       index: 0,
       // 当前索引
+      tagList: [],
+      // 与 list 平行：每张图的标签数组（[{text,color}]）
       scale: 1,
       rotate: 0,
       x: 0,
@@ -6733,7 +6735,7 @@
       if (viewer) return viewer;
       viewer = document.createElement("div");
       viewer.className = "bny-image-viewer";
-      viewer.innerHTML = '<div class="bny-image-mask"></div><div class="bny-image-container"><img class="bny-image-large" alt="preview"></div><div class="bny-image-tools"><a class="bny-image-tool" data-action="prev" title="上一张（←）"><i class="bny-icon icon-left"></i></a><a class="bny-image-tool" data-action="zoom-out" title="缩小（-）"><i class="bny-icon icon-minus"></i></a><a class="bny-image-tool" data-action="zoom-in" title="放大（+）"><i class="bny-icon icon-plus"></i></a><a class="bny-image-tool" data-action="reset" title="重置（0）"><i class="bny-icon icon-sync"></i></a><a class="bny-image-tool" data-action="rotate-left" title="左旋"><i class="bny-icon icon-undo"></i></a><a class="bny-image-tool" data-action="rotate-right" title="右旋"><i class="bny-icon icon-redo"></i></a><a class="bny-image-tool" data-action="next" title="下一张（→）"><i class="bny-icon icon-right"></i></a></div><a class="bny-image-close" title="关闭（ESC）"><i class="bny-icon icon-close"></i></a><div class="bny-image-counter"></div>';
+      viewer.innerHTML = '<div class="bny-image-mask"></div><div class="bny-image-container"><img class="bny-image-large" alt="preview"></div><div class="bny-image-tools"><a class="bny-image-tool" data-action="prev" title="上一张（←）"><i class="bny-icon icon-left"></i></a><a class="bny-image-tool" data-action="zoom-out" title="缩小（-）"><i class="bny-icon icon-minus"></i></a><a class="bny-image-tool" data-action="zoom-in" title="放大（+）"><i class="bny-icon icon-plus"></i></a><a class="bny-image-tool" data-action="reset" title="重置（0）"><i class="bny-icon icon-sync"></i></a><a class="bny-image-tool" data-action="rotate-left" title="左旋"><i class="bny-icon icon-undo"></i></a><a class="bny-image-tool" data-action="rotate-right" title="右旋"><i class="bny-icon icon-redo"></i></a><a class="bny-image-tool" data-action="next" title="下一张（→）"><i class="bny-icon icon-right"></i></a></div><a class="bny-image-close" title="关闭（ESC）"><i class="bny-icon icon-close"></i></a><div class="bny-image-tags bny-image-tags--viewer"></div><div class="bny-image-counter"></div>';
       document.body.appendChild(viewer);
       imgEl = viewer.querySelector(".bny-image-large");
       viewer.querySelector(".bny-image-mask").addEventListener("click", close);
@@ -6775,9 +6777,10 @@
       });
       return viewer;
     }
-    function open(list, index) {
+    function open(list, index, tagList) {
       if (!list || !list.length) return;
       current.list = list;
+      current.tagList = tagList || [];
       current.index = Math.max(0, Math.min(index, list.length - 1));
       resetTransform();
       getViewer();
@@ -6818,6 +6821,8 @@
       var nextBtn = viewer.querySelector('[data-action="next"]');
       prevBtn.classList.toggle("disabled", current.list.length <= 1);
       nextBtn.classList.toggle("disabled", current.list.length <= 1);
+      var tagBox = viewer.querySelector(".bny-image-tags--viewer");
+      renderTags(tagBox, current.tagList[current.index] || []);
     }
     function handleAction(action) {
       switch (action) {
@@ -6899,27 +6904,81 @@
           break;
       }
     }
+    function parseTags(attr) {
+      if (!attr) return [];
+      return attr.split(",").map(function(part) {
+        part = part.trim();
+        if (!part) return null;
+        var i = part.indexOf(":");
+        if (i > 0) return { text: part.slice(0, i).trim(), color: part.slice(i + 1).trim() };
+        return { text: part, color: "" };
+      }).filter(Boolean);
+    }
+    function renderTags(box, tags) {
+      if (!box) return;
+      box.textContent = "";
+      (tags || []).forEach(function(t) {
+        var el = document.createElement("span");
+        el.className = "bny-tag";
+        el.textContent = t.text;
+        if (t.color) el.setAttribute("color", t.color);
+        box.appendChild(el);
+      });
+    }
+    function ensureItem(img) {
+      if (img._bnyImageWrapped) return img.parentNode;
+      var item = document.createElement("span");
+      item.className = "bny-image-item";
+      img.parentNode.insertBefore(item, img);
+      item.appendChild(img);
+      img._bnyImageWrapped = true;
+      var tags = parseTags(img.getAttribute("data-preview-tags"));
+      if (tags.length) {
+        var box = document.createElement("span");
+        box.className = "bny-image-tags";
+        renderTags(box, tags);
+        item.appendChild(box);
+      }
+      return item;
+    }
+    function collectList(groupImgs, currentImg) {
+      var list = [];
+      var tags = [];
+      var idx = 0;
+      Array.prototype.forEach.call(groupImgs, function(g, i) {
+        list.push(g.getAttribute("data-preview-src") || g.src);
+        tags.push(parseTags(g.getAttribute("data-preview-tags")));
+        if (g === currentImg) idx = i;
+      });
+      return { list, idx, tags };
+    }
     function scan(root) {
+      var sized = (root || document).querySelectorAll(".bny-image-group[data-preview-size]");
+      Array.prototype.forEach.call(sized, function(g) {
+        g.style.setProperty("--bny-image-group-size", g.getAttribute("data-preview-size") + "px");
+      });
       var imgs = (root || document).querySelectorAll("img[data-preview]");
       Array.prototype.forEach.call(imgs, function(img) {
         if (img._bnyImageBound) return;
         img._bnyImageBound = true;
         img.classList.add("bny-image-thumb");
+        ensureItem(img);
         img.addEventListener("click", function() {
-          var group = img.getAttribute("data-preview-group");
           var fullSrc = img.getAttribute("data-preview-src") || img.src;
+          var container = img.closest(".bny-image-group");
+          if (container) {
+            var r = collectList(container.querySelectorAll("img[data-preview]"), img);
+            open(r.list, r.idx, r.tags);
+            return;
+          }
+          var group = img.getAttribute("data-preview-group");
           if (group) {
             var groupImgs = document.querySelectorAll('img[data-preview][data-preview-group="' + CSS.escape(group) + '"]');
-            var list = [];
-            var idx = 0;
-            Array.prototype.forEach.call(groupImgs, function(g, i) {
-              list.push(g.getAttribute("data-preview-src") || g.src);
-              if (g === img) idx = i;
-            });
-            open(list, idx);
-          } else {
-            open([fullSrc], 0);
+            var r2 = collectList(groupImgs, img);
+            open(r2.list, r2.idx, r2.tags);
+            return;
           }
+          open([fullSrc], 0, [parseTags(img.getAttribute("data-preview-tags"))]);
         });
       });
     }
