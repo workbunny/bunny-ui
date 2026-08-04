@@ -87,7 +87,15 @@
                 if (location.hash && location.hash.length > 1) {
                     var path = location.hash.substring(1);
                     if (path.charAt(0) === '/') {
-                        targetUrl = path;
+                        // /test/* 是文档站组件演示页，属于 docs 布局（含左侧菜单）。
+                        // 深链直接访问（或刷新）时必须先加载 /doc/docs.html，
+                        // 由其内部自动导航把内容填入 #docs-view，否则会把组件页裸塞进 main 视口，
+                        // 导致左侧菜单丢失。
+                        if (path.indexOf('/test/') === 0) {
+                            targetUrl = '/doc/docs.html';
+                        } else {
+                            targetUrl = path;
+                        }
                     }
                 }
                 autoNav.href = targetUrl;
