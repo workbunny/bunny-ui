@@ -204,6 +204,36 @@
     }
 
     /**
+     * 过滤危险 URL 协议（防止 javascript:/vbscript: 等 XSS）
+     *
+     * 背景：filterDangerousHtml 仅在 html:true 时过滤“原始 HTML 文本”中的
+     * <a href="javascript:">，但 Markdown 链接/图片语法 [text](url) 是在
+     * parseInline 阶段“生成” <a>/<img> 标签的，发生在 filterDangerousHtml 之后，
+     * 因此 javascript: 协议会从 Markdown 语法绕过过滤。这里在生成标签前统一拦截。
+     *
+     * 策略：
+     * - 允许：http/https、mailto、tel、相对路径、#锚点、以及（图片场景）data: URI
+     * - 拒绝：javascript:/vbscript: 始终拒绝；data: 在链接场景也拒绝
+     *   （data:text/html 可执行脚本），仅在 allowData=true（图片）时放行 data:
+     *
+     * @param {string} url 原始 URL
+     * @param {boolean} allowData 是否允许 data: 协议（图片场景为 true）
+     * @returns {string} 安全 URL；若含危险协议则返回空串（破坏链接/href）
+     */
+    function sanitizeUrl(url, allowData) {
+        if (typeof url !== 'string') return url;
+        // 去除首尾空白与可能的前置控制字符
+        var s = url.trim().replace(/^[\u0000-\u001F\u007F]+/, '');
+        var dangerous = allowData
+            ? /^(javascript|vbscript):/i
+            : /^(javascript|vbscript|data):/i;
+        if (dangerous.test(s)) {
+            return '';
+        }
+        return url;
+    }
+
+    /**
      * 获取规则列表的副本（LIFO 顺序，末尾优先）
      * 内置规则在前，自定义规则在后（后注册优先）
      */
@@ -285,7 +315,10 @@
             text = escapeForMarkdown(text);
         } else {
             // html: true 时过滤危险标签
-            text = filterDangerousHtml(text);
+            // 先保护围栏代码块/行内代码，避免其中的 <object> 等被 filterDangerousHtml 误删
+            var protectedCode = protectCode(text);
+            text = filterDangerousHtml(protectedCode.text);
+            text = restoreCode(text, protectedCode.placeholders);
         }
 
         var lines = text.split('\n');
@@ -347,19 +380,45 @@
      * 这样引用块、列表等容器内的代码块不会破坏容器语法。
      * parseFencedCode 会去掉容器前缀后再提取代码内容。
      */
-    function escapeForMarkdown(text) {
-        // 先保护围栏代码块和内联代码（用占位符）
+    /**
+     * 保护围栏代码块与内联代码（用占位符），返回 { text, placeholders }
+     *
+     * 供 escapeForMarkdown / filterDangerousHtml 在预处理时跳过代码内容，
+     * 防止代码块/行内代码中的 HTML（如 <object>）被当作真实 HTML 处理：
+     * - html:false 时避免被 HTML 转义破坏 markdown 结构
+     * - html:true 时避免被 filterDangerousHtml 误删其中的危险标签
+     */
+    function protectCode(text) {
         var placeholders = [];
-        var CODE_BLOCK_RE = /```[\s\S]*?```/g;
-        text = text.replace(CODE_BLOCK_RE, function (m) {
+        text = text.replace(/```[\s\S]*?```/g, function (m) {
             placeholders.push(m);
             return '\u0000CODEBLOCK' + (placeholders.length - 1) + '\u0000';
         });
-        var INLINE_CODE_RE = /`[^`]+`/g;
-        text = text.replace(INLINE_CODE_RE, function (m) {
+        text = text.replace(/`[^`]+`/g, function (m) {
             placeholders.push(m);
             return '\u0000INLINECODE' + (placeholders.length - 1) + '\u0000';
         });
+        return { text: text, placeholders: placeholders };
+    }
+
+    /**
+     * 还原 protectCode 生成的占位符（保留原始内容，不转义）
+     */
+    function restoreCode(text, placeholders) {
+        text = text.replace(/\u0000CODEBLOCK(\d+)\u0000/g, function (_, i) {
+            return placeholders[parseInt(i)];
+        });
+        text = text.replace(/\u0000INLINECODE(\d+)\u0000/g, function (_, i) {
+            return placeholders[parseInt(i)];
+        });
+        return text;
+    }
+
+    function escapeForMarkdown(text) {
+        // 先保护围栏代码块和内联代码（用占位符）
+        var protected_ = protectCode(text);
+        text = protected_.text;
+        var placeholders = protected_.placeholders;
 
         // 转义 HTML 特殊字符：< > " ' &
         text = text.replace(/&/g, '&amp;');
@@ -375,12 +434,7 @@
 
         // 还原占位符：保持原始内容（不转义，由 parseFencedCode/parseInline 统一转义）
         // 围栏代码块保留原始的多行结构（包括 > 前缀等容器语法）
-        text = text.replace(/\u0000CODEBLOCK(\d+)\u0000/g, function (_, i) {
-            return placeholders[parseInt(i)];
-        });
-        text = text.replace(/\u0000INLINECODE(\d+)\u0000/g, function (_, i) {
-            return placeholders[parseInt(i)];
-        });
+        text = restoreCode(text, placeholders);
 
         return text;
     }
@@ -1077,7 +1131,7 @@
         // 输出 data-preview 启用图片预览，有 title 时加 bny-tip
         text = text.replace(/!\[([^\]]*)\]\(([^)\s]+)(?:\s+(?:"|&quot;)([^"]*)(?:"|&quot;))?\)/g, function (_, alt, url, title) {
             var tipAttr = title ? ' bny-tip="' + escapeHtml(title) + '"' : '';
-            return '<img src="' + escapeHtml(url) + '" alt="' + escapeHtml(alt) + '" data-preview' + tipAttr + '>';
+            return '<img src="' + escapeHtml(sanitizeUrl(url, true)) + '" alt="' + escapeHtml(alt) + '" data-preview' + tipAttr + '>';
         });
 
         // 3. 链接 [text](url)
@@ -1085,7 +1139,7 @@
         text = text.replace(/\[([^\]]+)\]\(([^)\s]+)(?:\s+(?:"|&quot;)([^"]*)(?:"|&quot;))?\)/g, function (_, linkText, url, title) {
             var tipAttr = title ? ' bny-tip="' + escapeHtml(title) + '"' : '';
             var target = options.linkTarget ? ' target="' + options.linkTarget + '"' : '';
-            return '<a href="' + escapeHtml(url) + '"' + tipAttr + target + '>' + linkText + '</a>';
+            return '<a href="' + escapeHtml(sanitizeUrl(url, false)) + '"' + tipAttr + target + '>' + linkText + '</a>';
         });
 
         // 4. 脚注引用 [^1]
@@ -1101,7 +1155,7 @@
             if (!def) return _; // 未找到定义，原样返回
             var tipAttr = def.title ? ' bny-tip="' + escapeHtml(def.title) + '"' : '';
             var target = options.linkTarget ? ' target="' + options.linkTarget + '"' : '';
-            return '<a href="' + escapeHtml(def.url) + '"' + tipAttr + target + '>' + linkText + '</a>';
+            return '<a href="' + escapeHtml(sanitizeUrl(def.url, false)) + '"' + tipAttr + target + '>' + linkText + '</a>';
         });
         // 快捷引用 [ref]（单独一行中括号，前面没有 !）
         text = text.replace(/(?<!!)\[([^\]]+)\](?!\()/g, function (_, linkText) {
@@ -1111,7 +1165,7 @@
             if (!def) return _;
             var tipAttr = def.title ? ' bny-tip="' + escapeHtml(def.title) + '"' : '';
             var target = options.linkTarget ? ' target="' + options.linkTarget + '"' : '';
-            return '<a href="' + escapeHtml(def.url) + '"' + tipAttr + target + '>' + linkText + '</a>';
+            return '<a href="' + escapeHtml(sanitizeUrl(def.url, false)) + '"' + tipAttr + target + '>' + linkText + '</a>';
         });
 
         // 5. 粗体 ** 或 __（先于斜体）
