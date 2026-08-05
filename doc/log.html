@@ -51,7 +51,7 @@
             <li><a class="trigger" href="/doc/home.html"><i class="bny-icon icon-home"></i><span>首页</span></a></li>
             <li><a class="trigger" href="/doc/docs.html"><i class="bny-icon icon-book"></i><span>文档</span></a></li>
             <li><a class="trigger" href="/doc/ext.html"><i class="bny-icon icon-rocket"></i><span>拓展</span></a></li>
-            <li><a class="trigger" href="/doc/log.html"><i class="bny-icon icon-calendar"></i><span>更新日志</span></a></li>
+            <li><a class="trigger" href="/doc/log.html"><i class="bny-icon icon-calendar"></i><span>日志</span></a></li>
             <li><a class="trigger" href="javascript:void(0)" id="mode-btn" spa-skip title="切换主题">
                 <span class="mode-icons">
                     <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4.5"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.5 4.5l1.8 1.8M17.7 17.7l1.8 1.8M19.5 4.5l-1.8 1.8M6.3 17.7l-1.8 1.8"/></svg>
@@ -65,6 +65,99 @@
 
 <main spa-view>
     <div class="docs-layout">
+        <!-- 左侧菜单 -->
+        <aside class="docs-sidebar hidden-xs">
+            <div hx-ext="bny-nav" nav-side nav-color="white" style="flex-direction: row;">
+                <ul class="menu">
+                    <li class="show">
+                        <div class="trigger">
+                            <span>基础</span>
+                        </div>
+                        <ul class="sub-menu">
+                            <li><a class="trigger" spa-view-target="#log-view" href="/test/base.html"><span>开始使用</span></a></li>
+                            <li><a class="trigger" spa-view-target="#log-view" href="/test/js.html"><span>底层方法</span></a></li>
+                            <li><a class="trigger" spa-view-target="#log-view" href="/test/class.html"><span>公共类</span></a></li>
+                        </ul>
+                    </li>
+                    <li class="show">
+                        <div class="trigger">
+                            <span>通用</span>
+                        </div>
+                        <ul class="sub-menu">
+                            <li><a class="trigger" spa-view-target="#log-view" href="/test/color.html"><span>颜色</span></a></li>
+                            <li><a class="trigger" spa-view-target="#log-view" href="/test/button.html"><span>按钮</span></a></li>
+                            <li><a class="trigger" spa-view-target="#log-view" href="/test/tag.html"><span>标签</span></a></li>
+                            <li><a class="trigger" spa-view-target="#log-view" href="/test/icons.html"><span>图标</span></a></li>
+                            <li><a class="trigger" spa-view-target="#log-view" href="/test/subsidiary.html"><span>辅助</span></a></li>
+                            <li><a class="trigger" spa-view-target="#log-view" href="/test/grid.html"><span>网格</span></a></li>
+                            <li><a class="trigger" spa-view-target="#log-view" href="/test/card.html"><span>卡片</span></a></li>
+                        </ul>
+                    </li>
+                    <li class="show">
+                        <div class="trigger">
+                            <span>导航</span>
+                        </div>
+                        <ul class="sub-menu">
+                            <li><a class="trigger" spa-view-target="#log-view" href="/test/menu.html"><span>菜单</span></a></li>
+                            <li><a class="trigger" spa-view-target="#log-view" href="/test/nav.html"><span>导航栏</span></a></li>
+                            <li><a class="trigger" spa-view-target="#log-view" href="/test/anchor.html"><span>锚点</span></a></li>
+                            <li><a class="trigger" spa-view-target="#log-view" href="/test/dropdown.html"><span>下拉菜单</span></a></li>
+                            <li><a class="trigger" spa-view-target="#log-view" href="/test/tab.html"><span>选项卡</span></a></li>
+                            <li><a class="trigger" spa-view-target="#log-view" href="/test/breadcrumb.html"><span>面包屑</span></a></li>
+                            <li><a class="trigger" spa-view-target="#log-view" href="/test/backtop.html"><span>回到顶部</span></a></li>
+                        </ul>
+                    </li>
+                    <li class="show">
+                        <div class="trigger">
+                            <span>数据展示</span>
+                        </div>
+                        <ul class="sub-menu">
+                            <li><a class="trigger" spa-view-target="#log-view" href="/test/table.html"><span>表格</span></a></li>
+                            <li><a class="trigger" spa-view-target="#log-view" href="/test/code.html"><span>代码</span></a></li>
+                            <li><a class="trigger" spa-view-target="#log-view" href="/test/collapse.html"><span>折叠面板</span></a></li>
+                            <li><a class="trigger" spa-view-target="#log-view" href="/test/skeleton.html"><span>骨架屏</span></a></li>
+                            <li><a class="trigger" spa-view-target="#log-view" href="/test/empty.html"><span>空状态</span></a></li>
+                            <li><a class="trigger" spa-view-target="#log-view" href="/test/avatar.html"><span>头像 & 徽标</span></a></li>
+                            <li><a class="trigger" spa-view-target="#log-view" href="/test/tip.html"><span>提示</span></a></li>
+                            <li><a class="trigger" spa-view-target="#log-view" href="/test/image.html"><span>图片预览</span></a></li>
+                            <li><a class="trigger" spa-view-target="#log-view" href="/test/timeline.html"><span>时间线</span></a></li>
+                            <li><a class="trigger" spa-view-target="#log-view" href="/test/steps.html"><span>步骤条</span></a></li>
+                        </ul>
+                    </li>
+                    <li class="show">
+                        <div class="trigger">
+                            <span>反馈</span>
+                        </div>
+                        <ul class="sub-menu">
+                            <li><a class="trigger" spa-view-target="#log-view" href="/test/alert.html"><span>警示信息</span></a></li>
+                            <li><a class="trigger" spa-view-target="#log-view" href="/test/confirm.html"><span>确认信息</span></a></li>
+                            <li><a class="trigger" spa-view-target="#log-view" href="/test/page.html"><span>页面信息</span></a></li>
+                            <li><a class="trigger" spa-view-target="#log-view" href="/test/load.html"><span>加载</span></a></li>
+                        </ul>
+                    </li>
+                    <li class="show">
+                        <div class="trigger">
+                            <span>表单</span>
+                        </div>
+                        <ul class="sub-menu">
+                            <li><a class="trigger" spa-view-target="#log-view" href="/test/form.html"><span>表单</span></a></li>
+                            <li><a class="trigger" spa-view-target="#log-view" href="/test/validate.html"><span>表单校验</span></a></li>
+                            <li><a class="trigger" spa-view-target="#log-view" href="/test/datepicker.html"><span>日期选择</span></a></li>
+                            <li><a class="trigger" spa-view-target="#log-view" href="/test/rate.html"><span>评分</span></a></li>
+                        </ul>
+                    </li>
+                    <li class="show">
+                        <div class="trigger">
+                            <span>数据交互</span>
+                        </div>
+                        <ul class="sub-menu">
+                            <li><a class="trigger" spa-view-target="#log-view" href="/test/pagination.html"><span>分页</span></a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </aside>
+        <!-- 右侧内容区（嵌套 spa-view） -->
         <div class="docs-content">
             <div spa-view id="log-view">
                 <a href="/test/log.html" id="log-auto-nav" spa-view-target="#log-view" style="display:none"></a>
