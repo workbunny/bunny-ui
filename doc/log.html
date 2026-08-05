@@ -36,6 +36,10 @@
     <script src="/ext/spa/spa.js"></script>
     <!-- 文档站共享样式（含文档页框架布局，全局保留，导航时不被移除） -->
     <link rel="stylesheet" href="/doc/doc.css">
+    <style>
+        .bny-timeline-content .cl { margin: 7px 0; line-height: 1.75; }
+        .bny-timeline-content .cl .bny-tag { margin-right: 8px; vertical-align: middle; }
+    </style>
 </head>
 
 <body hx-ext="bny-spa" spa-mode="hash">
@@ -79,7 +83,7 @@
 <section class="section">
     <div class="doc-container">
         <blockquote class="bny-blockquote">
-            本页基于 git tag 的版本发布记录，使用时间线组件按发布时间（新 → 旧）排列。当前最新版本为 <b>v2.0.8</b>。
+            本页基于 git tag 的版本发布记录，使用时间线组件按发布时间（新 → 旧）排列。当前最新版本为 <b>v2.0.8</b>。每条记录的「新增 / 优化 / 修复 / 删除 / 更新 / 重构」均整理自对应版本的 git 提交历史。
         </blockquote>
 
         <h2 id="n01">版本时间线</h2>
@@ -88,146 +92,230 @@
                 <div class="bny-timeline-node"></div>
                 <div class="bny-timestamp">2026-07-29</div>
                 <div class="bny-timeline-title">v2.0.8</div>
-                <div class="bny-timeline-content">新增 Markdown 外部拓展插件；文档更新（修复 code 组件与 md 拓展问题）；优化 SPA 拓展。</div>
+                <div class="bny-timeline-content">
+                    <p class="cl"><span class="bny-tag" tag-color="green">新增</span> Markdown 外部拓展插件；输入框前缀/后缀组件；a 标签按钮适配；SPA 嵌套视口支持。</p>
+                    <p class="cl"><span class="bny-tag" tag-color="blue">优化</span> 文档站（修复 code 组件与 md 拓展问题）；doc.css 样式细节。</p>
+                </div>
             </div>
             <div class="bny-timeline-item is-success">
                 <div class="bny-timeline-node"></div>
                 <div class="bny-timestamp">2026-07-25</div>
                 <div class="bny-timeline-title">v2.0.7</div>
-                <div class="bny-timeline-content">完善 SPA 扩展的 SEO/GEO head 同步；修复若干 bug。</div>
+                <div class="bny-timeline-content">
+                    <p class="cl"><span class="bny-tag" tag-color="green">新增</span> bny-spa 单页面应用外部扩展。</p>
+                    <p class="cl"><span class="bny-tag" tag-color="blue">优化</span> SPA 扩展的 SEO/GEO head 同步；回到顶部暗黑模式；验证器；图片预览按钮样式。</p>
+                    <p class="cl"><span class="bny-tag" tag-color="red">修复</span> 若干 bug。</p>
+                    <p class="cl"><span class="bny-tag" tag-color="yellow">文档</span> 补全说明文档。</p>
+                </div>
             </div>
             <div class="bny-timeline-item is-success">
                 <div class="bny-timeline-node"></div>
                 <div class="bny-timestamp">2026-07-23</div>
                 <div class="bny-timeline-title">v2.0.6</div>
-                <div class="bny-timeline-content">增强多组件能力与安全性；新增和优化功能；优化图片预览按钮样式。</div>
+                <div class="bny-timeline-content">
+                    <p class="cl"><span class="bny-tag" tag-color="green">新增</span> backtop 回到顶部组件；部分公共样式。</p>
+                    <p class="cl"><span class="bny-tag" tag-color="blue">增强</span> 多组件能力与安全性；tooltip 和 table。</p>
+                    <p class="cl"><span class="bny-tag" tag-color="red">修复</span> 时间选择组件问题。</p>
+                    <p class="cl"><span class="bny-tag" tag-color="blue">优化</span> 页面组件；测试用例。</p>
+                </div>
             </div>
             <div class="bny-timeline-item is-success">
                 <div class="bny-timeline-node"></div>
                 <div class="bny-timestamp">2026-06-15</div>
                 <div class="bny-timeline-title">v2.0.5</div>
-                <div class="bny-timeline-content">新增输入框前缀/后缀组件、a 标签按钮适配、SPA 嵌套视口支持；修复时间选择组件问题。</div>
+                <div class="bny-timeline-content">
+                    <p class="cl"><span class="bny-tag" tag-color="green">新增</span> 日期选择器组件；面包屑组件；头像 & 徽标 css 组件；骨架屏组件；提示组件。</p>
+                    <p class="cl"><span class="bny-tag" tag-color="blue">优化</span> 透明样式；bunny.js 核心。</p>
+                </div>
             </div>
             <div class="bny-timeline-item is-success">
                 <div class="bny-timeline-node"></div>
                 <div class="bny-timestamp">2026-06-10</div>
                 <div class="bny-timeline-title">v2.0.4</div>
-                <div class="bny-timeline-content">优化整体样式与下拉菜单；优化选项卡；增强 tooltip 和 table。</div>
+                <div class="bny-timeline-content">
+                    <p class="cl"><span class="bny-tag" tag-color="blue">优化</span> 整体样式；选项卡；下拉菜单。</p>
+                    <p class="cl"><span class="bny-tag" tag-color="yellow">更新</span> dropdown.html 示例。</p>
+                </div>
             </div>
             <div class="bny-timeline-item is-success">
                 <div class="bny-timeline-node"></div>
                 <div class="bny-timestamp">2026-04-29</div>
                 <div class="bny-timeline-title">v2.0.3</div>
-                <div class="bny-timeline-content">优化折叠面板与 tab 组件；修复菜单组件样式。</div>
+                <div class="bny-timeline-content">
+                    <p class="cl"><span class="bny-tag" tag-color="blue">优化</span> 折叠面板；tab 组件；菜单组件样式；组件 code；站点首页信息。</p>
+                    <p class="cl"><span class="bny-tag" tag-color="yellow">更新</span> menu.html、home.html、iframe.html、index.html。</p>
+                </div>
             </div>
             <div class="bny-timeline-item is-success">
                 <div class="bny-timeline-node"></div>
                 <div class="bny-timestamp">2026-03-12</div>
                 <div class="bny-timeline-title">v2.0.1</div>
-                <div class="bny-timeline-content">优化 page 组件与导航栏样式（card/nav）；新增导航瞄组件。</div>
+                <div class="bny-timeline-content">
+                    <p class="cl"><span class="bny-tag" tag-color="green">新增</span> 导航瞄（anchor）组件。</p>
+                    <p class="cl"><span class="bny-tag" tag-color="blue">优化</span> 站点页面；page 组件；导航栏白色样式标题色；card 与 nav 样式。</p>
+                </div>
             </div>
             <div class="bny-timeline-item is-info">
                 <div class="bny-timeline-node"></div>
                 <div class="bny-timestamp">2026-03-09</div>
                 <div class="bny-timeline-title">v2.0.0</div>
-                <div class="bny-timeline-content">站点页面重构；新增顶部栏 / 侧边栏导航栏、bunny 图标（2.x 正式线起点）。</div>
+                <div class="bny-timeline-content">
+                    <p class="cl"><span class="bny-tag" tag-color="green">新增</span> bunny 图标；导航栏顶部栏与侧边栏；菜单组件颜色样式；字体大小样式；按钮组合样式；load 组件血条样式；公共样式类；颜色样式；grid 网格布局；滑块样式；form 选择框与表单样式。</p>
+                    <p class="cl"><span class="bny-tag" tag-color="blue">优化</span> 站点页面；下拉菜单；按钮组合；折叠面板；tab 样式与组件；文档页与首页；grid 布局；table 样式；表单；code；色调。</p>
+                    <p class="cl"><span class="bny-tag" tag-color="yellow">更新</span> index.html、nav.html、README.md、class.html、collapse.js、table.css、图标。</p>
+                    <p class="cl"><span class="bny-tag" tag-color="red">修复</span> 页面组件弹出问题；按钮样式。</p>
+                    <p class="cl"><span class="bny-tag" tag-color="red">删除</span> dist 构建产物（改走调试目录）；调整 .gitignore、新增 CNAME。</p>
+                </div>
             </div>
             <div class="bny-timeline-item is-warning">
                 <div class="bny-timeline-node"></div>
                 <div class="bny-timestamp">2025-11-14</div>
                 <div class="bny-timeline-title">v2.0.2</div>
-                <div class="bny-timeline-content">回退部分更新（Revert）。该标签指向 2025-11 的提交，早于 v2.0.0 的发布时间。</div>
+                <div class="bny-timeline-content">
+                    <p class="cl"><span class="bny-tag" tag-color="red">回退</span> 部分「更新」提交（Revert ×6，该标签指向 2025-11 的提交，早于 v2.0.0 的发布时间）。</p>
+                    <p class="cl"><span class="bny-tag" tag-color="yellow">更新</span> 若干提交；优化文档。</p>
+                </div>
             </div>
             <div class="bny-timeline-item is-success">
                 <div class="bny-timeline-node"></div>
                 <div class="bny-timestamp">2025-04-14</div>
                 <div class="bny-timeline-title">v1.0.2</div>
-                <div class="bny-timeline-content">新增加载组件；优化文档与导航栏。</div>
+                <div class="bny-timeline-content">
+                    <p class="cl"><span class="bny-tag" tag-color="green">新增</span> 加载（load）组件。</p>
+                    <p class="cl"><span class="bny-tag" tag-color="blue">优化</span> 文档；导航栏。</p>
+                    <p class="cl"><span class="bny-tag" tag-color="red">修复</span> 导航栏。</p>
+                    <p class="cl"><span class="bny-tag" tag-color="blue">整理</span> 代码与框架。</p>
+                </div>
             </div>
             <div class="bny-timeline-item is-success">
                 <div class="bny-timeline-node"></div>
                 <div class="bny-timestamp">2025-03-31</div>
                 <div class="bny-timeline-title">v1.0.1</div>
-                <div class="bny-timeline-content">优化弹出框、表格、下拉组件。</div>
+                <div class="bny-timeline-content">
+                    <p class="cl"><span class="bny-tag" tag-color="blue">优化</span> 弹出框；表格；下拉组件。</p>
+                    <p class="cl"><span class="bny-tag" tag-color="yellow">更新</span> 自述 README。</p>
+                </div>
             </div>
             <div class="bny-timeline-item is-info">
                 <div class="bny-timeline-node"></div>
                 <div class="bny-timestamp">2025-03-20</div>
                 <div class="bny-timeline-title">v1.0.0</div>
-                <div class="bny-timeline-content">页面与表单优化（首个正式稳定版）。</div>
+                <div class="bny-timeline-content">
+                    <p class="cl"><span class="bny-tag" tag-color="green">里程碑</span> 首个正式稳定版发布。</p>
+                    <p class="cl"><span class="bny-tag" tag-color="blue">优化</span> 页面；表单。</p>
+                    <p class="cl"><span class="bny-tag" tag-color="yellow">更新</span> 表单。</p>
+                </div>
             </div>
             <div class="bny-timeline-item is-success">
                 <div class="bny-timeline-node"></div>
                 <div class="bny-timestamp">2025-03-12</div>
                 <div class="bny-timeline-title">v0.1.1</div>
-                <div class="bny-timeline-content">优化选项卡、导航栏、下拉组件。</div>
+                <div class="bny-timeline-content">
+                    <p class="cl"><span class="bny-tag" tag-color="blue">优化</span> 选项卡；导航栏；下拉菜单。</p>
+                </div>
             </div>
             <div class="bny-timeline-item is-success">
                 <div class="bny-timeline-node"></div>
                 <div class="bny-timestamp">2025-03-07</div>
                 <div class="bny-timeline-title">v0.1.0</div>
-                <div class="bny-timeline-content">重构导航栏；优化下拉与弹出框。</div>
+                <div class="bny-timeline-content">
+                    <p class="cl"><span class="bny-tag" tag-color="blue">重构</span> 导航栏。</p>
+                    <p class="cl"><span class="bny-tag" tag-color="blue">优化</span> 下拉菜单；弹出框。</p>
+                </div>
             </div>
             <div class="bny-timeline-item is-success">
                 <div class="bny-timeline-node"></div>
                 <div class="bny-timestamp">2025-03-04</div>
                 <div class="bny-timeline-title">v0.0.9</div>
-                <div class="bny-timeline-content">优化组件；更新弹出框与动画。</div>
+                <div class="bny-timeline-content">
+                    <p class="cl"><span class="bny-tag" tag-color="blue">优化</span> 组件；弹出框；动画。</p>
+                    <p class="cl"><span class="bny-tag" tag-color="yellow">更新</span> 弹出框；动画组件。</p>
+                </div>
             </div>
             <div class="bny-timeline-item is-success">
                 <div class="bny-timeline-node"></div>
                 <div class="bny-timestamp">2025-03-03</div>
                 <div class="bny-timeline-title">v0.0.8</div>
-                <div class="bny-timeline-content">重构弹性盒子（flexbox）。</div>
+                <div class="bny-timeline-content">
+                    <p class="cl"><span class="bny-tag" tag-color="blue">重构</span> 弹性盒子（flexbox）。</p>
+                    <p class="cl"><span class="bny-tag" tag-color="yellow">更新</span> 公共类。</p>
+                </div>
             </div>
             <div class="bny-timeline-item is-success">
                 <div class="bny-timeline-node"></div>
                 <div class="bny-timestamp">2025-02-28</div>
                 <div class="bny-timeline-title">v0.0.7</div>
-                <div class="bny-timeline-content">重构菜单组件；新增下拉菜单。</div>
+                <div class="bny-timeline-content">
+                    <p class="cl"><span class="bny-tag" tag-color="blue">重构</span> 菜单组件。</p>
+                    <p class="cl"><span class="bny-tag" tag-color="green">新增</span> 下拉菜单；图标内容。</p>
+                    <p class="cl"><span class="bny-tag" tag-color="yellow">更新</span> 模板；选项卡。</p>
+                    <p class="cl"><span class="bny-tag" tag-color="red">删除</span> 选项卡部分功能。</p>
+                </div>
             </div>
             <div class="bny-timeline-item is-success">
                 <div class="bny-timeline-node"></div>
                 <div class="bny-timestamp">2025-02-25</div>
                 <div class="bny-timeline-title">v0.0.6</div>
-                <div class="bny-timeline-content">新增功能；优化组件。</div>
+                <div class="bny-timeline-content">
+                    <p class="cl"><span class="bny-tag" tag-color="green">新增</span> 组件能力扩展功能。</p>
+                    <p class="cl"><span class="bny-tag" tag-color="blue">优化</span> 组件。</p>
+                </div>
             </div>
             <div class="bny-timeline-item is-success">
                 <div class="bny-timeline-node"></div>
                 <div class="bny-timestamp">2025-02-17</div>
                 <div class="bny-timeline-title">v0.0.5</div>
-                <div class="bny-timeline-content">新增和优化。</div>
+                <div class="bny-timeline-content">
+                    <p class="cl"><span class="bny-tag" tag-color="green">新增</span> 组件能力扩展。</p>
+                    <p class="cl"><span class="bny-tag" tag-color="blue">优化</span> 整体体验与组件。</p>
+                </div>
             </div>
             <div class="bny-timeline-item is-success">
                 <div class="bny-timeline-node"></div>
                 <div class="bny-timestamp">2025-01-17</div>
                 <div class="bny-timeline-title">v0.0.4</div>
-                <div class="bny-timeline-content">新增徽章组件；优化弹出框与滚动条样式。</div>
+                <div class="bny-timeline-content">
+                    <p class="cl"><span class="bny-tag" tag-color="green">新增</span> 徽章组件。</p>
+                    <p class="cl"><span class="bny-tag" tag-color="blue">优化</span> 文档；滚动条样式；弹出框；导航栏。</p>
+                </div>
             </div>
             <div class="bny-timeline-item is-success">
                 <div class="bny-timeline-node"></div>
                 <div class="bny-timestamp">2025-01-04</div>
                 <div class="bny-timeline-title">v0.0.3</div>
-                <div class="bny-timeline-content">文档页面优化；新增动画组件；优化卡片。</div>
+                <div class="bny-timeline-content">
+                    <p class="cl"><span class="bny-tag" tag-color="green">新增</span> 动画组件。</p>
+                    <p class="cl"><span class="bny-tag" tag-color="blue">优化</span> 文档页面；卡片；细节；页面 SEO。</p>
+                </div>
             </div>
             <div class="bny-timeline-item is-success">
                 <div class="bny-timeline-node"></div>
                 <div class="bny-timestamp">2024-12-31</div>
                 <div class="bny-timeline-title">v0.0.2</div>
-                <div class="bny-timeline-content">新增导航栏组件、表单开关；优化表格。</div>
+                <div class="bny-timeline-content">
+                    <p class="cl"><span class="bny-tag" tag-color="green">新增</span> 导航栏组件；表单-开关组件。</p>
+                    <p class="cl"><span class="bny-tag" tag-color="red">修复</span> 选择框禁用样式。</p>
+                    <p class="cl"><span class="bny-tag" tag-color="blue">优化</span> 页面；图标；表格；整体风格。</p>
+                </div>
             </div>
             <div class="bny-timeline-item is-success">
                 <div class="bny-timeline-node"></div>
                 <div class="bny-timestamp">2024-12-24</div>
                 <div class="bny-timeline-title">v0.0.1</div>
-                <div class="bny-timeline-content">项目初始化（自述文件优化）。</div>
+                <div class="bny-timeline-content">
+                    <p class="cl"><span class="bny-tag" tag-color="green">新增</span> 图标、面板、弹出框/弹出层、走马灯、提示、公共类、辅助类、菜单（动态/静态）、对话框 API、加载组件雏形。</p>
+                    <p class="cl"><span class="bny-tag" tag-color="blue">优化</span> 页面；表格；样式；代码高亮；颜色；选项卡。</p>
+                    <p class="cl"><span class="bny-tag" tag-color="red">修复</span> 页面代码。</p>
+                    <p class="cl"><span class="bny-tag" tag-color="red">删除</span> 早期菜单组件（后续 v0.0.7 重构回归）。</p>
+                </div>
             </div>
         </div>
 
         <h2 id="n02">说明</h2>
         <div class="bny-card">
-            <p><b>数据来源</b>：本页内容由仓库的 git tag 与 <code>main</code> 分支提交历史整理而成，每个节点的日期为该 tag 对应提交的日期。</p>
-            <p><b>维护方式</b>：发布新版本后打上 <code>vX.Y.Z</code> 标签即可，本页按标签日期自动排序呈现；如需补充更详细的发布说明，直接在对应版本的 <code>bny-timeline-content</code> 中编辑文字即可。</p>
+            <p><b>数据来源</b>：本页内容由仓库的 git tag 与 <code>main</code> 分支提交历史整理而成，每个节点的日期为该 tag 对应提交的日期；「新增 / 优化 / 修复 / 删除 / 更新 / 重构」分类均提取自对应版本的提交记录。</p>
+            <p><b>维护方式</b>：发布新版本后打上 <code>vX.Y.Z</code> 标签即可，本页按标签日期自动排序呈现；如需补充更详细的发布说明，直接在对应版本的 <code>bny-timeline-content</code> 中按分类编辑文字即可。</p>
+            <p><b>分类标签含义</b>：<span class="bny-tag" tag-color="green">新增</span> 新功能/组件 · <span class="bny-tag" tag-color="blue">优化</span> 体验与样式改进 · <span class="bny-tag" tag-color="red">修复</span> bug 修复/删除项 · <span class="bny-tag" tag-color="yellow">更新</span> 文档与已有内容变更 · <span class="bny-tag" tag-color="blue">重构</span> 内部结构重构。</p>
             <p><b>节点配色含义</b>：<code>is-primary</code> 当前最新 · <code>is-info</code> 重大里程碑（x.0.0） · <code>is-warning</code> 特殊版本（如回退） · <code>is-success</code> 常规更新。</p>
             <p><b>仓库</b>：<a href="https://github.com/workbunny/bunny.ui" target="_blank" rel="noopener">github.com/workbunny/bunny.ui</a></p>
         </div>
