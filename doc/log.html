@@ -64,130 +64,176 @@
 </header>
 
 <main spa-view>
-    <div class="docs-layout">
-        <!-- 左侧菜单 -->
-        <aside class="docs-sidebar hidden-xs">
-            <div hx-ext="bny-nav" nav-side nav-color="white" style="flex-direction: row;">
-                <ul class="menu">
-                    <li class="show">
-                        <div class="trigger">
-                            <span>基础</span>
-                        </div>
-                        <ul class="sub-menu">
-                            <li><a class="trigger" spa-view-target="#log-view" href="/test/base.html"><span>开始使用</span></a></li>
-                            <li><a class="trigger" spa-view-target="#log-view" href="/test/js.html"><span>底层方法</span></a></li>
-                            <li><a class="trigger" spa-view-target="#log-view" href="/test/class.html"><span>公共类</span></a></li>
-                        </ul>
-                    </li>
-                    <li class="show">
-                        <div class="trigger">
-                            <span>通用</span>
-                        </div>
-                        <ul class="sub-menu">
-                            <li><a class="trigger" spa-view-target="#log-view" href="/test/color.html"><span>颜色</span></a></li>
-                            <li><a class="trigger" spa-view-target="#log-view" href="/test/button.html"><span>按钮</span></a></li>
-                            <li><a class="trigger" spa-view-target="#log-view" href="/test/tag.html"><span>标签</span></a></li>
-                            <li><a class="trigger" spa-view-target="#log-view" href="/test/icons.html"><span>图标</span></a></li>
-                            <li><a class="trigger" spa-view-target="#log-view" href="/test/subsidiary.html"><span>辅助</span></a></li>
-                            <li><a class="trigger" spa-view-target="#log-view" href="/test/grid.html"><span>网格</span></a></li>
-                            <li><a class="trigger" spa-view-target="#log-view" href="/test/card.html"><span>卡片</span></a></li>
-                        </ul>
-                    </li>
-                    <li class="show">
-                        <div class="trigger">
-                            <span>导航</span>
-                        </div>
-                        <ul class="sub-menu">
-                            <li><a class="trigger" spa-view-target="#log-view" href="/test/menu.html"><span>菜单</span></a></li>
-                            <li><a class="trigger" spa-view-target="#log-view" href="/test/nav.html"><span>导航栏</span></a></li>
-                            <li><a class="trigger" spa-view-target="#log-view" href="/test/anchor.html"><span>锚点</span></a></li>
-                            <li><a class="trigger" spa-view-target="#log-view" href="/test/dropdown.html"><span>下拉菜单</span></a></li>
-                            <li><a class="trigger" spa-view-target="#log-view" href="/test/tab.html"><span>选项卡</span></a></li>
-                            <li><a class="trigger" spa-view-target="#log-view" href="/test/breadcrumb.html"><span>面包屑</span></a></li>
-                            <li><a class="trigger" spa-view-target="#log-view" href="/test/backtop.html"><span>回到顶部</span></a></li>
-                        </ul>
-                    </li>
-                    <li class="show">
-                        <div class="trigger">
-                            <span>数据展示</span>
-                        </div>
-                        <ul class="sub-menu">
-                            <li><a class="trigger" spa-view-target="#log-view" href="/test/table.html"><span>表格</span></a></li>
-                            <li><a class="trigger" spa-view-target="#log-view" href="/test/code.html"><span>代码</span></a></li>
-                            <li><a class="trigger" spa-view-target="#log-view" href="/test/collapse.html"><span>折叠面板</span></a></li>
-                            <li><a class="trigger" spa-view-target="#log-view" href="/test/skeleton.html"><span>骨架屏</span></a></li>
-                            <li><a class="trigger" spa-view-target="#log-view" href="/test/empty.html"><span>空状态</span></a></li>
-                            <li><a class="trigger" spa-view-target="#log-view" href="/test/avatar.html"><span>头像 & 徽标</span></a></li>
-                            <li><a class="trigger" spa-view-target="#log-view" href="/test/tip.html"><span>提示</span></a></li>
-                            <li><a class="trigger" spa-view-target="#log-view" href="/test/image.html"><span>图片预览</span></a></li>
-                            <li><a class="trigger" spa-view-target="#log-view" href="/test/timeline.html"><span>时间线</span></a></li>
-                            <li><a class="trigger" spa-view-target="#log-view" href="/test/steps.html"><span>步骤条</span></a></li>
-                        </ul>
-                    </li>
-                    <li class="show">
-                        <div class="trigger">
-                            <span>反馈</span>
-                        </div>
-                        <ul class="sub-menu">
-                            <li><a class="trigger" spa-view-target="#log-view" href="/test/alert.html"><span>警示信息</span></a></li>
-                            <li><a class="trigger" spa-view-target="#log-view" href="/test/confirm.html"><span>确认信息</span></a></li>
-                            <li><a class="trigger" spa-view-target="#log-view" href="/test/page.html"><span>页面信息</span></a></li>
-                            <li><a class="trigger" spa-view-target="#log-view" href="/test/load.html"><span>加载</span></a></li>
-                        </ul>
-                    </li>
-                    <li class="show">
-                        <div class="trigger">
-                            <span>表单</span>
-                        </div>
-                        <ul class="sub-menu">
-                            <li><a class="trigger" spa-view-target="#log-view" href="/test/form.html"><span>表单</span></a></li>
-                            <li><a class="trigger" spa-view-target="#log-view" href="/test/validate.html"><span>表单校验</span></a></li>
-                            <li><a class="trigger" spa-view-target="#log-view" href="/test/datepicker.html"><span>日期选择</span></a></li>
-                            <li><a class="trigger" spa-view-target="#log-view" href="/test/rate.html"><span>评分</span></a></li>
-                        </ul>
-                    </li>
-                    <li class="show">
-                        <div class="trigger">
-                            <span>数据交互</span>
-                        </div>
-                        <ul class="sub-menu">
-                            <li><a class="trigger" spa-view-target="#log-view" href="/test/pagination.html"><span>分页</span></a></li>
-                        </ul>
-                    </li>
-                </ul>
-            </div>
-        </aside>
-        <!-- 右侧内容区（嵌套 spa-view） -->
-        <div class="docs-content">
-            <div spa-view id="log-view">
-                <a href="/test/log.html" id="log-auto-nav" spa-view-target="#log-view" style="display:none"></a>
-                <script>
-                    // 更新日志页：加载 /test/log.html（时间线组件构建的版本记录）
-                    // 放在 #log-view 内，确保 SPA 导航到本页时能随视口替换一起执行
-                    // 使用 bny.spaReady 确保 SPA 扩展初始化完成后再触发点击
-                    function triggerLogAutoNav() {
-                        var autoNav = document.getElementById('log-auto-nav');
-                        if (!autoNav) return; // autoNav 不存在说明 #log-view 已被内容替换
-                        // popstate 回退时不重新触发自动导航，避免后退陷阱
-                        if (typeof bny !== 'undefined' && bny.spaIsPopstate && bny.spaIsPopstate()) return;
-                        autoNav.click();
-                    }
+<!-- ==================== 更新日志页内容 ==================== -->
 
-                    if (typeof bny !== 'undefined' && bny.spaReady) {
-                        bny.spaReady(triggerLogAutoNav);
-                    } else {
-                        window.addEventListener('DOMContentLoaded', triggerLogAutoNav);
-                    }
-                </script>
+<!-- 页头 -->
+<section class="page-hero">
+    <div class="doc-container">
+        <span class="eyebrow"><i class="bny-icon icon-calendar"></i> Changelog</span>
+        <h1 class="section-title">更新日志</h1>
+        <p class="section-subtitle">BunnyUI 组件库版本发布记录，按发布时间（新 → 旧）排列。当前最新版本 v2.0.8。</p>
+    </div>
+</section>
+
+<!-- 版本时间线 -->
+<section class="section">
+    <div class="doc-container">
+        <blockquote class="bny-blockquote">
+            本页基于 git tag 的版本发布记录，使用时间线组件按发布时间（新 → 旧）排列。当前最新版本为 <b>v2.0.8</b>。
+        </blockquote>
+
+        <h2 id="n01">版本时间线</h2>
+        <div class="bny-timeline">
+            <div class="bny-timeline-item is-primary">
+                <div class="bny-timeline-node"></div>
+                <div class="bny-timestamp">2026-07-29</div>
+                <div class="bny-timeline-title">v2.0.8</div>
+                <div class="bny-timeline-content">新增 Markdown 外部拓展插件；文档更新（修复 code 组件与 md 拓展问题）；优化 SPA 拓展。</div>
+            </div>
+            <div class="bny-timeline-item is-success">
+                <div class="bny-timeline-node"></div>
+                <div class="bny-timestamp">2026-07-25</div>
+                <div class="bny-timeline-title">v2.0.7</div>
+                <div class="bny-timeline-content">完善 SPA 扩展的 SEO/GEO head 同步；修复若干 bug。</div>
+            </div>
+            <div class="bny-timeline-item is-success">
+                <div class="bny-timeline-node"></div>
+                <div class="bny-timestamp">2026-07-23</div>
+                <div class="bny-timeline-title">v2.0.6</div>
+                <div class="bny-timeline-content">增强多组件能力与安全性；新增和优化功能；优化图片预览按钮样式。</div>
+            </div>
+            <div class="bny-timeline-item is-success">
+                <div class="bny-timeline-node"></div>
+                <div class="bny-timestamp">2026-06-15</div>
+                <div class="bny-timeline-title">v2.0.5</div>
+                <div class="bny-timeline-content">新增输入框前缀/后缀组件、a 标签按钮适配、SPA 嵌套视口支持；修复时间选择组件问题。</div>
+            </div>
+            <div class="bny-timeline-item is-success">
+                <div class="bny-timeline-node"></div>
+                <div class="bny-timestamp">2026-06-10</div>
+                <div class="bny-timeline-title">v2.0.4</div>
+                <div class="bny-timeline-content">优化整体样式与下拉菜单；优化选项卡；增强 tooltip 和 table。</div>
+            </div>
+            <div class="bny-timeline-item is-success">
+                <div class="bny-timeline-node"></div>
+                <div class="bny-timestamp">2026-04-29</div>
+                <div class="bny-timeline-title">v2.0.3</div>
+                <div class="bny-timeline-content">优化折叠面板与 tab 组件；修复菜单组件样式。</div>
+            </div>
+            <div class="bny-timeline-item is-success">
+                <div class="bny-timeline-node"></div>
+                <div class="bny-timestamp">2026-03-12</div>
+                <div class="bny-timeline-title">v2.0.1</div>
+                <div class="bny-timeline-content">优化 page 组件与导航栏样式（card/nav）；新增导航瞄组件。</div>
+            </div>
+            <div class="bny-timeline-item is-info">
+                <div class="bny-timeline-node"></div>
+                <div class="bny-timestamp">2026-03-09</div>
+                <div class="bny-timeline-title">v2.0.0</div>
+                <div class="bny-timeline-content">站点页面重构；新增顶部栏 / 侧边栏导航栏、bunny 图标（2.x 正式线起点）。</div>
+            </div>
+            <div class="bny-timeline-item is-warning">
+                <div class="bny-timeline-node"></div>
+                <div class="bny-timestamp">2025-11-14</div>
+                <div class="bny-timeline-title">v2.0.2</div>
+                <div class="bny-timeline-content">回退部分更新（Revert）。该标签指向 2025-11 的提交，早于 v2.0.0 的发布时间。</div>
+            </div>
+            <div class="bny-timeline-item is-success">
+                <div class="bny-timeline-node"></div>
+                <div class="bny-timestamp">2025-04-14</div>
+                <div class="bny-timeline-title">v1.0.2</div>
+                <div class="bny-timeline-content">新增加载组件；优化文档与导航栏。</div>
+            </div>
+            <div class="bny-timeline-item is-success">
+                <div class="bny-timeline-node"></div>
+                <div class="bny-timestamp">2025-03-31</div>
+                <div class="bny-timeline-title">v1.0.1</div>
+                <div class="bny-timeline-content">优化弹出框、表格、下拉组件。</div>
+            </div>
+            <div class="bny-timeline-item is-info">
+                <div class="bny-timeline-node"></div>
+                <div class="bny-timestamp">2025-03-20</div>
+                <div class="bny-timeline-title">v1.0.0</div>
+                <div class="bny-timeline-content">页面与表单优化（首个正式稳定版）。</div>
+            </div>
+            <div class="bny-timeline-item is-success">
+                <div class="bny-timeline-node"></div>
+                <div class="bny-timestamp">2025-03-12</div>
+                <div class="bny-timeline-title">v0.1.1</div>
+                <div class="bny-timeline-content">优化选项卡、导航栏、下拉组件。</div>
+            </div>
+            <div class="bny-timeline-item is-success">
+                <div class="bny-timeline-node"></div>
+                <div class="bny-timestamp">2025-03-07</div>
+                <div class="bny-timeline-title">v0.1.0</div>
+                <div class="bny-timeline-content">重构导航栏；优化下拉与弹出框。</div>
+            </div>
+            <div class="bny-timeline-item is-success">
+                <div class="bny-timeline-node"></div>
+                <div class="bny-timestamp">2025-03-04</div>
+                <div class="bny-timeline-title">v0.0.9</div>
+                <div class="bny-timeline-content">优化组件；更新弹出框与动画。</div>
+            </div>
+            <div class="bny-timeline-item is-success">
+                <div class="bny-timeline-node"></div>
+                <div class="bny-timestamp">2025-03-03</div>
+                <div class="bny-timeline-title">v0.0.8</div>
+                <div class="bny-timeline-content">重构弹性盒子（flexbox）。</div>
+            </div>
+            <div class="bny-timeline-item is-success">
+                <div class="bny-timeline-node"></div>
+                <div class="bny-timestamp">2025-02-28</div>
+                <div class="bny-timeline-title">v0.0.7</div>
+                <div class="bny-timeline-content">重构菜单组件；新增下拉菜单。</div>
+            </div>
+            <div class="bny-timeline-item is-success">
+                <div class="bny-timeline-node"></div>
+                <div class="bny-timestamp">2025-02-25</div>
+                <div class="bny-timeline-title">v0.0.6</div>
+                <div class="bny-timeline-content">新增功能；优化组件。</div>
+            </div>
+            <div class="bny-timeline-item is-success">
+                <div class="bny-timeline-node"></div>
+                <div class="bny-timestamp">2025-02-17</div>
+                <div class="bny-timeline-title">v0.0.5</div>
+                <div class="bny-timeline-content">新增和优化。</div>
+            </div>
+            <div class="bny-timeline-item is-success">
+                <div class="bny-timeline-node"></div>
+                <div class="bny-timestamp">2025-01-17</div>
+                <div class="bny-timeline-title">v0.0.4</div>
+                <div class="bny-timeline-content">新增徽章组件；优化弹出框与滚动条样式。</div>
+            </div>
+            <div class="bny-timeline-item is-success">
+                <div class="bny-timeline-node"></div>
+                <div class="bny-timestamp">2025-01-04</div>
+                <div class="bny-timeline-title">v0.0.3</div>
+                <div class="bny-timeline-content">文档页面优化；新增动画组件；优化卡片。</div>
+            </div>
+            <div class="bny-timeline-item is-success">
+                <div class="bny-timeline-node"></div>
+                <div class="bny-timestamp">2024-12-31</div>
+                <div class="bny-timeline-title">v0.0.2</div>
+                <div class="bny-timeline-content">新增导航栏组件、表单开关；优化表格。</div>
+            </div>
+            <div class="bny-timeline-item is-success">
+                <div class="bny-timeline-node"></div>
+                <div class="bny-timestamp">2024-12-24</div>
+                <div class="bny-timeline-title">v0.0.1</div>
+                <div class="bny-timeline-content">项目初始化（自述文件优化）。</div>
             </div>
         </div>
+
+        <h2 id="n02">说明</h2>
+        <div class="bny-card">
+            <p><b>数据来源</b>：本页内容由仓库的 git tag 与 <code>main</code> 分支提交历史整理而成，每个节点的日期为该 tag 对应提交的日期。</p>
+            <p><b>维护方式</b>：发布新版本后打上 <code>vX.Y.Z</code> 标签即可，本页按标签日期自动排序呈现；如需补充更详细的发布说明，直接在对应版本的 <code>bny-timeline-content</code> 中编辑文字即可。</p>
+            <p><b>节点配色含义</b>：<code>is-primary</code> 当前最新 · <code>is-info</code> 重大里程碑（x.0.0） · <code>is-warning</code> 特殊版本（如回退） · <code>is-success</code> 常规更新。</p>
+            <p><b>仓库</b>：<a href="https://github.com/workbunny/bunny.ui" target="_blank" rel="noopener">github.com/workbunny/bunny.ui</a></p>
+        </div>
     </div>
-    <!-- 移动端菜单按钮 -->
-    <div class="mobile-menu-btn">
-        <button class="bny-btn" model="border circle" hx-ext="bny-page" hx-get="/doc/menu.html" hx-trigger="click" title="false" anim="left" width="250px" height="100%" offset="left" shade spa-skip>
-            <i class="bny-icon icon-menu"></i>
-        </button>
-    </div>
+</section>
+
 </main>
 
 <footer class="site-footer">
