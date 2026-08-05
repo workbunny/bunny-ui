@@ -273,7 +273,7 @@ html.dark .icon-moon {
     overflow: hidden;
     background:
         radial-gradient(1200px 500px at 80% -10%, var(--default-alpha-10), transparent 60%),
-        radial-gradient(900px 400px at 10% 20%, var(--gray), transparent 55%);
+        radial-gradient(900px 400px at 10% 20%, var(--blue-shallow), transparent 55%);
 }
 
 .hero::before {
@@ -300,7 +300,7 @@ html.dark .icon-moon {
     line-height: 1.30;
     letter-spacing: -.02em;
     margin: 0 0 20px;
-    background: linear-gradient(135deg, var(--default) 10%, var(--default-shallow) 55%, var(--default-middle) 95%);
+    background: linear-gradient(160deg, var(--default-middle) 10%, var(--default-shallow) 55%, var(--default) 95%);
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -311,8 +311,8 @@ html.dark .icon-moon {
     display: inline-block;
     font-size: var(--font-size-sm);
     font-weight: var(--font-weight-medium);
-    color: var(--blue);
-    background: var(--blue-alpha-10);
+    color: var(--green);
+    background: var(--green-alpha-10);
     padding: 3px 12px;
     border-radius: var(--border-radius-full);
     margin-bottom: 16px;

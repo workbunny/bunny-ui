@@ -1,11 +1,12 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BunnyUI - 拓展</title>
-    <meta name="keywords" content="BunnyUI, 拓展, SPA, Markdown">
-    <meta name="description" content="BunnyUI 外部扩展功能介绍">
+    <title>BunnyUI - 更新日志</title>
+    <meta name="keywords" content="BunnyUI, 更新日志, Changelog, 版本发布">
+    <meta name="description" content="BunnyUI 组件库版本发布记录">
     <link rel="shortcut icon" href="/bunny.png" type="image/x-icon">
     <!-- 防闪白脚本 -->
     <script>
@@ -33,9 +34,10 @@
     <!-- SPA 扩展 -->
     <link rel="stylesheet" href="/ext/spa/spa.css">
     <script src="/ext/spa/spa.js"></script>
-    <!-- 文档站共享样式 -->
+    <!-- 文档站共享样式（含文档页框架布局，全局保留，导航时不被移除） -->
     <link rel="stylesheet" href="/doc/doc.css">
 </head>
+
 <body hx-ext="bny-spa" spa-mode="hash">
 <header class="site-header">
     <div hx-ext="bny-nav" nav-color="white">
@@ -62,49 +64,37 @@
 </header>
 
 <main spa-view>
-<!-- ==================== 拓展页内容 ==================== -->
+    <div class="docs-layout">
+        <div class="docs-content">
+            <div spa-view id="log-view">
+                <a href="/test/log.html" id="log-auto-nav" spa-view-target="#log-view" style="display:none"></a>
+                <script>
+                    // 更新日志页：加载 /test/log.html（时间线组件构建的版本记录）
+                    // 放在 #log-view 内，确保 SPA 导航到本页时能随视口替换一起执行
+                    // 使用 bny.spaReady 确保 SPA 扩展初始化完成后再触发点击
+                    function triggerLogAutoNav() {
+                        var autoNav = document.getElementById('log-auto-nav');
+                        if (!autoNav) return; // autoNav 不存在说明 #log-view 已被内容替换
+                        // popstate 回退时不重新触发自动导航，避免后退陷阱
+                        if (typeof bny !== 'undefined' && bny.spaIsPopstate && bny.spaIsPopstate()) return;
+                        autoNav.click();
+                    }
 
-<!-- 页头 -->
-<section class="page-hero">
-    <div class="doc-container">
-        <span class="eyebrow"><i class="bny-icon icon-rocket"></i> Extensions</span>
-        <h1 class="section-title">拓展功能</h1>
-        <p class="section-subtitle">BunnyUI 的外部扩展模块，按需引入，增强核心能力。</p>
-    </div>
-</section>
-
-<!-- 扩展卡片 -->
-<section class="section section--tight">
-    <div class="doc-container">
-        <div class="grid-2">
-            <!-- SPA 扩展卡片 -->
-            <div class="bny-card" card-model="transition">
-                <div class="body">
-                    <span class="bny-tag" tag-color="blue">SPA</span>
-                    <h3 class="title">bny-spa 单页面应用</h3>
-                    <p class="content">基于 HTMX 的轻量级 SPA 扩展。服务端零改造，获得无刷新导航、URL 同步、前进后退、SEO/GEO head 同步等 SPA 体验。支持多层嵌套视口。</p>
-                    <div class="flex gap-12 mt-16">
-                        <a class="bny-btn" target="_blank" model="border" size="sm" href="/ext/spa/index.html" spa-skip>查看示例</a>
-                        <a class="bny-btn" model="border" size="sm" href="https://github.com/workbunny/bunny.ui/tree/2.x/ext/spa" target="_blank" spa-skip>源码</a>
-                    </div>
-                </div>
-            </div>
-            <!-- Markdown 扩展卡片 -->
-            <div class="bny-card" card-model="transition">
-                <div class="body">
-                    <span class="bny-tag" tag-color="green">Markdown</span>
-                    <h3 class="title">bny-md Markdown 渲染</h3>
-                    <p class="content">运行时 Markdown 渲染扩展。纯 JS 实现，无需预编译，直接将 Markdown 解析为 HTML 并映射到 bny-ui 组件样式。支持 GFM 扩展、XSS 防护、代码高亮。</p>
-                    <div class="flex gap-12 mt-16">
-                        <a class="bny-btn" target="_blank" model="border" size="sm" href="/ext/markdown/index.html" spa-skip>查看示例</a>
-                        <a class="bny-btn" model="border" size="sm" href="https://github.com/workbunny/bunny.ui/tree/2.x/ext/markdown" target="_blank" spa-skip>源码</a>
-                    </div>
-                </div>
+                    if (typeof bny !== 'undefined' && bny.spaReady) {
+                        bny.spaReady(triggerLogAutoNav);
+                    } else {
+                        window.addEventListener('DOMContentLoaded', triggerLogAutoNav);
+                    }
+                </script>
             </div>
         </div>
     </div>
-</section>
-
+    <!-- 移动端菜单按钮 -->
+    <div class="mobile-menu-btn">
+        <button class="bny-btn" model="border circle" hx-ext="bny-page" hx-get="/doc/menu.html" hx-trigger="click" title="false" anim="left" width="250px" height="100%" offset="left" shade spa-skip>
+            <i class="bny-icon icon-menu"></i>
+        </button>
+    </div>
 </main>
 
 <footer class="site-footer">
@@ -118,7 +108,7 @@
                 </div>
             </div>
             <div class="footer-links">
-                <div class="footer-col"><h4>导航</h4><a href="/doc/home.html">首页</a><a href="/doc/docs.html">文档</a><a href="/doc/ext.html">拓展</a></div>
+                <div class="footer-col"><h4>导航</h4><a href="/doc/home.html">首页</a><a href="/doc/docs.html">文档</a><a href="/doc/ext.html">拓展</a><a href="/doc/log.html">更新日志</a></div>
                 <div class="footer-col"><h4>资源</h4><a href="https://github.com/workbunny/bunny.ui" target="_blank" spa-skip>GitHub</a><a href="/test/base.html">快速开始</a></div>
                 <div class="footer-col"><h4>拓展</h4><a href="/ext/spa/index.html" spa-skip>SPA</a><a href="/ext/markdown/index.html" spa-skip>Markdown</a></div>
             </div>
