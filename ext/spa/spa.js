@@ -75,6 +75,30 @@
     var _replaceNext = false; // 下一次 navigate 用 replaceState（初始自动导航用，避免重复历史记录）
     var _isPopstate = false;  // 正在处理 popstate（自动导航脚本据此跳过，避免后退陷阱）
 
+    /** CSRF token 缓存，用于 SPA 导航时自动附加 X-CSRF-TOKEN 请求头 */
+    var _csrfToken = '';
+    /** 常见的 CSRF meta name 属性值（按优先级排列） */
+    var CSRF_META_NAMES = ['csrf-token', 'csrf_token', 'x-csrf-token'];
+    /** 常见的 CSRF hidden input name 属性值 */
+    var CSRF_INPUT_NAMES = ['__token__', '_token', 'csrf_token', 'csrf-token'];
+
+    /**
+     * 生成 fetch 请求头（含 CSRF token 与 SPA 标记）
+     * 集中管理所有 fetch 请求的 header，避免三处重复
+     * @returns {object}
+     */
+    function getRequestHeaders() {
+        var headers = {
+            'HX-Request': 'true',
+            'X-Spa-Request': 'true',
+            'X-Spa-Layout': 'false'
+        };
+        if (_csrfToken) {
+            headers['X-CSRF-TOKEN'] = _csrfToken;
+        }
+        return headers;
+    }
+
     // ==================== 初始化 ====================
 
     /**
@@ -89,6 +113,15 @@
         _mode = getSpaMode();
         // hash 模式下记录入口页路径（SPA 启动时的页面）
         _entryPath = location.pathname + location.search;
+
+        // 读取页面初始 CSRF token（后续 SPA 导航自动携带）
+        for (var i = 0; i < CSRF_META_NAMES.length; i++) {
+            var csrfMeta = document.querySelector('meta[name="' + CSRF_META_NAMES[i] + '"]');
+            if (csrfMeta && csrfMeta.getAttribute('content')) {
+                _csrfToken = csrfMeta.getAttribute('content');
+                break;
+            }
+        }
 
         // 初始 URL：直接用 location.href（可能带 hash）
         _currentUrl = location.href;
@@ -401,10 +434,7 @@
         _controller = new AbortController();
 
         fetch(url, {
-            headers: {
-                'HX-Request': 'true',
-                'X-Spa-Request': 'true'
-            },
+            headers: getRequestHeaders(),
             signal: _controller.signal,
             redirect: 'follow'
         })
@@ -473,10 +503,7 @@
         fetch(url, {
             method: 'POST',
             body: formData,
-            headers: {
-                'HX-Request': 'true',
-                'X-Spa-Request': 'true'
-            },
+            headers: getRequestHeaders(),
             signal: _controller.signal,
             redirect: 'follow'
         })
@@ -631,6 +658,9 @@
         diffHeadAssets(doc, 'link', 'href');
         diffHeadAssets(doc, 'script', 'src');
         diffHeadAssets(doc, 'style', null);
+
+        // ===== CSRF token 同步 =====
+        syncCsrfToken(doc);
     }
 
     /**
@@ -786,6 +816,40 @@
     }
 
     /**
+     * 同步 CSRF token
+     * 检测新文档中 meta CSRF token 变化，统一更新页面中所有 CSRF 相关元素
+     * 覆盖 ThinkPHP（__token__）、Laravel（_token）等常见命名
+     * @param {Document} doc 响应文档
+     */
+    function syncCsrfToken(doc) {
+        var newToken = '';
+        for (var i = 0; i < CSRF_META_NAMES.length; i++) {
+            var meta = doc.querySelector('meta[name="' + CSRF_META_NAMES[i] + '"]');
+            if (meta && meta.getAttribute('content')) {
+                newToken = meta.getAttribute('content');
+                break;
+            }
+        }
+        if (!newToken || newToken === _csrfToken) return;
+
+        _csrfToken = newToken;
+
+        // 更新页面中所有 CSRF meta 标签
+        for (var j = 0; j < CSRF_META_NAMES.length; j++) {
+            var curMeta = document.querySelector('meta[name="' + CSRF_META_NAMES[j] + '"]');
+            if (curMeta) curMeta.setAttribute('content', newToken);
+        }
+
+        // 更新页面中所有 CSRF hidden input
+        for (var k = 0; k < CSRF_INPUT_NAMES.length; k++) {
+            var inputs = document.querySelectorAll('input[name="' + CSRF_INPUT_NAMES[k] + '"]');
+            Array.prototype.forEach.call(inputs, function (input) {
+                input.value = newToken;
+            });
+        }
+    }
+
+    /**
      * popstate 处理（浏览器前进/后退）
      */
     function onPopState(e) {
@@ -811,10 +875,7 @@
         _controller = new AbortController();
 
         fetch(url, {
-            headers: {
-                'HX-Request': 'true',
-                'X-Spa-Request': 'true'
-            },
+            headers: getRequestHeaders(),
             signal: _controller.signal,
             redirect: 'follow'
         })
