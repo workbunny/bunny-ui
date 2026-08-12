@@ -77,7 +77,7 @@
     <div class="doc-container">
         <span class="eyebrow"><i class="bny-icon icon-calendar"></i> Changelog</span>
         <h1 class="section-title">更新日志</h1>
-        <p class="section-subtitle">BunnyUI 组件库版本发布记录，按发布时间（新 → 旧）排列。当前最新版本 v2.0.8。</p>
+        <p class="section-subtitle">BunnyUI 组件库版本发布记录，按发布时间（新 → 旧）排列。当前最新版本 v2.1.0。</p>
     </div>
 </section>
 
@@ -87,6 +87,19 @@
         <h2 id="n01">版本时间线</h2>
         <div class="bny-timeline">
             <div class="bny-timeline-item is-primary">
+                <div class="bny-timeline-node"></div>
+                <div class="bny-timestamp">2026-08-12</div>
+                <div class="bny-timeline-title">v2.1.0</div>
+                <div class="bny-timeline-content">
+                    <p class="cl"><span class="bny-tag" tag-color="red">破坏性变更</span> 组件属性统一重命名为组件名前缀（tooltip → tip、相关 data 属性同步迁移），升级时需更新 HTML。</p>
+                    <p class="cl"><span class="bny-tag" tag-color="green">新增</span> 图片预览卡牌式堆叠分组（bny-image-group）及标签；SPA 扩展 CSRF 自动管理（支持 ThinkPHP __token__ / Laravel _token）与 X-Spa-Layout 请求头；更新日志页面及按版本下载。</p>
+                    <p class="cl"><span class="bny-tag" tag-color="blue">优化</span> SPA 扩展 fetch 请求头统一收口至 getRequestHeaders()；文档站样式与交互细节。</p>
+                    <p class="cl"><span class="bny-tag" tag-color="red">修复</span> Markdown XSS（区块代码危险标签被误删 + javascript:/vbscript: 协议绕过）；深链访问保留文档站左侧菜单；移动端菜单按钮属性同步。</p>
+                    <p class="cl"><span class="bny-tag" tag-color="yellow">文档</span> 完善 SPA 扩展文档（CSRF 自动管理章节、嵌套视口、ThinkPHP 示例）；更新文档站多处细节。</p>
+                    <p class="dl"><a class="bny-btn" btn-model="border" btn-size="sm" href="https://github.com/workbunny/bunny.ui/releases/download/v2.1.0/bunny.zip" target="_blank" spa-skip><i class="bny-icon icon-download"></i> 下载 bunny.zip</a></p>
+                </div>
+            </div>
+            <div class="bny-timeline-item is-success">
                 <div class="bny-timeline-node"></div>
                 <div class="bny-timestamp">2026-07-29</div>
                 <div class="bny-timeline-title">v2.0.8</div>
