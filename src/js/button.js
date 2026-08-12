@@ -19,11 +19,11 @@
     function shouldShowLoading(elt) {
         if (!elt || !elt.classList || !elt.classList.contains('bny-btn')) return false;
         // 显式关闭
-        if (elt.getAttribute('bny-button-loading') === 'false') return false;
+        if (elt.getAttribute('btn-loading') === 'false') return false;
         // 显式开启
-        if (elt.getAttribute('bny-button-loading') !== null) return true;
+        if (elt.getAttribute('btn-loading') !== null) return true;
         // 默认开启
-        var global = document.body.getAttribute('data-bny-button-loading-auto');
+        var global = document.body.getAttribute('btn-loading-auto');
         return global !== 'false';
     }
 
@@ -51,8 +51,8 @@
         requestAnimationFrame(function () {
             elt.classList.remove('bny-loading');
             // 仅在 loading 期间被设置 disabled 时才移除
-            if (elt.getAttribute('bny-button-loading') !== null ||
-                !elt.hasAttribute('data-bny-keep-disabled')) {
+            if (elt.getAttribute('btn-loading') !== null ||
+                !elt.hasAttribute('btn-keep-disabled')) {
                 elt.removeAttribute('disabled');
                 elt.removeAttribute('aria-disabled');
             }

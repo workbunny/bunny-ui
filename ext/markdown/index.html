@@ -438,7 +438,7 @@
                                         hx-get="sample.md"
                                         hx-target="#md-output"
                                         hx-ext="bny-md"
-                                        bny-md-config='{"html":true}'>
+                                        md-config='{"html":true}'>
                                     加载 sample.md
                                 </button>
                                 <div id="md-output"></div>
@@ -449,7 +449,7 @@
 <pre class="code-pane"><code>&lt;button hx-get="sample.md"
         hx-target="#md-output"
         hx-ext="bny-md"
-        bny-md-config='{"html":true}'
+        md-config='{"html":true}'
         class="bny-btn" color="blue"&gt;
     加载 sample.md
 &lt;/button&gt;
@@ -545,7 +545,7 @@ function render() {
                                         // 去掉首行（:::callout）和末行（:::），取中间内容
                                         var lines = (ctx.__lines || []).slice(1, -1);
                                         var body = lines.join('\n').trim();
-                                        return '<div class="bny-alert" color="blue">' +
+                                        return '<div class="bny-alert" alert-color="blue">' +
                                             ctx.inline(body) + '</div>';
                                     }
                                 });
@@ -567,7 +567,7 @@ bny.md.block({
     render: function(match, ctx) {
         var lines = (ctx.__lines || []).slice(1, -1);
         var body = lines.join('\n').trim();
-        return '&lt;div class="bny-alert" color="blue"&gt;' +
+        return '&lt;div class="bny-alert" alert-color="blue"&gt;' +
             ctx.inline(body) + '&lt;/div&gt;';
     }
 });

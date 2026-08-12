@@ -11,14 +11,14 @@
      * @returns {{threshold:number, container:HTMLElement|Window, isWindow:boolean}}
      */
     function getConfig(elt) {
-        // 阈值：data-threshold 或 data-bny-backtop 的数字值
-        var t = elt.getAttribute('data-threshold') || elt.getAttribute('data-bny-backtop');
+        // 阈值：top-threshold 的数字值
+        var t = elt.getAttribute('top-threshold') || elt.getAttribute('top');
         var th = (t && !isNaN(parseInt(t, 10))) ? parseInt(t, 10) : 200;
 
         // 滚动容器：data-target 指定 > 自动检测 > window
         var container = window;
         var isWindow = true;
-        var target = elt.getAttribute('data-target');
+        var target = elt.getAttribute('top-target');
         if (target) {
             var el = document.querySelector(target);
             if (el && el.scrollHeight > el.clientHeight) {
@@ -27,8 +27,8 @@
             }
         }
         if (isWindow) {
-            // 自动检测 #bny-content 或 [data-scroll-container]
-            var candidates = document.querySelectorAll('#bny-content, [data-scroll-container]');
+            // 自动检测 #bny-content 或 [top-scroll-container]
+            var candidates = document.querySelectorAll('#bny-content, [top-scroll-container]');
             for (var i = 0; i < candidates.length; i++) {
                 if (candidates[i].scrollHeight > candidates[i].clientHeight) {
                     container = candidates[i];
@@ -134,7 +134,7 @@
 
     /**
      * 扫描并绑定页面中所有 backtop 元素
-     * - 优先复用页面已有 [data-bny-backtop] 或 #bny-backtop
+     * - 优先复用页面已有 [top] 或 #bny-backtop
      * - 若都不存在，自动创建一个默认按钮挂到 body
      * @param {HTMLElement} [root]
      */
@@ -143,16 +143,16 @@
         var customBtns = [];
         if (root && root.nodeType === 1) {
             if (root.id === 'bny-backtop' ||
-                (root.hasAttribute && root.hasAttribute('data-bny-backtop'))) {
+                (root.hasAttribute && root.hasAttribute('top'))) {
                 customBtns.push(root);
             }
             if (root.querySelectorAll) {
-                var found = root.querySelectorAll('[data-bny-backtop]');
+                var found = root.querySelectorAll('[top]');
                 for (var i = 0; i < found.length; i++) customBtns.push(found[i]);
             }
         } else {
             // 全局扫描
-            var all = document.querySelectorAll('[data-bny-backtop]');
+            var all = document.querySelectorAll('[top]');
             for (var j = 0; j < all.length; j++) customBtns.push(all[j]);
             var byId = document.getElementById('bny-backtop');
             if (byId && customBtns.indexOf(byId) === -1) customBtns.push(byId);

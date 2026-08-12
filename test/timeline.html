@@ -1,7 +1,7 @@
 <div class="bny-row">
     <div class="text-content-box col-xs12 col-sm9">
         <div class="text-content">
-            <h1>Timeline 时间线<div class="bny-tag" color="red">v2.0.6+</div></h1>
+            <h1>Timeline 时间线</h1>
             <hr>
             <blockquote class="bny-blockquote">
                 时间线组件，纯 CSS 实现。可视化时间顺序，支持左/右/交错布局、节点颜色与图标。
@@ -72,7 +72,7 @@
                     <div class="body">
                         <div>
                             <div class="p-12" style="max-width:480px; margin-left:auto;">
-                                <div class="bny-timeline" mode="right">
+                                <div class="bny-timeline" tl-mode="right">
                                     <div class="bny-timeline-item is-info">
                                         <div class="bny-timeline-node"></div>
                                         <div class="bny-timestamp">2026-07-21 09:00</div>
@@ -96,7 +96,7 @@
                         </div>
                         <div>
                             <pre hx-ext="bny-code">
-&lt;div class=&quot;bny-timeline&quot; mode=&quot;right&quot;&gt;...&lt;/div&gt;
+&lt;div class=&quot;bny-timeline&quot; tl-mode=&quot;right&quot;&gt;...&lt;/div&gt;
                             </pre>
                         </div>
                     </div>
@@ -113,7 +113,7 @@
                     <div class="body">
                         <div>
                             <div class="p-12">
-                                <div class="bny-timeline" mode="alternate">
+                                <div class="bny-timeline" tl-mode="alternate">
                                     <div class="bny-timeline-item is-primary">
                                         <div class="bny-timeline-node"></div>
                                         <div class="bny-timestamp">2026-07-20</div>
@@ -143,7 +143,7 @@
                         </div>
                         <div>
                             <pre hx-ext="bny-code">
-&lt;div class=&quot;bny-timeline&quot; mode=&quot;alternate&quot;&gt;...&lt;/div&gt;
+&lt;div class=&quot;bny-timeline&quot; tl-mode=&quot;alternate&quot;&gt;...&lt;/div&gt;
                             </pre>
                         </div>
                     </div>
@@ -160,7 +160,7 @@
                     <div class="body">
                         <div>
                             <div class="p-12">
-                                <div class="bny-timeline" color="green">
+                                <div class="bny-timeline" tl-color="green">
                                     <div class="bny-timeline-item">
                                         <div class="bny-timeline-node"></div>
                                         <div class="bny-timestamp">2026-07-23</div>
@@ -176,7 +176,7 @@
                         </div>
                         <div>
                             <pre hx-ext="bny-code">
-&lt;div class=&quot;bny-timeline&quot; color=&quot;green&quot;&gt;...&lt;/div&gt;
+&lt;div class=&quot;bny-timeline&quot; tl-color=&quot;green&quot;&gt;...&lt;/div&gt;
                             </pre>
                         </div>
                     </div>
@@ -184,33 +184,59 @@
             </div>
 
             <h2 id="n05">API</h2>
-            <h3>CSS 类</h3>
+            <h3>Timeline 属性</h3>
             <table hx-ext="bny-table">
-                <thead><tr><th>类名/属性</th><th>说明</th></tr></thead>
+                <thead>
+                    <tr>
+                        <th>属性</th>
+                        <th>可选值</th>
+                        <th>说明</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>tl-mode</code></td>
+                        <td>right / alternate</td>
+                        <td>布局方向；默认 left（主轴在左），可选 right（主轴在右）、alternate（左右交错）</td>
+                    </tr>
+                    <tr>
+                        <td><code>tl-color</code></td>
+                        <td>green / blue / yellow / red</td>
+                        <td>统一节点主题色（作用于所有节点圆点）</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>Timeline 类名</h3>
+            <table hx-ext="bny-table">
+                <thead>
+                    <tr>
+                        <th>类名</th>
+                        <th>说明</th>
+                    </tr>
+                </thead>
                 <tbody>
                     <tr><td><code>bny-timeline</code></td><td>时间线容器</td></tr>
-                    <tr><td><code>mode="right"</code></td><td>右侧布局</td></tr>
-                    <tr><td><code>mode="alternate"</code></td><td>交错布局</td></tr>
-                    <tr><td><code>color="green/blue/yellow/red"</code></td><td>主题色变体</td></tr>
                     <tr><td><code>bny-timeline-item</code></td><td>时间线项</td></tr>
                     <tr><td><code>bny-timeline-node</code></td><td>节点圆点</td></tr>
                     <tr><td><code>bny-timestamp</code></td><td>时间戳</td></tr>
                     <tr><td><code>bny-timeline-title</code></td><td>标题</td></tr>
                     <tr><td><code>bny-timeline-content</code></td><td>内容</td></tr>
-                    <tr><td><code>is-primary/success/warning/danger/info</code></td><td>节点状态色</td></tr>
-                    <tr><td><code>is-hollow</code></td><td>空心节点</td></tr>
+                    <tr><td><code>is-primary</code> / <code>is-success</code> / <code>is-warning</code> / <code>is-danger</code> / <code>is-info</code></td><td>节点状态色（单个 item 上的修饰类）</td></tr>
+                    <tr><td><code>is-hollow</code></td><td>空心节点（仅边框，无填充）</td></tr>
+                    <tr><td><code>has-icon</code></td><td>节点内放自定义图标（放大节点并居中图标）</td></tr>
                 </tbody>
             </table>
         </div>
     </div>
     <div class="right-anchor-box hidden-xs col-sm3">
         <div class="right-anchor">
-            <ul hx-ext="bny-anchor" rail>
-                <li class="link" anchor="#n01">基础用法</li>
-                <li class="link" anchor="#n02">右侧布局</li>
-                <li class="link" anchor="#n03">交错布局</li>
-                <li class="link" anchor="#n04">主题色</li>
-                <li class="link" anchor="#n05">API</li>
+            <ul hx-ext="bny-anchor" anchor-rail>
+                <li class="link" anchor-target="#n01">基础用法</li>
+                <li class="link" anchor-target="#n02">右侧布局</li>
+                <li class="link" anchor-target="#n03">交错布局</li>
+                <li class="link" anchor-target="#n04">主题色</li>
+                <li class="link" anchor-target="#n05">API</li>
             </ul>
         </div>
     </div>

@@ -18,19 +18,19 @@ table.bny-table, table[hx-ext~="bny-table"] {
         letter-spacing: 0.02em;
     }
 
-    &[color="green"] th {
+    &[table-color="green"] th {
         background-color: var(--green);
     }
 
-    &[color="yellow"] th {
+    &[table-color="yellow"] th {
         background-color: var(--yellow);
     }
 
-    &[color="red"] th {
+    &[table-color="red"] th {
         background-color: var(--red);
     }
 
-    &[color="blue"] th {
+    &[table-color="blue"] th {
         background-color: var(--blue);
     }
 
@@ -154,7 +154,7 @@ table[hx-ext~="bny-table"] th.sortable {
 
             &::before {
                 padding: 12px 15px;
-                content: attr(label);
+                content: attr(table-label);
                 font-weight: var(--font-weight-semibold);
                 font-size: var(--font-size-sm);
                 color: var(--white-common);
@@ -171,19 +171,19 @@ table[hx-ext~="bny-table"] th.sortable {
             }
         }
 
-        &[color="green"] td::before {
+        &[table-color="green"] td::before {
             background-color: var(--green);
         }
 
-        &[color="yellow"] td::before {
+        &[table-color="yellow"] td::before {
             background-color: var(--yellow);
         }
 
-        &[color="red"] td::before {
+        &[table-color="red"] td::before {
             background-color: var(--red);
         }
 
-        &[color="blue"] td::before {
+        &[table-color="blue"] td::before {
             background-color: var(--blue);
         }
     }

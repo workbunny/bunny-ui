@@ -4,7 +4,7 @@ htmx.defineExtension('bny-confirm', {
             if (bny.hasExtName(evt.target, 'bny-confirm')) {
                 const msg = evt.target.getAttribute('hx-confirm')
                 const title = evt.target.getAttribute('title') || '提示'
-                const anim = evt.target.getAttribute('anim') || 'scale'
+                const anim = evt.target.getAttribute('confirm-anim') || 'scale'
                 bny.confirm(msg, {
                     title: title,
                     anim: anim,

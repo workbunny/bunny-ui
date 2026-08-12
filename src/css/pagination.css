@@ -119,31 +119,31 @@
 }
 
 /* 主题色变体 */
-.bny-pagination[color="green"] .bny-pagination-btn.active,
-.bny-pagination[color="green"] .bny-pagination-prev.active,
-.bny-pagination[color="green"] .bny-pagination-next.active {
+.bny-pagination[pg-color="green"] .bny-pagination-btn.active,
+.bny-pagination[pg-color="green"] .bny-pagination-prev.active,
+.bny-pagination[pg-color="green"] .bny-pagination-next.active {
     background-color: var(--green);
     border-color: var(--green);
 }
 
-.bny-pagination[color="blue"] .bny-pagination-btn.active,
-.bny-pagination[color="blue"] .bny-pagination-prev.active,
-.bny-pagination[color="blue"] .bny-pagination-next.active {
+.bny-pagination[pg-color="blue"] .bny-pagination-btn.active,
+.bny-pagination[pg-color="blue"] .bny-pagination-prev.active,
+.bny-pagination[pg-color="blue"] .bny-pagination-next.active {
     background-color: var(--blue);
     border-color: var(--blue);
 }
 
-.bny-pagination[color="red"] .bny-pagination-btn.active,
-.bny-pagination[color="red"] .bny-pagination-prev.active,
-.bny-pagination[color="red"] .bny-pagination-next.active {
+.bny-pagination[pg-color="red"] .bny-pagination-btn.active,
+.bny-pagination[pg-color="red"] .bny-pagination-prev.active,
+.bny-pagination[pg-color="red"] .bny-pagination-next.active {
     background-color: var(--red);
     border-color: var(--red);
 }
 
 /* 简洁模式：无边框 */
-.bny-pagination[model="simple"] .bny-pagination-btn,
-.bny-pagination[model="simple"] .bny-pagination-prev,
-.bny-pagination[model="simple"] .bny-pagination-next {
+.bny-pagination[pg-model="simple"] .bny-pagination-btn,
+.bny-pagination[pg-model="simple"] .bny-pagination-prev,
+.bny-pagination[pg-model="simple"] .bny-pagination-next {
     border: none;
     background-color: transparent;
 

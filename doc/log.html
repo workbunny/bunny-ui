@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BunnyUI - 更新日志</title>
+    <meta name="keywords" content="BunnyUI, 更新日志, Changelog, 版本发布">
+    <meta name="description" content="BunnyUI 组件库版本发布记录">
+    <link rel="shortcut icon" href="/bunny.png" type="image/x-icon">
+    <!-- 防闪白脚本 -->
+    <script>
+        (function () {
+            var t;
+            try { t = localStorage.getItem('bny-theme'); } catch (e) { }
+            if (!t) {
+                t = (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) ? 'dark' : 'light';
+            }
+            if (t === 'dark') document.documentElement.classList.add('dark');
+        })();
+    </script>
+    <!-- highlight -->
+    <link rel="stylesheet" href="/highlight/styles/atom-one-dark.min.css">
+    <script src="/highlight/highlight.min.js"></script>
+    <script src="/highlight/languages/javascript.min.js"></script>
+    <script src="/highlight/languages/php.min.js"></script>
+    <script src="/highlight/languages/css.min.js"></script>
+    <!-- prismjs -->
+    <link rel="stylesheet" href="/prismjs/prism.css">
+    <script src="/prismjs/prism.js"></script>
+    <!-- bunny -->
+    <link rel="stylesheet" href="/debug/bunny.css?v=2">
+    <script src="/debug/bunny.js?v=2"></script>
+    <!-- SPA 扩展 -->
+    <link rel="stylesheet" href="/ext/spa/spa.css">
+    <script src="/ext/spa/spa.js"></script>
+    <!-- 文档站共享样式（含文档页框架布局，全局保留，导航时不被移除） -->
+    <link rel="stylesheet" href="/doc/doc.css">
+    <style>
+        .bny-timeline-content .cl { margin: 7px 0; line-height: 1.75; }
+        .bny-timeline-content .cl .bny-tag { margin-right: 8px; vertical-align: middle; }
+        .bny-timeline-content .dl { margin: 12px 0 0; }
+        .bny-timeline-content .dl .bny-icon { margin-right: 4px; }
+    </style>
+</head>
+
+<body hx-ext="bny-spa" spa-mode="hash">
+<header class="site-header">
+    <div hx-ext="bny-nav" nav-color="white">
+        <div class="head">
+            <a class="logo-box" href="/doc/home.html">
+                <span class="logo"><img src="/bunny.png" alt="BunnyUI"></span>
+                <span>BunnyUI</span>
+            </a>
+        </div>
+        <ul class="menu">
+            <li><a class="trigger" href="/doc/home.html"><i class="bny-icon icon-home"></i><span>首页</span></a></li>
+            <li><a class="trigger" href="/doc/docs.html"><i class="bny-icon icon-book"></i><span>文档</span></a></li>
+            <li><a class="trigger" href="/doc/ext.html"><i class="bny-icon icon-rocket"></i><span>拓展</span></a></li>
+            <li><a class="trigger" href="/doc/log.html"><i class="bny-icon icon-calendar"></i><span>日志</span></a></li>
+            <li><a class="trigger" href="javascript:void(0)" id="mode-btn" spa-skip title="切换主题">
+                <span class="mode-icons">
+                    <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4.5"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.5 4.5l1.8 1.8M17.7 17.7l1.8 1.8M19.5 4.5l-1.8 1.8M6.3 17.7l-1.8 1.8"/></svg>
+                    <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/></svg>
+                </span>
+            </a></li>
+            <li><a class="trigger" href="https://github.com/workbunny/bunny.ui" target="_blank" spa-skip><i class="bny-icon icon-github-fill"></i><span></span></a></li>
+        </ul>
+    </div>
+</header>
+
+<main spa-view>
+<!-- ==================== 更新日志页内容 ==================== -->
+
+<!-- 页头 -->
+<section class="page-hero">
+    <div class="doc-container">
+        <span class="eyebrow"><i class="bny-icon icon-calendar"></i> Changelog</span>
+        <h1 class="section-title">更新日志</h1>
+        <p class="section-subtitle">BunnyUI 组件库版本发布记录，按发布时间（新 → 旧）排列。当前最新版本 v2.1.0。</p>
+    </div>
+</section>
+
+<!-- 版本时间线 -->
+<section class="section">
+    <div class="doc-container">
+        <h2 id="n01">版本时间线</h2>
+        <div class="bny-timeline">
+            <div class="bny-timeline-item is-primary">
+                <div class="bny-timeline-node"></div>
+                <div class="bny-timestamp">2026-08-12</div>
+                <div class="bny-timeline-title">v2.1.0</div>
+                <div class="bny-timeline-content">
+                    <p class="cl"><span class="bny-tag" tag-color="red">破坏性变更</span> 组件属性统一重命名为组件名前缀（tooltip → tip、相关 data 属性同步迁移），升级时需更新 HTML。</p>
+                    <p class="cl"><span class="bny-tag" tag-color="green">新增</span> 图片预览卡牌式堆叠分组（bny-image-group）及标签；SPA 扩展 CSRF 自动管理（支持 ThinkPHP __token__ / Laravel _token）与 X-Spa-Layout 请求头；更新日志页面及按版本下载。</p>
+                    <p class="cl"><span class="bny-tag" tag-color="blue">优化</span> SPA 扩展 fetch 请求头统一收口至 getRequestHeaders()；文档站样式与交互细节。</p>
+                    <p class="cl"><span class="bny-tag" tag-color="red">修复</span> Markdown XSS（区块代码危险标签被误删 + javascript:/vbscript: 协议绕过）；深链访问保留文档站左侧菜单；移动端菜单按钮属性同步。</p>
+                    <p class="cl"><span class="bny-tag" tag-color="yellow">文档</span> 完善 SPA 扩展文档（CSRF 自动管理章节、嵌套视口、ThinkPHP 示例）；更新文档站多处细节。</p>
+                    <p class="dl"><a class="bny-btn" btn-model="border" btn-size="sm" href="https://github.com/workbunny/bunny.ui/releases/download/v2.1.0/bunny.zip" target="_blank" spa-skip><i class="bny-icon icon-download"></i> 下载 bunny.zip</a></p>
+                </div>
+            </div>
+            <div class="bny-timeline-item is-success">
+                <div class="bny-timeline-node"></div>
+                <div class="bny-timestamp">2026-07-29</div>
+                <div class="bny-timeline-title">v2.0.8</div>
+                <div class="bny-timeline-content">
+                    <p class="cl"><span class="bny-tag" tag-color="green">新增</span> Markdown 外部拓展插件；输入框前缀/后缀组件；a 标签按钮适配；SPA 嵌套视口支持。</p>
+                    <p class="cl"><span class="bny-tag" tag-color="blue">优化</span> 文档站（修复 code 组件与 md 拓展问题）；doc.css 样式细节。</p>
+                    <p class="dl"><a class="bny-btn" btn-model="border" btn-size="sm" href="https://github.com/workbunny/bunny.ui/releases/download/v2.0.8/bunny.zip" target="_blank" spa-skip><i class="bny-icon icon-download"></i> 下载 bunny.zip</a></p>
+                </div>
+            </div>
+            <div class="bny-timeline-item is-success">
+                <div class="bny-timeline-node"></div>
+                <div class="bny-timestamp">2026-07-25</div>
+                <div class="bny-timeline-title">v2.0.7</div>
+                <div class="bny-timeline-content">
+                    <p class="cl"><span class="bny-tag" tag-color="green">新增</span> bny-spa 单页面应用外部扩展。</p>
+                    <p class="cl"><span class="bny-tag" tag-color="blue">优化</span> SPA 扩展的 SEO/GEO head 同步；回到顶部暗黑模式；验证器；图片预览按钮样式。</p>
+                    <p class="cl"><span class="bny-tag" tag-color="red">修复</span> 若干 bug。</p>
+                    <p class="cl"><span class="bny-tag" tag-color="yellow">文档</span> 补全说明文档。</p>
+                    <p class="dl"><a class="bny-btn" btn-model="border" btn-size="sm" href="https://github.com/workbunny/bunny.ui/releases/download/v2.0.7/bunny.zip" target="_blank" spa-skip><i class="bny-icon icon-download"></i> 下载 bunny.zip</a></p>
+                </div>
+            </div>
+            <div class="bny-timeline-item is-success">
+                <div class="bny-timeline-node"></div>
+                <div class="bny-timestamp">2026-07-23</div>
+                <div class="bny-timeline-title">v2.0.6</div>
+                <div class="bny-timeline-content">
+                    <p class="cl"><span class="bny-tag" tag-color="green">新增</span> backtop 回到顶部组件；部分公共样式。</p>
+                    <p class="cl"><span class="bny-tag" tag-color="blue">增强</span> 多组件能力与安全性；tooltip 和 table。</p>
+                    <p class="cl"><span class="bny-tag" tag-color="red">修复</span> 时间选择组件问题。</p>
+                    <p class="cl"><span class="bny-tag" tag-color="blue">优化</span> 页面组件；测试用例。</p>
+                    <p class="dl"><a class="bny-btn" btn-model="border" btn-size="sm" href="https://github.com/workbunny/bunny.ui/releases/download/v2.0.6/bunny.zip" target="_blank" spa-skip><i class="bny-icon icon-download"></i> 下载 bunny.zip</a></p>
+                </div>
+            </div>
+            <div class="bny-timeline-item is-success">
+                <div class="bny-timeline-node"></div>
+                <div class="bny-timestamp">2026-06-15</div>
+                <div class="bny-timeline-title">v2.0.5</div>
+                <div class="bny-timeline-content">
+                    <p class="cl"><span class="bny-tag" tag-color="green">新增</span> 日期选择器组件；面包屑组件；头像 & 徽标 css 组件；骨架屏组件；提示组件。</p>
+                    <p class="cl"><span class="bny-tag" tag-color="blue">优化</span> 透明样式；bunny.js 核心。</p>
+                    <p class="dl"><a class="bny-btn" btn-model="border" btn-size="sm" href="https://github.com/workbunny/bunny.ui/releases/download/v2.0.5/bunny.zip" target="_blank" spa-skip><i class="bny-icon icon-download"></i> 下载 bunny.zip</a></p>
+                </div>
+            </div>
+            <div class="bny-timeline-item is-success">
+                <div class="bny-timeline-node"></div>
+                <div class="bny-timestamp">2026-06-10</div>
+                <div class="bny-timeline-title">v2.0.4</div>
+                <div class="bny-timeline-content">
+                    <p class="cl"><span class="bny-tag" tag-color="blue">优化</span> 整体样式；选项卡；下拉菜单。</p>
+                    <p class="cl"><span class="bny-tag" tag-color="yellow">更新</span> dropdown.html 示例。</p>
+                    <p class="dl"><a class="bny-btn" btn-model="border" btn-size="sm" href="https://github.com/workbunny/bunny.ui/releases/download/v2.0.4/bunny.zip" target="_blank" spa-skip><i class="bny-icon icon-download"></i> 下载 bunny.zip</a></p>
+                </div>
+            </div>
+            <div class="bny-timeline-item is-success">
+                <div class="bny-timeline-node"></div>
+                <div class="bny-timestamp">2026-04-29</div>
+                <div class="bny-timeline-title">v2.0.3</div>
+                <div class="bny-timeline-content">
+                    <p class="cl"><span class="bny-tag" tag-color="blue">优化</span> 折叠面板；tab 组件；菜单组件样式；组件 code；站点首页信息。</p>
+                    <p class="cl"><span class="bny-tag" tag-color="yellow">更新</span> menu.html、home.html、iframe.html、index.html。</p>
+                    <p class="dl"><a class="bny-btn" btn-model="border" btn-size="sm" href="https://github.com/workbunny/bunny.ui/releases/download/v2.0.3/bunny.zip" target="_blank" spa-skip><i class="bny-icon icon-download"></i> 下载 bunny.zip</a></p>
+                </div>
+            </div>
+            <div class="bny-timeline-item is-success">
+                <div class="bny-timeline-node"></div>
+                <div class="bny-timestamp">2026-03-12</div>
+                <div class="bny-timeline-title">v2.0.1</div>
+                <div class="bny-timeline-content">
+                    <p class="cl"><span class="bny-tag" tag-color="green">新增</span> 导航瞄（anchor）组件。</p>
+                    <p class="cl"><span class="bny-tag" tag-color="blue">优化</span> 站点页面；page 组件；导航栏白色样式标题色；card 与 nav 样式。</p>
+                    <p class="dl"><a class="bny-btn" btn-model="border" btn-size="sm" href="https://github.com/workbunny/bunny.ui/releases/download/v2.0.1/bunny.zip" target="_blank" spa-skip><i class="bny-icon icon-download"></i> 下载 bunny.zip</a></p>
+                </div>
+            </div>
+            <div class="bny-timeline-item is-info">
+                <div class="bny-timeline-node"></div>
+                <div class="bny-timestamp">2026-03-09</div>
+                <div class="bny-timeline-title">v2.0.0</div>
+                <div class="bny-timeline-content">
+                    <p class="cl"><span class="bny-tag" tag-color="green">新增</span> bunny 图标；导航栏顶部栏与侧边栏；菜单组件颜色样式；字体大小样式；按钮组合样式；load 组件血条样式；公共样式类；颜色样式；grid 网格布局；滑块样式；form 选择框与表单样式。</p>
+                    <p class="cl"><span class="bny-tag" tag-color="blue">优化</span> 站点页面；下拉菜单；按钮组合；折叠面板；tab 样式与组件；文档页与首页；grid 布局；table 样式；表单；code；色调。</p>
+                    <p class="cl"><span class="bny-tag" tag-color="yellow">更新</span> index.html、nav.html、README.md、class.html、collapse.js、table.css、图标。</p>
+                    <p class="cl"><span class="bny-tag" tag-color="red">修复</span> 页面组件弹出问题；按钮样式。</p>
+                    <p class="cl"><span class="bny-tag" tag-color="red">删除</span> dist 构建产物（改走调试目录）；调整 .gitignore、新增 CNAME。</p>
+                    <p class="dl"><a class="bny-btn" btn-model="border" btn-size="sm" href="https://github.com/workbunny/bunny.ui/releases/download/v2.0.0/bunny.zip" target="_blank" spa-skip><i class="bny-icon icon-download"></i> 下载 bunny.zip</a></p>
+                </div>
+            </div>
+            <div class="bny-timeline-item is-warning">
+                <div class="bny-timeline-node"></div>
+                <div class="bny-timestamp">2025-11-14</div>
+                <div class="bny-timeline-title">v2.0.2</div>
+                <div class="bny-timeline-content">
+                    <p class="cl"><span class="bny-tag" tag-color="red">回退</span> 部分「更新」提交（Revert ×6，该标签指向 2025-11 的提交，早于 v2.0.0 的发布时间）。</p>
+                    <p class="cl"><span class="bny-tag" tag-color="yellow">更新</span> 若干提交；优化文档。</p>
+                    <p class="dl"><a class="bny-btn" btn-model="border" btn-size="sm" href="https://github.com/workbunny/bunny.ui/releases/download/v2.0.2/bunny.zip" target="_blank" spa-skip><i class="bny-icon icon-download"></i> 下载 bunny.zip</a></p>
+                </div>
+            </div>
+            <div class="bny-timeline-item is-success">
+                <div class="bny-timeline-node"></div>
+                <div class="bny-timestamp">2025-04-14</div>
+                <div class="bny-timeline-title">v1.0.2</div>
+                <div class="bny-timeline-content">
+                    <p class="cl"><span class="bny-tag" tag-color="green">新增</span> 加载（load）组件。</p>
+                    <p class="cl"><span class="bny-tag" tag-color="blue">优化</span> 文档；导航栏。</p>
+                    <p class="cl"><span class="bny-tag" tag-color="red">修复</span> 导航栏。</p>
+                    <p class="cl"><span class="bny-tag" tag-color="blue">整理</span> 代码与框架。</p>
+                    <p class="dl"><a class="bny-btn" btn-model="border" btn-size="sm" href="https://github.com/workbunny/bunny.ui/releases/download/v1.0.2/bunny.zip" target="_blank" spa-skip><i class="bny-icon icon-download"></i> 下载 bunny.zip</a></p>
+                </div>
+            </div>
+            <div class="bny-timeline-item is-success">
+                <div class="bny-timeline-node"></div>
+                <div class="bny-timestamp">2025-03-31</div>
+                <div class="bny-timeline-title">v1.0.1</div>
+                <div class="bny-timeline-content">
+                    <p class="cl"><span class="bny-tag" tag-color="blue">优化</span> 弹出框；表格；下拉组件。</p>
+                    <p class="cl"><span class="bny-tag" tag-color="yellow">更新</span> 自述 README。</p>
+                    <p class="dl"><a class="bny-btn" btn-model="border" btn-size="sm" href="https://github.com/workbunny/bunny.ui/releases/download/v1.0.1/bunny.zip" target="_blank" spa-skip><i class="bny-icon icon-download"></i> 下载 bunny.zip</a></p>
+                </div>
+            </div>
+            <div class="bny-timeline-item is-info">
+                <div class="bny-timeline-node"></div>
+                <div class="bny-timestamp">2025-03-20</div>
+                <div class="bny-timeline-title">v1.0.0</div>
+                <div class="bny-timeline-content">
+                    <p class="cl"><span class="bny-tag" tag-color="green">里程碑</span> 首个正式稳定版发布。</p>
+                    <p class="cl"><span class="bny-tag" tag-color="blue">优化</span> 页面；表单。</p>
+                    <p class="cl"><span class="bny-tag" tag-color="yellow">更新</span> 表单。</p>
+                    <p class="dl"><a class="bny-btn" btn-model="border" btn-size="sm" href="https://github.com/workbunny/bunny.ui/releases/download/v1.0.0/bunny.zip" target="_blank" spa-skip><i class="bny-icon icon-download"></i> 下载 bunny.zip</a></p>
+                </div>
+            </div>
+            <div class="bny-timeline-item is-success">
+                <div class="bny-timeline-node"></div>
+                <div class="bny-timestamp">2025-03-12</div>
+                <div class="bny-timeline-title">v0.1.1</div>
+                <div class="bny-timeline-content">
+                    <p class="cl">优化选项卡、导航栏与下拉菜单。</p>
+                </div>
+            </div>
+            <div class="bny-timeline-item is-success">
+                <div class="bny-timeline-node"></div>
+                <div class="bny-timestamp">2025-03-07</div>
+                <div class="bny-timeline-title">v0.1.0</div>
+                <div class="bny-timeline-content">
+                    <p class="cl">重构导航栏，优化下拉菜单与弹出框。</p>
+                </div>
+            </div>
+            <div class="bny-timeline-item is-success">
+                <div class="bny-timeline-node"></div>
+                <div class="bny-timestamp">2025-03-04</div>
+                <div class="bny-timeline-title">v0.0.9</div>
+                <div class="bny-timeline-content">
+                    <p class="cl">优化组件、弹出框与动画，更新弹出框与动画组件。</p>
+                </div>
+            </div>
+            <div class="bny-timeline-item is-success">
+                <div class="bny-timeline-node"></div>
+                <div class="bny-timestamp">2025-03-03</div>
+                <div class="bny-timeline-title">v0.0.8</div>
+                <div class="bny-timeline-content">
+                    <p class="cl">重构弹性盒子（flexbox），更新公共类。</p>
+                </div>
+            </div>
+            <div class="bny-timeline-item is-success">
+                <div class="bny-timeline-node"></div>
+                <div class="bny-timestamp">2025-02-28</div>
+                <div class="bny-timeline-title">v0.0.7</div>
+                <div class="bny-timeline-content">
+                    <p class="cl">重构菜单组件，新增下拉菜单与图标内容，更新模板与选项卡，删除选项卡部分功能。</p>
+                </div>
+            </div>
+            <div class="bny-timeline-item is-success">
+                <div class="bny-timeline-node"></div>
+                <div class="bny-timestamp">2025-02-25</div>
+                <div class="bny-timeline-title">v0.0.6</div>
+                <div class="bny-timeline-content">
+                    <p class="cl">新增组件功能并优化已有组件。</p>
+                </div>
+            </div>
+            <div class="bny-timeline-item is-success">
+                <div class="bny-timeline-node"></div>
+                <div class="bny-timestamp">2025-02-17</div>
+                <div class="bny-timeline-title">v0.0.5</div>
+                <div class="bny-timeline-content">
+                    <p class="cl">组件能力扩展与整体体验优化。</p>
+                </div>
+            </div>
+            <div class="bny-timeline-item is-success">
+                <div class="bny-timeline-node"></div>
+                <div class="bny-timestamp">2025-01-17</div>
+                <div class="bny-timeline-title">v0.0.4</div>
+                <div class="bny-timeline-content">
+                    <p class="cl">新增徽章组件，优化文档、滚动条、弹出框与导航栏样式。</p>
+                </div>
+            </div>
+            <div class="bny-timeline-item is-success">
+                <div class="bny-timeline-node"></div>
+                <div class="bny-timestamp">2025-01-04</div>
+                <div class="bny-timeline-title">v0.0.3</div>
+                <div class="bny-timeline-content">
+                    <p class="cl">新增动画组件，优化文档页面、卡片与页面 SEO。</p>
+                </div>
+            </div>
+            <div class="bny-timeline-item is-success">
+                <div class="bny-timeline-node"></div>
+                <div class="bny-timestamp">2024-12-31</div>
+                <div class="bny-timeline-title">v0.0.2</div>
+                <div class="bny-timeline-content">
+                    <p class="cl">新增导航栏与表单-开关组件，优化页面、图标、表格与整体风格，修复选择框禁用样式。</p>
+                </div>
+            </div>
+            <div class="bny-timeline-item is-success">
+                <div class="bny-timeline-node"></div>
+                <div class="bny-timestamp">2024-12-24</div>
+                <div class="bny-timeline-title">v0.0.1</div>
+                <div class="bny-timeline-content">
+                    <p class="cl">项目初始化：搭建图标、面板、弹出框、走马灯、提示、菜单、公共类等基础组件与样式，并修复页面代码。</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+</main>
+
+<footer class="site-footer">
+    <div class="doc-container">
+        <div class="footer-grid">
+            <div class="footer-brand">
+                <div class="logo-line"><img src="/bunny.png" alt="BunnyUI"><span>BunnyUI</span></div>
+                <p>基于 HTMX 拓展的轻量级 Web UI 组件库，服务端渲染友好，声明式编程。</p>
+                <div class="footer-social">
+                    <a class="bny-btn" model="border circle" href="https://github.com/workbunny/bunny.ui" target="_blank" spa-skip title="GitHub"><i class="bny-icon icon-github-fill"></i></a>
+                </div>
+            </div>
+            <div class="footer-links">
+                <div class="footer-col"><h4>导航</h4><a href="/doc/home.html">首页</a><a href="/doc/docs.html">文档</a><a href="/doc/ext.html">拓展</a><a href="/doc/log.html">更新日志</a></div>
+                <div class="footer-col"><h4>资源</h4><a href="https://github.com/workbunny/bunny.ui" target="_blank" spa-skip>GitHub</a><a href="/test/base.html">快速开始</a></div>
+                <div class="footer-col"><h4>拓展</h4><a href="/ext/spa/index.html" spa-skip>SPA</a><a href="/ext/markdown/index.html" spa-skip>Markdown</a></div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <span>© 2026 BunnyUI. MIT Licensed.</span>
+            <span><i class="bny-icon icon-code"></i> Built with HTMX.</span>
+        </div>
+    </div>
+</footer>
+
+<script>
+    document.getElementById('mode-btn').addEventListener('click', function () {
+        var isDark = document.documentElement.classList.toggle('dark');
+        try { localStorage.setItem('bny-theme', isDark ? 'dark' : 'light'); } catch (e) { }
+    });
+</script>
+</body>
+</html>

@@ -24,29 +24,29 @@
     animation: anim-spin 0.8s linear infinite;
     display: inline-block;
 
-    &[color="green"] {
+    &[load-color="green"] {
         border-top-color: var(--green);
     }
 
-    &[color="red"] {
+    &[load-color="red"] {
         border-top-color: var(--red);
     }
 
-    &[color="yellow"] {
+    &[load-color="yellow"] {
         border-top-color: var(--yellow);
     }
 
-    &[color="blue"] {
+    &[load-color="blue"] {
         border-top-color: var(--blue);
     }
 
-    &[size="small"] {
+    &[load-size="small"] {
         width: 24px;
         height: 24px;
         border-width: 3px;
     }
 
-    &[size="large"] {
+    &[load-size="large"] {
         width: 56px;
         height: 56px;
         border-width: 5px;
@@ -68,12 +68,12 @@
     gap: 5px;
     padding-bottom: 22px;
 
-    &[size="small"] > div {
+    &[load-size="small"] > div {
         width: 10px;
         height: 10px;
     }
 
-    &[size="large"] > div {
+    &[load-size="large"] > div {
         width: 24px;
         height: 24px;
     }
@@ -105,28 +105,28 @@
         }
     }
 
-    &[color="green"] > div {
+    &[load-color="green"] > div {
         &:nth-child(1) { background-color: var(--green); }
         &:nth-child(2) { animation-delay: 0.15s; background-color: var(--green-middle); }
         &:nth-child(3) { animation-delay: 0.3s; background-color: var(--green-shallow); }
         &:nth-child(4) { animation-delay: 0.45s; background-color: var(--gray-middle); }
     }
 
-    &[color="yellow"] > div {
+    &[load-color="yellow"] > div {
         &:nth-child(1) { background-color: var(--yellow); }
         &:nth-child(2) { animation-delay: 0.15s; background-color: var(--yellow-middle); }
         &:nth-child(3) { animation-delay: 0.3s; background-color: var(--yellow-shallow); }
         &:nth-child(4) { animation-delay: 0.45s; background-color: var(--gray-middle); }
     }
 
-    &[color="red"] > div {
+    &[load-color="red"] > div {
         &:nth-child(1) { background-color: var(--red); }
         &:nth-child(2) { animation-delay: 0.15s; background-color: var(--red-middle); }
         &:nth-child(3) { animation-delay: 0.3s; background-color: var(--red-shallow); }
         &:nth-child(4) { animation-delay: 0.45s; background-color: var(--gray-middle); }
     }
 
-    &[color="blue"] > div {
+    &[load-color="blue"] > div {
         &:nth-child(1) { background-color: var(--blue); }
         &:nth-child(2) { animation-delay: 0.15s; background-color: var(--blue-middle); }
         &:nth-child(3) { animation-delay: 0.3s; background-color: var(--blue-shallow); }
@@ -203,10 +203,10 @@
         border-radius: var(--border-radius-full);
     }
 
-    &[color="green"] > div { background: var(--green); }
-    &[color="yellow"] > div { background: var(--yellow); }
-    &[color="red"] > div { background: var(--red); }
-    &[color="blue"] > div { background: var(--blue); }
+    &[load-color="green"] > div { background: var(--green); }
+    &[load-color="yellow"] > div { background: var(--yellow); }
+    &[load-color="red"] > div { background: var(--red); }
+    &[load-color="blue"] > div { background: var(--blue); }
 }
 
 @keyframes load-health {

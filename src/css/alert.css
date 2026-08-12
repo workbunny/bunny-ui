@@ -55,25 +55,25 @@
     align-items: flex-start;
     gap: 10px;
 
-    &[color="green"] {
+    &[alert-color="green"] {
         border-color: var(--green);
         background-color: var(--green-alpha-10);
         color: var(--green);
     }
 
-    &[color="yellow"] {
+    &[alert-color="yellow"] {
         border-color: var(--yellow);
         background-color: var(--yellow-alpha-10);
         color: var(--yellow);
     }
 
-    &[color="red"] {
+    &[alert-color="red"] {
         border-color: var(--red);
         background-color: var(--red-alpha-10);
         color: var(--red);
     }
 
-    &[color="blue"] {
+    &[alert-color="blue"] {
         border-color: var(--blue);
         background-color: var(--blue-alpha-10);
         color: var(--blue);

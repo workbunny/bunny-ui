@@ -1,7 +1,7 @@
 <div class="bny-row">
     <div class="text-content-box col-xs12 col-sm9">
         <div class="text-content">
-            <h1>Empty 空状态<div class="bny-tag" color="red">v2.0.6+</div></h1>
+            <h1>Empty 空状态</h1>
             <hr>
             <blockquote class="bny-blockquote">
                 空数据占位组件，纯 CSS 实现。常用于列表/表格无数据时展示。
@@ -63,7 +63,7 @@
                             <div class="p-12">
                                 <div class="bny-row" gap="16">
                                     <div class="col-xs12 col-sm4">
-                                        <div class="bny-empty is-sm" color="blue">
+                                        <div class="bny-empty is-sm" empty-color="blue">
                                             <div class="bny-empty-icon">
                                                 <i class="bny-icon icon-question-circle"></i>
                                             </div>
@@ -71,7 +71,7 @@
                                         </div>
                                     </div>
                                     <div class="col-xs12 col-sm4">
-                                        <div class="bny-empty" color="yellow">
+                                        <div class="bny-empty" empty-color="yellow">
                                             <div class="bny-empty-icon">
                                                 <i class="bny-icon icon-error"></i>
                                             </div>
@@ -79,7 +79,7 @@
                                         </div>
                                     </div>
                                     <div class="col-xs12 col-sm4">
-                                        <div class="bny-empty is-sm" color="green">
+                                        <div class="bny-empty is-sm" empty-color="green">
                                             <div class="bny-empty-icon">
                                                 <i class="bny-icon icon-check"></i>
                                             </div>
@@ -91,21 +91,21 @@
                         </div>
                         <div>
                             <pre hx-ext="bny-code">
-&lt;div class=&quot;bny-empty is-sm&quot; color=&quot;blue&quot;&gt;
+&lt;div class=&quot;bny-empty is-sm&quot; empty-color=&quot;blue&quot;&gt;
     &lt;div class=&quot;bny-empty-icon&quot;&gt;
         &lt;i class=&quot;bny-icon icon-question-circle&quot;&gt;&lt;/i&gt;
     &lt;/div&gt;
     &lt;div class=&quot;bny-empty-desc&quot;&gt;无搜索结果&lt;/div&gt;
 &lt;/div&gt;
 
-&lt;div class=&quot;bny-empty&quot; color=&quot;yellow&quot;&gt;
+&lt;div class=&quot;bny-empty&quot; empty-color=&quot;yellow&quot;&gt;
     &lt;div class=&quot;bny-empty-icon&quot;&gt;
         &lt;i class=&quot;bny-icon icon-error&quot;&gt;&lt;/i&gt;
     &lt;/div&gt;
     &lt;div class=&quot;bny-empty-desc&quot;&gt;网络异常&lt;/div&gt;
 &lt;/div&gt;
 
-&lt;div class=&quot;bny-empty is-sm&quot; color=&quot;green&quot;&gt;
+&lt;div class=&quot;bny-empty is-sm&quot; empty-color=&quot;green&quot;&gt;
     &lt;div class=&quot;bny-empty-icon&quot;&gt;
         &lt;i class=&quot;bny-icon icon-check&quot;&gt;&lt;/i&gt;
     &lt;/div&gt;
@@ -162,11 +162,11 @@
     </div>
     <div class="right-anchor-box hidden-xs col-sm3">
         <div class="right-anchor">
-            <ul hx-ext="bny-anchor" rail>
-                <li class="link" anchor="#n01">基础用法</li>
-                <li class="link" anchor="#n02">主题色</li>
-                <li class="link" anchor="#n03">简洁模式</li>
-                <li class="link" anchor="#n04">API</li>
+            <ul hx-ext="bny-anchor" anchor-rail>
+                <li class="link" anchor-target="#n01">基础用法</li>
+                <li class="link" anchor-target="#n02">主题色</li>
+                <li class="link" anchor-target="#n03">简洁模式</li>
+                <li class="link" anchor-target="#n04">API</li>
             </ul>
         </div>
     </div>

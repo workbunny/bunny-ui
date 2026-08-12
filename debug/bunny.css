@@ -3070,7 +3070,7 @@ p {
     }
 
     /* 白色菜单 */
-    &[color="white"] {
+    &[menu-color="white"] {
         background-color: var(--white);
         color: var(--black);
         border: 1px solid var(--gray-shallow);
@@ -3087,7 +3087,7 @@ p {
     }
 
     /* 绿色菜单 */
-    &[color="green"] {
+    &[menu-color="green"] {
         background-color: var(--green);
 
         & .sub-menu {
@@ -3100,7 +3100,7 @@ p {
     }
 
     /* 黄色菜单 */
-    &[color="yellow"] {
+    &[menu-color="yellow"] {
         background-color: var(--yellow);
 
         & .sub-menu {
@@ -3113,7 +3113,7 @@ p {
     }
 
     /* 红色菜单 */
-    &[color="red"] {
+    &[menu-color="red"] {
         background-color: var(--red);
 
         & .sub-menu {
@@ -3126,7 +3126,7 @@ p {
     }
 
     /* 蓝色菜单 */
-    &[color="blue"] {
+    &[menu-color="blue"] {
         background-color: var(--blue);
 
         & .sub-menu {
@@ -3140,7 +3140,7 @@ p {
 }
 
 /* ========== 垂直菜单 ========== */
-[hx-ext~="bny-menu"][mode="vertical"] {
+[hx-ext~="bny-menu"][menu-mode="vertical"] {
     flex-direction: column;
     width: 100%;
     padding: 6px 0;
@@ -3179,7 +3179,7 @@ p {
         visibility: visible;
     }
 
-    &[color="white"] .sub-menu {
+    &[menu-color="white"] .sub-menu {
         background: var(--white-shallow);
     }
 }
@@ -3228,135 +3228,135 @@ p {
 
     /* a 标签按钮：覆盖浏览器默认 a:visited 颜色，保持按钮文字色一致
        优先级 (0,2,0) 高于 a:visited (0,1,1)，避免访问后变紫色
-       实色按钮文字均为 white-common；border 模式的 color 由后续 &[model~="border"] 覆盖 */
+       实色按钮文字均为 white-common；border 模式的 color 由后续 &[btn-model~="border"] 覆盖 */
     &:visited {
         color: var(--white-common);
     }
 
     /* 绿色 */
-    &[color="green"] {
+    &[btn-color="green"] {
         background-color: var(--green);
         border-color: var(--green);
     }
 
-    &[color="green"]:hover {
+    &[btn-color="green"]:hover {
         background-color: var(--green-middle);
         border-color: var(--green-middle);
     }
 
-    &[color="green"]:active {
+    &[btn-color="green"]:active {
         background-color: var(--green);
         border-color: var(--green);
     }
 
     /* 蓝色 */
-    &[color="blue"] {
+    &[btn-color="blue"] {
         background-color: var(--blue);
         border-color: var(--blue);
     }
 
-    &[color="blue"]:hover {
+    &[btn-color="blue"]:hover {
         background-color: var(--blue-middle);
         border-color: var(--blue-middle);
     }
 
-    &[color="blue"]:active {
+    &[btn-color="blue"]:active {
         background-color: var(--blue);
         border-color: var(--blue);
     }
 
     /* 黄色 */
-    &[color="yellow"] {
+    &[btn-color="yellow"] {
         background-color: var(--yellow);
         border-color: var(--yellow);
     }
 
-    &[color="yellow"]:hover {
+    &[btn-color="yellow"]:hover {
         background-color: var(--yellow-middle);
         border-color: var(--yellow-middle);
     }
 
-    &[color="yellow"]:active {
+    &[btn-color="yellow"]:active {
         background-color: var(--yellow);
         border-color: var(--yellow);
     }
 
     /* 红色 */
-    &[color="red"] {
+    &[btn-color="red"] {
         background-color: var(--red);
         border-color: var(--red);
     }
 
-    &[color="red"]:hover {
+    &[btn-color="red"]:hover {
         background-color: var(--red-middle);
         border-color: var(--red-middle);
     }
 
-    &[color="red"]:active {
+    &[btn-color="red"]:active {
         background-color: var(--red);
         border-color: var(--red);
     }
 
     /* 边框样式 — ghost/outline */
-    &[model~="border"] {
+    &[btn-model~="border"] {
         background-color: transparent;
         color: var(--black);
         box-shadow: none;
     }
 
-    &[model~="border"]:hover {
+    &[btn-model~="border"]:hover {
         background-color: var(--default-alpha-10);
         color: var(--default);
         box-shadow: none;
     }
 
-    &[model~="border"]:active {
+    &[btn-model~="border"]:active {
         background-color: var(--default-alpha-20);
         color: var(--default);
     }
 
-    &[model~="border"][color="green"] {
+    &[btn-model~="border"][btn-color="green"] {
         color: var(--green);
         border-color: var(--green);
     }
 
-    &[model~="border"][color="green"]:hover {
+    &[btn-model~="border"][btn-color="green"]:hover {
         background-color: var(--green-alpha-10);
         color: var(--green);
     }
 
-    &[model~="border"][color="blue"] {
+    &[btn-model~="border"][btn-color="blue"] {
         color: var(--blue);
         border-color: var(--blue);
     }
 
-    &[model~="border"][color="blue"]:hover {
+    &[btn-model~="border"][btn-color="blue"]:hover {
         background-color: var(--blue-alpha-10);
         color: var(--blue);
     }
 
-    &[model~="border"][color="yellow"] {
+    &[btn-model~="border"][btn-color="yellow"] {
         color: var(--yellow);
         border-color: var(--yellow);
     }
 
-    &[model~="border"][color="yellow"]:hover {
+    &[btn-model~="border"][btn-color="yellow"]:hover {
         background-color: var(--yellow-alpha-10);
         color: var(--yellow);
     }
 
-    &[model~="border"][color="red"] {
+    &[btn-model~="border"][btn-color="red"] {
         color: var(--red);
         border-color: var(--red);
     }
 
-    &[model~="border"][color="red"]:hover {
+    &[btn-model~="border"][btn-color="red"]:hover {
         background-color: var(--red-alpha-10);
         color: var(--red);
     }
 
     /* 圆形 */
-    &[model~="circle"] {
+    &[btn-model~="circle"] {
         border-radius: var(--border-radius-full);
         padding: 8px;
         width: 36px;
@@ -3364,13 +3364,13 @@ p {
     }
 
     /* 大小 */
-    &[size="sm"] {
+    &[btn-size="sm"] {
         padding: 5px 12px;
         font-size: var(--font-size-sm);
         border-radius: var(--border-radius-sm);
     }
 
-    &[size="lg"] {
+    &[btn-size="lg"] {
         padding: 12px 24px;
         font-size: var(--font-size-16);
         border-radius: var(--border-radius-8);
@@ -3423,7 +3423,7 @@ p {
             filter: brightness(0.95);
         }
 
-        &[model~="border"]:not(:last-child) {
+        &[btn-model~="border"]:not(:last-child) {
             border-right-color: var(--gray-middle);
         }
     }
@@ -3456,20 +3456,20 @@ p {
     }
 
     /* 边框按钮的 spinner 颜色取主色 */
-    &[model~="border"]::after {
+    &[btn-model~="border"]::after {
         --btn-spin-color: var(--default);
     }
 
-    &[color="green"]::after { --btn-spin-color: var(--white-common); }
-    &[color="blue"]::after  { --btn-spin-color: var(--white-common); }
-    &[color="yellow"]::after{ --btn-spin-color: var(--white-common); }
-    &[color="red"]::after   { --btn-spin-color: var(--white-common); }
+    &[btn-color="green"]::after { --btn-spin-color: var(--white-common); }
+    &[btn-color="blue"]::after  { --btn-spin-color: var(--white-common); }
+    &[btn-color="yellow"]::after{ --btn-spin-color: var(--white-common); }
+    &[btn-color="red"]::after   { --btn-spin-color: var(--white-common); }
 
     /* 边框 + 颜色：spinner 取颜色主色（边框按钮背景透明，白色不可见） */
-    &[model~="border"][color="green"]::after  { --btn-spin-color: var(--green); }
-    &[model~="border"][color="blue"]::after   { --btn-spin-color: var(--blue); }
-    &[model~="border"][color="yellow"]::after { --btn-spin-color: var(--yellow); }
-    &[model~="border"][color="red"]::after   { --btn-spin-color: var(--red); }
+    &[btn-model~="border"][btn-color="green"]::after  { --btn-spin-color: var(--green); }
+    &[btn-model~="border"][btn-color="blue"]::after   { --btn-spin-color: var(--blue); }
+    &[btn-model~="border"][btn-color="yellow"]::after { --btn-spin-color: var(--yellow); }
+    &[btn-model~="border"][btn-color="red"]::after   { --btn-spin-color: var(--red); }
 
     /* 禁用 hover/active 视觉 */
     &:hover,
@@ -3519,7 +3519,7 @@ p {
     }
 
     /* 绿色 */
-    &[color="green"] {
+    &[tag-color="green"] {
         background-color: var(--green-shallow);
         color: var(--green);
         border-color: var(--green);
@@ -3530,7 +3530,7 @@ p {
     }
 
     /* 蓝色 */
-    &[color="blue"] {
+    &[tag-color="blue"] {
         background-color: var(--blue-shallow);
         color: var(--blue);
         border-color: var(--blue);
@@ -3541,7 +3541,7 @@ p {
     }
 
     /* 黄色 */
-    &[color="yellow"] {
+    &[tag-color="yellow"] {
         background-color: var(--yellow-shallow);
         color: var(--yellow);
         border-color: var(--yellow);
@@ -3552,7 +3552,7 @@ p {
     }
 
     /* 红色 */
-    &[color="red"] {
+    &[tag-color="red"] {
         background-color: var(--red-shallow);
         color: var(--red);
         border-color: var(--red);
@@ -3563,7 +3563,7 @@ p {
     }
 
     /* 禁用 */
-    &[disabled] {
+    &[tag-disabled] {
         cursor: not-allowed;
         opacity: 0.45;
     }
@@ -3629,7 +3629,6 @@ p {
         &.show {
             & .title {
                 color: var(--default);
-                font-weight: var(--font-weight-semibold);
 
                 &::before {
                     transform: rotate(90deg);
@@ -3703,25 +3702,25 @@ p {
     align-items: flex-start;
     gap: 10px;
 
-    &[color="green"] {
+    &[alert-color="green"] {
         border-color: var(--green);
         background-color: var(--green-alpha-10);
         color: var(--green);
     }
 
-    &[color="yellow"] {
+    &[alert-color="yellow"] {
         border-color: var(--yellow);
         background-color: var(--yellow-alpha-10);
         color: var(--yellow);
     }
 
-    &[color="red"] {
+    &[alert-color="red"] {
         border-color: var(--red);
         background-color: var(--red-alpha-10);
         color: var(--red);
     }
 
-    &[color="blue"] {
+    &[alert-color="blue"] {
         border-color: var(--blue);
         background-color: var(--blue-alpha-10);
         color: var(--blue);
@@ -3977,19 +3976,19 @@ code {
     color: var(--black-middle);
     font-style: italic;
 
-    &[color="green"] {
+    &[sub-color="green"] {
         border-color: var(--green);
     }
 
-    &[color="yellow"] {
+    &[sub-color="yellow"] {
         border-color: var(--yellow);
     }
 
-    &[color="red"] {
+    &[sub-color="red"] {
         border-color: var(--red);
     }
 
-    &[color="blue"] {
+    &[sub-color="blue"] {
         border-color: var(--blue);
     }
 }
@@ -4037,24 +4036,24 @@ hr {
     margin: 14px 0;
     padding: 0;
     border: none;
-    border-bottom: 1.5px solid var(--gray-shallow);
+    border-bottom: 1.5px solid var(--default-middle);
     clear: both;
     overflow: hidden;
     background: none;
 
-    &[color="green"] {
+    &[sub-color="green"] {
         border-color: var(--green-middle);
     }
 
-    &[color="yellow"] {
+    &[sub-color="yellow"] {
         border-color: var(--yellow-middle);
     }
 
-    &[color="red"] {
+    &[sub-color="red"] {
         border-color: var(--red-middle);
     }
 
-    &[color="blue"] {
+    &[sub-color="blue"] {
         border-color: var(--blue-middle);
     }
 }
@@ -4070,11 +4069,11 @@ hr {
     border: 1px solid var(--gray-shallow);
     transition: var(--transition);
 
-    &[model="transition"] {
+    &[card-model="transition"] {
         cursor: pointer;
     }
 
-    &[model="transition"]:hover {
+    &[card-model="transition"]:hover {
         box-shadow: var(--box-shadow-hover-005);
         transform: translateY(-2px);
         border-color: var(--default-shallow);
@@ -4089,9 +4088,6 @@ hr {
     & > .head {
         padding: 14px 18px;
         border-bottom: 1px solid var(--gray-shallow);
-        font-weight: var(--font-weight-semibold);
-        font-size: var(--font-size-16);
-        color: var(--black);
     }
 
     & > .foot {
@@ -4151,29 +4147,29 @@ hr {
     animation: anim-spin 0.8s linear infinite;
     display: inline-block;
 
-    &[color="green"] {
+    &[load-color="green"] {
         border-top-color: var(--green);
     }
 
-    &[color="red"] {
+    &[load-color="red"] {
         border-top-color: var(--red);
     }
 
-    &[color="yellow"] {
+    &[load-color="yellow"] {
         border-top-color: var(--yellow);
     }
 
-    &[color="blue"] {
+    &[load-color="blue"] {
         border-top-color: var(--blue);
     }
 
-    &[size="small"] {
+    &[load-size="small"] {
         width: 24px;
         height: 24px;
         border-width: 3px;
     }
 
-    &[size="large"] {
+    &[load-size="large"] {
         width: 56px;
         height: 56px;
         border-width: 5px;
@@ -4195,12 +4191,12 @@ hr {
     gap: 5px;
     padding-bottom: 22px;
 
-    &[size="small"] > div {
+    &[load-size="small"] > div {
         width: 10px;
         height: 10px;
     }
 
-    &[size="large"] > div {
+    &[load-size="large"] > div {
         width: 24px;
         height: 24px;
     }
@@ -4232,28 +4228,28 @@ hr {
         }
     }
 
-    &[color="green"] > div {
+    &[load-color="green"] > div {
         &:nth-child(1) { background-color: var(--green); }
         &:nth-child(2) { animation-delay: 0.15s; background-color: var(--green-middle); }
         &:nth-child(3) { animation-delay: 0.3s; background-color: var(--green-shallow); }
         &:nth-child(4) { animation-delay: 0.45s; background-color: var(--gray-middle); }
     }
 
-    &[color="yellow"] > div {
+    &[load-color="yellow"] > div {
         &:nth-child(1) { background-color: var(--yellow); }
         &:nth-child(2) { animation-delay: 0.15s; background-color: var(--yellow-middle); }
         &:nth-child(3) { animation-delay: 0.3s; background-color: var(--yellow-shallow); }
         &:nth-child(4) { animation-delay: 0.45s; background-color: var(--gray-middle); }
     }
 
-    &[color="red"] > div {
+    &[load-color="red"] > div {
         &:nth-child(1) { background-color: var(--red); }
         &:nth-child(2) { animation-delay: 0.15s; background-color: var(--red-middle); }
         &:nth-child(3) { animation-delay: 0.3s; background-color: var(--red-shallow); }
         &:nth-child(4) { animation-delay: 0.45s; background-color: var(--gray-middle); }
     }
 
-    &[color="blue"] > div {
+    &[load-color="blue"] > div {
         &:nth-child(1) { background-color: var(--blue); }
         &:nth-child(2) { animation-delay: 0.15s; background-color: var(--blue-middle); }
         &:nth-child(3) { animation-delay: 0.3s; background-color: var(--blue-shallow); }
@@ -4330,10 +4326,10 @@ hr {
         border-radius: var(--border-radius-full);
     }
 
-    &[color="green"] > div { background: var(--green); }
-    &[color="yellow"] > div { background: var(--yellow); }
-    &[color="red"] > div { background: var(--red); }
-    &[color="blue"] > div { background: var(--blue); }
+    &[load-color="green"] > div { background: var(--green); }
+    &[load-color="yellow"] > div { background: var(--yellow); }
+    &[load-color="red"] > div { background: var(--red); }
+    &[load-color="blue"] > div { background: var(--blue); }
 }
 
 @keyframes load-health {
@@ -4360,19 +4356,19 @@ table.bny-table, table[hx-ext~="bny-table"] {
         letter-spacing: 0.02em;
     }
 
-    &[color="green"] th {
+    &[table-color="green"] th {
         background-color: var(--green);
     }
 
-    &[color="yellow"] th {
+    &[table-color="yellow"] th {
         background-color: var(--yellow);
     }
 
-    &[color="red"] th {
+    &[table-color="red"] th {
         background-color: var(--red);
     }
 
-    &[color="blue"] th {
+    &[table-color="blue"] th {
         background-color: var(--blue);
     }
 
@@ -4496,7 +4492,7 @@ table[hx-ext~="bny-table"] th.sortable {
 
             &::before {
                 padding: 12px 15px;
-                content: attr(label);
+                content: attr(table-label);
                 font-weight: var(--font-weight-semibold);
                 font-size: var(--font-size-sm);
                 color: var(--white-common);
@@ -4513,19 +4509,19 @@ table[hx-ext~="bny-table"] th.sortable {
             }
         }
 
-        &[color="green"] td::before {
+        &[table-color="green"] td::before {
             background-color: var(--green);
         }
 
-        &[color="yellow"] td::before {
+        &[table-color="yellow"] td::before {
             background-color: var(--yellow);
         }
 
-        &[color="red"] td::before {
+        &[table-color="red"] td::before {
             background-color: var(--red);
         }
 
-        &[color="blue"] td::before {
+        &[table-color="blue"] td::before {
             background-color: var(--blue);
         }
     }
@@ -5045,24 +5041,24 @@ html.dark table[hx-ext~="bny-table"] tbody tr.bny-table-empty td {
  * - 默认      : 38px
  * - size="lg" : 46px 高度
  */
-.bny-input[size="sm"],
-.bny-textarea[size="sm"],
-.bny-select[size="sm"],
-[hx-ext="bny-input"][size="sm"],
-[hx-ext="bny-textarea"][size="sm"],
-[hx-ext="bny-select"][size="sm"] {
+.bny-input[form-size="sm"],
+.bny-textarea[form-size="sm"],
+.bny-select[form-size="sm"],
+[hx-ext="bny-input"][form-size="sm"],
+[hx-ext="bny-textarea"][form-size="sm"],
+[hx-ext="bny-select"][form-size="sm"] {
     height: 30px;
     font-size: var(--font-size-sm);
     padding: 0 8px;
     border-radius: var(--border-radius-sm);
 }
 
-.bny-input[size="lg"],
-.bny-textarea[size="lg"],
-.bny-select[size="lg"],
-[hx-ext="bny-input"][size="lg"],
-[hx-ext="bny-textarea"][size="lg"],
-[hx-ext="bny-select"][size="lg"] {
+.bny-input[form-size="lg"],
+.bny-textarea[form-size="lg"],
+.bny-select[form-size="lg"],
+[hx-ext="bny-input"][form-size="lg"],
+[hx-ext="bny-textarea"][form-size="lg"],
+[hx-ext="bny-select"][form-size="lg"] {
     height: 46px;
     font-size: var(--font-size-16);
     padding: 0 16px;
@@ -5070,10 +5066,10 @@ html.dark table[hx-ext~="bny-table"] tbody tr.bny-table-empty td {
 }
 
 /* textarea 不强制固定高度 */
-.bny-textarea[size="sm"],
-.bny-textarea[size="lg"],
-[hx-ext="bny-textarea"][size="sm"],
-[hx-ext="bny-textarea"][size="lg"] {
+.bny-textarea[form-size="sm"],
+.bny-textarea[form-size="lg"],
+[hx-ext="bny-textarea"][form-size="sm"],
+[hx-ext="bny-textarea"][form-size="lg"] {
     height: auto;
     min-height: 80px;
 }
@@ -5245,7 +5241,7 @@ html.dark table[hx-ext~="bny-table"] tbody tr.bny-table-empty td {
 }
 
 /* 尺寸变体 — 在容器上声明，子元素自动继承 */
-.bny-input-group[size="sm"] {
+.bny-input-group[form-size="sm"] {
     height: 30px;
     font-size: var(--font-size-sm);
     border-radius: var(--border-radius-sm);
@@ -5262,7 +5258,7 @@ html.dark table[hx-ext~="bny-table"] tbody tr.bny-table-empty td {
     }
 }
 
-.bny-input-group[size="lg"] {
+.bny-input-group[form-size="lg"] {
     height: 46px;
     font-size: var(--font-size-16);
     border-radius: var(--border-radius-8);
@@ -5329,31 +5325,31 @@ html.dark table[hx-ext~="bny-table"] tbody tr.bny-table-empty td {
     max-width: 100%;
 
     /* 网格间距 */
-    &[gap] {
+    &[grid-gap] {
         gap: 8px
     }
 
-    &[gap="10"] {
+    &[grid-gap="10"] {
         gap: 10px
     }
 
-    &[gap="12"] {
+    &[grid-gap="12"] {
         gap: 12px
     }
 
-    &[gap="14"] {
+    &[grid-gap="14"] {
         gap: 14px
     }
 
-    &[gap="18"] {
+    &[grid-gap="18"] {
         gap: 18px
     }
 
-    &[gap="22"] {
+    &[grid-gap="22"] {
         gap: 22px
     }
 
-    &[gap="26"] {
+    &[grid-gap="26"] {
         gap: 26px
     }
 
@@ -6131,7 +6127,7 @@ html.dark table[hx-ext~="bny-table"] tbody tr.bny-table-empty td {
                 overflow: unset;
                 opacity: 1;
                 visibility: visible;
-                transform: translateY(0);
+                transform: translateY(4px);
             }
 
             & > .trigger > i:last-child {
@@ -6176,7 +6172,7 @@ html.dark table[hx-ext~="bny-table"] tbody tr.bny-table-empty td {
     /* ========== 颜色变体 ========== */
 
     /* 白色 */
-    &[color="white"] {
+    &[nav-color="white"] {
         background: var(--white);
         color: var(--black-middle);
         border-bottom: 1px solid var(--gray-shallow);
@@ -6219,104 +6215,104 @@ html.dark table[hx-ext~="bny-table"] tbody tr.bny-table-empty td {
             border: 1px solid var(--gray-shallow);
         }
 
-        &:not([side]) {
-            &[collapsed] .sub-menu {
+        &:not([nav-side]) {
+            &[nav-collapsed] .sub-menu {
                 background: var(--white-shallow) !important;
             }
         }
 
-        &[side] .sub-menu {
+        &[nav-side] .sub-menu {
             background: var(--white-shallow) !important;
         }
     }
 
     /* 绿色 */
-    &[color="green"] {
+    &[nav-color="green"] {
         background: var(--green);
 
         & li > .trigger::before {
             background: var(--green-shallow) !important;
         }
 
-        &[collapsed] .sub-menu {
+        &[nav-collapsed] .sub-menu {
             background: var(--green) !important;
         }
 
-        &:not([side]) {
+        &:not([nav-side]) {
             & .sub-menu {
                 background: var(--green) !important;
             }
 
-            &[collapsed] .sub-menu {
+            &[nav-collapsed] .sub-menu {
                 background: var(--black-alpha-20) !important;
             }
         }
     }
 
     /* 黄色 */
-    &[color="yellow"] {
+    &[nav-color="yellow"] {
         background: var(--yellow);
 
         & li > .trigger::before {
             background: var(--yellow-shallow) !important;
         }
 
-        &[collapsed] .sub-menu {
+        &[nav-collapsed] .sub-menu {
             background: var(--yellow) !important;
         }
 
-        &:not([side]) {
+        &:not([nav-side]) {
             & .sub-menu {
                 background: var(--yellow) !important;
             }
 
-            &[collapsed] .sub-menu {
+            &[nav-collapsed] .sub-menu {
                 background: var(--black-alpha-20) !important;
             }
         }
     }
 
     /* 红色 */
-    &[color="red"] {
+    &[nav-color="red"] {
         background: var(--red);
 
         & li > .trigger::before {
             background: var(--red-shallow) !important;
         }
 
-        &[collapsed] .sub-menu {
+        &[nav-collapsed] .sub-menu {
             background: var(--red) !important;
         }
 
-        &:not([side]) {
+        &:not([nav-side]) {
             & .sub-menu {
                 background: var(--red) !important;
             }
 
-            &[collapsed] .sub-menu {
+            &[nav-collapsed] .sub-menu {
                 background: var(--black-alpha-20) !important;
             }
         }
     }
 
     /* 蓝色 */
-    &[color="blue"] {
+    &[nav-color="blue"] {
         background: var(--blue);
 
         & li > .trigger::before {
             background: var(--blue-shallow) !important;
         }
 
-        &[collapsed] .sub-menu {
+        &[nav-collapsed] .sub-menu {
             background: var(--blue) !important;
         }
 
-        &:not([side]) {
+        &:not([nav-side]) {
             & .sub-menu {
                 background: var(--blue) !important;
             }
 
-            &[collapsed] .sub-menu {
+            &[nav-collapsed] .sub-menu {
                 background: var(--black-alpha-20) !important;
             }
         }
@@ -6324,7 +6320,7 @@ html.dark table[hx-ext~="bny-table"] tbody tr.bny-table-empty td {
 }
 
 /* ========== 顶部导航（非侧边） ========== */
-[hx-ext~="bny-nav"]:not([side]) {
+[hx-ext~="bny-nav"]:not([nav-side]) {
     & > .head > .toggle-btn {
         display: none;
     }
@@ -6355,7 +6351,7 @@ html.dark table[hx-ext~="bny-table"] tbody tr.bny-table-empty td {
 
 /* ========== 移动端响应式 ========== */
 @media screen and (max-width: 768px) {
-    [hx-ext~="bny-nav"]:not([side]) {
+    [hx-ext~="bny-nav"]:not([nav-side]) {
         flex-direction: column;
         overflow: hidden;
 
@@ -6388,7 +6384,7 @@ html.dark table[hx-ext~="bny-table"] tbody tr.bny-table-empty td {
             width: 100%;
         }
 
-        &[collapsed] {
+        &[nav-collapsed] {
             & > .head {
                 border-bottom: 1px solid var(--white-alpha-15);
 
@@ -6418,7 +6414,7 @@ html.dark table[hx-ext~="bny-table"] tbody tr.bny-table-empty td {
 }
 
 /* ========== 侧边导航 ========== */
-[hx-ext~="bny-nav"][side] {
+[hx-ext~="bny-nav"][nav-side] {
     display: flex;
     flex-direction: column;
     width: 240px;
@@ -6493,7 +6489,7 @@ html.dark table[hx-ext~="bny-table"] tbody tr.bny-table-empty td {
         border-radius: 0;
     }
 
-    &[collapsed] {
+    &[nav-collapsed] {
         width: 80px;
 
         & > .head {
@@ -6563,11 +6559,11 @@ html.dark table[hx-ext~="bny-table"] tbody tr.bny-table-empty td {
     }
 
     /* 侧边栏颜色变体下的 sub-menu */
-    &[color="white"] .sub-menu {
+    &[nav-color="white"] .sub-menu {
         background: var(--white-shallow) !important;
     }
 
-    &[color="white"][collapsed] .sub-menu {
+    &[nav-color="white"][nav-collapsed] .sub-menu {
         background: var(--white) !important;
     }
 }
@@ -6608,7 +6604,7 @@ html.dark table[hx-ext~="bny-table"] tbody tr.bny-table-empty td {
         }
     }
 
-    &[rail] {
+    &[anchor-rail] {
         &::before {
             content: "";
             width: 3px;
@@ -6633,8 +6629,8 @@ html.dark table[hx-ext~="bny-table"] tbody tr.bny-table-empty td {
         transition: top 0.2s ease, height 0.2s ease;
     }
 }
-/* ========== Tooltip 气泡提示 ========== */
-.bny-tooltip {
+/* ========== tip 气泡提示 ========== */
+.tip {
     position: fixed;
     z-index: 99999;
     max-width: 280px;
@@ -6727,7 +6723,7 @@ html.dark table[hx-ext~="bny-table"] tbody tr.bny-table-empty td {
 
 /* ========== 亮色主题 ========== */
 
-.bny-tooltip.bny-tooltip-light {
+.tip.tip-light {
     background: var(--white);
     color: var(--black);
     box-shadow: var(--box-shadow-055);
@@ -6763,7 +6759,7 @@ html.dark table[hx-ext~="bny-table"] tbody tr.bny-table-empty td {
 
 /* ========== 暗黑模式下的亮色主题 ========== */
 
-html.dark .bny-tooltip.bny-tooltip-light {
+html.dark .tip.tip-light {
     background: rgba(255, 255, 255, 0.92);
     color: var(--black);
     backdrop-filter: blur(12px);
@@ -7213,7 +7209,7 @@ html.dark .bny-tooltip.bny-tooltip-light {
     color: var(--white);
     font-size: var(--font-size-16);
     font-weight: var(--font-weight-semibold);
-    overflow: hidden;
+    /* 不在此设 overflow:hidden，否则会把溢出的状态指示点裁掉；圆角裁切改由 img 自身 border-radius:inherit 完成 */
     flex-shrink: 0;
     user-select: none;
     position: relative;
@@ -7222,29 +7218,30 @@ html.dark .bny-tooltip.bny-tooltip-light {
         width: 100%;
         height: 100%;
         object-fit: cover;
+        border-radius: inherit;
     }
 
     /* ====== 尺寸 ====== */
-    &[size="xs"]  { width: 24px; height: 24px; font-size: var(--font-size-xs); }
-    &[size="sm"]  { width: 32px; height: 32px; font-size: var(--font-size-sm); }
+    &[avatar-size="xs"]  { width: 24px; height: 24px; font-size: var(--font-size-xs); }
+    &[avatar-size="sm"]  { width: 32px; height: 32px; font-size: var(--font-size-sm); }
     /* md 为默认 40px */
-    &[size="lg"]  { width: 56px; height: 56px; font-size: var(--font-size-20); }
-    &[size="xl"]  { width: 72px; height: 72px; font-size: var(--font-size-24); }
+    &[avatar-size="lg"]  { width: 56px; height: 56px; font-size: var(--font-size-20); }
+    &[avatar-size="xl"]  { width: 72px; height: 72px; font-size: var(--font-size-24); }
 
     /* ====== 方形 ====== */
-    &[shape="square"] {
+    &[avatar-shape="square"] {
         border-radius: var(--border-radius-sm);
 
-        &[size="lg"], &[size="xl"] { border-radius: var(--border-radius); }
+        &[avatar-size="lg"], &[avatar-size="xl"] { border-radius: var(--border-radius); }
     }
 
     /* ====== 颜色 ====== */
-    &[color="green"]  { background: var(--green); }
-    &[color="blue"]   { background: var(--blue); }
-    &[color="yellow"] { background: var(--yellow); }
-    &[color="red"]    { background: var(--red); }
+    &[avatar-color="green"]  { background: var(--green); }
+    &[avatar-color="blue"]   { background: var(--blue); }
+    &[avatar-color="yellow"] { background: var(--yellow); }
+    &[avatar-color="red"]    { background: var(--red); }
 
-    /* ====== 状态指示点 ====== */
+    /* ====== 状态指示点（贴在头像圆形角落，自然半露在边缘） ====== */
     & .bny-avatar-status {
         position: absolute;
         bottom: 0;
@@ -7254,29 +7251,30 @@ html.dark .bny-tooltip.bny-tooltip-light {
         border-radius: 50%;
         border: 2px solid var(--white);
         background: var(--gray);
+        z-index: 2;
 
         &.online  { background: var(--green); }
         &.busy    { background: var(--red); }
         &.away    { background: var(--yellow); }
 
-        &[placement="bottom-left"] {
+        &[avatar-placement="bottom-left"] {
             right: auto;
             left: 0;
         }
-        &[placement="top-right"] {
+        &[avatar-placement="top-right"] {
             bottom: auto;
             top: 0;
         }
-        &[placement="top-left"] {
+        &[avatar-placement="top-left"] {
             bottom: auto; right: auto;
             top: 0; left: 0;
         }
     }
 
-    &[size="xs"]  .bny-avatar-status { width: 6px; height: 6px; border-width: 1.5px; }
-    &[size="sm"]  .bny-avatar-status { width: 8px; height: 8px; border-width: 1.5px; }
-    &[size="lg"]  .bny-avatar-status { width: 14px; height: 14px; }
-    &[size="xl"]  .bny-avatar-status { width: 16px; height: 16px; border-width: 3px; }
+    &[avatar-size="xs"]  .bny-avatar-status { width: 6px; height: 6px; border-width: 1.5px; }
+    &[avatar-size="sm"]  .bny-avatar-status { width: 8px; height: 8px; border-width: 1.5px; }
+    &[avatar-size="lg"]  .bny-avatar-status { width: 14px; height: 14px; }
+    &[avatar-size="xl"]  .bny-avatar-status { width: 16px; height: 16px; border-width: 3px; }
 }
 
 /* ====== 头像组（重叠排列） ====== */
@@ -7382,7 +7380,7 @@ html.dark .bny-tooltip.bny-tooltip-light {
     line-height: 1;
     white-space: nowrap;
 
-    &[size="lg"] {
+    &[avatar-size="lg"] {
         min-width: 26px;
         height: 26px;
         padding: 0 8px;
@@ -7398,7 +7396,7 @@ html.dark .bny-tooltip.bny-tooltip-light {
         padding: 0;
         border-radius: 50%;
 
-        &[size="lg"] {
+        &[avatar-size="lg"] {
             width: 12px;
             height: 12px;
             min-width: 12px;
@@ -7406,11 +7404,11 @@ html.dark .bny-tooltip.bny-tooltip-light {
     }
 
     /* 颜色 */
-    &[color="green"]  { background: var(--green); }
-    &[color="blue"]   { background: var(--blue); }
-    &[color="yellow"] { background: var(--yellow); }
-    &[color="red"]    { background: var(--red); }
-    &[color="gray"]   { background: var(--gray); }
+    &[avatar-color="green"]  { background: var(--green); }
+    &[avatar-color="blue"]   { background: var(--blue); }
+    &[avatar-color="yellow"] { background: var(--yellow); }
+    &[avatar-color="red"]    { background: var(--red); }
+    &[avatar-color="gray"]   { background: var(--gray); }
 }
 /* ========== DatePicker 日期选择器 ========== */
 
@@ -7910,31 +7908,31 @@ html.dark .bny-backtop {
 }
 
 /* 主题色变体 */
-.bny-pagination[color="green"] .bny-pagination-btn.active,
-.bny-pagination[color="green"] .bny-pagination-prev.active,
-.bny-pagination[color="green"] .bny-pagination-next.active {
+.bny-pagination[pg-color="green"] .bny-pagination-btn.active,
+.bny-pagination[pg-color="green"] .bny-pagination-prev.active,
+.bny-pagination[pg-color="green"] .bny-pagination-next.active {
     background-color: var(--green);
     border-color: var(--green);
 }
 
-.bny-pagination[color="blue"] .bny-pagination-btn.active,
-.bny-pagination[color="blue"] .bny-pagination-prev.active,
-.bny-pagination[color="blue"] .bny-pagination-next.active {
+.bny-pagination[pg-color="blue"] .bny-pagination-btn.active,
+.bny-pagination[pg-color="blue"] .bny-pagination-prev.active,
+.bny-pagination[pg-color="blue"] .bny-pagination-next.active {
     background-color: var(--blue);
     border-color: var(--blue);
 }
 
-.bny-pagination[color="red"] .bny-pagination-btn.active,
-.bny-pagination[color="red"] .bny-pagination-prev.active,
-.bny-pagination[color="red"] .bny-pagination-next.active {
+.bny-pagination[pg-color="red"] .bny-pagination-btn.active,
+.bny-pagination[pg-color="red"] .bny-pagination-prev.active,
+.bny-pagination[pg-color="red"] .bny-pagination-next.active {
     background-color: var(--red);
     border-color: var(--red);
 }
 
 /* 简洁模式：无边框 */
-.bny-pagination[model="simple"] .bny-pagination-btn,
-.bny-pagination[model="simple"] .bny-pagination-prev,
-.bny-pagination[model="simple"] .bny-pagination-next {
+.bny-pagination[pg-model="simple"] .bny-pagination-btn,
+.bny-pagination[pg-model="simple"] .bny-pagination-prev,
+.bny-pagination[pg-model="simple"] .bny-pagination-next {
     border: none;
     background-color: transparent;
 
@@ -8117,6 +8115,122 @@ html.dark .bny-backtop {
     }
 }
 
+/* ====== 图片组（卡牌式堆叠） ======
+ * 用 <div class="bny-image-group"> 包裹若干 <img img-preview>，
+ * 缩略图像一叠扑克牌层叠排列：背后的卡片依次上移、微旋转，露出层叠边角；
+ * 悬停时展开成扇形便于辨认，点击任一张在灯箱内翻页浏览整组。
+ * 尺寸可用容器属性 img-preview-size="72" 或 CSS 变量 --bny-image-group-size 调整。
+ * 扫描时每张图会被 .bny-image-item 包裹，用于承载左上角标签浮层（见下方 .bny-image-tags）。
+ */
+
+/* 包裹层：定位上下文；非组内时为自然尺寸的相对定位内联块 */
+.bny-image-item {
+    position: relative;
+    display: inline-block;
+    line-height: 0;
+
+    & .bny-image-thumb {
+        display: block;
+    }
+}
+
+.bny-image-group {
+    display: inline-block;
+    position: relative;
+    vertical-align: middle;
+    /* 为背后卡片上移露出的边角预留空间，避免压到相邻行 */
+    width: var(--bny-image-group-size, 72px);
+    height: calc(var(--bny-image-group-size, 72px) + 16px);
+    line-height: 1;
+
+    /* 卡片（包裹层）绝对定位在组内容器左下角，靠变换层叠 */
+    & .bny-image-item {
+        position: absolute;
+        left: 0;
+        bottom: 0;
+        width: var(--bny-image-group-size, 72px);
+        height: var(--bny-image-group-size, 72px);
+        /* 显式时长，避免 var(--transition) 里含 all 关键字导致整条 transition 失效 */
+        transition: transform 280ms cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    & .bny-image-item .bny-image-thumb {
+        position: static;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: var(--border-radius-8);
+        border: 2px solid var(--white);
+        box-shadow: 0 2px 8px rgba(15, 23, 42, 0.18);
+        cursor: pointer;
+        background: var(--light);
+    }
+
+    /* 背后的卡片（DOM 中越靠前越靠后）依次上移、错位、微旋转，形成卡牌堆叠 */
+    & .bny-image-item:nth-last-child(2) { transform: translate(-7px, -7px) rotate(-6deg); }
+    & .bny-image-item:nth-last-child(3) { transform: translate(7px, -13px) rotate(6deg); }
+    & .bny-image-item:nth-last-child(4) { transform: translate(-7px, -19px) rotate(-9deg); }
+    & .bny-image-item:nth-last-child(5) { transform: translate(7px, -25px) rotate(9deg); }
+    & .bny-image-item:nth-last-child(n+6) { transform: translate(-7px, -31px) rotate(-11deg); }
+
+    /* 悬停展开成扇形：背后的卡片向两侧散开，最前一张轻微上浮 */
+    &:hover .bny-image-item:nth-last-child(2) { transform: translate(-12px, -4px) rotate(-5deg); }
+    &:hover .bny-image-item:nth-last-child(3) { transform: translate(12px, -4px) rotate(5deg); }
+    &:hover .bny-image-item:nth-last-child(4) { transform: translate(-24px, -2px) rotate(-9deg); }
+    &:hover .bny-image-item:nth-last-child(5) { transform: translate(24px, -2px) rotate(9deg); }
+    &:hover .bny-image-item:nth-last-child(n+6) { transform: translate(-34px, 0) rotate(-12deg); }
+    &:hover .bny-image-item:last-child .bny-image-thumb { transform: translateY(-6px); box-shadow: 0 6px 16px rgba(15, 23, 42, 0.28); }
+
+    /* 暗黑模式下投影用浅色描边增强层次 */
+    html.dark & .bny-image-item .bny-image-thumb {
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.45);
+    }
+    html.dark &:hover .bny-image-item:last-child .bny-image-thumb {
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.6);
+    }
+}
+
+/* ====== 图片标签（左上角浮层，复用 .bny-tag 视觉） ====== */
+.bny-image-tags {
+    position: absolute;
+    top: 4px;
+    left: 4px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 3px;
+    max-width: calc(100% - 8px);
+    z-index: 2;
+    pointer-events: none;
+
+    /* 角落里去掉 ribbon 小三角与多余 margin，并缩小适配缩略图 */
+    & .bny-tag {
+        margin-left: 0;
+        height: auto;
+        padding: 1px 6px;
+        font-size: 11px;
+        line-height: 1.3;
+    }
+    & .bny-tag::before {
+        display: none;
+    }
+}
+
+/* 灯箱大图左上角标签浮层（与计数器/关闭按钮同层级） */
+.bny-image-viewer .bny-image-tags--viewer {
+    position: absolute;
+    top: 24px;
+    left: 32px;
+    z-index: 2;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    pointer-events: none;
+
+    & .bny-tag::before {
+        display: none;
+    }
+}
+
 /* 暗黑模式适配 */
 html.dark .bny-image-viewer .bny-image-tools,
 html.dark .bny-image-viewer .bny-image-close,
@@ -8258,7 +8372,7 @@ html.dark .bny-image-viewer .bny-image-counter {
     }
 
     /* ============ 纵向 ============ */
-    &[direction="vertical"] {
+    &[step-direction="vertical"] {
         flex-direction: column;
         gap: 0;
 
@@ -8293,7 +8407,7 @@ html.dark .bny-image-viewer .bny-image-counter {
     }
 
     /* ============ 简洁模式 ============ */
-    &[model="simple"] .bny-step {
+    &[step-model="simple"] .bny-step {
         & .bny-step-icon {
             width: 28px;
             height: 28px;
@@ -8307,29 +8421,29 @@ html.dark .bny-image-viewer .bny-image-counter {
     }
 
     /* ============ 主题色变体 ============ */
-    &[color="green"] .bny-step.is-process .bny-step-icon,
-    &[color="green"] .bny-step.is-finish .bny-step-icon,
-    &[color="green"] .bny-step.is-finish:not(:last-child)::after {
+    &[step-color="green"] .bny-step.is-process .bny-step-icon,
+    &[step-color="green"] .bny-step.is-finish .bny-step-icon,
+    &[step-color="green"] .bny-step.is-finish:not(:last-child)::after {
         background-color: var(--green);
         border-color: var(--green);
     }
 
-    &[color="green"] .bny-step.is-process .bny-step-icon {
+    &[step-color="green"] .bny-step.is-process .bny-step-icon {
         box-shadow: 0 0 0 3px var(--green-alpha-10);
     }
 
-    &[color="blue"] .bny-step.is-process .bny-step-icon,
-    &[color="blue"] .bny-step.is-finish .bny-step-icon,
-    &[color="blue"] .bny-step.is-finish:not(:last-child)::after {
+    &[step-color="blue"] .bny-step.is-process .bny-step-icon,
+    &[step-color="blue"] .bny-step.is-finish .bny-step-icon,
+    &[step-color="blue"] .bny-step.is-finish:not(:last-child)::after {
         background-color: var(--blue);
         border-color: var(--blue);
     }
 
-    &[color="blue"] .bny-step.is-process .bny-step-icon {
+    &[step-color="blue"] .bny-step.is-process .bny-step-icon {
         box-shadow: 0 0 0 3px var(--blue-alpha-10);
     }
 
-    &[color="red"] .bny-step.is-finish:not(:last-child)::after {
+    &[step-color="red"] .bny-step.is-finish:not(:last-child)::after {
         background-color: var(--red);
     }
 
@@ -8411,33 +8525,33 @@ html.dark .bny-image-viewer .bny-image-counter {
 }
 
 /* 主题色变体 */
-.bny-rate[color="green"] .bny-rate-icon.is-active,
-.bny-rate[color="green"] .bny-rate-icon.is-half {
+.bny-rate[rate-color="green"] .bny-rate-icon.is-active,
+.bny-rate[rate-color="green"] .bny-rate-icon.is-half {
     color: var(--green);
 }
 
-.bny-rate[color="blue"] .bny-rate-icon.is-active,
-.bny-rate[color="blue"] .bny-rate-icon.is-half {
+.bny-rate[rate-color="blue"] .bny-rate-icon.is-active,
+.bny-rate[rate-color="blue"] .bny-rate-icon.is-half {
     color: var(--blue);
 }
 
-.bny-rate[color="yellow"] .bny-rate-icon.is-active,
-.bny-rate[color="yellow"] .bny-rate-icon.is-half {
+.bny-rate[rate-color="yellow"] .bny-rate-icon.is-active,
+.bny-rate[rate-color="yellow"] .bny-rate-icon.is-half {
     color: var(--yellow);
 }
 
-.bny-rate[color="red"] .bny-rate-icon.is-active,
-.bny-rate[color="red"] .bny-rate-icon.is-half {
+.bny-rate[rate-color="red"] .bny-rate-icon.is-active,
+.bny-rate[rate-color="red"] .bny-rate-icon.is-half {
     color: var(--red);
 }
 
 /* 尺寸变体 */
-.bny-rate[size="sm"] .bny-rate-icon {
+.bny-rate[rate-size="sm"] .bny-rate-icon {
     width: 16px;
     height: 16px;
 }
 
-.bny-rate[size="lg"] .bny-rate-icon {
+.bny-rate[rate-size="lg"] .bny-rate-icon {
     width: 28px;
     height: 28px;
 }
@@ -8517,28 +8631,28 @@ html.dark .bny-image-viewer .bny-image-counter {
 
     /* ============ 主题色变体 ============
      * -shallow 色在白底上过浅几乎不可见，改用主题主色让图标与描述都鲜明可辨 */
-    &[color="default"] .bny-empty-icon,
-    &[color="default"] .bny-empty-desc {
+    &[empty-color="default"] .bny-empty-icon,
+    &[empty-color="default"] .bny-empty-desc {
         color: var(--default);
     }
 
-    &[color="green"] .bny-empty-icon,
-    &[color="green"] .bny-empty-desc {
+    &[empty-color="green"] .bny-empty-icon,
+    &[empty-color="green"] .bny-empty-desc {
         color: var(--green);
     }
 
-    &[color="blue"] .bny-empty-icon,
-    &[color="blue"] .bny-empty-desc {
+    &[empty-color="blue"] .bny-empty-icon,
+    &[empty-color="blue"] .bny-empty-desc {
         color: var(--blue);
     }
 
-    &[color="yellow"] .bny-empty-icon,
-    &[color="yellow"] .bny-empty-desc {
+    &[empty-color="yellow"] .bny-empty-icon,
+    &[empty-color="yellow"] .bny-empty-desc {
         color: var(--yellow);
     }
 
-    &[color="red"] .bny-empty-icon,
-    &[color="red"] .bny-empty-desc {
+    &[empty-color="red"] .bny-empty-icon,
+    &[empty-color="red"] .bny-empty-desc {
         color: var(--red);
     }
 
@@ -8652,28 +8766,28 @@ html.dark .bny-image-viewer .bny-image-counter {
     }
 
     /* ============ 主题色变体（默认节点色） ============ */
-    &[color="green"] .bny-timeline-item .bny-timeline-node {
+    &[tl-color="green"] .bny-timeline-item .bny-timeline-node {
         border-color: var(--green);
         background-color: var(--green);
     }
 
-    &[color="blue"] .bny-timeline-item .bny-timeline-node {
+    &[tl-color="blue"] .bny-timeline-item .bny-timeline-node {
         border-color: var(--blue);
         background-color: var(--blue);
     }
 
-    &[color="yellow"] .bny-timeline-item .bny-timeline-node {
+    &[tl-color="yellow"] .bny-timeline-item .bny-timeline-node {
         border-color: var(--yellow);
         background-color: var(--yellow);
     }
 
-    &[color="red"] .bny-timeline-item .bny-timeline-node {
+    &[tl-color="red"] .bny-timeline-item .bny-timeline-node {
         border-color: var(--red);
         background-color: var(--red);
     }
 
     /* ============ 右侧布局 ============ */
-    &[mode="right"] {
+    &[tl-mode="right"] {
         &::before {
             left: auto;
             right: 8px;
@@ -8692,7 +8806,7 @@ html.dark .bny-image-viewer .bny-image-counter {
     }
 
     /* ============ 交错布局 ============ */
-    &[mode="alternate"] {
+    &[tl-mode="alternate"] {
         &::before {
             left: 50%;
             transform: translateX(-50%);
@@ -8741,12 +8855,12 @@ html.dark .bny-image-viewer .bny-image-counter {
         }
     }
 
-    &[mode="right"] .bny-timeline-item.has-icon .bny-timeline-node {
+    &[tl-mode="right"] .bny-timeline-item.has-icon .bny-timeline-node {
         left: auto;
         right: -4px;
     }
 
-    &[mode="alternate"] .bny-timeline-item.has-icon .bny-timeline-node {
+    &[tl-mode="alternate"] .bny-timeline-item.has-icon .bny-timeline-node {
         &:nth-child(even) {
             left: auto;
             right: calc(50% - 14px);

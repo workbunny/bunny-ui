@@ -36,7 +36,7 @@
     }
 
     /* 绿色 */
-    &[color="green"] {
+    &[tag-color="green"] {
         background-color: var(--green-shallow);
         color: var(--green);
         border-color: var(--green);
@@ -47,7 +47,7 @@
     }
 
     /* 蓝色 */
-    &[color="blue"] {
+    &[tag-color="blue"] {
         background-color: var(--blue-shallow);
         color: var(--blue);
         border-color: var(--blue);
@@ -58,7 +58,7 @@
     }
 
     /* 黄色 */
-    &[color="yellow"] {
+    &[tag-color="yellow"] {
         background-color: var(--yellow-shallow);
         color: var(--yellow);
         border-color: var(--yellow);
@@ -69,7 +69,7 @@
     }
 
     /* 红色 */
-    &[color="red"] {
+    &[tag-color="red"] {
         background-color: var(--red-shallow);
         color: var(--red);
         border-color: var(--red);
@@ -80,7 +80,7 @@
     }
 
     /* 禁用 */
-    &[disabled] {
+    &[tag-disabled] {
         cursor: not-allowed;
         opacity: 0.45;
     }

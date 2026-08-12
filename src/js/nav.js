@@ -3,11 +3,11 @@ htmx.defineExtension('bny-nav', {
 
         function onToggle(btn, nav) {
             btn.addEventListener('click', (e) => {
-                const collapsed = nav.hasAttribute('collapsed') ?? false
+                const collapsed = nav.hasAttribute('nav-collapsed') ?? false
                 if (collapsed) {
-                    nav.removeAttribute('collapsed')
+                    nav.removeAttribute('nav-collapsed')
                 } else {
-                    nav.setAttribute('collapsed', '')
+                    nav.setAttribute('nav-collapsed', '')
                 }
                 const isShow = nav.querySelectorAll('li.show')
                 if (isShow.length > 0) {
@@ -19,11 +19,11 @@ htmx.defineExtension('bny-nav', {
         if (name === 'htmx:afterProcessNode') {
             if (bny.hasExtName(evt.target, 'bny-nav')) {
                 // side 属性 侧边栏模式
-                const side = evt.target.hasAttribute('side') ?? false
+                const side = evt.target.hasAttribute('nav-side') ?? false
                 // collapsed 属性 伸缩模式
-                // const collapsed = evt.target.hasAttribute('collapsed') ?? false
+                // const collapsed = evt.target.hasAttribute('nav-collapsed') ?? false
                 // 处理 toggle 属性 伸缩按钮模式
-                const toggle = evt.target.hasAttribute('toggle') ?? false
+                const toggle = evt.target.hasAttribute('nav-toggle') ?? false
                 if ((side && toggle) || !side) {
                     const head = bny.queryChild(evt.target, '.head')
                     const toggleBtn = document.createElement('div')
@@ -42,7 +42,7 @@ htmx.defineExtension('bny-nav', {
                     if (item) {
                         // 有子菜单
                         if (subMenu) {
-                            const collapsed = evt.target.hasAttribute('collapsed') ?? false
+                            const collapsed = evt.target.hasAttribute('nav-collapsed') ?? false
                             // 父级
                             if (!side || collapsed) {
                                 const parent = item.parentElement

@@ -19,11 +19,11 @@
                                 <button class="bny-btn" hx-get="/test/data/tab01.html" hx-target="#tab01>.head"
                                     hx-swap="beforeend">添加选项卡</button>
 
-                                <div hx-ext="bny-tab" hx-trigger="mouseover" id="tab01" index="1">
+                                <div hx-ext="bny-tab" hx-trigger="mouseover" id="tab01" tab-index="1">
                                     <ul class="head">
-                                        <li closable>选项卡1</li>
-                                        <li closable>选项卡2</li>
-                                        <li closable>选项卡3</li>
+                                        <li tab-closable>选项卡1</li>
+                                        <li tab-closable>选项卡2</li>
+                                        <li tab-closable>选项卡3</li>
                                     </ul>
                                     <div class="body">
                                         <div> 选项卡1的内容 </div>
@@ -38,7 +38,7 @@
 &lt;button class=&quot;bny-btn&quot; hx-get=&quot;/test/data/tab01.html&quot; hx-target=&quot;#tab01&gt;.head&quot;
     hx-swap=&quot;beforeend&quot;&gt;添加选项卡&lt;/button&gt;
 
-&lt;div hx-ext=&quot;bny-tab&quot; hx-trigger=&quot;mouseover&quot; id=&quot;tab01&quot; index=&quot;1&quot;&gt;
+&lt;div hx-ext=&quot;bny-tab&quot; hx-trigger=&quot;mouseover&quot; id=&quot;tab01&quot; tab-index=&quot;1&quot;&gt;
     &lt;ul class=&quot;head&quot;&gt;
         &lt;li closable&gt;选项卡1&lt;/li&gt;
         &lt;li closable&gt;选项卡2&lt;/li&gt;
@@ -67,9 +67,9 @@
                             <div class="p-12">
                                 <button class="bny-btn" hx-get="/test/data/tab01.html" hx-target="#tab02>.head"
                                     hx-swap="beforeend">添加选项卡</button>
-                                <div hx-ext="bny-tab" mode="scroll" style="width: 400px;" id="tab02">
+                                <div hx-ext="bny-tab" tab-mode="scroll" style="width: 400px;" id="tab02">
                                     <ul class="head">
-                                        <li closable>选项卡11</li>
+                                        <li tab-closable>选项卡11</li>
                                         <li>选项卡22</li>
                                         <li hx-get="/test/data/tab02body.html">选项卡33</li>
                                         <li>选项卡44</li>
@@ -91,7 +91,7 @@
                         </div>
                         <div>
                             <pre hx-ext="bny-code">
-&lt;div hx-ext=&quot;bny-tab&quot; mode=&quot;scroll&quot; style=&quot;width: 400px;&quot;&gt;
+&lt;div hx-ext=&quot;bny-tab&quot; tab-mode=&quot;scroll&quot; style=&quot;width: 400px;&quot;&gt;
     &lt;ul class=&quot;head&quot;&gt;
         &lt;li closable&gt;选项卡11&lt;/li&gt;
         &lt;li&gt;选项卡22&lt;/li&gt;
@@ -138,21 +138,21 @@
                         <td></td>
                     </tr>
                     <tr>
-                        <td>model</td>
+                        <td>tab-mode</td>
                         <td>无</td>
                         <td>否</td>
                         <td>滚动模式:'scroll'</td>
                         <td></td>
                     </tr>
                     <tr>
-                        <td>index</td>
+                        <td>tab-index</td>
                         <td>"0"</td>
                         <td>否</td>
                         <td>选项卡索引</td>
                         <td></td>
                     </tr>
                     <tr>
-                        <td>closable</td>
+                        <td>tab-closable</td>
                         <td>无值</td>
                         <td>否</td>
                         <td>是否显示关闭按钮;用于.head的li元素</td>
@@ -164,10 +164,10 @@
     </div>
     <div class="right-anchor-box hidden-xs col-sm3">
         <div class="right-anchor">
-            <ul hx-ext="bny-anchor" rail>
-                <li class="link" anchor="#n01">基础用法</li>
-                <li class="link" anchor="#n02">滚动模式</li>
-                <li class="link" anchor="#n03">API</li>
+            <ul hx-ext="bny-anchor" anchor-rail>
+                <li class="link" anchor-target="#n01">基础用法</li>
+                <li class="link" anchor-target="#n02">滚动模式</li>
+                <li class="link" anchor-target="#n03">API</li>
             </ul>
         </div>
     </div>

@@ -24,11 +24,11 @@ htmx.defineExtension('bny-page', {
                         data.title = title
                     }
                 }
-                data.shade = elt.getAttribute('shade') !== null ? true : false
-                if (elt.hasAttribute('anim')) data.anim = elt.getAttribute('anim')
-                if (elt.hasAttribute('width')) data.width = elt.getAttribute('width')
-                if (elt.hasAttribute('height')) data.height = elt.getAttribute('height')
-                if (elt.hasAttribute('offset')) data.offset = elt.getAttribute('offset')
+                data.shade = elt.getAttribute('page-shade') !== null ? true : false
+                if (elt.hasAttribute('page-anim')) data.anim = elt.getAttribute('page-anim')
+                if (elt.hasAttribute('page-width')) data.width = elt.getAttribute('page-width')
+                if (elt.hasAttribute('page-height')) data.height = elt.getAttribute('page-height')
+                if (elt.hasAttribute('page-offset')) data.offset = elt.getAttribute('page-offset')
                 const page = bny.page(text, data)
                 htmx.process(page)
             }

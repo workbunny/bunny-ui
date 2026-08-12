@@ -36,10 +36,10 @@
     <link rel="stylesheet" href="/doc/doc.css">
 </head>
 
-<body hx-ext="bny-spa" bny-spa-mode="hash">
+<body hx-ext="bny-spa" spa-mode="hash">
     <!-- ==================== 共享 Shell ==================== -->
     <header class="site-header">
-        <div hx-ext="bny-nav" color="white">
+        <div hx-ext="bny-nav" nav-color="white">
             <div class="head">
                 <a class="logo-box" href="/doc/home.html">
                     <span class="logo"><img src="/bunny.png" alt="BunnyUI"></span>
@@ -50,7 +50,8 @@
                 <li><a class="trigger" href="/doc/home.html"><i class="bny-icon icon-home"></i><span>首页</span></a></li>
                 <li><a class="trigger" href="/doc/docs.html"><i class="bny-icon icon-book"></i><span>文档</span></a></li>
                 <li><a class="trigger" href="/doc/ext.html"><i class="bny-icon icon-rocket"></i><span>拓展</span></a></li>
-                <li><a class="trigger" href="javascript:void(0)" id="mode-btn" bny-spa-skip title="切换主题">
+                <li><a class="trigger" href="/doc/log.html"><i class="bny-icon icon-calendar"></i><span>日志</span></a></li>
+                <li><a class="trigger" href="javascript:void(0)" id="mode-btn" spa-skip title="切换主题">
                         <span class="mode-icons">
                             <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                                 stroke-linecap="round" stroke-linejoin="round">
@@ -64,19 +65,19 @@
                             </svg>
                         </span>
                     </a></li>
-                <li><a class="trigger" href="https://github.com/workbunny/bunny.ui" target="_blank" bny-spa-skip><i
+                <li><a class="trigger" href="https://github.com/workbunny/bunny.ui" target="_blank" spa-skip><i
                             class="bny-icon icon-github-fill"></i><span></span></a></li>
             </ul>
         </div>
     </header>
 
-    <main bny-view>
+    <main spa-view>
         <a href="/doc/home.html" id="auto-nav" style="display:none"></a>
         <script>
             // 首页自动导航：根据 hash 加载对应内容，默认加载 /doc/home.html
             // 全站 hash 模式：刷新时浏览器加载 index.html（入口页），
             // 通过 hash 路由（如 #/doc/home.html、#/doc/docs.html）自动导航到对应内容
-            // 放在 main bny-view 内，确保脚本随视口内容一起加载执行
+            // 放在 main spa-view 内，确保脚本随视口内容一起加载执行
             // 使用 bny.spaReady 确保 SPA 扩展初始化完成后再触发点击
             function triggerAutoNav() {
                 var autoNav = document.getElementById('auto-nav');
@@ -87,7 +88,15 @@
                 if (location.hash && location.hash.length > 1) {
                     var path = location.hash.substring(1);
                     if (path.charAt(0) === '/') {
-                        targetUrl = path;
+                        // /test/* 是文档站组件演示页，属于 docs 布局（含左侧菜单）。
+                        // 深链直接访问（或刷新）时必须先加载 /doc/docs.html，
+                        // 由其内部自动导航把内容填入 #docs-view，否则会把组件页裸塞进 main 视口，
+                        // 导致左侧菜单丢失。
+                        if (path.indexOf('/test/') === 0) {
+                            targetUrl = '/doc/docs.html';
+                        } else {
+                            targetUrl = path;
+                        }
                     }
                 }
                 autoNav.href = targetUrl;
@@ -115,7 +124,7 @@
                     <p>基于 HTMX 拓展的轻量级 Web UI 组件库，服务端渲染友好，声明式编程。</p>
                     <div class="footer-social">
                         <a class="bny-btn" model="border circle" href="https://github.com/workbunny/bunny.ui"
-                            target="_blank" bny-spa-skip title="GitHub"><i class="bny-icon icon-github-fill"></i></a>
+                            target="_blank" spa-skip title="GitHub"><i class="bny-icon icon-github-fill"></i></a>
                     </div>
                 </div>
                 <div class="footer-links">
@@ -124,12 +133,12 @@
                             href="/doc/ext.html">拓展</a>
                     </div>
                     <div class="footer-col">
-                        <h4>资源</h4><a href="https://github.com/workbunny/bunny.ui" target="_blank"
-                            bny-spa-skip>GitHub</a><a href="/test/base.html">快速开始</a>
+                        <h4>资源</h4><a href="https://github.com/workbunny/bunny.ui" target="_blank" spa-skip>GitHub</a><a
+                            href="/test/base.html">快速开始</a>
                     </div>
                     <div class="footer-col">
-                        <h4>拓展</h4><a href="/ext/spa/index.html" bny-spa-skip>SPA</a><a href="/ext/markdown/index.html"
-                            bny-spa-skip>Markdown</a>
+                        <h4>拓展</h4><a href="/ext/spa/index.html" spa-skip>SPA</a><a href="/ext/markdown/index.html"
+                            spa-skip>Markdown</a>
                     </div>
                 </div>
             </div>

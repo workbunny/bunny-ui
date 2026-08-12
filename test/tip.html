@@ -1,10 +1,10 @@
 <div class="bny-row">
     <div class="text-content-box col-xs12 col-sm9">
         <div class="text-content">
-            <h1>气泡提示<div class="bny-tag" color="red">v2.0.6+</div></h1>
+            <h1>气泡提示</h1>
             <hr>
             <blockquote class="bny-blockquote">
-                气泡提示是一种悬浮提示组件，支持 12 方向自动定位，通过 <code>bny-tip</code> 属性即可使用。
+                气泡提示是一种悬浮提示组件，支持 12 方向自动定位，通过 <code>tip</code> 属性即可使用。
             </blockquote>
 
             <h2 id="n01">基础用法</h2>
@@ -17,14 +17,14 @@
                     <div class="body">
                         <div>
                             <div class="p-12">
-                                <button class="bny-btn" bny-tip="这是一个基础提示">鼠标悬停</button>
-                                <span bny-tip="内联元素也支持" style="margin-left:12px; cursor:default; border-bottom:1px dashed var(--black-shallow);">悬停我</span>
+                                <button class="bny-btn" tip="这是一个基础提示">鼠标悬停</button>
+                                <span tip="内联元素也支持" style="margin-left:12px; cursor:default; border-bottom:1px dashed var(--black-shallow);">悬停我</span>
                             </div>
                         </div>
                         <div>
                             <pre hx-ext="bny-code">
-&lt;button class="bny-btn" bny-tip="这是一个基础提示"&gt;鼠标悬停&lt;/button&gt;
-&lt;span bny-tip="内联元素也支持"&gt;悬停我&lt;/span&gt;
+&lt;button class="bny-btn" tip="这是一个基础提示"&gt;鼠标悬停&lt;/button&gt;
+&lt;span tip="内联元素也支持"&gt;悬停我&lt;/span&gt;
                 </pre>
                         </div>
                     </div>
@@ -41,25 +41,25 @@
                     <div class="body">
                         <div>
                             <div class="p-12">
-                                <p bny-tip="上方居中的提示气泡，会自动根据视口空间调整方向" class="tc"
+                                <p tip="上方居中的提示气泡，会自动根据视口空间调整方向" class="tc"
                                     style="padding:24px; background:var(--white-shallow); margin-bottom:12px; border-radius:var(--border-radius); cursor:default;">
                                     顶部元素
                                 </p>
-                                <div class="bny-row" gap="10" style="margin-bottom:12px;">
+                                <div class="bny-row" grid-gap="10" style="margin-bottom:12px;">
                                     <div class="col-xs6">
-                                        <p bny-tip="左侧对齐的气泡提示，当上方空间不足时会自动切换到下方"
+                                        <p tip="左侧对齐的气泡提示，当上方空间不足时会自动切换到下方"
                                             style="padding:24px; background:var(--white-shallow); border-radius:var(--border-radius); cursor:default; text-align:center;">
                                             左区元素
                                         </p>
                                     </div>
                                     <div class="col-xs6">
-                                        <p bny-tip="右侧对齐的提示，这是一段比较长的文本用来测试气泡的自动换行和最大宽度效果"
+                                        <p tip="右侧对齐的提示，这是一段比较长的文本用来测试气泡的自动换行和最大宽度效果"
                                             style="padding:24px; background:var(--white-shallow); border-radius:var(--border-radius); cursor:default; text-align:center;">
                                             右区元素（长文本）
                                         </p>
                                     </div>
                                 </div>
-                                <p bny-tip="底部元素会自动向上弹出气泡" class="tc"
+                                <p tip="底部元素会自动向上弹出气泡" class="tc"
                                     style="padding:24px; background:var(--white-shallow); border-radius:var(--border-radius); cursor:default;">
                                     底部元素
                                 </p>
@@ -67,13 +67,13 @@
                         </div>
                         <div>
                             <pre hx-ext="bny-code">
-&lt;p bny-tip="上方居中的提示气泡"&gt;顶部元素&lt;/p&gt;
+&lt;p tip="上方居中的提示气泡"&gt;顶部元素&lt;/p&gt;
 
-&lt;p bny-tip="左侧对齐的气泡提示，当上方空间不足时会自动切换到下方"&gt;左区元素&lt;/p&gt;
+&lt;p tip="左侧对齐的气泡提示，当上方空间不足时会自动切换到下方"&gt;左区元素&lt;/p&gt;
 
-&lt;p bny-tip="右侧对齐的提示，这是一段比较长的文本用来测试气泡的自动换行和最大宽度效果"&gt;右区元素（长文本）&lt;/p&gt;
+&lt;p tip="右侧对齐的提示，这是一段比较长的文本用来测试气泡的自动换行和最大宽度效果"&gt;右区元素（长文本）&lt;/p&gt;
 
-&lt;p bny-tip="底部元素会自动向上弹出气泡"&gt;底部元素&lt;/p&gt;
+&lt;p tip="底部元素会自动向上弹出气泡"&gt;底部元素&lt;/p&gt;
                 </pre>
                         </div>
                     </div>
@@ -91,16 +91,16 @@
                         <div>
                             <div class="p-12">
                                 <p>使用 Tab 键聚焦下方输入框和按钮：</p>
-                                <input class="bny-input" bny-tip="请输入您的用户名" placeholder="聚焦我试试" style="margin-bottom:12px;">
+                                <input class="bny-input" tip="请输入您的用户名" placeholder="聚焦我试试" style="margin-bottom:12px;">
                                 <br>
-                                <button class="bny-btn" bny-tip="点击或聚焦均可触发提示" style="margin-top:8px;">可聚焦按钮</button>
+                                <button class="bny-btn" tip="点击或聚焦均可触发提示" style="margin-top:8px;">可聚焦按钮</button>
                             </div>
                         </div>
                         <div>
                             <pre hx-ext="bny-code">
-&lt;input class="bny-input" bny-tip="请输入您的用户名" placeholder="聚焦我试试"&gt;
+&lt;input class="bny-input" tip="请输入您的用户名" placeholder="聚焦我试试"&gt;
 
-&lt;button class="bny-btn" bny-tip="点击或聚焦均可触发提示"&gt;可聚焦按钮&lt;/button&gt;
+&lt;button class="bny-btn" tip="点击或聚焦均可触发提示"&gt;可聚焦按钮&lt;/button&gt;
                 </pre>
                         </div>
                     </div>
@@ -146,13 +146,13 @@
                     <div class="body">
                         <div>
                             <div class="p-12">
-                                <button class="bny-btn" bny-tip-html="<b>加粗标题</b><br><span style='color:var(--green)'>带颜色的描述文字</span>">HTML 内容提示</button>
+                                <button class="bny-btn" tip-html="<b>加粗标题</b><br><span style='color:var(--green)'>带颜色的描述文字</span>">HTML 内容提示</button>
                             </div>
                         </div>
                         <div>
                             <pre hx-ext="bny-code">
 &lt;button class=&quot;bny-btn&quot;
-    bny-tip-html=&quot;&lt;b&gt;加粗标题&lt;/b&gt;&lt;br&gt;&lt;span style='color:var(--green)'&gt;带颜色的描述文字&lt;/span&gt;&quot;&gt;
+    tip-html=&quot;&lt;b&gt;加粗标题&lt;/b&gt;&lt;br&gt;&lt;span style='color:var(--green)'&gt;带颜色的描述文字&lt;/span&gt;&quot;&gt;
     HTML 内容提示
 &lt;/button&gt;
                 </pre>
@@ -171,13 +171,13 @@
                     <div class="body">
                         <div>
                             <div class="p-12">
-                                <button class="bny-btn" bny-tip="悬停 500ms 后才显示" data-tip-delay="500">延迟 500ms</button>
-                                <button class="bny-btn" bny-tip="立即显示（默认）" style="margin-left:12px;">无延迟</button>
+                                <button class="bny-btn" tip="悬停 500ms 后才显示" tip-delay="500">延迟 500ms</button>
+                                <button class="bny-btn" tip="立即显示（默认）" style="margin-left:12px;">无延迟</button>
                             </div>
                         </div>
                         <div>
                             <pre hx-ext="bny-code">
-&lt;button class=&quot;bny-btn&quot; bny-tip=&quot;悬停 500ms 后才显示&quot; data-tip-delay=&quot;500&quot;&gt;延迟 500ms&lt;/button&gt;
+&lt;button class=&quot;bny-btn&quot; tip=&quot;悬停 500ms 后才显示&quot; tip-delay=&quot;500&quot;&gt;延迟 500ms&lt;/button&gt;
                 </pre>
                         </div>
                     </div>
@@ -194,15 +194,15 @@
                     <div class="body">
                         <div>
                             <div class="p-12">
-                                <button class="bny-btn" bny-tip="始终在右侧显示" data-tip-placement="right">右侧提示</button>
-                                <button class="bny-btn" bny-tip="始终在下方左对齐" data-tip-placement="bottom-start" style="margin-left:12px;">下方左对齐</button>
+                                <button class="bny-btn" tip="始终在右侧显示" tip-placement="right">右侧提示</button>
+                                <button class="bny-btn" tip="始终在下方左对齐" tip-placement="bottom-start" style="margin-left:12px;">下方左对齐</button>
                             </div>
                         </div>
                         <div>
                             <pre hx-ext="bny-code">
-&lt;button class=&quot;bny-btn&quot; bny-tip=&quot;始终在右侧显示&quot; data-tip-placement=&quot;right&quot;&gt;右侧提示&lt;/button&gt;
+&lt;button class=&quot;bny-btn&quot; tip=&quot;始终在右侧显示&quot; tip-placement=&quot;right&quot;&gt;右侧提示&lt;/button&gt;
 
-&lt;button class=&quot;bny-btn&quot; bny-tip=&quot;始终在下方左对齐&quot; data-tip-placement=&quot;bottom-start&quot;&gt;下方左对齐&lt;/button&gt;
+&lt;button class=&quot;bny-btn&quot; tip=&quot;始终在下方左对齐&quot; tip-placement=&quot;bottom-start&quot;&gt;下方左对齐&lt;/button&gt;
                 </pre>
                         </div>
                     </div>
@@ -219,15 +219,15 @@
                     <div class="body">
                         <div>
                             <div class="p-12">
-                                <button class="bny-btn" bny-tip="白色背景的气泡提示，带阴影效果" data-tip-theme="light">亮色主题</button>
-                                <button class="bny-btn" bny-tip="这是一段比较长的文本，用于展示自定义宽度的气泡提示效果" data-tip-width="180px" style="margin-left:12px;">窄宽度</button>
+                                <button class="bny-btn" tip="白色背景的气泡提示，带阴影效果" tip-theme="light">亮色主题</button>
+                                <button class="bny-btn" tip="这是一段比较长的文本，用于展示自定义宽度的气泡提示效果" tip-width="180px" style="margin-left:12px;">窄宽度</button>
                             </div>
                         </div>
                         <div>
                             <pre hx-ext="bny-code">
-&lt;button class=&quot;bny-btn&quot; bny-tip=&quot;白色背景的气泡提示&quot; data-tip-theme=&quot;light&quot;&gt;亮色主题&lt;/button&gt;
+&lt;button class=&quot;bny-btn&quot; tip=&quot;白色背景的气泡提示&quot; tip-theme=&quot;light&quot;&gt;亮色主题&lt;/button&gt;
 
-&lt;button class=&quot;bny-btn&quot; bny-tip=&quot;长文本...&quot; data-tip-width=&quot;180px&quot;&gt;窄宽度&lt;/button&gt;
+&lt;button class=&quot;bny-btn&quot; tip=&quot;长文本...&quot; tip-width=&quot;180px&quot;&gt;窄宽度&lt;/button&gt;
                 </pre>
                         </div>
                     </div>
@@ -248,42 +248,42 @@
                 </thead>
                 <tbody>
                     <tr>
-                        <td>bny-tip</td>
+                        <td>tip</td>
                         <td>—</td>
                         <td>否</td>
-                        <td>气泡提示的纯文本内容（与 bny-tip-html 二选一）</td>
-                        <td><div class="bny-tag" color="red">v2.0.5+</div></td>
+                        <td>气泡提示的纯文本内容（与 tip-html 二选一）</td>
+                        <td><div class="bny-tag" tag-color="red">v2.0.5+</div></td>
                     </tr>
                     <tr>
-                        <td>bny-tip-html</td>
+                        <td>tip-html</td>
                         <td>—</td>
                         <td>否</td>
-                        <td>气泡提示的 HTML 内容（与 bny-tip 二选一，优先级更高）</td>
+                        <td>气泡提示的 HTML 内容（与 tip 二选一，优先级更高）</td>
                         <td></td>
                     </tr>
                     <tr>
-                        <td>data-tip-delay</td>
+                        <td>tip-delay</td>
                         <td>0</td>
                         <td>否</td>
                         <td>显示延迟时间（毫秒）</td>
                         <td></td>
                     </tr>
                     <tr>
-                        <td>data-tip-placement</td>
+                        <td>tip-placement</td>
                         <td>—</td>
                         <td>否</td>
                         <td>手动指定方向，不设置则自动评分。可选值见下方定位表</td>
                         <td></td>
                     </tr>
                     <tr>
-                        <td>data-tip-theme</td>
+                        <td>tip-theme</td>
                         <td>—</td>
                         <td>否</td>
                         <td>主题：light-亮色（白色背景+阴影）</td>
                         <td></td>
                     </tr>
                     <tr>
-                        <td>data-tip-width</td>
+                        <td>tip-width</td>
                         <td>280px</td>
                         <td>否</td>
                         <td>自定义最大宽度</td>
@@ -331,16 +331,16 @@
     </div>
     <div class="right-anchor-box hidden-xs col-sm3">
         <div class="right-anchor">
-            <ul hx-ext="bny-anchor" rail>
-                <li class="link" anchor="#n01">基础用法</li>
-                <li class="link" anchor="#n02">12 方向自动定位</li>
-                <li class="link" anchor="#n03">键盘无障碍</li>
-                <li class="link" anchor="#n04">HTMX 动态内容</li>
-                <li class="link" anchor="#n05">HTML 内容</li>
-                <li class="link" anchor="#n06">延迟显示</li>
-                <li class="link" anchor="#n07">手动指定方向</li>
-                <li class="link" anchor="#n08">亮色主题 &amp; 宽度</li>
-                <li class="link" anchor="#n09">API</li>
+            <ul hx-ext="bny-anchor" anchor-rail>
+                <li class="link" anchor-target="#n01">基础用法</li>
+                <li class="link" anchor-target="#n02">12 方向自动定位</li>
+                <li class="link" anchor-target="#n03">键盘无障碍</li>
+                <li class="link" anchor-target="#n04">HTMX 动态内容</li>
+                <li class="link" anchor-target="#n05">HTML 内容</li>
+                <li class="link" anchor-target="#n06">延迟显示</li>
+                <li class="link" anchor-target="#n07">手动指定方向</li>
+                <li class="link" anchor-target="#n08">亮色主题 &amp; 宽度</li>
+                <li class="link" anchor-target="#n09">API</li>
             </ul>
         </div>
     </div>

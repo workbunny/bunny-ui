@@ -43,135 +43,135 @@
 
     /* a 标签按钮：覆盖浏览器默认 a:visited 颜色，保持按钮文字色一致
        优先级 (0,2,0) 高于 a:visited (0,1,1)，避免访问后变紫色
-       实色按钮文字均为 white-common；border 模式的 color 由后续 &[model~="border"] 覆盖 */
+       实色按钮文字均为 white-common；border 模式的 color 由后续 &[btn-model~="border"] 覆盖 */
     &:visited {
         color: var(--white-common);
     }
 
     /* 绿色 */
-    &[color="green"] {
+    &[btn-color="green"] {
         background-color: var(--green);
         border-color: var(--green);
     }
 
-    &[color="green"]:hover {
+    &[btn-color="green"]:hover {
         background-color: var(--green-middle);
         border-color: var(--green-middle);
     }
 
-    &[color="green"]:active {
+    &[btn-color="green"]:active {
         background-color: var(--green);
         border-color: var(--green);
     }
 
     /* 蓝色 */
-    &[color="blue"] {
+    &[btn-color="blue"] {
         background-color: var(--blue);
         border-color: var(--blue);
     }
 
-    &[color="blue"]:hover {
+    &[btn-color="blue"]:hover {
         background-color: var(--blue-middle);
         border-color: var(--blue-middle);
     }
 
-    &[color="blue"]:active {
+    &[btn-color="blue"]:active {
         background-color: var(--blue);
         border-color: var(--blue);
     }
 
     /* 黄色 */
-    &[color="yellow"] {
+    &[btn-color="yellow"] {
         background-color: var(--yellow);
         border-color: var(--yellow);
     }
 
-    &[color="yellow"]:hover {
+    &[btn-color="yellow"]:hover {
         background-color: var(--yellow-middle);
         border-color: var(--yellow-middle);
     }
 
-    &[color="yellow"]:active {
+    &[btn-color="yellow"]:active {
         background-color: var(--yellow);
         border-color: var(--yellow);
     }
 
     /* 红色 */
-    &[color="red"] {
+    &[btn-color="red"] {
         background-color: var(--red);
         border-color: var(--red);
     }
 
-    &[color="red"]:hover {
+    &[btn-color="red"]:hover {
         background-color: var(--red-middle);
         border-color: var(--red-middle);
     }
 
-    &[color="red"]:active {
+    &[btn-color="red"]:active {
         background-color: var(--red);
         border-color: var(--red);
     }
 
     /* 边框样式 — ghost/outline */
-    &[model~="border"] {
+    &[btn-model~="border"] {
         background-color: transparent;
         color: var(--black);
         box-shadow: none;
     }
 
-    &[model~="border"]:hover {
+    &[btn-model~="border"]:hover {
         background-color: var(--default-alpha-10);
         color: var(--default);
         box-shadow: none;
     }
 
-    &[model~="border"]:active {
+    &[btn-model~="border"]:active {
         background-color: var(--default-alpha-20);
         color: var(--default);
     }
 
-    &[model~="border"][color="green"] {
+    &[btn-model~="border"][btn-color="green"] {
         color: var(--green);
         border-color: var(--green);
     }
 
-    &[model~="border"][color="green"]:hover {
+    &[btn-model~="border"][btn-color="green"]:hover {
         background-color: var(--green-alpha-10);
         color: var(--green);
     }
 
-    &[model~="border"][color="blue"] {
+    &[btn-model~="border"][btn-color="blue"] {
         color: var(--blue);
         border-color: var(--blue);
     }
 
-    &[model~="border"][color="blue"]:hover {
+    &[btn-model~="border"][btn-color="blue"]:hover {
         background-color: var(--blue-alpha-10);
         color: var(--blue);
     }
 
-    &[model~="border"][color="yellow"] {
+    &[btn-model~="border"][btn-color="yellow"] {
         color: var(--yellow);
         border-color: var(--yellow);
     }
 
-    &[model~="border"][color="yellow"]:hover {
+    &[btn-model~="border"][btn-color="yellow"]:hover {
         background-color: var(--yellow-alpha-10);
         color: var(--yellow);
     }
 
-    &[model~="border"][color="red"] {
+    &[btn-model~="border"][btn-color="red"] {
         color: var(--red);
         border-color: var(--red);
     }
 
-    &[model~="border"][color="red"]:hover {
+    &[btn-model~="border"][btn-color="red"]:hover {
         background-color: var(--red-alpha-10);
         color: var(--red);
     }
 
     /* 圆形 */
-    &[model~="circle"] {
+    &[btn-model~="circle"] {
         border-radius: var(--border-radius-full);
         padding: 8px;
         width: 36px;
@@ -179,13 +179,13 @@
     }
 
     /* 大小 */
-    &[size="sm"] {
+    &[btn-size="sm"] {
         padding: 5px 12px;
         font-size: var(--font-size-sm);
         border-radius: var(--border-radius-sm);
     }
 
-    &[size="lg"] {
+    &[btn-size="lg"] {
         padding: 12px 24px;
         font-size: var(--font-size-16);
         border-radius: var(--border-radius-8);
@@ -238,7 +238,7 @@
             filter: brightness(0.95);
         }
 
-        &[model~="border"]:not(:last-child) {
+        &[btn-model~="border"]:not(:last-child) {
             border-right-color: var(--gray-middle);
         }
     }
@@ -271,20 +271,20 @@
     }
 
     /* 边框按钮的 spinner 颜色取主色 */
-    &[model~="border"]::after {
+    &[btn-model~="border"]::after {
         --btn-spin-color: var(--default);
     }
 
-    &[color="green"]::after { --btn-spin-color: var(--white-common); }
-    &[color="blue"]::after  { --btn-spin-color: var(--white-common); }
-    &[color="yellow"]::after{ --btn-spin-color: var(--white-common); }
-    &[color="red"]::after   { --btn-spin-color: var(--white-common); }
+    &[btn-color="green"]::after { --btn-spin-color: var(--white-common); }
+    &[btn-color="blue"]::after  { --btn-spin-color: var(--white-common); }
+    &[btn-color="yellow"]::after{ --btn-spin-color: var(--white-common); }
+    &[btn-color="red"]::after   { --btn-spin-color: var(--white-common); }
 
     /* 边框 + 颜色：spinner 取颜色主色（边框按钮背景透明，白色不可见） */
-    &[model~="border"][color="green"]::after  { --btn-spin-color: var(--green); }
-    &[model~="border"][color="blue"]::after   { --btn-spin-color: var(--blue); }
-    &[model~="border"][color="yellow"]::after { --btn-spin-color: var(--yellow); }
-    &[model~="border"][color="red"]::after   { --btn-spin-color: var(--red); }
+    &[btn-model~="border"][btn-color="green"]::after  { --btn-spin-color: var(--green); }
+    &[btn-model~="border"][btn-color="blue"]::after   { --btn-spin-color: var(--blue); }
+    &[btn-model~="border"][btn-color="yellow"]::after { --btn-spin-color: var(--yellow); }
+    &[btn-model~="border"][btn-color="red"]::after   { --btn-spin-color: var(--red); }
 
     /* 禁用 hover/active 视觉 */
     &:hover,

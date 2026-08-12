@@ -51,14 +51,14 @@
         <p>父级布局保持不变，仅子视口（虚线框内）刷新。</p>
     </div>
 
-    <div class="demo-layout" bny-view>
+    <div class="demo-layout" spa-view>
         <!-- 根视口 [0]：父级布局（点击导航时保持不变） -->
         <div class="layout-header">
             <h2>用户中心 - 父级布局（路径 [0]）</h2>
         </div>
         <div class="layout-content">
             <!-- 子视口 [0, 0]：包含导航 + 内容，整体交换 -->
-            <div class="child-view" bny-view>
+            <div class="child-view" spa-view>
                 <nav class="child-nav">
                     <a href="./nested-detail.html">详情</a>
                     <a href="./nested-posts.html">帖子</a>

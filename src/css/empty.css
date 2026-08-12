@@ -74,28 +74,28 @@
 
     /* ============ 主题色变体 ============
      * -shallow 色在白底上过浅几乎不可见，改用主题主色让图标与描述都鲜明可辨 */
-    &[color="default"] .bny-empty-icon,
-    &[color="default"] .bny-empty-desc {
+    &[empty-color="default"] .bny-empty-icon,
+    &[empty-color="default"] .bny-empty-desc {
         color: var(--default);
     }
 
-    &[color="green"] .bny-empty-icon,
-    &[color="green"] .bny-empty-desc {
+    &[empty-color="green"] .bny-empty-icon,
+    &[empty-color="green"] .bny-empty-desc {
         color: var(--green);
     }
 
-    &[color="blue"] .bny-empty-icon,
-    &[color="blue"] .bny-empty-desc {
+    &[empty-color="blue"] .bny-empty-icon,
+    &[empty-color="blue"] .bny-empty-desc {
         color: var(--blue);
     }
 
-    &[color="yellow"] .bny-empty-icon,
-    &[color="yellow"] .bny-empty-desc {
+    &[empty-color="yellow"] .bny-empty-icon,
+    &[empty-color="yellow"] .bny-empty-desc {
         color: var(--yellow);
     }
 
-    &[color="red"] .bny-empty-icon,
-    &[color="red"] .bny-empty-desc {
+    &[empty-color="red"] .bny-empty-icon,
+    &[empty-color="red"] .bny-empty-desc {
         color: var(--red);
     }
 

@@ -59,7 +59,6 @@
         &.show {
             & .title {
                 color: var(--default);
-                font-weight: var(--font-weight-semibold);
 
                 &::before {
                     transform: rotate(90deg);

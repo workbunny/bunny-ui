@@ -4,9 +4,9 @@ htmx.defineExtension('bny-code', {
 
         function getCode(target, str) {
             // 获取mode属性
-            const mode = target.getAttribute('mode')
+            const mode = target.getAttribute('code-mode')
             // 获取lang属性
-            const lang = target.getAttribute('lang')
+            const lang = target.getAttribute('code-lang')
             // 处理高亮
             switch (mode) {
                 case 'highlight':

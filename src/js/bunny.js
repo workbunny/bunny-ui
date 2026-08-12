@@ -187,7 +187,7 @@ window.bny = {
         // 创建 alert 元素（直接挂入共享容器，多条按调用顺序自上而下堆叠，不再重叠）
         const alert = document.createElement('div')
         alert.classList.add('bny-alert', `bny-anim-${anim}`)
-        alert.setAttribute('color', color)
+        alert.setAttribute('alert-color', color)
         alert.style.width = 'auto'
         alert.innerHTML = bny.escapeChars(msg)
         // 关闭按钮：允许用户主动关闭
@@ -256,7 +256,7 @@ window.bny = {
         // 创建确认按钮
         const confirm_yes = document.createElement('button')
         confirm_yes.classList.add('bny-btn')
-        confirm_yes.setAttribute('color', 'blue')
+        confirm_yes.setAttribute('btn-color', 'blue')
         confirm_yes.innerHTML = '确认'
         // 创建取消按钮
         const confirm_no = document.createElement('button')
@@ -638,11 +638,11 @@ window.bny = {
         load.className = `bny-load-shade`
         switch (style) {
             case 1:
-                load.innerHTML = `<div class="bny-load" color="${color}" size="${size}"></div>`
+                load.innerHTML = `<div class="bny-load" load-color="${color}" load-size="${size}"></div>`
                 break;
             case 2:
                 load.innerHTML = `
-                <div class="bny-load-ball" color="${color}" size="${size}">
+                <div class="bny-load-ball" load-color="${color}" load-size="${size}">
                     <div></div>
                     <div></div>
                     <div></div>

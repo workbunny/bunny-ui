@@ -67,33 +67,33 @@
 }
 
 /* 主题色变体 */
-.bny-rate[color="green"] .bny-rate-icon.is-active,
-.bny-rate[color="green"] .bny-rate-icon.is-half {
+.bny-rate[rate-color="green"] .bny-rate-icon.is-active,
+.bny-rate[rate-color="green"] .bny-rate-icon.is-half {
     color: var(--green);
 }
 
-.bny-rate[color="blue"] .bny-rate-icon.is-active,
-.bny-rate[color="blue"] .bny-rate-icon.is-half {
+.bny-rate[rate-color="blue"] .bny-rate-icon.is-active,
+.bny-rate[rate-color="blue"] .bny-rate-icon.is-half {
     color: var(--blue);
 }
 
-.bny-rate[color="yellow"] .bny-rate-icon.is-active,
-.bny-rate[color="yellow"] .bny-rate-icon.is-half {
+.bny-rate[rate-color="yellow"] .bny-rate-icon.is-active,
+.bny-rate[rate-color="yellow"] .bny-rate-icon.is-half {
     color: var(--yellow);
 }
 
-.bny-rate[color="red"] .bny-rate-icon.is-active,
-.bny-rate[color="red"] .bny-rate-icon.is-half {
+.bny-rate[rate-color="red"] .bny-rate-icon.is-active,
+.bny-rate[rate-color="red"] .bny-rate-icon.is-half {
     color: var(--red);
 }
 
 /* 尺寸变体 */
-.bny-rate[size="sm"] .bny-rate-icon {
+.bny-rate[rate-size="sm"] .bny-rate-icon {
     width: 16px;
     height: 16px;
 }
 
-.bny-rate[size="lg"] .bny-rate-icon {
+.bny-rate[rate-size="lg"] .bny-rate-icon {
     width: 28px;
     height: 28px;
 }
