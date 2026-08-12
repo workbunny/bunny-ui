@@ -15,6 +15,8 @@
 - 渐进增强 — 禁用 JS 时链接照常跳转，不影响 SEO
 - 错误降级 — fetch 失败时自动回退到整页跳转
 - 两种导航模式 — history（真实 URL，适配任意后端）和 hash（hash 路由，无后端也能用）
+- CSRF 自动管理 — 自动同步 CSRF token，解决 SPA 导航后跨视口表单令牌过期问题
+- 布局跳过 — `X-Spa-Layout` 请求头告知后端可省略布局渲染，省带宽
 
 ## 引入
 
@@ -185,6 +187,7 @@ class SpaMiddleware
 | `<link bny-spa>` | 按 href 做 diff，新增的加，消失的删 | 页面特有 CSS |
 | `<script bny-spa>` | 按 src 做 diff，新增的加并执行 | 页面特有 JS |
 | `<style bny-spa>` | 按 textContent 做 diff | 页面特有内联样式 |
+| `<meta name="csrf-token">` | 检测 content 变化，遍历更新全页面 CSRF hidden input | CSRF 防护 · 跨视口表单令牌同步 |
 | 不带 `bny-spa` 的元素 | 绝不碰，全局资源安全不动 | 全局 CSS/JS |
 
 ### 页面特有资源示例
@@ -368,6 +371,87 @@ document.querySelector('[spa-view]').addEventListener('bny:spa:loaded', function
 |--------|----|------|
 | `X-Spa-Request` | `true` | bny-spa 导航请求 |
 | `HX-Request` | `true` | HTMX 标准请求头 |
+| `X-Spa-Layout` | `false` | 告知后端可跳过布局渲染（省带宽，后端可选实现） |
+| `X-CSRF-TOKEN` | CSRF token 值 | 自动携带当前 CSRF token，存在时必带 |
+
+## CSRF 自动管理
+
+SPA 导航后，新内容中的 CSRF token 会更新，但 header 搜索框、侧边栏等**跨视口**区域的旧表单仍持有过期 token，POST 提交会触发 419 错误。bny-spa 内置了完整的 CSRF 生命周期管理。
+
+### 工作机制
+
+```
+初始加载 → init() 从 meta[name="csrf-token"] 读取 token → 缓存到 _csrfToken
+                                                              ↓
+每次导航 fetch 自动带 X-CSRF-TOKEN header            ← getRequestHeaders()
+                                                              ↓
+swapContent → syncHead() → syncCsrfToken(doc)
+                                 ↓
+                 新 token ≠ 缓存 token ？
+                   ↓ 是                 ↓ 否
+         遍历更新全页面：              跳过
+         · meta[name="csrf-token"] content
+         · input[name="__token__"] value
+         · input[name="_token"] value
+         · input[name="csrf_token"] value
+         缓存刷新 → 下次 fetch 自动带新 token
+```
+
+### 服务端配置
+
+只需在页面 `<head>` 中放置 CSRF token meta 标签，SPA 扩展会自动管理：
+
+```html
+<head>
+    <!-- SPA 扩展从此读取 token -->
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+</head>
+```
+
+支持的命名（按优先级匹配）：
+
+| 框架 | meta name | hidden input name |
+|------|-----------|-------------------|
+| ThinkPHP | `csrf-token` | `__token__` |
+| Laravel | `csrf-token` | `_token` |
+| 通用 | `csrf_token` / `x-csrf-token` | `csrf_token` / `csrf-token` |
+
+### ThinkPHP 完整示例
+
+```html
+<head>
+    <meta name="csrf-token" content="{:token()}">
+</head>
+<body hx-ext="bny-spa">
+    <!-- 全局搜索框（跨视口，token 会被 SPA 自动同步） -->
+    <header>
+        <form action="/search" method="post">
+            <input type="hidden" name="__token__" value="{:token()}">
+            <input type="text" name="keyword">
+            <button type="submit">搜索</button>
+        </form>
+    </header>
+
+    <main spa-view>
+        <!-- 主内容区表单 —— 每次导航后 token 自动刷新 -->
+        <form action="/users/create" method="post">
+            <input type="hidden" name="__token__" value="{:token()}">
+            ...
+        </form>
+    </main>
+</body>
+```
+
+**注意**：页面初始渲染时仍需写 `{:token()}`（确保禁用 JS 时也能用）。SPA 扩展仅在导航切换后负责同步更新所有已存在的 token 元素，不会自动创建新的 hidden input。
+
+### 触发条件
+
+仅在满足以下两个条件时执行同步：
+
+1. 新文档中包含 `meta[name="csrf-token"]` 且有 content 值
+2. 新 token 值与当前 `_csrfToken` 不同
+
+首次加载、token 未变化的页面导航、无 CSRF meta 的页面均不会触发更新（零开销）。
 
 ## 进度条
 
