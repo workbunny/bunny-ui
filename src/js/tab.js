@@ -27,7 +27,7 @@ htmx.defineExtension('bny-tab', {
             moreBtn.setAttribute("hx-ext", "bny-dropdown")
             moreBtn.innerHTML = `<i class="bny-icon icon-down"></i>
             <div class="bny-dropdown">
-                <div hx-ext="bny-menu" mode="vertical">
+                <div hx-ext="bny-menu" menu-mode="vertical">
                     <div class="item">
                         <div class="trigger btn-close-this">
                             <span>关闭当前</span>
