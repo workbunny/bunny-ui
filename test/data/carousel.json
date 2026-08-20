@@ -1,0 +1,9 @@
+{
+    "data": [
+        { "src": "https://picsum.photos/seed/carousel1/800/400", "title": "山间晨曦" },
+        { "src": "https://picsum.photos/seed/carousel2/800/400", "title": "城市夜色", "link": "https://picsum.photos", "target": "_blank" },
+        { "src": "https://picsum.photos/seed/carousel3/800/400", "title": "海岸风光" },
+        { "html": "<div style=\"height:100%; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px; background:linear-gradient(135deg, #6366f1, #a855f7); color:#fff;\"><div style=\"font-size:22px; font-weight:600;\">Bunny-UI 轮播组件</div><div style=\"opacity:.85;\">图片、HTML、纯文本均可作为轮播项</div></div>" },
+        { "src": "https://picsum.photos/seed/carousel4/800/400", "title": "森林小径", "link": "https://picsum.photos", "target": "_blank" }
+    ]
+}

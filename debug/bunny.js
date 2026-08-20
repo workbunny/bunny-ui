@@ -4918,7 +4918,7 @@
         moreBtn.setAttribute("hx-ext", "bny-dropdown");
         moreBtn.innerHTML = `<i class="bny-icon icon-down"></i>
             <div class="bny-dropdown">
-                <div hx-ext="bny-menu" mode="vertical">
+                <div hx-ext="bny-menu" menu-mode="vertical">
                     <div class="item">
                         <div class="trigger btn-close-this">
                             <span>关闭当前</span>
@@ -6995,6 +6995,615 @@
       scan(document);
     }
   })();
+  htmx.defineExtension("bny-carousel", {
+    // 事件
+    onEvent: function(name, evt) {
+      function getTrack(root) {
+        const view = bny.queryChild(root, ".carousel-view");
+        return view ? bny.queryChild(view, ".carousel-track") : null;
+      }
+      function getItems(root) {
+        const track = getTrack(root);
+        if (!track) return [];
+        return Array.from(track.children).filter(function(el) {
+          return !el.classList.contains("carousel-clone");
+        });
+      }
+      function normalizePos(root, pos) {
+        const state = root._bnyCarousel;
+        const count = getItems(root).length;
+        if (count <= 0) return 0;
+        if (state.loop) {
+          pos = (pos % count + count) % count;
+        } else {
+          pos = Math.max(0, Math.min(pos, count - 1));
+        }
+        return pos;
+      }
+      function indexFromPos(root) {
+        const state = root._bnyCarousel;
+        const count = getItems(root).length;
+        if (count <= 0) return 0;
+        let idx = Math.round(state.pos);
+        if (state.loop) idx = (idx % count + count) % count;
+        else idx = Math.max(0, Math.min(idx, count - 1));
+        return idx;
+      }
+      function ensureStructure(root) {
+        let view = bny.queryChild(root, ".carousel-view");
+        if (!view) {
+          view = document.createElement("div");
+          view.className = "carousel-view";
+          root.insertBefore(view, root.firstChild);
+        }
+        let track = bny.queryChild(view, ".carousel-track");
+        if (!track) {
+          track = document.createElement("div");
+          track.className = "carousel-track";
+          view.appendChild(track);
+        }
+        const children = Array.from(bny.queryChildAll(root, "*"));
+        for (let i = 0; i < children.length; i++) {
+          const child = children[i];
+          if (child === view) continue;
+          if (child.classList.contains("btn-left")) continue;
+          if (child.classList.contains("btn-right")) continue;
+          if (child.classList.contains("indicator")) continue;
+          track.appendChild(child);
+        }
+        const items = track.children;
+        for (let i = 0; i < items.length; i++) {
+          items[i].classList.add("carousel-item");
+        }
+        if (!bny.queryChild(root, ".btn-left")) {
+          const btn = document.createElement("div");
+          btn.className = "btn-left";
+          btn.innerHTML = `<i class="bny-icon icon-left"></i>`;
+          root.appendChild(btn);
+        }
+        if (!bny.queryChild(root, ".btn-right")) {
+          const btn = document.createElement("div");
+          btn.className = "btn-right";
+          btn.innerHTML = `<i class="bny-icon icon-right"></i>`;
+          root.appendChild(btn);
+        }
+        if (!bny.queryChild(root, ".indicator")) {
+          const ul = document.createElement("ul");
+          ul.className = "indicator";
+          root.appendChild(ul);
+        }
+      }
+      function rebuildIndicator(root) {
+        const indicator = bny.queryChild(root, ".indicator");
+        if (!indicator) return;
+        const state = root._bnyCarousel;
+        const count = getItems(root).length;
+        indicator.textContent = "";
+        for (let i = 0; i < count; i++) {
+          const li = document.createElement("li");
+          if (i === state.index) li.classList.add("this");
+          indicator.appendChild(li);
+        }
+      }
+      function updateIndicatorThis(root) {
+        const state = root._bnyCarousel;
+        const indicator = bny.queryChild(root, ".indicator");
+        if (!indicator) return;
+        const lis = indicator.children;
+        for (let i = 0; i < lis.length; i++) {
+          lis[i].classList.toggle("this", i === state.index);
+        }
+      }
+      function updateArrows(root) {
+        const state = root._bnyCarousel;
+        const count = getItems(root).length;
+        const left = bny.queryChild(root, ".btn-left");
+        const right = bny.queryChild(root, ".btn-right");
+        if (left) left.classList.toggle("disabled", !state.loop && state.index <= 0);
+        if (right) right.classList.toggle("disabled", !state.loop && state.index >= count - 1);
+      }
+      function syncUI(root) {
+        const state = root._bnyCarousel;
+        const idx = indexFromPos(root);
+        if (idx === state.index) return;
+        state.index = idx;
+        updateIndicatorThis(root);
+        updateArrows(root);
+      }
+      function renderSlide(root, pos) {
+        const track = getTrack(root);
+        if (track) track.style.transform = "translateX(" + -pos * 100 + "%)";
+      }
+      function renderCoverflow(root, pos) {
+        const state = root._bnyCarousel;
+        const track = getTrack(root);
+        if (!track) return;
+        const items = getItems(root);
+        const count = items.length;
+        const view = bny.queryChild(root, ".carousel-view");
+        const vw = view ? view.clientWidth : root.clientWidth;
+        for (let i = 0; i < count; i++) {
+          const item = items[i];
+          let off = i - pos;
+          if (state.loop && count > 2) {
+            off = (off % count + count) % count;
+            if (off > count / 2) off -= count;
+          }
+          const abs = Math.abs(off);
+          const dir = off < 0 ? -1 : 1;
+          const depth = Math.min(abs, 2);
+          const x = off * vw * 0.42;
+          const rotY = -dir * Math.min(abs, 1.2) * 42;
+          const scale = 1 - depth * 0.16;
+          const opacity = abs >= 2.6 ? 0 : 1 - Math.min(abs, 2) * 0.18;
+          item.style.transform = "translateX(" + x + "px) rotateY(" + rotY + "deg) scale(" + scale + ")";
+          item.style.opacity = String(opacity);
+          item.style.zIndex = String(100 - Math.round(Math.min(abs, 9) * 10));
+        }
+      }
+      function renderFade(root) {
+        const state = root._bnyCarousel;
+        const track = getTrack(root);
+        if (track) track.style.transform = "";
+        const items = getItems(root);
+        for (let i = 0; i < items.length; i++) {
+          items[i].classList.toggle("this", i === state.index);
+        }
+      }
+      function renderPosition(root) {
+        const state = root._bnyCarousel;
+        if (state.effect === "fade") return;
+        if (state.effect === "coverflow") renderCoverflow(root, state.pos);
+        else renderSlide(root, state.pos);
+      }
+      function stopAnim(root) {
+        const state = root._bnyCarousel;
+        if (state.anim) {
+          cancelAnimationFrame(state.anim.raf);
+          state.anim = null;
+        }
+      }
+      function animateTo(root, target, duration, onDone) {
+        const state = root._bnyCarousel;
+        stopAnim(root);
+        const from = state.pos;
+        const dist = target - from;
+        if (dist === 0) {
+          state.pos = target;
+          renderPosition(root);
+          syncUI(root);
+          if (typeof onDone === "function") onDone();
+          return;
+        }
+        const start = performance.now();
+        state.anim = { raf: 0 };
+        function frame(now) {
+          const t = Math.min(1, (now - start) / duration);
+          const e = 1 - Math.pow(1 - t, 3);
+          state.pos = from + dist * e;
+          renderPosition(root);
+          syncUI(root);
+          if (t < 1) {
+            state.anim.raf = requestAnimationFrame(frame);
+          } else {
+            state.anim = null;
+            if (typeof onDone === "function") onDone();
+          }
+        }
+        state.anim.raf = requestAnimationFrame(frame);
+      }
+      function animateGo(root, target) {
+        const state = root._bnyCarousel;
+        const count = getItems(root).length;
+        if (!state.loop) {
+          target = Math.max(0, Math.min(target, count - 1));
+        } else if (state.effect === "slide") {
+          target = Math.max(-1, Math.min(target, count));
+        }
+        animateTo(root, target, 350, function() {
+          state.pos = normalizePos(root, state.pos);
+          renderPosition(root);
+          syncUI(root);
+        });
+      }
+      function go(root, index) {
+        const state = root._bnyCarousel;
+        const count = getItems(root).length;
+        if (count === 0) return;
+        if (state.effect === "fade") {
+          if (state.loop) index = (index % count + count) % count;
+          else index = Math.max(0, Math.min(index, count - 1));
+          state.index = index;
+          state.pos = index;
+          renderFade(root);
+          updateIndicatorThis(root);
+          updateArrows(root);
+          return;
+        }
+        let target;
+        if (state.loop) {
+          const cur = state.pos;
+          let d = ((index - cur) % count + count) % count;
+          if (d > count / 2) d -= count;
+          if (state.effect === "slide" && Math.abs(d) > 1) {
+            target = (index % count + count) % count;
+          } else {
+            target = cur + d;
+          }
+        } else {
+          target = Math.max(0, Math.min(index, count - 1));
+        }
+        animateGo(root, target);
+      }
+      function rebuildClones(root) {
+        const state = root._bnyCarousel;
+        const track = getTrack(root);
+        if (!track) return;
+        Array.from(track.children).forEach(function(el) {
+          if (el.classList.contains("carousel-clone")) el.remove();
+        });
+        if (state.effect !== "slide" || !state.loop) return;
+        const items = getItems(root);
+        if (items.length < 2) return;
+        function makeClone(src) {
+          const c = src.cloneNode(true);
+          c.classList.add("carousel-clone");
+          c.classList.remove("this");
+          const all = [c].concat(Array.from(c.querySelectorAll("*")));
+          all.forEach(function(el) {
+            Array.from(el.attributes).forEach(function(attr) {
+              const n = attr.name.toLowerCase();
+              if (n === "id" || n.substring(0, 3) === "hx-") {
+                el.removeAttribute(attr.name);
+              }
+            });
+          });
+          return c;
+        }
+        track.insertBefore(makeClone(items[items.length - 1]), track.firstChild);
+        track.appendChild(makeClone(items[0]));
+      }
+      function updateAutoplay(root) {
+        const state = root._bnyCarousel;
+        if (state.timer) {
+          clearInterval(state.timer);
+          state.timer = null;
+        }
+        const count = getItems(root).length;
+        const active = !state.pausedByHover && !state.pausedByDrag && count > 1 && root.isConnected;
+        if (state.smooth) {
+          if (active) startSmooth(root);
+          else stopSmooth(root);
+          return;
+        }
+        if (!state.autoplayMs || !active) {
+          stopSmooth(root);
+          return;
+        }
+        state.timer = setInterval(function() {
+          if (!root.isConnected) {
+            clearInterval(state.timer);
+            state.timer = null;
+            return;
+          }
+          go(root, state.index + 1);
+        }, state.autoplayMs);
+      }
+      function startSmooth(root) {
+        const state = root._bnyCarousel;
+        if (state.rafId || !state.smooth) return;
+        let last = performance.now();
+        function frame(now) {
+          state.rafId = requestAnimationFrame(frame);
+          if (!root.isConnected) {
+            stopSmooth(root);
+            return;
+          }
+          if (state.pausedByHover || state.pausedByDrag || state.anim) return;
+          let dt = Math.min(100, now - last);
+          last = now;
+          const view = bny.queryChild(root, ".carousel-view");
+          const vw = view ? view.clientWidth : 0;
+          const count = getItems(root).length;
+          if (!vw || count < 2) return;
+          state.pos += state.smoothDir * (state.speed * dt / 1e3) / vw;
+          if (state.loop) {
+            if (state.pos >= count) state.pos -= count;
+            else if (state.pos < 0) state.pos += count;
+          } else {
+            if (state.pos >= count - 1) {
+              state.pos = count - 1;
+              state.smoothDir = -1;
+            } else if (state.pos <= 0) {
+              state.pos = 0;
+              state.smoothDir = 1;
+            }
+          }
+          renderPosition(root);
+          syncUI(root);
+        }
+        state.rafId = requestAnimationFrame(frame);
+      }
+      function stopSmooth(root) {
+        const state = root._bnyCarousel;
+        if (state.rafId) {
+          cancelAnimationFrame(state.rafId);
+          state.rafId = 0;
+        }
+      }
+      function refresh(root) {
+        const state = root._bnyCarousel;
+        const count = getItems(root).length;
+        root.classList.toggle("single", count <= 1);
+        state.pos = normalizePos(root, state.pos);
+        state.index = indexFromPos(root);
+        rebuildIndicator(root);
+        rebuildClones(root);
+        if (state.effect === "fade") renderFade(root);
+        else renderPosition(root);
+        updateArrows(root);
+        updateAutoplay(root);
+      }
+      function bindEvents(root) {
+        const state = root._bnyCarousel;
+        root.addEventListener("click", function(e) {
+          const left = e.target.closest(".btn-left");
+          if (left && left.parentElement === root) {
+            go(root, state.index - 1);
+            return;
+          }
+          const right = e.target.closest(".btn-right");
+          if (right && right.parentElement === root) {
+            go(root, state.index + 1);
+            return;
+          }
+          const li = e.target.closest("li");
+          if (li && li.parentElement && li.parentElement.classList.contains("indicator") && li.parentElement.parentElement === root) {
+            const index = bny.indexOf(li);
+            if (index !== null) go(root, index);
+          }
+        });
+        root.addEventListener("keydown", function(e) {
+          if (e.key === "ArrowLeft") {
+            e.preventDefault();
+            go(root, state.index - 1);
+          } else if (e.key === "ArrowRight") {
+            e.preventDefault();
+            go(root, state.index + 1);
+          }
+        });
+        root.addEventListener("mouseenter", function() {
+          state.pausedByHover = true;
+          updateAutoplay(root);
+        });
+        root.addEventListener("mouseleave", function() {
+          state.pausedByHover = false;
+          updateAutoplay(root);
+        });
+        function onPointerDown(e) {
+          if (!state.draggable) return;
+          if (state.effect === "fade") return;
+          if (getItems(root).length < 2) return;
+          if (state.drag) return;
+          if (e.pointerType === "mouse" && e.button !== 0) return;
+          const view = bny.queryChild(root, ".carousel-view");
+          if (!view || e.target.closest(".carousel-view") !== view) return;
+          stopAnim(root);
+          state.drag = {
+            pointerId: e.pointerId,
+            startX: e.clientX,
+            startY: e.clientY,
+            startTime: Date.now(),
+            active: false,
+            // 是否已进入水平拖拽
+            rejected: false,
+            // 是否已放弃（垂直滚动主导）
+            dx: 0,
+            // 最近一次水平位移
+            width: view.clientWidth,
+            startPos: state.pos
+          };
+          try {
+            view.setPointerCapture(e.pointerId);
+          } catch (_) {
+          }
+        }
+        function onPointerMove(e) {
+          const d = state.drag;
+          if (!d || e.pointerId !== d.pointerId) return;
+          const dx = e.clientX - d.startX;
+          const dy = e.clientY - d.startY;
+          if (!d.active) {
+            if (d.rejected) return;
+            if (Math.abs(dx) > 10 && Math.abs(dx) > Math.abs(dy)) {
+              d.active = true;
+              root.classList.add("dragging");
+              state.pausedByDrag = true;
+              updateAutoplay(root);
+            } else if (Math.abs(dy) > 10 && Math.abs(dy) > Math.abs(dx)) {
+              d.rejected = true;
+              return;
+            } else {
+              return;
+            }
+          }
+          d.dx = dx;
+          e.preventDefault();
+          const count = getItems(root).length;
+          let pos = d.startPos - dx / d.width;
+          if (!state.loop) {
+            if (pos < 0) pos = pos * 0.35;
+            else if (pos > count - 1) pos = count - 1 + (pos - (count - 1)) * 0.35;
+          } else if (state.effect === "slide") {
+            if (pos < -1) pos = -1;
+            else if (pos > count) pos = count;
+          }
+          state.pos = pos;
+          renderPosition(root);
+          syncUI(root);
+        }
+        function onPointerUp(e) {
+          const d = state.drag;
+          if (!d || e.pointerId !== d.pointerId) return;
+          state.drag = null;
+          root.classList.remove("dragging");
+          if (!d.active) return;
+          const dt = Math.max(1, Date.now() - d.startTime);
+          const speed = Math.abs(d.dx) / dt;
+          let target;
+          if (Math.abs(d.dx) > d.width / 3 || speed > 0.5) {
+            target = d.dx < 0 ? Math.floor(state.pos) + 1 : Math.ceil(state.pos) - 1;
+          } else {
+            target = Math.round(state.pos);
+          }
+          animateGo(root, target);
+          if (Math.abs(d.dx) > 10) {
+            root.addEventListener("click", function(ev) {
+              ev.preventDefault();
+              ev.stopPropagation();
+            }, { capture: true, once: true });
+          }
+          state.pausedByDrag = false;
+          updateAutoplay(root);
+        }
+        root.addEventListener("pointerdown", onPointerDown);
+        root.addEventListener("pointermove", onPointerMove, { passive: false });
+        root.addEventListener("pointerup", onPointerUp);
+        root.addEventListener("pointercancel", onPointerUp);
+        root.addEventListener("dragstart", function(e) {
+          if (state.drag) e.preventDefault();
+        });
+        function onResize() {
+          if (!root.isConnected) {
+            window.removeEventListener("resize", onResize);
+            return;
+          }
+          renderPosition(root);
+        }
+        window.addEventListener("resize", onResize);
+      }
+      function init(root) {
+        const effectRaw = root.getAttribute("carousel-effect");
+        const effect = effectRaw === "fade" || effectRaw === "coverflow" ? effectRaw : "slide";
+        const loop = root.getAttribute("carousel-loop") !== "false";
+        const arrow = root.getAttribute("carousel-arrow") ?? "hover";
+        const indicator = root.getAttribute("carousel-indicator") ?? "inside";
+        const draggable = root.getAttribute("carousel-drag") !== "false";
+        let autoplayMs = 0;
+        let smooth = false;
+        const autoplayAttr = root.getAttribute("carousel-autoplay");
+        if (autoplayAttr !== null && autoplayAttr !== "false") {
+          if (autoplayAttr === "smooth") {
+            if (effect === "fade") autoplayMs = 3e3;
+            else smooth = true;
+          } else {
+            const n = Number(autoplayAttr);
+            if (Number.isFinite(n) && n > 0) autoplayMs = n;
+          }
+        }
+        let speed = 60;
+        const speedAttr = Number(root.getAttribute("carousel-speed"));
+        if (Number.isFinite(speedAttr) && speedAttr > 0) speed = speedAttr;
+        const startIndex = Math.max(0, Number(root.getAttribute("carousel-index") ?? 0) || 0);
+        if (arrow === "always") root.classList.add("arrow-always");
+        else if (arrow === "none") root.classList.add("arrow-none");
+        if (indicator === "outside") root.classList.add("indicator-outside");
+        else if (indicator === "none") root.classList.add("indicator-none");
+        if (effect === "fade") root.classList.add("effect-fade");
+        else if (effect === "coverflow") root.classList.add("effect-coverflow");
+        const height = root.getAttribute("carousel-height");
+        if (height) root.style.height = height;
+        else if (effect === "coverflow") root.style.height = "320px";
+        if (!root.hasAttribute("tabindex")) root.setAttribute("tabindex", "0");
+        root._bnyCarousel = {
+          index: startIndex,
+          // 当前索引（整数）
+          pos: startIndex,
+          // 当前位置（浮点，拖拽/补间/连续滚动共用）
+          effect,
+          loop,
+          draggable,
+          autoplayMs,
+          // 离散自动播放间隔（0 = 禁用）
+          smooth,
+          // 丝滑连续滚动
+          speed,
+          // smooth 滚动速度 px/s
+          smoothDir: 1,
+          // smooth 滚动方向（非循环乒乓反弹时反转）
+          timer: null,
+          // 离散自动播放定时器
+          rafId: 0,
+          // smooth 滚动 rAF 句柄
+          anim: null,
+          // 补间动画状态
+          pausedByHover: false,
+          pausedByDrag: false,
+          drag: null
+        };
+        ensureStructure(root);
+        bindEvents(root);
+        refresh(root);
+      }
+      function absorb(root) {
+        if (!root._bnyCarousel) {
+          init(root);
+          return;
+        }
+        ensureStructure(root);
+        refresh(root);
+      }
+      if (name === "htmx:afterProcessNode") {
+        const target = evt.target;
+        if (bny.hasExtName(target, "bny-carousel")) {
+          absorb(target);
+          return false;
+        }
+        if (target.nodeType === 1 && target.parentElement && bny.hasExtName(target.parentElement, "bny-carousel")) {
+          absorb(target.parentElement);
+          return false;
+        }
+      }
+      return true;
+    },
+    // 响应转换：JSON 数组 → 轮播项 HTML
+    transformResponse: function(text, xhr, elt) {
+      function renderItem(item) {
+        if (item !== null && typeof item === "object") {
+          if (typeof item.html !== "undefined") {
+            return '<div class="carousel-item">' + String(item.html) + "</div>";
+          }
+          if (typeof item.src !== "undefined") {
+            const src = bny.escapeChars(String(item.src));
+            const title = item.title != null ? bny.escapeChars(String(item.title)) : "";
+            let inner = '<img src="' + src + '" alt="' + title + '">';
+            if (title) {
+              inner += '<div class="carousel-caption">' + title + "</div>";
+            }
+            if (item.link) {
+              const link = bny.escapeChars(String(item.link));
+              const target = item.target ? ' target="' + bny.escapeChars(String(item.target)) + '"' : "";
+              return '<div class="carousel-item"><a href="' + link + '"' + target + ">" + inner + "</a></div>";
+            }
+            return '<div class="carousel-item">' + inner + "</div>";
+          }
+          return '<div class="carousel-item">' + bny.escapeChars(JSON.stringify(item)) + "</div>";
+        }
+        return '<div class="carousel-item">' + bny.escapeChars(String(item)) + "</div>";
+      }
+      const ct = xhr.getResponseHeader("Content-Type") || "";
+      if (!ct.includes("application/json")) return text;
+      let json;
+      try {
+        json = JSON.parse(xhr.responseText);
+      } catch (e) {
+        return text;
+      }
+      const data = json.data || json;
+      if (!Array.isArray(data)) return text;
+      return data.map(renderItem).join("");
+    }
+  });
   (function() {
     function render(rate) {
       var max = parseInt(rate.getAttribute("rate-max"), 10) || 5;

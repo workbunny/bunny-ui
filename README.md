@@ -108,6 +108,7 @@ bun run build
 - **Empty 空状态**：无数据占位
 - **Code 代码**：代码高亮展示
 - **Image 图片**：图片预览（放大/缩小/重置）
+- **Carousel 轮播**：HTMX 驱动的轮播图（拖拽/自动播放/fade/coverflow/丝滑滚动）
 - **Avatar 头像**：用户头像
 
 ### 表单
