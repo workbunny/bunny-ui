@@ -1,0 +1,402 @@
+<div class="bny-row">
+    <div class="text-content-box col-xs12 col-sm9">
+        <div class="text-content">
+            <h1>Carousel 轮播</h1>
+            <hr>
+            <blockquote class="bny-blockquote">
+                轮播组件，容器加 <code>hx-ext="bny-carousel"</code> 后其直接子元素自动成为轮播项。
+                支持箭头 / 指示器 / 自动播放 / 循环 / 键盘操作 / 跟手拖拽，提供 slide / fade / coverflow（异形 3D）三种切换效果，
+                自动播放支持离散跳格与 smooth 丝滑连续滚动，也可由服务端返回 JSON 自动渲染。
+            </blockquote>
+
+            <h2 id="n01">基础用法</h2>
+            <div class="bny-card">
+                <div hx-ext="bny-tab">
+                    <ul class="head">
+                        <li>Preview</li>
+                        <li>Code</li>
+                    </ul>
+                    <div class="body">
+                        <div>
+                            <div class="p-12">
+                                <div hx-ext="bny-carousel" carousel-height="320px">
+                                    <img src="https://picsum.photos/seed/c11/800/400" alt="山间晨曦">
+                                    <img src="https://picsum.photos/seed/c12/800/400" alt="城市夜色">
+                                    <img src="https://picsum.photos/seed/c13/800/400" alt="海岸风光">
+                                </div>
+                                <blockquote class="bny-blockquote" style="margin-top:14px;">
+                                    容器加 <code>hx-ext="bny-carousel"</code> 后，其直接子元素（如 <code>img</code> 或任意元素）自动成为轮播项；
+                                    <code>carousel-height</code> 指定轮播高度。左右箭头悬浮时显示，点击底部指示器可跳转对应项。
+                                </blockquote>
+                            </div>
+                        </div>
+                        <div>
+                            <pre hx-ext="bny-code">
+&lt;div hx-ext=&quot;bny-carousel&quot; carousel-height=&quot;320px&quot;&gt;
+    &lt;img src=&quot;https://picsum.photos/seed/c11/800/400&quot; alt=&quot;山间晨曦&quot;&gt;
+    &lt;img src=&quot;https://picsum.photos/seed/c12/800/400&quot; alt=&quot;城市夜色&quot;&gt;
+    &lt;img src=&quot;https://picsum.photos/seed/c13/800/400&quot; alt=&quot;海岸风光&quot;&gt;
+&lt;/div&gt;
+                            </pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h2 id="n02">手动拖拽</h2>
+            <div class="bny-card">
+                <div hx-ext="bny-tab">
+                    <ul class="head">
+                        <li>Preview</li>
+                        <li>Code</li>
+                    </ul>
+                    <div class="body">
+                        <div>
+                            <div class="p-12">
+                                <div hx-ext="bny-carousel" carousel-height="320px">
+                                    <img src="https://picsum.photos/seed/c21/800/400" alt="晨雾山峦">
+                                    <img src="https://picsum.photos/seed/c22/800/400" alt="霓虹街景">
+                                    <img src="https://picsum.photos/seed/c23/800/400" alt="静谧海滩">
+                                    <img src="https://picsum.photos/seed/c24/800/400" alt="原始森林">
+                                </div>
+                                <blockquote class="bny-blockquote" style="margin-top:14px;">
+                                    支持鼠标 / 触摸跟手拖拽（Swiper 风格，slide / coverflow 效果）：
+                                    <ul>
+                                        <li>释放时按位移（超过 1/3 视口宽）或速度吸附到相邻项，未超阈值回弹</li>
+                                        <li>非循环模式拖到边界时有橡皮筋阻尼</li>
+                                        <li>拖拽不会误触轮播项内的链接</li>
+                                        <li>轮播聚焦后可用键盘 <code>←</code> / <code>→</code> 切换</li>
+                                    </ul>
+                                </blockquote>
+                            </div>
+                        </div>
+                        <div>
+                            <pre hx-ext="bny-code">
+&lt;div hx-ext=&quot;bny-carousel&quot; carousel-height=&quot;320px&quot;&gt;
+    &lt;img src=&quot;https://picsum.photos/seed/c21/800/400&quot; alt=&quot;晨雾山峦&quot;&gt;
+    &lt;img src=&quot;https://picsum.photos/seed/c22/800/400&quot; alt=&quot;霓虹街景&quot;&gt;
+    &lt;img src=&quot;https://picsum.photos/seed/c23/800/400&quot; alt=&quot;静谧海滩&quot;&gt;
+    &lt;img src=&quot;https://picsum.photos/seed/c24/800/400&quot; alt=&quot;原始森林&quot;&gt;
+&lt;/div&gt;
+
+// 拖拽默认开启，carousel-drag=&quot;false&quot; 可禁用
+                            </pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h2 id="n03">自动播放</h2>
+            <div class="bny-card">
+                <div hx-ext="bny-tab">
+                    <ul class="head">
+                        <li>Preview</li>
+                        <li>Code</li>
+                    </ul>
+                    <div class="body">
+                        <div>
+                            <div class="p-12">
+                                <div hx-ext="bny-carousel" carousel-height="320px" carousel-autoplay="3000">
+                                    <img src="https://picsum.photos/seed/c31/800/400" alt="高原湖泊">
+                                    <img src="https://picsum.photos/seed/c32/800/400" alt="古镇巷陌">
+                                    <img src="https://picsum.photos/seed/c33/800/400" alt="星空夜幕">
+                                </div>
+                                <blockquote class="bny-blockquote" style="margin-top:14px;">
+                                    <code>carousel-autoplay="3000"</code> 每 3 秒自动切换到下一项；鼠标悬浮时暂停，移开后继续。
+                                </blockquote>
+                            </div>
+                        </div>
+                        <div>
+                            <pre hx-ext="bny-code">
+&lt;div hx-ext=&quot;bny-carousel&quot; carousel-height=&quot;320px&quot; carousel-autoplay=&quot;3000&quot;&gt;
+    &lt;img src=&quot;https://picsum.photos/seed/c31/800/400&quot; alt=&quot;高原湖泊&quot;&gt;
+    &lt;img src=&quot;https://picsum.photos/seed/c32/800/400&quot; alt=&quot;古镇巷陌&quot;&gt;
+    &lt;img src=&quot;https://picsum.photos/seed/c33/800/400&quot; alt=&quot;星空夜幕&quot;&gt;
+&lt;/div&gt;
+                            </pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h2 id="n04">fade 效果</h2>
+            <div class="bny-card">
+                <div hx-ext="bny-tab">
+                    <ul class="head">
+                        <li>Preview</li>
+                        <li>Code</li>
+                    </ul>
+                    <div class="body">
+                        <div>
+                            <div class="p-12">
+                                <div hx-ext="bny-carousel" carousel-effect="fade" carousel-height="320px">
+                                    <img src="https://picsum.photos/seed/c41/800/400" alt="极光之夜">
+                                    <img src="https://picsum.photos/seed/c42/800/400" alt="沙漠落日">
+                                    <img src="https://picsum.photos/seed/c43/800/400" alt="雪原日出">
+                                </div>
+                                <blockquote class="bny-blockquote" style="margin-top:14px;">
+                                    <code>carousel-effect="fade"</code> 切换为淡入淡出效果（默认 <code>slide</code>）；
+                                    fade 模式下不启用拖拽，建议配合 <code>carousel-height</code> 指定高度。
+                                </blockquote>
+                            </div>
+                        </div>
+                        <div>
+                            <pre hx-ext="bny-code">
+&lt;div hx-ext=&quot;bny-carousel&quot; carousel-effect=&quot;fade&quot; carousel-height=&quot;320px&quot;&gt;
+    &lt;img src=&quot;https://picsum.photos/seed/c41/800/400&quot; alt=&quot;极光之夜&quot;&gt;
+    &lt;img src=&quot;https://picsum.photos/seed/c42/800/400&quot; alt=&quot;沙漠落日&quot;&gt;
+    &lt;img src=&quot;https://picsum.photos/seed/c43/800/400&quot; alt=&quot;雪原日出&quot;&gt;
+&lt;/div&gt;
+                            </pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h2 id="n05">非循环模式</h2>
+            <div class="bny-card">
+                <div hx-ext="bny-tab">
+                    <ul class="head">
+                        <li>Preview</li>
+                        <li>Code</li>
+                    </ul>
+                    <div class="body">
+                        <div>
+                            <div class="p-12">
+                                <div hx-ext="bny-carousel" carousel-loop="false" carousel-height="320px">
+                                    <img src="https://picsum.photos/seed/c51/800/400" alt="春日花海">
+                                    <img src="https://picsum.photos/seed/c52/800/400" alt="夏日海滩">
+                                    <img src="https://picsum.photos/seed/c53/800/400" alt="秋日枫林">
+                                </div>
+                                <blockquote class="bny-blockquote" style="margin-top:14px;">
+                                    <code>carousel-loop="false"</code> 关闭循环（默认开启）：到达边界后对应箭头禁用；
+                                    拖拽到边界时产生橡皮筋阻尼，松手回弹。
+                                </blockquote>
+                            </div>
+                        </div>
+                        <div>
+                            <pre hx-ext="bny-code">
+&lt;div hx-ext=&quot;bny-carousel&quot; carousel-loop=&quot;false&quot; carousel-height=&quot;320px&quot;&gt;
+    &lt;img src=&quot;https://picsum.photos/seed/c51/800/400&quot; alt=&quot;春日花海&quot;&gt;
+    &lt;img src=&quot;https://picsum.photos/seed/c52/800/400&quot; alt=&quot;夏日海滩&quot;&gt;
+    &lt;img src=&quot;https://picsum.photos/seed/c53/800/400&quot; alt=&quot;秋日枫林&quot;&gt;
+&lt;/div&gt;
+                            </pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h2 id="n06">箭头与指示器配置</h2>
+            <div class="bny-card">
+                <div hx-ext="bny-tab">
+                    <ul class="head">
+                        <li>Preview</li>
+                        <li>Code</li>
+                    </ul>
+                    <div class="body">
+                        <div>
+                            <div class="p-12">
+                                <div hx-ext="bny-carousel" carousel-arrow="always" carousel-indicator="outside" carousel-height="320px">
+                                    <img src="https://picsum.photos/seed/c61/800/400" alt="云端大桥">
+                                    <img src="https://picsum.photos/seed/c62/800/400" alt="梯田光影">
+                                    <img src="https://picsum.photos/seed/c63/800/400" alt="峡谷激流">
+                                </div>
+                                <blockquote class="bny-blockquote" style="margin-top:14px;">
+                                    <code>carousel-arrow="always"</code> 箭头常显（默认 <code>hover</code> 悬浮显示，另可选 <code>none</code> 隐藏）；
+                                    <code>carousel-indicator="outside"</code> 指示器显示在轮播下方（默认 <code>inside</code> 浮在轮播内，另可选 <code>none</code> 隐藏）。
+                                </blockquote>
+                            </div>
+                        </div>
+                        <div>
+                            <pre hx-ext="bny-code">
+&lt;div hx-ext=&quot;bny-carousel&quot;
+     carousel-arrow=&quot;always&quot;
+     carousel-indicator=&quot;outside&quot;
+     carousel-height=&quot;320px&quot;&gt;
+    &lt;img src=&quot;https://picsum.photos/seed/c61/800/400&quot; alt=&quot;云端大桥&quot;&gt;
+    &lt;img src=&quot;https://picsum.photos/seed/c62/800/400&quot; alt=&quot;梯田光影&quot;&gt;
+    &lt;img src=&quot;https://picsum.photos/seed/c63/800/400&quot; alt=&quot;峡谷激流&quot;&gt;
+&lt;/div&gt;
+                            </pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h2 id="n07">JSON 数据渲染</h2>
+            <div class="bny-card">
+                <div hx-ext="bny-tab">
+                    <ul class="head">
+                        <li>Preview</li>
+                        <li>Code</li>
+                    </ul>
+                    <div class="body">
+                        <div>
+                            <div class="p-12">
+                                <div hx-ext="bny-carousel"
+                                     hx-get="/test/data/carousel.json"
+                                     hx-trigger="load"
+                                     carousel-height="320px"></div>
+                                <blockquote class="bny-blockquote" style="margin-top:14px;">
+                                    容器加 <code>hx-get</code> 指向返回 <code>application/json</code> 的接口（配合 <code>hx-trigger="load"</code> 页面加载即请求），
+                                    服务端返回的数组自动渲染为轮播项。数据项格式：
+                                    <ul>
+                                        <li><code>{ src, title, link, target }</code>：图片 + 底部标题浮层 + 可选整项链接（<code>title</code> / <code>link</code> / <code>target</code> 均可选）</li>
+                                        <li><code>{ html }</code>：任意可信 HTML 内容</li>
+                                        <li>字符串 / 数字：转义后的纯文本项</li>
+                                    </ul>
+                                </blockquote>
+                            </div>
+                        </div>
+                        <div>
+                            <pre hx-ext="bny-code">
+&lt;div hx-ext=&quot;bny-carousel&quot;
+     hx-get=&quot;/test/data/carousel.json&quot;
+     hx-trigger=&quot;load&quot;
+     carousel-height=&quot;320px&quot;&gt;&lt;/div&gt;
+
+// 接口返回（Content-Type: application/json）
+{ &quot;data&quot;: [
+    { &quot;src&quot;: &quot;a.jpg&quot;, &quot;title&quot;: &quot;第一张&quot;, &quot;link&quot;: &quot;/a&quot;, &quot;target&quot;: &quot;_blank&quot; },
+    { &quot;html&quot;: &quot;&lt;p&gt;任意可信HTML内容&lt;/p&gt;&quot; },
+    &quot;纯文本项&quot;
+] }
+                            </pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h2 id="n08">coverflow 效果（异形 Slide）</h2>
+            <div class="bny-card">
+                <div hx-ext="bny-tab">
+                    <ul class="head">
+                        <li>Preview</li>
+                        <li>Code</li>
+                    </ul>
+                    <div class="body">
+                        <div>
+                            <div class="p-12">
+                                <div hx-ext="bny-carousel" carousel-effect="coverflow" carousel-height="320px" carousel-autoplay="3000">
+                                    <img src="https://picsum.photos/seed/c81/800/400" alt="城市天际线">
+                                    <img src="https://picsum.photos/seed/c82/800/400" alt="雪山倒影">
+                                    <img src="https://picsum.photos/seed/c83/800/400" alt="落日余晖">
+                                    <img src="https://picsum.photos/seed/c84/800/400" alt="薰衣草田">
+                                    <img src="https://picsum.photos/seed/c85/800/400" alt="热带雨林">
+                                </div>
+                                <blockquote class="bny-blockquote" style="margin-top:14px;">
+                                    <code>carousel-effect="coverflow"</code> 异形 3D 覆盖流：中央项正面朝前，两侧项透视旋转 + 缩小 + 压暗，错层堆叠。
+                                    支持拖拽 / 箭头 / 指示器 / 自动播放 / 循环环绕（按取模无缝环绕，无需克隆）。
+                                </blockquote>
+                            </div>
+                        </div>
+                        <div>
+                            <pre hx-ext="bny-code">
+&lt;div hx-ext=&quot;bny-carousel&quot;
+     carousel-effect=&quot;coverflow&quot;
+     carousel-height=&quot;320px&quot;
+     carousel-autoplay=&quot;3000&quot;&gt;
+    &lt;img src=&quot;https://picsum.photos/seed/c81/800/400&quot; alt=&quot;城市天际线&quot;&gt;
+    &lt;img src=&quot;https://picsum.photos/seed/c82/800/400&quot; alt=&quot;雪山倒影&quot;&gt;
+    &lt;img src=&quot;https://picsum.photos/seed/c83/800/400&quot; alt=&quot;落日余晖&quot;&gt;
+    ...
+&lt;/div&gt;
+                            </pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h2 id="n09">丝滑滚动播放</h2>
+            <div class="bny-card">
+                <div hx-ext="bny-tab">
+                    <ul class="head">
+                        <li>Preview</li>
+                        <li>Code</li>
+                    </ul>
+                    <div class="body">
+                        <div>
+                            <div class="p-12">
+                                <div hx-ext="bny-carousel" carousel-autoplay="smooth" carousel-speed="80" carousel-height="320px">
+                                    <img src="https://picsum.photos/seed/c91/800/400" alt="晨光熹微">
+                                    <img src="https://picsum.photos/seed/c92/800/400" alt="碧海蓝天">
+                                    <img src="https://picsum.photos/seed/c93/800/400" alt="层峦叠嶂">
+                                    <img src="https://picsum.photos/seed/c94/800/400" alt="繁星点点">
+                                </div>
+                                <div hx-ext="bny-carousel" carousel-effect="coverflow" carousel-autoplay="smooth" carousel-speed="60" carousel-height="300px" style="margin-top:20px;">
+                                    <img src="https://picsum.photos/seed/c95/800/400" alt="异形一">
+                                    <img src="https://picsum.photos/seed/c96/800/400" alt="异形二">
+                                    <img src="https://picsum.photos/seed/c97/800/400" alt="异形三">
+                                    <img src="https://picsum.photos/seed/c98/800/400" alt="异形四">
+                                </div>
+                                <blockquote class="bny-blockquote" style="margin-top:14px;">
+                                    <code>carousel-autoplay="smooth"</code> 丝滑连续滚动（默认 60 px/s，<code>carousel-speed</code> 调速）：
+                                    <ul>
+                                        <li>循环模式下匀速滚动、到末项后无缝环绕回首项（slide 自动挂克隆项，coverflow 按取模环绕）</li>
+                                        <li>非循环模式滚动到边界后乒乓反弹；fade 效果不支持连续滚动，退化为 3000ms 离散切换</li>
+                                        <li>鼠标悬浮 / 拖拽期间暂停，移开 / 松手后继续；指示器随滚动实时联动</li>
+                                    </ul>
+                                </blockquote>
+                            </div>
+                        </div>
+                        <div>
+                            <pre hx-ext="bny-code">
+&lt;div hx-ext=&quot;bny-carousel&quot;
+     carousel-autoplay=&quot;smooth&quot;
+     carousel-speed=&quot;80&quot;
+     carousel-height=&quot;320px&quot;&gt;
+    &lt;img src=&quot;a.jpg&quot; alt=&quot;晨光熹微&quot;&gt;
+    &lt;img src=&quot;b.jpg&quot; alt=&quot;碧海蓝天&quot;&gt;
+    ...
+&lt;/div&gt;
+
+// coverflow + smooth 组合
+&lt;div hx-ext=&quot;bny-carousel&quot;
+     carousel-effect=&quot;coverflow&quot;
+     carousel-autoplay=&quot;smooth&quot;
+     carousel-speed=&quot;60&quot;&gt;&lt;/div&gt;
+                            </pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h2 id="n10">API</h2>
+            <h3>属性</h3>
+            <table hx-ext="bny-table">
+                <thead><tr><th>属性</th><th>说明</th></tr></thead>
+                <tbody>
+                    <tr><td><code>hx-ext="bny-carousel"</code></td><td>启用轮播，容器直接子元素自动成为轮播项</td></tr>
+                    <tr><td><code>carousel-index</code></td><td>初始索引，默认 0</td></tr>
+                    <tr><td><code>carousel-autoplay</code></td><td>自动播放：间隔 ms（如 3000）或 "smooth"（丝滑连续滚动）；缺省或 "false" 禁用；鼠标悬浮暂停</td></tr>
+                    <tr><td><code>carousel-speed</code></td><td>smooth 滚动速度（px/s），默认 60</td></tr>
+                    <tr><td><code>carousel-loop</code></td><td>循环模式，默认开启；"false" 关闭（到边界箭头禁用，拖拽有橡皮筋阻尼，smooth 乒乓反弹）</td></tr>
+                    <tr><td><code>carousel-arrow</code></td><td>箭头显示：hover / always / none（默认 hover）</td></tr>
+                    <tr><td><code>carousel-indicator</code></td><td>指示器：inside / outside / none（默认 inside）</td></tr>
+                    <tr><td><code>carousel-effect</code></td><td>切换效果：slide / fade / coverflow（异形 3D，默认 slide）</td></tr>
+                    <tr><td><code>carousel-height</code></td><td>轮播高度（如 320px）</td></tr>
+                    <tr><td><code>carousel-drag</code></td><td>手动拖拽，默认开启；"false" 禁用（slide / coverflow 效果）</td></tr>
+                    <tr><td><code>hx-get</code></td><td>指向返回 application/json 的接口，返回数组自动渲染轮播项</td></tr>
+                </tbody>
+            </table>
+
+        </div>
+    </div>
+    <div class="right-anchor-box hidden-xs col-sm3">
+        <div class="right-anchor">
+            <ul hx-ext="bny-anchor" anchor-rail>
+                <li class="link" anchor-target="#n01">基础用法</li>
+                <li class="link" anchor-target="#n02">手动拖拽</li>
+                <li class="link" anchor-target="#n03">自动播放</li>
+                <li class="link" anchor-target="#n04">fade 效果</li>
+                <li class="link" anchor-target="#n05">非循环模式</li>
+                <li class="link" anchor-target="#n06">箭头与指示器配置</li>
+                <li class="link" anchor-target="#n07">JSON 数据渲染</li>
+                <li class="link" anchor-target="#n08">coverflow 效果</li>
+                <li class="link" anchor-target="#n09">丝滑滚动播放</li>
+                <li class="link" anchor-target="#n10">API</li>
+            </ul>
+        </div>
+    </div>
+</div>

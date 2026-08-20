@@ -29,6 +29,7 @@ const jsFiles = [
   path.resolve(__dirname, 'src/js/validate.js'),
   path.resolve(__dirname, 'src/js/pagination.js'),
   path.resolve(__dirname, 'src/js/image.js'),
+  path.resolve(__dirname, 'src/js/carousel.js'),
   path.resolve(__dirname, 'src/js/rate.js'),
   // 如需新增JS文件，直接追加即可：
   // path.resolve(__dirname, 'src/js/entry3.js'),
@@ -66,6 +67,7 @@ const cssFiles = [
   path.resolve(__dirname, 'src/css/backtop.css'),
   path.resolve(__dirname, 'src/css/pagination.css'),
   path.resolve(__dirname, 'src/css/image.css'),
+  path.resolve(__dirname, 'src/css/carousel.css'),
   path.resolve(__dirname, 'src/css/steps.css'),
   path.resolve(__dirname, 'src/css/rate.css'),
   path.resolve(__dirname, 'src/css/empty.css'),

@@ -8238,6 +8238,273 @@ html.dark .bny-image-viewer .bny-image-counter {
     background-color: var(--white-alpha-15);
     color: var(--black);
 }
+/* ========== 轮播 ========== */
+
+/* 根：定位上下文（箭头/指示器的定位基准），直接子元素自动成为轮播项 */
+[hx-ext~="bny-carousel"] {
+    position: relative;
+    width: 100%;
+
+    /* 键盘可达：聚焦时显示焦点环（配合 tabindex="0"） */
+    &:focus-visible {
+        outline: none;
+        border-radius: var(--border-radius);
+        box-shadow: var(--focus-ring);
+    }
+
+    /* ===== 视口：裁剪轨道 ===== */
+    & > .carousel-view {
+        position: relative;
+        overflow: hidden;
+        height: 100%;
+        /* 保留垂直滚动手势，水平轴留给拖拽 */
+        touch-action: pan-y;
+        cursor: grab;
+        user-select: none;
+        -webkit-user-select: none;
+    }
+
+    /* 拖拽中：抓手光标 */
+    &.dragging > .carousel-view {
+        cursor: grabbing;
+    }
+
+    /* ===== 轨道（slide 默认）：flex 横排 + transform 位移切换 ===== */
+    & .carousel-track {
+        display: flex;
+        height: 100%;
+        /* 位移动画由 JS 补间（rAF）逐帧驱动，不使用 CSS 过渡 */
+        will-change: transform;
+    }
+
+    /* ===== 轮播项 ===== */
+    & .carousel-item {
+        position: relative;
+        flex: 0 0 100%;
+        width: 100%;
+    }
+
+    /* 图片：img 本身是轮播项（元素触发）或项内图片（JSON 渲染），均撑满裁剪不变形 */
+    & img.carousel-item,
+    & .carousel-item img {
+        display: block;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        /* 阻止图片原生拖拽，避免干扰指针拖拽 */
+        -webkit-user-drag: none;
+    }
+
+    /* 图片标题浮层：底部渐变遮罩（不挡点击） */
+    & .carousel-caption {
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        padding: 24px 16px 10px;
+        background: linear-gradient(to top, rgba(0, 0, 0, 0.55), transparent);
+        color: var(--white-common);
+        font-size: var(--font-size);
+        pointer-events: none;
+    }
+
+    /* ===== fade 效果：grid 堆叠 + 透明度切换（自动取最高项高度） ===== */
+    &.effect-fade .carousel-track {
+        display: grid;
+    }
+
+    &.effect-fade .carousel-item {
+        grid-area: 1 / 1;
+        opacity: 0;
+        visibility: hidden;
+        /* visibility 参与过渡：淡出完整可见、淡入立即显示 */
+        transition: opacity 200ms cubic-bezier(0.4, 0, 0.2, 1), visibility 200ms;
+    }
+
+    &.effect-fade .carousel-item.this {
+        opacity: 1;
+        visibility: visible;
+    }
+
+    /* ===== coverflow 效果（异形 3D 覆盖流）：中央项正面，两侧项透视旋转错层 ===== */
+
+    /* 根裁剪远端飞出的项（防止漂浮到相邻内容上；项为绝对定位，不影响垂直裁剪） */
+    &.effect-coverflow {
+        overflow: hidden;
+    }
+
+    /* 视口：露出两侧相邻项 + 3D 透视（高度兜底由 JS 在未设置 carousel-height 时提供，避免与显式高度冲突） */
+    &.effect-coverflow > .carousel-view {
+        overflow: visible;
+        perspective: 1200px;
+    }
+
+    /* 轨道改为静态容器：项绝对定位居中，位移/旋转由 JS 逐项施加 */
+    &.effect-coverflow .carousel-track {
+        display: block;
+        position: relative;
+    }
+
+    &.effect-coverflow .carousel-item {
+        position: absolute;
+        top: 0;
+        left: 50%;
+        width: 60%;
+        height: 100%;
+        /* 居中（宽 60% → 左移 30%） */
+        margin-left: -30%;
+        /* 圆角 + 裁剪只在项这一层做：裁剪边界随 3D 变换整体旋转，四角完整 */
+        border-radius: var(--border-radius);
+        box-shadow: var(--box-shadow-005);
+        overflow: hidden;
+        background-color: var(--white);
+        will-change: transform, opacity;
+    }
+
+    /* 项内图片同样裁圆角：JSON 渲染时 img 被项包着，两层同心圆角视觉一致 */
+    &.effect-coverflow img.carousel-item,
+    &.effect-coverflow .carousel-item img {
+        border-radius: var(--border-radius);
+    }
+
+    /* ===== 切换箭头 ===== */
+    & > .btn-left,
+    & > .btn-right {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        /* 高于 coverflow 项的错层 zIndex（JS 设至 100） */
+        z-index: 200;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        /* 半透明白底（暗色模式自动切换为半透明黑底），配可变文字色保证可读 */
+        background-color: var(--white-alpha-85);
+        box-shadow: var(--box-shadow-005);
+        cursor: pointer;
+        user-select: none;
+        /* 默认隐藏，根 hover 时显示 */
+        opacity: 0;
+        pointer-events: none;
+        transition: var(--transition-fast);
+
+        & i {
+            font-size: var(--font-size-18);
+            color: var(--black);
+            transition: var(--transition-fast);
+        }
+
+        /* hover 高亮：主色底 */
+        &:hover {
+            background-color: var(--default);
+
+            & i {
+                color: var(--white-common);
+            }
+        }
+
+        &:active i {
+            transform: scale(0.9);
+        }
+    }
+
+    & > .btn-left {
+        left: 12px;
+    }
+
+    & > .btn-right {
+        right: 12px;
+    }
+
+    /* 默认行为：根 hover 时显示箭头 */
+    &:hover > .btn-left,
+    &:hover > .btn-right {
+        opacity: 1;
+        pointer-events: auto;
+    }
+
+    /* carousel-arrow="always"：常显 */
+    &.arrow-always > .btn-left,
+    &.arrow-always > .btn-right {
+        opacity: 1;
+        pointer-events: auto;
+    }
+
+    /* carousel-arrow="none"：隐藏 */
+    &.arrow-none > .btn-left,
+    &.arrow-none > .btn-right {
+        display: none;
+    }
+
+    /* 非 loop 模式边界禁用（需写在 hover/always 显示之后，同优先级靠源顺序覆盖） */
+    & > .btn-left.disabled,
+    & > .btn-right.disabled {
+        opacity: 0.35;
+        pointer-events: none;
+    }
+
+    /* 仅 1 项：隐藏箭头 */
+    &.single > .btn-left,
+    &.single > .btn-right {
+        display: none;
+    }
+
+    /* ===== 指示器 ===== */
+    & > .indicator {
+        position: absolute;
+        bottom: 10px;
+        left: 50%;
+        transform: translateX(-50%);
+        /* 高于 coverflow 项的错层 zIndex（JS 设至 100） */
+        z-index: 200;
+        display: flex;
+        gap: 8px;
+
+        & > li {
+            width: 10px;
+            height: 10px;
+            border-radius: var(--border-radius-full);
+            /* 常数白点 + 阴影：任何内容背景下都可见（暗色模式同样适用） */
+            background-color: var(--white-common);
+            opacity: 0.55;
+            box-shadow: var(--box-shadow-005);
+            cursor: pointer;
+            transition: var(--transition-fast);
+
+            &:hover {
+                opacity: 0.85;
+            }
+
+            /* 当前项：主色高亮并拉长为胶囊 */
+            &.this {
+                width: 24px;
+                background-color: var(--default);
+                opacity: 1;
+            }
+        }
+    }
+
+    /* carousel-indicator="outside"：流式布局，显示在视口下方 */
+    &.indicator-outside > .indicator {
+        position: static;
+        transform: none;
+        justify-content: center;
+        margin-top: 8px;
+    }
+
+    /* carousel-indicator="none"：隐藏 */
+    &.indicator-none > .indicator {
+        display: none;
+    }
+
+    /* 仅 1 项：隐藏指示器 */
+    &.single > .indicator {
+        display: none;
+    }
+}
 /* ========== 步骤条 ========== */
 .bny-steps {
     display: flex;
