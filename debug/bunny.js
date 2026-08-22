@@ -6305,27 +6305,33 @@
       document.addEventListener("DOMContentLoaded", bindListeners);
     }
   })();
-  htmx.defineExtension("bny-validate", {
+  htmx.defineExtension("bny-form", {
     onEvent: function(name, evt) {
       if (name === "htmx:afterProcessNode") {
-        if (!bny.hasExtName(evt.target, "bny-validate")) return false;
+        if (!bny.hasExtName(evt.target, "bny-form")) return false;
         var form = evt.target;
-        if (form._bnyValidateInit) return false;
-        form._bnyValidateInit = true;
+        if (form._bnyFormInit) return false;
+        form._bnyFormInit = true;
         form.setAttribute("novalidate", "");
         form.addEventListener("submit", function(e) {
           var ok = validateForm(form);
+          var useAlert = form.hasAttribute("valid-alert") && typeof bny !== "undefined" && bny.alert;
           if (!ok) {
             e.preventDefault();
             e.stopImmediatePropagation();
+            if (useAlert) {
+              var inv = form.querySelector('[aria-invalid="true"]');
+              var msg = inv ? getFieldError(inv) : "校验未通过";
+              bny.alert(msg, 3);
+            }
             return false;
           }
           var hasHx = form.getAttribute("hx-post") || form.getAttribute("hx-get") || form.getAttribute("hx-put") || form.getAttribute("hx-patch") || form.getAttribute("hx-delete");
           if (!hasHx) {
             if (form.closest('[hx-ext~="bny-spa"]')) return;
             e.preventDefault();
-            if (typeof bny !== "undefined" && bny.alert) {
-              bny.alert("校验通过");
+            if (useAlert) {
+              bny.alert("校验通过", 1);
             }
           }
         }, true);
@@ -6459,6 +6465,9 @@
   function showError(field, msg) {
     field.setAttribute("aria-invalid", "true");
     field.classList.add("bny-input-error");
+    if (field.closest("form") && field.closest("form").hasAttribute("valid-alert")) {
+      return;
+    }
     var item = field.closest(".form-item");
     if (!item) {
       var next = field.nextElementSibling;
