@@ -31,6 +31,7 @@ const jsFiles = [
   path.resolve(__dirname, 'src/js/image.js'),
   path.resolve(__dirname, 'src/js/carousel.js'),
   path.resolve(__dirname, 'src/js/rate.js'),
+  path.resolve(__dirname, 'src/js/skeleton.js'),
   // 如需新增JS文件，直接追加即可：
   // path.resolve(__dirname, 'src/js/entry3.js'),
 ];

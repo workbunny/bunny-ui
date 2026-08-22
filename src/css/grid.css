@@ -213,6 +213,20 @@
     & .col-xs-offset12 {
         grid-column-end: 13;
     }
+
+    /* 行占据（span）：让该格子在纵向占 N 行（1~12） */
+    & .col-xs-span1 { grid-row: span 1; }
+    & .col-xs-span2 { grid-row: span 2; }
+    & .col-xs-span3 { grid-row: span 3; }
+    & .col-xs-span4 { grid-row: span 4; }
+    & .col-xs-span5 { grid-row: span 5; }
+    & .col-xs-span6 { grid-row: span 6; }
+    & .col-xs-span7 { grid-row: span 7; }
+    & .col-xs-span8 { grid-row: span 8; }
+    & .col-xs-span9 { grid-row: span 9; }
+    & .col-xs-span10 { grid-row: span 10; }
+    & .col-xs-span11 { grid-row: span 11; }
+    & .col-xs-span12 { grid-row: span 12; }
 }
 
 /* 超小屏幕（768px 以下） */
@@ -337,6 +351,20 @@
             grid-column-end: 13;
         }
 
+        /* 行占据（span） */
+        & .col-sm-span1 { grid-row: span 1; }
+        & .col-sm-span2 { grid-row: span 2; }
+        & .col-sm-span3 { grid-row: span 3; }
+        & .col-sm-span4 { grid-row: span 4; }
+        & .col-sm-span5 { grid-row: span 5; }
+        & .col-sm-span6 { grid-row: span 6; }
+        & .col-sm-span7 { grid-row: span 7; }
+        & .col-sm-span8 { grid-row: span 8; }
+        & .col-sm-span9 { grid-row: span 9; }
+        & .col-sm-span10 { grid-row: span 10; }
+        & .col-sm-span11 { grid-row: span 11; }
+        & .col-sm-span12 { grid-row: span 12; }
+
         & .hidden-sm {
             display: none;
         }
@@ -455,6 +483,20 @@
             grid-column-end: 13;
         }
 
+        /* 行占据（span） */
+        & .col-md-span1 { grid-row: span 1; }
+        & .col-md-span2 { grid-row: span 2; }
+        & .col-md-span3 { grid-row: span 3; }
+        & .col-md-span4 { grid-row: span 4; }
+        & .col-md-span5 { grid-row: span 5; }
+        & .col-md-span6 { grid-row: span 6; }
+        & .col-md-span7 { grid-row: span 7; }
+        & .col-md-span8 { grid-row: span 8; }
+        & .col-md-span9 { grid-row: span 9; }
+        & .col-md-span10 { grid-row: span 10; }
+        & .col-md-span11 { grid-row: span 11; }
+        & .col-md-span12 { grid-row: span 12; }
+
         & .hidden-md {
             display: none;
         }
@@ -572,6 +614,20 @@
             grid-column-end: 13;
         }
 
+        /* 行占据（span） */
+        & .col-lg-span1 { grid-row: span 1; }
+        & .col-lg-span2 { grid-row: span 2; }
+        & .col-lg-span3 { grid-row: span 3; }
+        & .col-lg-span4 { grid-row: span 4; }
+        & .col-lg-span5 { grid-row: span 5; }
+        & .col-lg-span6 { grid-row: span 6; }
+        & .col-lg-span7 { grid-row: span 7; }
+        & .col-lg-span8 { grid-row: span 8; }
+        & .col-lg-span9 { grid-row: span 9; }
+        & .col-lg-span10 { grid-row: span 10; }
+        & .col-lg-span11 { grid-row: span 11; }
+        & .col-lg-span12 { grid-row: span 12; }
+
         & .hidden-lg {
             display: none;
         }
@@ -688,6 +744,20 @@
         & .col-xl-offset12 {
             grid-column-end: 13;
         }
+
+        /* 行占据（span） */
+        & .col-xl-span1 { grid-row: span 1; }
+        & .col-xl-span2 { grid-row: span 2; }
+        & .col-xl-span3 { grid-row: span 3; }
+        & .col-xl-span4 { grid-row: span 4; }
+        & .col-xl-span5 { grid-row: span 5; }
+        & .col-xl-span6 { grid-row: span 6; }
+        & .col-xl-span7 { grid-row: span 7; }
+        & .col-xl-span8 { grid-row: span 8; }
+        & .col-xl-span9 { grid-row: span 9; }
+        & .col-xl-span10 { grid-row: span 10; }
+        & .col-xl-span11 { grid-row: span 11; }
+        & .col-xl-span12 { grid-row: span 12; }
 
         & .hidden-xl {
             display: none;

@@ -4499,6 +4499,8 @@ table[hx-ext~="bny-table"] th.sortable {
                 display: flex;
                 align-items: center;
                 flex: 0 0 90px;
+                /* 标签高度贯穿整行，避免多行内容时标签块悬浮、上下留空 */
+                align-self: stretch;
                 text-align: left;
                 white-space: nowrap;
                 overflow: hidden;
@@ -4524,6 +4526,42 @@ table[hx-ext~="bny-table"] th.sortable {
         &[table-color="blue"] td::before {
             background-color: var(--blue);
         }
+    }
+}
+
+/* ========== 移动端顶部排序条（手机端隐藏 thead 后的排序入口） ========== */
+.bny-table-sort-bar {
+    display: none;
+}
+
+@media screen and (max-width: 767px) {
+    .bny-table-sort-bar {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        /* 贴卡片区上方，不额外占页边距 */
+        margin-bottom: -6px;
+        padding: 14px 14px 0;
+    }
+
+    .bny-table-sort-chip {
+        border: 1px solid var(--gray-middle);
+        background-color: var(--white);
+        color: var(--black-middle);
+        border-radius: 16px;
+        padding: 4px 12px;
+        font-size: var(--font-size-sm);
+        font-family: inherit;
+        line-height: 1.5;
+        cursor: pointer;
+        transition: background-color var(--transition-fast), color var(--transition-fast),
+            border-color var(--transition-fast);
+    }
+
+    .bny-table-sort-chip.active {
+        border-color: var(--default);
+        color: var(--default-middle);
+        background-color: var(--default-alpha-10);
     }
 }
 
@@ -5504,6 +5542,20 @@ html.dark table[hx-ext~="bny-table"] tbody tr.bny-table-empty td {
     & .col-xs-offset12 {
         grid-column-end: 13;
     }
+
+    /* 行占据（span）：让该格子在纵向占 N 行（1~12） */
+    & .col-xs-span1 { grid-row: span 1; }
+    & .col-xs-span2 { grid-row: span 2; }
+    & .col-xs-span3 { grid-row: span 3; }
+    & .col-xs-span4 { grid-row: span 4; }
+    & .col-xs-span5 { grid-row: span 5; }
+    & .col-xs-span6 { grid-row: span 6; }
+    & .col-xs-span7 { grid-row: span 7; }
+    & .col-xs-span8 { grid-row: span 8; }
+    & .col-xs-span9 { grid-row: span 9; }
+    & .col-xs-span10 { grid-row: span 10; }
+    & .col-xs-span11 { grid-row: span 11; }
+    & .col-xs-span12 { grid-row: span 12; }
 }
 
 /* 超小屏幕（768px 以下） */
@@ -5628,6 +5680,20 @@ html.dark table[hx-ext~="bny-table"] tbody tr.bny-table-empty td {
             grid-column-end: 13;
         }
 
+        /* 行占据（span） */
+        & .col-sm-span1 { grid-row: span 1; }
+        & .col-sm-span2 { grid-row: span 2; }
+        & .col-sm-span3 { grid-row: span 3; }
+        & .col-sm-span4 { grid-row: span 4; }
+        & .col-sm-span5 { grid-row: span 5; }
+        & .col-sm-span6 { grid-row: span 6; }
+        & .col-sm-span7 { grid-row: span 7; }
+        & .col-sm-span8 { grid-row: span 8; }
+        & .col-sm-span9 { grid-row: span 9; }
+        & .col-sm-span10 { grid-row: span 10; }
+        & .col-sm-span11 { grid-row: span 11; }
+        & .col-sm-span12 { grid-row: span 12; }
+
         & .hidden-sm {
             display: none;
         }
@@ -5746,6 +5812,20 @@ html.dark table[hx-ext~="bny-table"] tbody tr.bny-table-empty td {
             grid-column-end: 13;
         }
 
+        /* 行占据（span） */
+        & .col-md-span1 { grid-row: span 1; }
+        & .col-md-span2 { grid-row: span 2; }
+        & .col-md-span3 { grid-row: span 3; }
+        & .col-md-span4 { grid-row: span 4; }
+        & .col-md-span5 { grid-row: span 5; }
+        & .col-md-span6 { grid-row: span 6; }
+        & .col-md-span7 { grid-row: span 7; }
+        & .col-md-span8 { grid-row: span 8; }
+        & .col-md-span9 { grid-row: span 9; }
+        & .col-md-span10 { grid-row: span 10; }
+        & .col-md-span11 { grid-row: span 11; }
+        & .col-md-span12 { grid-row: span 12; }
+
         & .hidden-md {
             display: none;
         }
@@ -5863,6 +5943,20 @@ html.dark table[hx-ext~="bny-table"] tbody tr.bny-table-empty td {
             grid-column-end: 13;
         }
 
+        /* 行占据（span） */
+        & .col-lg-span1 { grid-row: span 1; }
+        & .col-lg-span2 { grid-row: span 2; }
+        & .col-lg-span3 { grid-row: span 3; }
+        & .col-lg-span4 { grid-row: span 4; }
+        & .col-lg-span5 { grid-row: span 5; }
+        & .col-lg-span6 { grid-row: span 6; }
+        & .col-lg-span7 { grid-row: span 7; }
+        & .col-lg-span8 { grid-row: span 8; }
+        & .col-lg-span9 { grid-row: span 9; }
+        & .col-lg-span10 { grid-row: span 10; }
+        & .col-lg-span11 { grid-row: span 11; }
+        & .col-lg-span12 { grid-row: span 12; }
+
         & .hidden-lg {
             display: none;
         }
@@ -5979,6 +6073,20 @@ html.dark table[hx-ext~="bny-table"] tbody tr.bny-table-empty td {
         & .col-xl-offset12 {
             grid-column-end: 13;
         }
+
+        /* 行占据（span） */
+        & .col-xl-span1 { grid-row: span 1; }
+        & .col-xl-span2 { grid-row: span 2; }
+        & .col-xl-span3 { grid-row: span 3; }
+        & .col-xl-span4 { grid-row: span 4; }
+        & .col-xl-span5 { grid-row: span 5; }
+        & .col-xl-span6 { grid-row: span 6; }
+        & .col-xl-span7 { grid-row: span 7; }
+        & .col-xl-span8 { grid-row: span 8; }
+        & .col-xl-span9 { grid-row: span 9; }
+        & .col-xl-span10 { grid-row: span 10; }
+        & .col-xl-span11 { grid-row: span 11; }
+        & .col-xl-span12 { grid-row: span 12; }
 
         & .hidden-xl {
             display: none;
@@ -7107,6 +7215,57 @@ html.dark .tip.tip-light {
         & .bny-skeleton-text { margin: 0 16px 6px; }
         & .bny-skeleton-text:last-child { width: 55%; margin-bottom: 16px; }
     }
+}
+
+/* ========== bny-skeleton 扩展（自定义草图 + 自动克隆） ========== */
+
+/* ---- 作为 hx-indicator：默认隐藏，请求期间(.htmx-request)才显示 ---- */
+[skeleton-sketch],
+[skeleton-clone] {
+    display: none;
+}
+
+/* 手动开启：不依赖 hx-indicator，直接常显（class 类名或裸属性写法均可） */
+[skeleton-sketch].bny-skeleton-active, [skeleton-sketch][bny-skeleton-active],
+[skeleton-clone].bny-skeleton-active,  [skeleton-clone][bny-skeleton-active] {
+    display: block;
+}
+
+/* 请求进行中显示骨架 */
+[skeleton-sketch].htmx-request,
+[skeleton-clone].htmx-request {
+    display: block;
+}
+
+/* ---- 自动克隆：保留文本占位但完全隐藏，避免布局塌陷 ---- */
+.bny-skeleton-cloned,
+.bny-skeleton-cloned * {
+    color: transparent !important;
+    -webkit-text-fill-color: transparent !important;
+}
+
+/* ---- 嵌套组合容器（自定义草图）默认撑满，仅作布局分组 ---- */
+.bny-skeleton-sketch-list,
+.bny-skeleton-sketch-grid,
+.bny-skeleton-sketch-card {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.bny-skeleton-sketch-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 14px;
+}
+
+.bny-skeleton-sketch-card {
+    & .bny-skeleton-image { height: 120px; }
+    & .bny-skeleton-title  { margin: 12px 0 8px; }
+}
+
+.bny-skeleton-sketch-list {
+    & .bny-skeleton-avatar { flex-shrink: 0; }
 }
 /* ========== Breadcrumb 面包屑导航 ========== */
 
@@ -8240,6 +8399,12 @@ html.dark .bny-image-viewer .bny-image-counter {
 }
 /* ========== 轮播 ========== */
 
+/* 图片加载前骨架占位流光动画（模块内自包含，避免依赖其他组件样式） */
+@keyframes bny-skeleton-shimmer {
+    0%   { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+}
+
 /* 根：定位上下文（箭头/指示器的定位基准），直接子元素自动成为轮播项 */
 [hx-ext~="bny-carousel"] {
     position: relative;
@@ -8291,8 +8456,20 @@ html.dark .bny-image-viewer .bny-image-counter {
         width: 100%;
         height: 100%;
         object-fit: cover;
+        /* 加载前骨架占位：流光背景，图片加载完成后由 JS 加 .bny-img-loaded 清除 */
+        background: linear-gradient(90deg,
+            var(--gray-shallow) 25%,
+            var(--white-middle) 37%,
+            var(--gray-shallow) 63%);
+        background-size: 200% 100%;
+        animation: bny-skeleton-shimmer 1.6s ease-in-out infinite;
         /* 阻止图片原生拖拽，避免干扰指针拖拽 */
         -webkit-user-drag: none;
+
+        &.bny-img-loaded {
+            background: none;
+            animation: none;
+        }
     }
 
     /* 图片标题浮层：底部渐变遮罩（不挡点击） */

@@ -4233,9 +4233,23 @@
           initFocusable(evt.target);
           evt.target.addEventListener("click", function(e) {
             const item = e.target.closest(".item");
-            let subMenu = item.querySelector(".sub-menu");
-            if (item && subMenu) {
+            if (!item) return;
+            const parent = item.parentElement;
+            if (parent) {
+              Array.from(parent.querySelectorAll(":scope > .item.show")).forEach(function(o) {
+                if (o !== item) o.classList.remove("show");
+              });
+            }
+            const subMenu = item.querySelector(":scope > .sub-menu");
+            if (subMenu) {
               item.classList.toggle("show");
+            }
+          });
+          document.addEventListener("click", function(e) {
+            if (!evt.target.contains(e.target)) {
+              evt.target.querySelectorAll(".item.show").forEach(function(o) {
+                o.classList.remove("show");
+              });
             }
           });
           evt.target.addEventListener("keydown", onMenuKeydown);
@@ -4748,6 +4762,8 @@
         if (!ths.length) return;
         const tableKey = table.getAttribute("table-key") || "";
         const storeKey = tableKey ? "bny-table-sort:" + tableKey : "";
+        const tbodyCaptured = table.querySelector("tbody");
+        const defaultRows = tbodyCaptured ? Array.from(tbodyCaptured.querySelectorAll("tr")) : [];
         function persistSort(colIndex, type, asc) {
           if (!storeKey) return;
           try {
@@ -4756,6 +4772,13 @@
               type,
               asc
             }));
+          } catch (_) {
+          }
+        }
+        function clearPersist() {
+          if (!storeKey) return;
+          try {
+            sessionStorage.removeItem(storeKey);
           } catch (_) {
           }
         }
@@ -4770,34 +4793,71 @@
           }
         }
         ths.forEach(function(th) {
-          const colIndex = Array.from(th.parentElement.querySelectorAll("th")).indexOf(th);
+          th._colIndex = Array.from(th.parentElement.querySelectorAll("th")).indexOf(th);
+        });
+        function renderChip(th, state) {
+          if (!th || !th._chip) return;
+          const chip = th._chip;
+          chip.classList.toggle("active", !!state);
+          const label = chip.getAttribute("data-col") || th.textContent.trim();
+          chip.textContent = state === "asc" ? label + " ↑" : state === "desc" ? label + " ↓" : label;
+        }
+        function cycleColumn(th) {
+          const colIndex = th._colIndex;
+          const isAsc = th.classList.contains("sort-asc");
+          const isDesc = th.classList.contains("sort-desc");
+          ths.forEach(function(t) {
+            t.classList.remove("sort-asc", "sort-desc");
+            renderChip(t, null);
+          });
+          const type = th.getAttribute("table-sort") || "string";
+          const tbody = table.querySelector("tbody");
+          if (isDesc) {
+            clearPersist();
+            if (tbody && defaultRows.length) {
+              defaultRows.forEach(function(r) {
+                tbody.appendChild(r);
+              });
+            }
+            return;
+          }
+          const asc = !isAsc;
+          th.classList.add(asc ? "sort-asc" : "sort-desc");
+          renderChip(th, asc ? "asc" : "desc");
+          if (tbody) {
+            sortRows(tbody, colIndex, type, asc);
+          }
+          persistSort(colIndex, type, asc);
+        }
+        ths.forEach(function(th) {
           th.style.cursor = "pointer";
           th.setAttribute("title", "点击排序");
           th.classList.add("sortable");
           th.addEventListener("click", function() {
-            const isAsc = th.classList.contains("sort-asc");
-            ths.forEach(function(t) {
-              t.classList.remove("sort-asc", "sort-desc");
-            });
-            if (isAsc) {
-              th.classList.add("sort-desc");
-            } else {
-              th.classList.add("sort-asc");
-            }
-            const type = th.getAttribute("table-sort") || "string";
-            const asc = th.classList.contains("sort-asc");
-            const tbody = table.querySelector("tbody");
-            if (tbody) {
-              sortRows(tbody, colIndex, type, asc);
-            }
-            persistSort(colIndex, type, asc);
+            cycleColumn(th);
           });
+        });
+        const sortBar = document.createElement("div");
+        sortBar.className = "bny-table-sort-bar";
+        table.parentNode.insertBefore(sortBar, table);
+        ths.forEach(function(th) {
+          const chip = document.createElement("button");
+          chip.type = "button";
+          chip.className = "bny-table-sort-chip";
+          chip.setAttribute("data-col", th.textContent.trim());
+          chip.textContent = th.textContent.trim();
+          th._chip = chip;
+          chip.addEventListener("click", function() {
+            cycleColumn(th);
+          });
+          sortBar.appendChild(chip);
         });
         const saved = readSort();
         if (saved) {
           const targetTh = ths[saved.colIndex];
           if (targetTh) {
             targetTh.classList.add(saved.asc ? "sort-asc" : "sort-desc");
+            renderChip(targetTh, saved.asc ? "asc" : "desc");
             const tbody = table.querySelector("tbody");
             if (tbody) {
               sortRows(tbody, saved.colIndex, saved.type, saved.asc);
@@ -5191,6 +5251,17 @@
                 );
                 trigger.classList.add("active");
               }
+            }
+          });
+          document.addEventListener("click", function(e) {
+            const nav = evt.target;
+            if (nav.contains(e.target)) return;
+            const isSide = nav.hasAttribute("nav-side");
+            const isCollapsed = nav.hasAttribute("nav-collapsed");
+            if (isSide && !isCollapsed) return;
+            bny.removeClass(nav.querySelectorAll(".show"), "show");
+            if (!isSide && window.matchMedia("(max-width: 768px)").matches) {
+              nav.removeAttribute("nav-collapsed");
             }
           });
           return false;
@@ -6353,10 +6424,11 @@
       return true;
     }
   });
-  function validateField(field) {
+  function validateField(field, show) {
+    if (show === void 0) show = true;
     var error = getFieldError(field);
     if (error) {
-      showError(field, error);
+      if (show) showError(field, error);
       return false;
     }
     clearError(field);
@@ -6364,11 +6436,12 @@
   }
   function validateForm(form) {
     var fields = form.querySelectorAll("input, textarea, select");
+    var useAlert = form.hasAttribute("valid-alert");
     var allOk = true;
     var firstInvalid = null;
     Array.prototype.forEach.call(fields, function(field) {
       if (field.disabled || !field.name) return;
-      var ok = validateField(field);
+      var ok = validateField(field, !(useAlert && firstInvalid));
       if (!ok && !firstInvalid) {
         firstInvalid = field;
         allOk = false;
@@ -7340,6 +7413,20 @@
           state.rafId = 0;
         }
       }
+      function bindImgSkeleton(root) {
+        root.querySelectorAll("img").forEach(function(img) {
+          if (img.dataset.bnySkLoaded) return;
+          img.dataset.bnySkLoaded = "1";
+          function mark() {
+            img.classList.add("bny-img-loaded");
+          }
+          if (img.complete) mark();
+          else {
+            img.addEventListener("load", mark);
+            img.addEventListener("error", mark);
+          }
+        });
+      }
       function refresh(root) {
         const state = root._bnyCarousel;
         const count = getItems(root).length;
@@ -7351,6 +7438,7 @@
         if (state.effect === "fade") renderFade(root);
         else renderPosition(root);
         updateArrows(root);
+        bindImgSkeleton(root);
         updateAutoplay(root);
       }
       function bindEvents(root) {
@@ -7670,7 +7758,7 @@
             }
             return;
           }
-          var idx = parseInt(star2.getAttribute("rate-index"), 10);
+          var idx = parseInt(star2.getAttribute("data-index"), 10);
           if (state.half) {
             var rect = star2.getBoundingClientRect();
             var isLeft = e.clientX - rect.left < rect.width / 2;
@@ -7688,7 +7776,7 @@
         starsEl.addEventListener("click", function(e) {
           var star2 = e.target.closest(".bny-rate-star");
           if (!star2) return;
-          var idx = parseInt(star2.getAttribute("rate-index"), 10);
+          var idx = parseInt(star2.getAttribute("data-index"), 10);
           if (state.half) {
             var rect = star2.getBoundingClientRect();
             var isLeft = e.clientX - rect.left < rect.width / 2;
@@ -7777,5 +7865,143 @@
       scan(document);
     }
   })();
+  htmx.defineExtension("bny-skeleton", {
+    onEvent: function(name, evt) {
+      if (name !== "htmx:afterProcessNode") return true;
+      var elt = evt.target;
+      if (!bny.hasExtName(elt, "bny-skeleton")) return false;
+      if (elt._bnySkeletonInit) return false;
+      elt._bnySkeletonInit = true;
+      var sketch = elt.getAttribute("skeleton-sketch");
+      var clone = elt.getAttribute("skeleton-clone");
+      if (sketch) {
+        buildSketch(elt, sketch);
+      } else if (clone) {
+        buildClone(elt, clone);
+      }
+      return false;
+    }
+  });
+  function splitTop(str2) {
+    var parts = [], depth = 0, cur = "";
+    for (var i = 0; i < str2.length; i++) {
+      var c = str2[i];
+      if (c === "{") depth++;
+      else if (c === "}") depth--;
+      if (c === "," && depth === 0) {
+        parts.push(cur);
+        cur = "";
+      } else cur += c;
+    }
+    if (cur.trim()) parts.push(cur);
+    return parts;
+  }
+  function addBlock(parent, expr) {
+    var m = expr.match(/^([a-z-]+)(?:\s*x(\d+))?(?:\s+(short))?(?::([\d.]+))?\s*$/);
+    if (!m) return;
+    var type = m[1];
+    var count = parseInt(m[2] || "1", 10);
+    var short = !!m[3];
+    var width = m[4];
+    var map = {
+      text: ["bny-skeleton", "bny-skeleton-text"],
+      line: ["bny-skeleton", "bny-skeleton-text"],
+      title: ["bny-skeleton", "bny-skeleton-title"],
+      circle: ["bny-skeleton", "bny-skeleton-circle"],
+      avatar: ["bny-skeleton", "bny-skeleton-avatar"],
+      image: ["bny-skeleton", "bny-skeleton-image"],
+      button: ["bny-skeleton", "bny-skeleton-button"]
+    };
+    var cls = map[type] || map.text;
+    for (var i = 0; i < count; i++) {
+      var el = document.createElement("div");
+      el.className = cls.join(" ");
+      if (short) el.classList.add("short");
+      if (width) {
+        if (type === "circle") {
+          el.style.width = width + "px";
+          el.style.height = width + "px";
+        } else {
+          el.style.width = width + "px";
+        }
+      } else if (type === "circle") {
+        el.style.width = "40px";
+        el.style.height = "40px";
+      }
+      parent.appendChild(el);
+    }
+  }
+  function buildSketch(container, spec) {
+    splitTop(spec).forEach(function(it) {
+      it = it.trim();
+      if (!it) return;
+      var brace = it.indexOf("{");
+      if (brace !== -1) {
+        var name = it.slice(0, brace).trim().replace(/[^a-zA-Z0-9_\-]/g, "") || "group";
+        var inner = it.slice(brace + 1, it.lastIndexOf("}"));
+        var box = document.createElement("div");
+        box.className = "bny-skeleton-sketch-" + name;
+        container.appendChild(box);
+        buildSketch(box, inner);
+      } else {
+        addBlock(container, it);
+      }
+    });
+  }
+  function buildClone(elt, selector) {
+    var src = typeof selector === "string" && selector.trim() ? document.querySelector(selector.trim()) : null;
+    if (!src) {
+      console.error("bny-skeleton: skeleton-clone 目标不存在: " + selector);
+      return;
+    }
+    elt.innerHTML = "";
+    Array.prototype.forEach.call(src.children, function(child) {
+      elt.appendChild(child.cloneNode(true));
+    });
+    skeletonizeNode(elt);
+    elt.classList.add("bny-skeleton-cloned");
+  }
+  function skeletonizeNode(root) {
+    Array.prototype.forEach.call(root.querySelectorAll("*"), function(el) {
+      if (/^(IMG|VIDEO|IFRAME|CANVAS)$/.test(el.tagName)) {
+        var w = el.getAttribute("width"), h = el.getAttribute("height");
+        var box = document.createElement("div");
+        box.className = "bny-skeleton bny-skeleton-image";
+        box.setAttribute("aria-hidden", "true");
+        if (w) box.style.width = /px$/.test(w) ? w : w + "px";
+        if (h) box.style.height = /px$/.test(h) ? h : h + "px";
+        el.parentNode.replaceChild(box, el);
+        return;
+      }
+      if (el.tagName === "SVG" || isRounded(el) || el.classList.contains("avatar") || el.classList.contains("icon")) {
+        el.classList.add("bny-skeleton", "bny-skeleton-circle");
+        el.setAttribute("aria-hidden", "true");
+        return;
+      }
+      if (hasDirectText(el)) {
+        el.classList.add("bny-skeleton");
+        el.setAttribute("aria-hidden", "true");
+        return;
+      }
+    });
+  }
+  function hasDirectText(el) {
+    return Array.prototype.some.call(el.childNodes, function(n) {
+      return n.nodeType === 3 && n.nodeValue && n.nodeValue.trim() !== "";
+    });
+  }
+  function isRounded(el) {
+    try {
+      var r = getComputedStyle(el).borderRadius;
+      if (!r) return false;
+      var values = r.split(/[\s/]+/);
+      for (var i = 0; i < values.length; i++) {
+        var v = parseFloat(values[i]);
+        if (!isNaN(v) && v >= 50 && /%/.test(values[i])) return true;
+      }
+    } catch (_) {
+    }
+    return false;
+  }
 })();
 //# sourceMappingURL=bunny.js.map

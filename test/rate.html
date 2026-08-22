@@ -100,16 +100,37 @@
                                 <blockquote class="bny-blockquote">
                                     选值后会派发 <code>change</code> 事件，配合 <code>hx-trigger="change"</code> 即可提交到服务端。
                                 </blockquote>
+                                <div class="bny-rate" rate-value="0" id="rate-htmx-pre"></div>
+                                <div id="rate-htmx-feedback"
+                                    style="margin-top:12px; font-size:13px; color:var(--black-middle);">
+                                    点击星星试试，这里会反馈触发 change 的值。
+                                </div>
                             </div>
                         </div>
+                        <script>
+                        (function () {
+                            var r = document.getElementById('rate-htmx-pre');
+                            if (!r) return;
+                            r.addEventListener('change', function () {
+                                var fb = document.getElementById('rate-htmx-feedback');
+                                if (fb) fb.textContent = '已触发 change 提交，评分：' + r.getAttribute('data-value');
+                            });
+                        })();
+                        </script>
                         <div>
                             <pre hx-ext="bny-code">
-&lt;div class=&quot;bny-rate&quot;
-     rate-value=&quot;0&quot;
-     hx-post=&quot;/api/rate&quot;
-     hx-trigger=&quot;change&quot;
-     hx-vals='{\&quot;id\&quot;: 123}'&gt;
+&lt;!-- rate 选值后触发 change，配合 hx-trigger 提交到服务端 --&gt;
+&lt;div class="bny-rate"
+     rate-value="0"
+     hx-post="/api/rate"
+     hx-trigger="change"
+     hx-vals='{"id": 123}'
+     hx-target="#rate-feedback"
+     hx-swap="innerHTML"&gt;
 &lt;/div&gt;
+
+&lt;!-- 服务端返回内容展示区 --&gt;
+&lt;div id="rate-feedback"&gt;&lt;/div&gt;
                             </pre>
                         </div>
                     </div>

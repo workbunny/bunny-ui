@@ -58,6 +58,10 @@ htmx.defineExtension('bny-table', {
             const tableKey = table.getAttribute('table-key') || '';
             const storeKey = tableKey ? 'bny-table-sort:' + tableKey : '';
 
+            // 记录当前（未排序）的初始行顺序，作为“默认/取消排序”的还原快照
+            const tbodyCaptured = table.querySelector('tbody');
+            const defaultRows = tbodyCaptured ? Array.from(tbodyCaptured.querySelectorAll('tr')) : [];
+
             /**
              * 持久化排序状态到 sessionStorage
              * @param {number} colIndex
@@ -74,6 +78,14 @@ htmx.defineExtension('bny-table', {
             }
 
             /**
+             * 清除持久化排序状态（回到默认时调用，刷新后不再自动排序）
+             */
+            function clearPersist() {
+                if (!storeKey) return;
+                try { sessionStorage.removeItem(storeKey); } catch (_) { }
+            }
+
+            /**
              * 读取持久化的排序状态
              * @returns {{colIndex:number,type:string,asc:boolean}|null}
              */
@@ -86,37 +98,84 @@ htmx.defineExtension('bny-table', {
                 } catch (_) { return null; }
             }
 
+            // 记录每列索引，供表头与移动端排序条共用
             ths.forEach(function (th) {
-                const colIndex = Array.from(th.parentElement.querySelectorAll('th')).indexOf(th);
+                th._colIndex = Array.from(th.parentElement.querySelectorAll('th')).indexOf(th);
+            });
 
+            /**
+             * 渲染排序条的某一列 chip 状态（无排序/升序/降序）
+             * @param {HTMLElement} th
+             * @param {string|null} state
+             */
+            function renderChip(th, state) {
+                if (!th || !th._chip) return;
+                const chip = th._chip;
+                chip.classList.toggle('active', !!state);
+                const label = chip.getAttribute('data-col') || th.textContent.trim();
+                chip.textContent = state === 'asc' ? label + ' ↑'
+                    : state === 'desc' ? label + ' ↓'
+                        : label;
+            }
+
+            /**
+             * 三态排序：无 → 升序 → 降序 → 默认（取消排序）
+             * 表头 th 与移动端排序条 chip 共用此逻辑，状态彼此同步
+             * @param {HTMLElement} th
+             */
+            function cycleColumn(th) {
+                const colIndex = th._colIndex;
+                const isAsc = th.classList.contains('sort-asc');
+                const isDesc = th.classList.contains('sort-desc');
+
+                // 清除所有可排序列的排序标志（含表头与移动端 chip）
+                ths.forEach(function (t) {
+                    t.classList.remove('sort-asc', 'sort-desc');
+                    renderChip(t, null);
+                });
+
+                const type = th.getAttribute('table-sort') || 'string';
+                const tbody = table.querySelector('tbody');
+
+                // 第三态：降序再点 → 回到默认（取消排序），恢复初始顺序、图标/文本回归
+                if (isDesc) {
+                    clearPersist();
+                    if (tbody && defaultRows.length) {
+                        defaultRows.forEach(function (r) { tbody.appendChild(r); });
+                    }
+                    return;
+                }
+
+                // 无排序 → 升序；升序 → 降序
+                const asc = !isAsc;
+                th.classList.add(asc ? 'sort-asc' : 'sort-desc');
+                renderChip(th, asc ? 'asc' : 'desc');
+                if (tbody) {
+                    sortRows(tbody, colIndex, type, asc);
+                }
+                persistSort(colIndex, type, asc);
+            }
+
+            ths.forEach(function (th) {
                 th.style.cursor = 'pointer';
                 th.setAttribute('title', '点击排序');
                 th.classList.add('sortable');
+                th.addEventListener('click', function () { cycleColumn(th); });
+            });
 
-                th.addEventListener('click', function () {
-                    const isAsc = th.classList.contains('sort-asc');
-
-                    // 清除所有排序列的类名
-                    ths.forEach(function (t) {
-                        t.classList.remove('sort-asc', 'sort-desc');
-                    });
-
-                    // 设置当前列排序状态
-                    if (isAsc) {
-                        th.classList.add('sort-desc');
-                    } else {
-                        th.classList.add('sort-asc');
-                    }
-
-                    const type = th.getAttribute('table-sort') || 'string';
-                    const asc = th.classList.contains('sort-asc');
-                    const tbody = table.querySelector('tbody');
-                    if (tbody) {
-                        sortRows(tbody, colIndex, type, asc);
-                    }
-                    // 持久化排序状态
-                    persistSort(colIndex, type, asc);
-                });
+            // 移动端排序条（手机端隐藏了 thead，用顶部排序条提供排序入口）
+            const sortBar = document.createElement('div');
+            sortBar.className = 'bny-table-sort-bar';
+            table.parentNode.insertBefore(sortBar, table);
+            ths.forEach(function (th) {
+                const chip = document.createElement('button');
+                chip.type = 'button';
+                chip.className = 'bny-table-sort-chip';
+                chip.setAttribute('data-col', th.textContent.trim());
+                chip.textContent = th.textContent.trim();
+                th._chip = chip;
+                chip.addEventListener('click', function () { cycleColumn(th); });
+                sortBar.appendChild(chip);
             });
 
             // 恢复持久化的排序状态（HTMX 重新请求后自动应用）
@@ -125,6 +184,7 @@ htmx.defineExtension('bny-table', {
                 const targetTh = ths[saved.colIndex];
                 if (targetTh) {
                     targetTh.classList.add(saved.asc ? 'sort-asc' : 'sort-desc');
+                    renderChip(targetTh, saved.asc ? 'asc' : 'desc');
                     const tbody = table.querySelector('tbody');
                     if (tbody) {
                         sortRows(tbody, saved.colIndex, saved.type, saved.asc);

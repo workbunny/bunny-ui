@@ -67,6 +67,25 @@ htmx.defineExtension('bny-nav', {
                     }
                 })
 
+                // 点击导航外部：
+                // - 默认导航宽屏：收起子菜单
+                // - 默认导航手机端（≤768px）：整个菜单面板收回（移除 nav-collapsed）
+                // - 侧边导航展开态：不收起（保持常驻）；侧边收缩态：收起 flyout 子菜单
+                document.addEventListener('click', function (e) {
+                    const nav = evt.target
+                    if (nav.contains(e.target)) return
+                    const isSide = nav.hasAttribute('nav-side')
+                    const isCollapsed = nav.hasAttribute('nav-collapsed')
+                    // 侧边展开态保持常驻，不收起
+                    if (isSide && !isCollapsed) return
+                    // 收起展开的子菜单
+                    bny.removeClass(nav.querySelectorAll('.show'), 'show')
+                    // 默认导航 + 手机端（≤768px）：点击外部整个菜单面板也收回（移除 nav-collapsed）
+                    if (!isSide && window.matchMedia('(max-width: 768px)').matches) {
+                        nav.removeAttribute('nav-collapsed')
+                    }
+                })
+
 
                 return false
             }

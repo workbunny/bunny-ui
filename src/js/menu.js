@@ -7,12 +7,28 @@ htmx.defineExtension('bny-menu', {
             if (bny.hasExtName(evt.target, 'bny-menu')) {
                 // 为所有可聚焦的 item 设置 tabindex，便于键盘导航
                 initFocusable(evt.target)
-                // 鼠标点击：切换子菜单
+                // 鼠标点击：展开当前项的子菜单，同时收起其他已展开项
                 evt.target.addEventListener('click', function (e) {
                     const item = e.target.closest('.item')
-                    let subMenu = item.querySelector('.sub-menu')
-                    if (item && subMenu) {
+                    if (!item) return
+                    // 只收起「同父级的兄弟」中已展开的项（不触碰祖先链，避免点子菜单内项时收起顶层）
+                    const parent = item.parentElement
+                    if (parent) {
+                        Array.from(parent.querySelectorAll(':scope > .item.show')).forEach(function (o) {
+                            if (o !== item) o.classList.remove('show')
+                        })
+                    }
+                    const subMenu = item.querySelector(':scope > .sub-menu')
+                    if (subMenu) {
                         item.classList.toggle('show')
+                    }
+                })
+                // 点击菜单外部：自动收起所有已展开的子菜单
+                document.addEventListener('click', function (e) {
+                    if (!evt.target.contains(e.target)) {
+                        evt.target.querySelectorAll('.item.show').forEach(function (o) {
+                            o.classList.remove('show')
+                        })
                     }
                 })
                 // 键盘导航：方向键/Enter/ESC

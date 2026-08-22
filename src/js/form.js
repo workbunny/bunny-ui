@@ -96,12 +96,14 @@ htmx.defineExtension('bny-form', {
 /**
  * 校验单个字段
  * @param {HTMLElement} field input/textarea/select
+ * @param {boolean} [show=true] 是否标红并显示错误（valid-alert 提交时仅第一个错误标红）
  * @returns {boolean}
  */
-function validateField(field) {
+function validateField(field, show) {
+    if (show === undefined) show = true;
     var error = getFieldError(field);
     if (error) {
-        showError(field, error);
+        if (show) showError(field, error);
         return false;
     }
     clearError(field);
@@ -115,12 +117,14 @@ function validateField(field) {
  */
 function validateForm(form) {
     var fields = form.querySelectorAll('input, textarea, select');
+    // valid-alert 模式：提交时只标红第一个错误字段，避免多框全红分不清（弹窗已提示该唯一错误）
+    var useAlert = form.hasAttribute('valid-alert');
     var allOk = true;
     var firstInvalid = null;
     Array.prototype.forEach.call(fields, function (field) {
         // 跳过 disabled / 无 name 的字段
         if (field.disabled || !field.name) return;
-        var ok = validateField(field);
+        var ok = validateField(field, !(useAlert && firstInvalid));
         if (!ok && !firstInvalid) {
             firstInvalid = field;
             allOk = false;

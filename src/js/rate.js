@@ -87,7 +87,7 @@
                     }
                     return;
                 }
-                var idx = parseInt(star.getAttribute('rate-index'), 10);
+                var idx = parseInt(star.getAttribute('data-index'), 10);
                 // 半星：根据鼠标位置判断
                 if (state.half) {
                     var rect = star.getBoundingClientRect();
@@ -106,7 +106,7 @@
             starsEl.addEventListener('click', function (e) {
                 var star = e.target.closest('.bny-rate-star');
                 if (!star) return;
-                var idx = parseInt(star.getAttribute('rate-index'), 10);
+                var idx = parseInt(star.getAttribute('data-index'), 10);
                 if (state.half) {
                     var rect = star.getBoundingClientRect();
                     var isLeft = (e.clientX - rect.left) < rect.width / 2;
