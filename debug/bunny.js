@@ -4879,10 +4879,29 @@
           }
         }
       }
+      function initTree(table) {
+        table.querySelectorAll(".bny-table-tree-toggle").forEach(function(btn) {
+          btn.addEventListener("click", function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            const tr = btn.closest("tr");
+            if (!tr) return;
+            const level = parseInt(tr.getAttribute("data-tree-level") || "0", 10);
+            const willCollapse = !tr.classList.contains("tree-collapsed");
+            tr.classList.toggle("tree-collapsed", willCollapse);
+            let n = tr.nextElementSibling;
+            while (n && n.tagName === "TR" && parseInt(n.getAttribute("data-tree-level") || "-1", 10) > level) {
+              n.style.display = willCollapse ? "none" : "";
+              n = n.nextElementSibling;
+            }
+          });
+        });
+      }
       if (name === "htmx:afterProcessNode") {
         if (bny.hasExtName(evt.target, "bny-table")) {
           initLabels(evt.target);
           initSort(evt.target);
+          initTree(evt.target);
           return false;
         } else if (evt.target.tagName === "TR") {
           const tds = evt.target.querySelectorAll("td");
@@ -4925,6 +4944,59 @@
         h += '<table hx-ext="bny-table"' + (color ? ' table-color="' + color + '"' : "");
         if (tableKey) h += ' table-key="' + bny.escapeChars(tableKey) + '"';
         h += ">";
+        const indentUnit = 20;
+        function treeRowHtml(row, cells, level) {
+          const hasKids = Array.isArray(row.children) && row.children.length > 0;
+          let r = '<tr data-tree-level="' + level + '"' + (hasKids ? ' data-tree-parent="1"' : "") + ">";
+          cells.forEach(function(cell, ci) {
+            let content = renderCell(cell);
+            if (ci === 0) {
+              content = '<span class="bny-table-tree-indent" style="padding-left:' + level * indentUnit + 'px"></span>' + (hasKids ? '<span class="bny-table-tree-toggle"><i class="bny-icon icon-caret-right"></i></span>' : "") + content;
+            }
+            r += "<td" + (ci === 0 ? ' class="bny-table-tree-cell"' : "") + ">" + content + "</td>";
+          });
+          r += "</tr>";
+          return r;
+        }
+        function appendRow(row, level) {
+          if (row && !Array.isArray(row) && typeof row === "object") {
+            if (Array.isArray(row.cells) || Array.isArray(row.children)) {
+              const hasChildren = Array.isArray(row.children) && row.children.length > 0;
+              const cells = Array.isArray(row.cells) ? row.cells : [row.cells];
+              h += treeRowHtml(row, cells, level);
+              if (hasChildren) {
+                (row.children || []).forEach(function(child) {
+                  appendRow(child, level + 1);
+                });
+              }
+              return;
+            }
+            if (typeof row.__html !== "undefined" && row.__html) {
+              h += row.__html;
+              return;
+            }
+            h += '<tr data-tree-level="' + level + '">';
+            [row].forEach(function(cell, ci) {
+              let content = renderCell(cell);
+              if (ci === 0 && level > 0) {
+                content = '<span class="bny-table-tree-indent" style="padding-left:' + level * indentUnit + 'px"></span>' + content;
+              }
+              h += "<td>" + content + "</td>";
+            });
+            h += "</tr>";
+            return;
+          }
+          const vals = Array.isArray(row) ? row : [row];
+          h += '<tr data-tree-level="' + level + '">';
+          vals.forEach(function(cell, ci) {
+            let content = renderCell(cell);
+            if (ci === 0 && level > 0) {
+              content = '<span class="bny-table-tree-indent" style="padding-left:' + level * indentUnit + 'px"></span>' + content;
+            }
+            h += "<td>" + content + "</td>";
+          });
+          h += "</tr>";
+        }
         h += "<thead><tr>";
         cols.forEach(function(col) {
           h += renderCol(col);
@@ -4935,17 +5007,7 @@
           h += '<tr class="bny-table-empty"><td colspan="' + cols.length + '">' + bny.escapeChars(emptyText) + "</td></tr>";
         } else {
           rows.forEach(function(row) {
-            h += "<tr>";
-            if (Array.isArray(row)) {
-              row.forEach(function(cell) {
-                h += "<td>" + renderCell(cell) + "</td>";
-              });
-            } else if (row && typeof row === "object" && row.__html) {
-              h += row.__html;
-            } else {
-              h += "<td>" + renderCell(row) + "</td>";
-            }
-            h += "</tr>";
+            appendRow(row, 0);
           });
         }
         h += "</tbody></table>";
@@ -7045,6 +7107,14 @@
         img._bnyImageBound = true;
         img.classList.add("bny-image-thumb");
         ensureItem(img);
+        var markLoaded = function() {
+          img.classList.add("bny-img-loaded");
+        };
+        if (img.complete) markLoaded();
+        else {
+          img.addEventListener("load", markLoaded);
+          img.addEventListener("error", markLoaded);
+        }
         img.addEventListener("click", function() {
           var fullSrc = img.getAttribute("img-preview-src") || img.src;
           var container = img.closest(".bny-image-group");
@@ -8002,6 +8072,214 @@
     } catch (_) {
     }
     return false;
+  }
+  htmx.defineExtension("bny-attr", {
+    onEvent: function(name, evt) {
+      if (name !== "htmx:afterProcessNode") return true;
+      const el = evt.target;
+      if (!bny.hasExtName(el, "bny-attr")) return true;
+      if (el._bnyAttrInit) return true;
+      el._bnyAttrInit = true;
+      const opAttrs = ["attr-set", "attr-add", "attr-remove", "attr-toggle", "attr-rename", "attr-replace"].filter(function(a) {
+        return el.hasAttribute(a);
+      });
+      const hasJson = el.hasAttribute("attr-json");
+      if (!opAttrs.length && !hasJson) return true;
+      const target = resolveTarget(el);
+      const applyAll = function() {
+        opAttrs.forEach(function(opAttr) {
+          applyOp(el, opAttr, target);
+        });
+        if (target && document.dispatchEvent) {
+          target.dispatchEvent(new CustomEvent("attr-applied", { bubbles: true, detail: { by: el } }));
+        }
+      };
+      if (el.hasAttribute("attr-auto")) {
+        applyAll();
+      }
+      const trigger = el.getAttribute("attr-trigger") || "click";
+      el.addEventListener(trigger, function(e) {
+        const jsonPath = el.getAttribute("attr-json");
+        if (jsonPath !== null && e && e.detail && e.detail.xhr) {
+          applyJsonFromResponse(target, jsonPath, e.detail.xhr, el.getAttribute("attr-value"));
+        }
+        applyAll();
+      });
+      return true;
+    }
+  });
+  function resolveTarget(el) {
+    const sel = el.getAttribute("attr-target");
+    if (typeof sel === "string" && sel.trim()) {
+      const t = el.closest(sel) || document.querySelector(sel.trim());
+      if (t) return t;
+    }
+    return el;
+  }
+  function applyOp(el, opAttr, target) {
+    const raw = el.getAttribute(opAttr);
+    if (!raw || !target) return;
+    const op = opAttr.replace("attr-", "");
+    raw.split(",").forEach(function(pair) {
+      pair = pair.trim();
+      if (!pair) return;
+      const idx = pair.indexOf(":");
+      let k = pair, v = "";
+      if (idx > -1) {
+        k = pair.slice(0, idx).trim();
+        v = pair.slice(idx + 1).trim();
+      }
+      if (!k) return;
+      applyOne(target, op, k, v);
+    });
+  }
+  function applyJsonFromResponse(target, attrJson, xhr, valueAttr) {
+    if (!target || !xhr) return;
+    let obj;
+    try {
+      obj = JSON.parse(xhr.responseText);
+    } catch (_) {
+      return;
+    }
+    const attrStr = String(attrJson);
+    let path = attrStr, expected;
+    const c = attrStr.indexOf(":");
+    if (c > -1) {
+      path = attrStr.slice(0, c).trim();
+      expected = attrStr.slice(c + 1);
+    }
+    const src = path && path.trim() ? resolveJsonPath(obj, path.trim()) : obj;
+    if (expected !== void 0) {
+      if (!valsEqual(src, expected)) return;
+    }
+    if (valueAttr && String(valueAttr).trim()) {
+      if (/^on/i.test(valueAttr)) {
+        console.warn("[bny-attr] 已拦截 json 事件属性:", valueAttr);
+        return;
+      }
+      const val = String(src == null ? "" : src);
+      if (/^(javascript|vbscript):/i.test(val.trim())) {
+        console.warn("[bny-attr] 已拦截 json 危险值:", val);
+        return;
+      }
+      try {
+        target.setAttribute(valueAttr, val);
+      } catch (_) {
+      }
+      return;
+    }
+    if (!src || typeof src !== "object") {
+      console.warn("[bny-attr] attr-json 指向非对象值，请配合 attr-value=目标属性 使用: " + (path || ""));
+      return;
+    }
+    Object.keys(src).forEach(function(k) {
+      if (/^on/i.test(k)) {
+        console.warn("[bny-attr] 已拦截 json 事件属性:", k);
+        return;
+      }
+      const v = String(src[k]);
+      if (/^(javascript|vbscript):/i.test(v.trim())) {
+        console.warn("[bny-attr] 已拦截 json 危险值:", v);
+        return;
+      }
+      try {
+        target.setAttribute(k, v);
+      } catch (_) {
+      }
+    });
+  }
+  function valsEqual(a, b) {
+    const bs = String(b);
+    if (String(a) === bs) return true;
+    if (/^-?\d+(\.\d+)?$/.test(bs) && Number(a) === Number(b)) return true;
+    return false;
+  }
+  function resolveJsonPath(obj, path) {
+    return path.split(".").reduce(function(o, k) {
+      return o == null ? o : o[k];
+    }, obj);
+  }
+  function applyOne(target, op, key, value) {
+    const dangerousName = /^on/i.test(key) || op === "rename" && /^on/i.test(String(value || ""));
+    if (dangerousName) {
+      console.warn("[bny-attr] 已拦截事件处理属性名:", op === "rename" ? value : key);
+      return;
+    }
+    if (op !== "remove" && value && /^(javascript|vbscript):/i.test(String(value).trim())) {
+      console.warn("[bny-attr] 已拦截危险协议值:", value);
+      return;
+    }
+    switch (op) {
+      case "set":
+        target.setAttribute(key, value);
+        break;
+      case "add": {
+        if (!value) break;
+        const addTokens = value.split(/\s+/).filter(Boolean);
+        const addArr = target.hasAttribute(key) ? (target.getAttribute(key) || "").split(/\s+/) : [];
+        addTokens.forEach(function(t) {
+          if (t && addArr.indexOf(t) === -1) addArr.push(t);
+        });
+        target.setAttribute(key, addArr.join(" "));
+        break;
+      }
+      case "remove": {
+        if (!value) {
+          target.removeAttribute(key);
+          break;
+        }
+        if (!target.hasAttribute(key)) break;
+        const rmTokens = value.split(/\s+/).filter(Boolean);
+        const remain = target.getAttribute(key).split(/\s+/).filter(function(t) {
+          return rmTokens.indexOf(t) === -1;
+        });
+        if (remain.length) target.setAttribute(key, remain.join(" "));
+        else target.removeAttribute(key);
+        break;
+      }
+      case "rename": {
+        if (key && value && target.hasAttribute(key)) {
+          const saved = target.getAttribute(key);
+          target.removeAttribute(key);
+          target.setAttribute(value, saved);
+        }
+        break;
+      }
+      case "replace": {
+        if (!value || !target.hasAttribute(key)) break;
+        const repArr = target.getAttribute(key).split(/\s+/);
+        value.split(/\s+/).forEach(function(part) {
+          if (!part) return;
+          const at = part.indexOf("@");
+          if (at > 0) {
+            const o = part.slice(0, at), n = part.slice(at + 1);
+            const i = repArr.indexOf(o);
+            if (i > -1) repArr[i] = n;
+          }
+        });
+        target.setAttribute(key, repArr.join(" "));
+        break;
+      }
+      case "toggle": {
+        if (!target.hasAttribute(key)) {
+          target.setAttribute(key, value);
+        } else if (value) {
+          const cur = target.getAttribute(key);
+          if (cur.split(/\s+/).indexOf(value) > -1) {
+            const arr = cur.split(/\s+/).filter(function(t) {
+              return t !== value;
+            });
+            if (arr.length) target.setAttribute(key, arr.join(" "));
+            else target.removeAttribute(key);
+          } else {
+            target.setAttribute(key, (cur ? cur + " " : "") + value);
+          }
+        } else {
+          target.removeAttribute(key);
+        }
+        break;
+      }
+    }
   }
 })();
 //# sourceMappingURL=bunny.js.map

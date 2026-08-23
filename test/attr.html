@@ -1,0 +1,424 @@
+<div class="bny-row">
+    <div class="text-content-box col-xs12 col-sm9">
+        <div class="text-content">
+            <style>
+                .attr-demo-box {
+                    border: 1px solid var(--gray-middle);
+                    border-radius: var(--border-radius);
+                    padding: 14px 16px;
+                    min-height: 48px;
+                    transition: background-color var(--transition-fast), border-color var(--transition-fast), box-shadow var(--transition-fast);
+                }
+                .attr-demo-box.active { background-color: var(--green-shallow); border-color: var(--green); }
+                .attr-demo-box.on { background-color: var(--blue-shallow); border-color: var(--blue); }
+
+                /* 属性驱动视觉：目标带 data-status 时按该值变绿/红，JSON 例子可见即生效 */
+                .attr-status[data-status="online"]  { background-color: var(--green-shallow); border-color: var(--green); }
+                .attr-status[data-status="offline"] { background-color: var(--red-shallow);   border-color: var(--red); }
+
+                /* 条件触发视觉：命中（写了 data-match）才变绿；未命中无此属性 → 中性 */
+                .attr-status[data-match] { background-color: var(--green-shallow); border-color: var(--green); }
+            </style>
+
+            <h1>属性</h1>
+            <hr>
+            <blockquote class="bny-blockquote">
+                <code>bny-attr</code>：对<b>属性名</b>与<b>属性值</b>做增删改查，无需手写 JS。
+                属性前缀 <code>attr-*</code>；禁止 <code>on*</code> 事件属性与 <code>javascript:/vbscript:</code> 危险值。
+            </blockquote>
+
+            <h2 id="n00">注入防护</h2>
+            <div class="bny-card">
+                <p class="p-12" style="margin:0;font-size:13px;color:var(--black-shallow);">
+                    以下声明会被禁止：目标不会生成 <code>onclick</code>、<code>href</code> 不会变成 <code>javascript:</code>，也无脚本执行（控制台有拦截警告）。
+                </p>
+                <div class="p-12">
+                    <div class="flex gap-8">
+                        <button class="bny-btn" hx-ext="bny-attr" attr-target="#sec-box" attr-set="onclick:alert(1)">尝试注入 onclick</button>
+                        <button class="bny-btn" hx-ext="bny-attr" attr-target="#sec-link" attr-set="href:javascript:alert(1)">尝试注入 href=javascript:</button>
+                    </div>
+                    <div id="sec-box" class="attr-demo-box mt-12">目标 · onclick 应始终不存在</div>
+                    <a id="sec-link" class="mt-12" href="#">点击上面按钮后，此链接 href 应仍为 #</a>
+                </div>
+            </div>
+
+            <h2 id="n01">属性值 的增删改查</h2>
+            <div class="bny-card">
+                <div hx-ext="bny-tab">
+                    <ul class="head"><li>Preview</li><li>Code</li></ul>
+                    <div class="body">
+                        <div>
+                            <div class="p-12">
+                                <p style="margin:0 0 12px; font-size:13px; color:var(--black-shallow);">
+                                    增/改：<code>attr-set</code> 写入或覆盖 · 追加：<code>attr-add</code>（不重复）· 删：<code>attr-remove="k:v"</code> · 查：<code>getAttribute</code>/<code>attr-applied</code>
+                                </p>
+                                <div class="flex gap-8">
+                                    <button class="bny-btn" hx-ext="bny-attr" attr-target="#val-box" attr-set="data-state:open">增值 open</button>
+                                    <button class="bny-btn" hx-ext="bny-attr" attr-target="#val-box" attr-set="data-state:done">改值 done</button>
+                                    <button class="bny-btn" hx-ext="bny-attr" attr-target="#val-box" attr-add="class:active">加值 active</button>
+                                    <button class="bny-btn" hx-ext="bny-attr" attr-target="#val-box" attr-remove="class:active">删值 active</button>
+                                </div>
+                                <div id="val-box" class="attr-demo-box mt-12">目标元素</div>
+                                <p style="margin-top:8px; font-size:12px; color:var(--black-shallow);">
+                                    当前 data-state：<code id="val-view">（无）</code> · class：<code id="val-class">（无附加）</code>
+                                </p>
+                                <hr style="margin:16px 0;">
+                                <p style="margin:0 0 10px; font-size:13px; color:var(--black-shallow);">
+                                    多值属性（如 <code>data-tags</code>）按<b>单个值</b>操作：
+                                    <code>attr-add</code> / <code>attr-remove</code>(单值) / <code>attr-replace="old@new"</code>
+                                </p>
+                                <div id="tags-box" data-tags="hot new" class="attr-demo-box">
+                                    tags：<code id="tags-view">hot new</code>
+                                </div>
+                                <div class="flex gap-8 mt-12">
+                                    <button class="bny-btn" hx-ext="bny-attr" attr-target="#tags-box" attr-add="data-tags:best">增一个 best</button>
+                                    <button class="bny-btn" hx-ext="bny-attr" attr-target="#tags-box" attr-add="data-tags:t1 t2">增多个 t1 t2</button>
+                                    <button class="bny-btn" hx-ext="bny-attr" attr-target="#tags-box" attr-remove="data-tags:hot">删一个 hot</button>
+                                    <button class="bny-btn" hx-ext="bny-attr" attr-target="#tags-box" attr-remove="data-tags:new best">删多个 new best</button>
+                                    <button class="bny-btn" hx-ext="bny-attr" attr-target="#tags-box" attr-replace="data-tags:new@top t1@x">改多个 new→top / t1→x</button>
+                                </div>
+                                <script>
+                                (function () {
+                                    var box = document.getElementById('tags-box');
+                                    var v = document.getElementById('tags-view');
+                                    setInterval(function () { v.textContent = box.getAttribute('data-tags') || '（无）'; }, 300);
+                                })();
+                                </script>
+                                <script>
+                                (function () {
+                                    var box = document.getElementById('val-box');
+                                    var v = document.getElementById('val-view');
+                                    var c = document.getElementById('val-class');
+                                    function refresh() {
+                                        v.textContent = box.getAttribute('data-state') || '（无）';
+                                        c.textContent = box.className.replace(/attr-demo-box|mt-12/g, '').trim() || '（无附加）';
+                                    }
+                                    setInterval(refresh, 300);
+                                })();
+                                </script>
+                            </div>
+                        </div>
+                        <div>
+                            <pre hx-ext="bny-code">
+&lt;!-- 值的增 / 改 / 追加 / 删 --&gt;
+&lt;button hx-ext="bny-attr" attr-target="#box" attr-set="data-state:open"&gt;增值&lt;/button&gt;
+&lt;button hx-ext="bny-attr" attr-target="#box" attr-set="data-state:done"&gt;改值&lt;/button&gt;
+&lt;button hx-ext="bny-attr" attr-target="#box" attr-add="class:active"&gt;加值&lt;/button&gt;
+&lt;button hx-ext="bny-attr" attr-target="#box" attr-remove="class:active"&gt;删值&lt;/button&gt;
+
+&lt;!-- 查值：业务 getAttribute --&gt;
+const v = document.getElementById('box').getAttribute('data-state');
+&lt;!-- 或监听扩展派发的 attr-applied 事件 --&gt;
+box.addEventListener('attr-applied', () =&gt; console.log(box.getAttribute('data-state')));
+                    </pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h2 id="n02">属性名 的增删改查</h2>
+            <div class="bny-card">
+                <div hx-ext="bny-tab">
+                    <ul class="head"><li>Preview</li><li>Code</li></ul>
+                    <div class="body">
+                        <div>
+                            <div class="p-12">
+                                <p style="margin:0 0 12px; font-size:13px; color:var(--black-shallow);">
+                                    增名：<code>attr-set</code> 新建 · 改名：<code>attr-rename="old:new"</code> · 删名：<code>attr-remove="k"</code> · 查名：<code>hasAttribute</code>
+                                </p>
+                                <div class="flex gap-8">
+                                    <button class="bny-btn" hx-ext="bny-attr" attr-target="#name-box" attr-set="data-state:open">增名 data-state</button>
+                                    <button class="bny-btn" hx-ext="bny-attr" attr-target="#name-box" attr-rename="data-state:data-status">改名 data-status</button>
+                                    <button class="bny-btn" hx-ext="bny-attr" attr-target="#name-box" attr-remove="data-status">删名 data-status</button>
+                                    <button class="bny-btn" hx-ext="bny-attr" attr-target="#name-box" attr-toggle="class:on">切换 class:on</button>
+                                </div>
+                                <div id="name-box" class="attr-demo-box mt-12">目标元素</div>
+                                <p style="margin-top:8px; font-size:12px; color:var(--black-shallow);">
+                                    现有属性名：<code id="name-view">（无）</code>
+                                </p>
+                                <script>
+                                (function () {
+                                    var box = document.getElementById('name-box');
+                                    var v = document.getElementById('name-view');
+                                    function refresh() {
+                                        var names = Array.prototype.slice.call(box.attributes)
+                                            .map(function (a) { return a.name; })
+                                            .filter(function (n) { return n !== 'id' && n !== 'class' && n !== 'style'; });
+                                        v.textContent = names.join(', ') || '（无业务属性）';
+                                    }
+                                    setInterval(refresh, 300);
+                                })();
+                                </script>
+                            </div>
+                        </div>
+                        <div>
+                            <pre hx-ext="bny-code">
+&lt;!-- 名的增 / 改 / 删 --&gt;
+&lt;button hx-ext="bny-attr" attr-target="#box" attr-set="data-state:open"&gt;增名&lt;/button&gt;
+&lt;button hx-ext="bny-attr" attr-target="#box" attr-rename="data-state:data-status"&gt;改名&lt;/button&gt;
+&lt;button hx-ext="bny-attr" attr-target="#box" attr-remove="data-status"&gt;删名&lt;/button&gt;
+
+&lt;!-- 查名：hasAttribute --&gt;
+const has = document.getElementById('box').hasAttribute('data-status');
+&lt;!-- 或 attr-toggle 切换某个属性的有无 --&gt;
+&lt;button hx-ext="bny-attr" attr-target="#box" attr-toggle="class:on"&gt;切换&lt;/button&gt;
+                    </pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h2 id="n04">配合 htmx 请求</h2>
+            <div class="bny-card">
+                <div hx-ext="bny-tab">
+                    <ul class="head"><li>Preview</li><li>Code</li></ul>
+                    <div class="body">
+                        <div>
+                            <div class="p-12">
+                                <p style="margin:0 0 12px; font-size:13px; color:var(--black-shallow);">
+                                    <code>attr-trigger</code> 可填 htmx 事件。注意 <code>htmx:afterSwap</code> 派发在<b>目标元素</b>，
+                                    因此把 attr 放在目标自身（<code>#req-box</code>）上监听：请求完成替换内容后，给自身加 <code>active</code> 并写 <code>data-loaded</code>。
+                                </p>
+                                <button class="bny-btn" hx-get="/test/data/table01.json"
+                                    hx-target="#req-box" hx-swap="innerHTML" hx-trigger="click">点击加载</button>
+                                <div id="req-box" hx-ext="bny-attr"
+                                    attr-trigger="htmx:afterSwap"
+                                    attr-target="#req-box"
+                                    attr-add="class:active"
+                                    attr-set="data-loaded:true, data-time:ok"
+                                    class="attr-demo-box mt-12">
+                                    请求返回的内容会替换到这里，同时因 attr-trigger="htmx:afterSwap" 而高亮
+                                </div>
+                                <p style="margin-top:8px; font-size:12px; color:var(--black-shallow);">
+                                    请求后 data-loaded：<code id="req-view">（尚未请求）</code>
+                                </p>
+                                <script>
+                                (function () {
+                                    var box = document.getElementById('req-box');
+                                    var v = document.getElementById('req-view');
+                                    setInterval(function () { v.textContent = box.getAttribute('data-loaded') || '（未设置）'; }, 300);
+                                })();
+                                </script>
+                            </div>
+                        </div>
+                        <div>
+                            <pre hx-ext="bny-code">
+&lt;!-- htmx:afterSwap 派发在目标元素，attr 放目标自身监听 --&gt;
+&lt;button class="bny-btn" hx-get="/data/table01.json"
+    hx-target="#box" hx-swap="innerHTML"&gt;加载&lt;/button&gt;
+
+&lt;div id="box" hx-ext="bny-attr"
+    attr-trigger="htmx:afterSwap"
+    attr-target="#box"
+    attr-add="class:active"
+    attr-set="data-loaded:true"&gt;...&lt;/div&gt;
+
+&lt;!-- 请求方若要监听，用派发在其上的事件：htmx:afterRequest / htmx:beforeRequest / htmx:responseError --&gt;
+&lt;button class="bny-btn" hx-ext="bny-attr" hx-get="/data/xxx"
+    attr-trigger="htmx:responseError" attr-target="#other" attr-add="class:error"&gt;失败标记&lt;/button&gt;
+                    </pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h2 id="n03">attr-auto 初始化 + attr-trigger 自定义事件</h2>
+            <div class="bny-card">
+                <div hx-ext="bny-tab">
+                    <ul class="head"><li>Preview</li><li>Code</li></ul>
+                    <div class="body">
+                        <div>
+                            <div class="p-12">
+                                <p style="margin:0 0 12px; font-size:13px; color:var(--black-shallow);">
+                                    <code>attr-auto</code> 初始化即写入一次；<code>attr-trigger</code> 自定义触发事件（默认 click，可 mouseenter/change 等）。
+                                </p>
+                                <button class="bny-btn" hx-ext="bny-attr" attr-target="#trig-box" attr-trigger="mouseenter" attr-add="class:active">鼠标悬停（mouseenter）</button>
+                                <div id="trig-box" class="attr-demo-box mt-12">目标元素</div>
+                                <hr style="margin:20px 0;">
+                                <div id="auto-box" hx-ext="bny-attr" attr-auto attr-set="data-init:done, aria-live:polite" class="attr-demo-box">
+                                    初始化即写入 <code>data-init="done"</code>
+                                </div>
+                                <p style="margin-top:8px; font-size:12px; color:var(--black-shallow);">
+                                    auto data-init：<code id="auto-view">（无）</code>
+                                </p>
+                                <script>
+                                (function () {
+                                    var box = document.getElementById('auto-box');
+                                    var v = document.getElementById('auto-view');
+                                    setInterval(function () { v.textContent = box.getAttribute('data-init') || '（无）'; }, 300);
+                                })();
+                                </script>
+                            </div>
+                        </div>
+                        <div>
+                            <pre hx-ext="bny-code">
+&lt;button hx-ext="bny-attr" attr-target="#box"
+    attr-trigger="mouseenter" attr-add="class:active"&gt;悬停&lt;/button&gt;
+
+&lt;div hx-ext="bny-attr" attr-auto
+    attr-set="data-init:done, aria-live:polite"&gt;...&lt;/div&gt;
+                    </pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        <h2 id="n05">根据返回 JSON 管理属性</h2>
+            <div class="bny-card">
+                <div hx-ext="bny-tab">
+                    <ul class="head"><li>Preview</li><li>Code</li></ul>
+                    <div class="body">
+                        <div>
+                            <div class="p-12">
+                                <p style="margin:0 0 12px; font-size:13px; color:var(--black-shallow);">
+                                    <code>attr-json="data"</code>：请求完成把响应 JSON（<code>{…}</code>）中 <code>data</code> 对象的键值写入目标；
+                                    配合 <code>hx-swap="none"</code> 不替换内容。<b>卡片随 data-status 变色即为生效</b>（online 变绿）。
+                                </p>
+                                <div hx-ext="bny-attr" hx-get="/test/data/attr-status.json"
+                                    hx-trigger="click" hx-swap="none"
+                                    attr-trigger="htmx:afterRequest"
+                                    attr-json="data"
+                                    attr-target="#json-box">
+                                    <button class="bny-btn" hx-trigger="click" type="button">再拉取一次状态</button>
+                                    <div id="json-box" class="attr-demo-box attr-status mt-12">
+                                        此目标会获得响应 JSON 中的属性，并随 data-status 变绿
+                                    </div>
+                                    <p style="margin-top:8px; font-size:12px; color:var(--black-shallow);">
+                                        data-status：<code id="json-status">（未拉取）</code> · data-users：<code id="json-users">-</code> · data-zone：<code id="json-zone">-</code>
+                                    </p>
+                                    <script>
+                                    (function () {
+                                        var box = document.getElementById('json-box');
+                                        var s = document.getElementById('json-status');
+                                        var u = document.getElementById('json-users');
+                                        var z = document.getElementById('json-zone');
+                                        setInterval(function () {
+                                            s.textContent = box.getAttribute('data-status') || '（未拉取）';
+                                            u.textContent = box.getAttribute('data-users') || '-';
+                                            z.textContent = box.getAttribute('data-zone') || '-';
+                                        }, 300);
+                                    })();
+                                    </script>
+                                </div>
+                                <hr style="margin:16px 0;">
+                                <p style="margin:0 0 10px; font-size:13px; color:var(--black-shallow);">
+                                    取 JSON <b>某个字段的值</b>写入指定属性：<code>attr-json="data.data-users"</code> + <code>attr-value="data-count"</code>
+                                </p>
+                                <div hx-ext="bny-attr" hx-get="/test/data/attr-status.json"
+                                    hx-trigger="click" hx-swap="none"
+                                    attr-trigger="htmx:afterRequest"
+                                    attr-json="data.data-users"
+                                    attr-value="data-count"
+                                    attr-target="#json-count">
+                                    <button class="bny-btn" type="button">取 users 值</button>
+                                    <div id="json-count" class="attr-demo-box mt-12">
+                                        目标将拥有 data-count = 响应 JSON 里 data.data-users 的值
+                                    </div>
+                                    <p style="margin-top:8px; font-size:12px; color:var(--black-shallow);">
+                                        data-count：<strong id="json-count-view" style="font-size:20px;color:var(--default);">-</strong>
+                                    </p>
+                                    <script>
+                                    (function () {
+                                        var box = document.getElementById('json-count');
+                                        var v = document.getElementById('json-count-view');
+                                        setInterval(function () { v.textContent = box.getAttribute('data-count') || '-'; }, 300);
+                                    })();
+                                    </script>
+                                </div>
+                                <hr style="margin:16px 0;">
+                                <p style="margin:0 0 10px; font-size:13px; color:var(--black-shallow);">
+                                    条件触发：<code>attr-json="data.data-users:1280"</code> —— 只有该值等于 1280 才生效（变绿）；=999 不触发（不变）。
+                                </p>
+                                <div hx-ext="bny-attr" hx-get="/test/data/attr-status.json"
+                                    hx-trigger="click" hx-swap="none"
+                                    attr-trigger="htmx:afterRequest"
+                                    attr-json="data.data-users:1280"
+                                    attr-value="data-match"
+                                    attr-target="#cond-hit">
+                                    <button class="bny-btn" hx-trigger="click" type="button">命中条件(拉取)</button>
+                                    <div id="cond-hit" class="attr-demo-box attr-status mt-12">命中条件(data-users=1280) → 变绿</div>
+                                </div>
+                                <div hx-ext="bny-attr" hx-get="/test/data/attr-status.json"
+                                    hx-trigger="click" hx-swap="none"
+                                    attr-trigger="htmx:afterRequest"
+                                    attr-json="data.data-users:999"
+                                    attr-value="data-match"
+                                    attr-target="#cond-miss" class="mt-12">
+                                    <button class="bny-btn" hx-trigger="click" type="button">不命中条件(拉取)</button>
+                                    <div id="cond-miss" class="attr-demo-box attr-status mt-12">不满足条件(data-users=999) → 不变</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <pre hx-ext="bny-code">
+&lt;!-- attr-json：用响应 JSON 中 data 对象的键值写目标属性 --&gt;
+&lt;div hx-ext="bny-attr" hx-get="/api/status"
+    hx-trigger="load" hx-swap="none"          &lt;!-- 不替换内容 --&gt;
+    attr-trigger="htmx:afterRequest"
+    attr-json="data"                            &lt;!-- 响应 JSON 中要应用的路径 --&gt;
+    attr-target="#box"&gt;
+  &lt;button hx-trigger="click"&gt;再拉取&lt;/button&gt;
+  &lt;div id="box"&gt;...&lt;/div&gt;
+&lt;/div&gt;
+
+&lt;!-- 响应 JSON --&gt;
+{ "data": { "data-status": "online", "data-users": 1280 } }
+&lt;!-- → #box 获得 data-status="online"、data-users="1280" --&gt;
+
+&lt;!-- 取单个字段值写入指定属性（attr-value） --&gt;
+&lt;div hx-ext="bny-attr" hx-get="/api/status"
+    hx-trigger="load" hx-swap="none"
+    attr-trigger="htmx:afterRequest"
+    attr-json="data.data-users"   &lt;!-- path 指向标量 --&gt;
+    attr-value="data-count"        &lt;!-- 把该值写入 data-count --&gt;
+    attr-target="#box2"&gt;&lt;/div&gt;
+                    </pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h2 id="n06">API</h2>
+            <div class="bny-card">
+                <p class="p-12" style="margin:0;font-size:13px;color:var(--black-shallow);">
+                    在元素上 <code>hx-ext="bny-attr"</code> 启用；<code>attr-*</code> 声明操作与配置。
+                </p>
+                <table hx-ext="bny-table">
+                    <thead>
+                        <tr><th>属性</th><th>说明</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>attr-target="选择器"</td><td>目标元素，缺省为扩展元素自身</td></tr>
+                        <tr><td>attr-set="k:v, k2:v2"</td><td>整体设置/覆盖属性值（单值用）</td></tr>
+                        <tr><td>attr-add="k:v"</td><td>追加一个或多个值（空格分隔，不重复）</td></tr>
+                        <tr><td>attr-remove="k"</td><td>移除整个属性</td></tr>
+                        <tr><td>attr-remove="k:v"</td><td>仅移除该值（token 级）</td></tr>
+                        <tr><td>attr-replace="k:old@new"</td><td>多值属性把某个值替换为 new（空格分隔可多个）</td></tr>
+                        <tr><td>attr-rename="old:new"</td><td>改属性名（值保留）</td></tr>
+                        <tr><td>attr-toggle="k:v"</td><td>有则删、无则加（切换）</td></tr>
+                        <tr><td>attr-trigger="事件"</td><td>触发事件，默认 click；可填 htmx 事件如 htmx:afterRequest</td></tr>
+                        <tr><td>attr-auto</td><td>初始化即应用一次（不做事件绑定）</td></tr>
+                        <tr><td>attr-json="path"</td><td>请求完成后从响应 JSON 取 path；对象则批量键值写入目标</td></tr>
+                        <tr><td>attr-json="path:期望值"</td><td>条件触发：仅当 path 取值等于期望才应用</td></tr>
+                        <tr><td>attr-value="目标属性"</td><td>配合 attr-json，把取到的字段值写入该目标属性</td></tr>
+                    </tbody>
+                </table>
+                <p class="p-12" style="margin:0;font-size:12px;color:var(--black-shallow);">
+                    安全：写操作拒绝 <code>on*</code> 事件属性和 <code>javascript:/vbscript:</code> 危险值；应用后向目标派发 <code>attr-applied</code> 事件。
+                </p>
+            </div>
+
+        </div>
+    </div>
+    <div class="right-anchor-box hidden-xs col-sm3">
+        <div class="right-anchor">
+            <ul hx-ext="bny-anchor" anchor-rail>
+                <li class="link" anchor-target="#n01">属性值 增删改查</li>
+                <li class="link" anchor-target="#n02">属性名 增删改查</li>
+                <li class="link" anchor-target="#n03">自动 / 触发</li>
+                <li class="link" anchor-target="#n04">配合 htmx 请求</li>
+                <li class="link" anchor-target="#n05">按 JSON 管理</li>
+                <li class="link" anchor-target="#n06">API</li>
+            </ul>
+        </div>
+    </div>
+</div>

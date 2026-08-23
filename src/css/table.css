@@ -239,3 +239,56 @@ table[hx-ext~="bny-table"] tbody tr.bny-table-empty td {
 html.dark table[hx-ext~="bny-table"] tbody tr.bny-table-empty td {
     color: var(--gray-shallow);
 }
+
+/* ========== 树形表格 ========== */
+
+/* 展开箭头（图标版，可点击）与层级缩进占位 */
+.bny-table-tree-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    margin: -3px 2px -3px -4px;
+    cursor: pointer;
+    user-select: none;
+    color: var(--default-middle);
+    vertical-align: middle;
+    border-radius: var(--border-radius-sm);
+
+    &:hover {
+        background-color: var(--default-alpha-10);
+        color: var(--default);
+    }
+
+    & i {
+        font-size: 12px;
+        transition: transform var(--transition-fast);
+        /* 默认展开态：朝下 */
+        transform: rotate(90deg);
+    }
+}
+
+/* 折叠态：箭头朝右（icon-caret-right 原位） */
+tr.tree-collapsed .bny-table-tree-toggle i {
+    transform: rotate(0deg);
+}
+
+.bny-table-tree-indent {
+    display: inline-block;
+    vertical-align: middle;
+    white-space: nowrap;
+}
+
+/* 移动到端卡片式：首列缩进保持不变，箭头可点击；缩进量随层级渐变易于区分 */
+@media screen and (max-width: 767px) {
+    table[hx-ext~="bny-table"] td.bny-table-tree-cell {
+        & .bny-table-tree-toggle,
+        & .bny-table-tree-indent {
+            line-height: 1;
+        }
+        & .bny-table-tree-toggle {
+            margin-right: 2px;
+        }
+    }
+}

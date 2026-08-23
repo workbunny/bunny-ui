@@ -212,11 +212,38 @@ htmx.defineExtension('bny-table', {
             }
         }
 
+        /**
+         * 树形展开/折叠：点击首列箭头，折叠/展开该节点整棵子树
+         * @param {HTMLElement} table
+         */
+        function initTree(table) {
+            table.querySelectorAll('.bny-table-tree-toggle').forEach(function (btn) {
+                btn.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    const tr = btn.closest('tr');
+                    if (!tr) return;
+                    const level = parseInt(tr.getAttribute('data-tree-level') || '0', 10);
+                    const willCollapse = !tr.classList.contains('tree-collapsed');
+                    tr.classList.toggle('tree-collapsed', willCollapse);
+                    // 箭头方向由 CSS 依据 tree-collapsed 旋转（展开朝下、收起朝右）
+                    // 从下一行起，折叠/展开所有层级比当前深的行（即其后代），直到遇到同级或更浅
+                    let n = tr.nextElementSibling;
+                    while (n && n.tagName === 'TR' &&
+                        parseInt(n.getAttribute('data-tree-level') || '-1', 10) > level) {
+                        n.style.display = willCollapse ? 'none' : '';
+                        n = n.nextElementSibling;
+                    }
+                });
+            });
+        }
+
         // 在htmx初始化节点后触发
         if (name === 'htmx:afterProcessNode') {
             if (bny.hasExtName(evt.target, 'bny-table')) {
                 initLabels(evt.target);
                 initSort(evt.target);
+                initTree(evt.target);
                 return false;
             } else if (evt.target.tagName === 'TR') {
                 const tds = evt.target.querySelectorAll('td');
@@ -292,6 +319,79 @@ htmx.defineExtension('bny-table', {
             h += '<table hx-ext="bny-table"' + (color ? ' table-color="' + color + '"' : '');
             if (tableKey) h += ' table-key="' + bny.escapeChars(tableKey) + '"';
             h += '>';
+
+            // 树形缩进单位（px）：层级 × 该值
+            const indentUnit = 20;
+
+            /**
+             * 渲染一棵父行（首列插展开箭头 + 层级缩进）
+             * @param {object} row 父行 { cells:[], children:[] }
+             * @param {Array} cells 当前行各列
+             * @param {number} level 层级（0 为顶层）
+             */
+            function treeRowHtml(row, cells, level) {
+                const hasKids = Array.isArray(row.children) && row.children.length > 0;
+                let r = '<tr data-tree-level="' + level + '"' + (hasKids ? ' data-tree-parent="1"' : '') + '>';
+                cells.forEach(function (cell, ci) {
+                    let content = renderCell(cell);
+                    if (ci === 0) {
+                        content = '<span class="bny-table-tree-indent" style="padding-left:' + (level * indentUnit) + 'px"></span>' +
+                            (hasKids ? '<span class="bny-table-tree-toggle"><i class="bny-icon icon-caret-right"></i></span>' : '') +
+                            content;
+                    }
+                    r += '<td' + (ci === 0 ? ' class="bny-table-tree-cell"' : '') + '>' + content + '</td>';
+                });
+                r += '</tr>';
+                return r;
+            }
+
+            /**
+             * 递归追加一行（含其子树）。父行：{ cells, children: [...] }；子级同构，可任意嵌套。
+             * @param {*} row
+             * @param {number} level
+             */
+            function appendRow(row, level) {
+                // 树形行：整行对象（含 cells，可选 children）
+                if (row && !Array.isArray(row) && typeof row === 'object') {
+                    if (Array.isArray(row.cells) || Array.isArray(row.children)) {
+                        const hasChildren = Array.isArray(row.children) && row.children.length > 0;
+                        const cells = Array.isArray(row.cells) ? row.cells : [row.cells];
+                        h += treeRowHtml(row, cells, level);
+                        if (hasChildren) {
+                            (row.children || []).forEach(function (child) { appendRow(child, level + 1); });
+                        }
+                        return;
+                    }
+                    // 整行原始 HTML（自定义行结构）
+                    if (typeof row.__html !== 'undefined' && row.__html) {
+                        h += row.__html;
+                        return;
+                    }
+                    // 对象单格行
+                    h += '<tr data-tree-level="' + level + '">';
+                    [row].forEach(function (cell, ci) {
+                        let content = renderCell(cell);
+                        if (ci === 0 && level > 0) {
+                            content = '<span class="bny-table-tree-indent" style="padding-left:' + (level * indentUnit) + 'px"></span>' + content;
+                        }
+                        h += '<td>' + content + '</td>';
+                    });
+                    h += '</tr>';
+                    return;
+                }
+                // 平铺数组 / 单值 行
+                const vals = Array.isArray(row) ? row : [row];
+                h += '<tr data-tree-level="' + level + '">';
+                vals.forEach(function (cell, ci) {
+                    let content = renderCell(cell);
+                    if (ci === 0 && level > 0) {
+                        content = '<span class="bny-table-tree-indent" style="padding-left:' + (level * indentUnit) + 'px"></span>' + content;
+                    }
+                    h += '<td>' + content + '</td>';
+                });
+                h += '</tr>';
+            }
+
             h += '<thead><tr>';
             cols.forEach(function (col) {
                 h += renderCol(col);
@@ -302,20 +402,7 @@ htmx.defineExtension('bny-table', {
                 // 空状态：合并所有列显示占位文案
                 h += '<tr class="bny-table-empty"><td colspan="' + cols.length + '">' + bny.escapeChars(emptyText) + '</td></tr>';
             } else {
-                rows.forEach(function (row) {
-                    h += '<tr>';
-                    if (Array.isArray(row)) {
-                        row.forEach(function (cell) {
-                            h += '<td>' + renderCell(cell) + '</td>';
-                        });
-                    } else if (row && typeof row === 'object' && row.__html) {
-                        // 整行原始 HTML（用于自定义行结构）
-                        h += row.__html;
-                    } else {
-                        h += '<td>' + renderCell(row) + '</td>';
-                    }
-                    h += '</tr>';
-                });
+                rows.forEach(function (row) { appendRow(row, 0); });
             }
             h += '</tbody></table>';
             return h;
