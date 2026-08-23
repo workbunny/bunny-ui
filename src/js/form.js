@@ -1,14 +1,16 @@
 /**
- * bny-validate — 表单校验扩展
+ * bny-form — 表单组件（布局 + 校验）
  *
  * 设计：
  * - 基于 htmx 的校验事件链，与 htmx:validation:validate / htmx:invalidatedValue 配合
  * - 同时支持 HTML5 原生约束（required/pattern/minlength/min/max/type）和自定义 data-rules
  * - 校验失败：显示错误信息，阻止请求；通过：清除错误
  * - 错误信息元素自动注入到 .form-item 末尾，类名 .bny-form-error
+ * - 可选属性 valid-alert：开启后校验失败时自动 bny.alert() 弹第一条错误（code 3 红），
+ *   校验通过时弹“校验通过”（code 1 绿）；与 bny.alert 组件零耦合组合
  *
  * 用法：
- *   <form hx-ext="bny-validate" hx-post="/api/save">
+ *   <form hx-ext="bny-form" hx-post="/api/save">
  *     <div class="form-item">
  *       <label>用户名</label>
  *       <input name="user" required valid-msg-required="请输入用户名"
@@ -21,18 +23,18 @@
  *     <button class="bny-btn">提交</button>
  *   </form>
  */
-htmx.defineExtension('bny-validate', {
+htmx.defineExtension('bny-form', {
 
     onEvent: function (name, evt) {
 
         // htmx 初始化节点后：为表单注册 submit 拦截 + 字段实时校验
         if (name === 'htmx:afterProcessNode') {
-            if (!bny.hasExtName(evt.target, 'bny-validate')) return false;
+            if (!bny.hasExtName(evt.target, 'bny-form')) return false;
             var form = evt.target;
-            if (form._bnyValidateInit) return false;
-            form._bnyValidateInit = true;
+            if (form._bnyFormInit) return false;
+            form._bnyFormInit = true;
 
-            // 禁用浏览器原生校验，由 bny-validate 完全接管（否则 required 字段空值时
+            // 禁用浏览器原生校验，由 bny-form 完全接管（否则 required 字段空值时
             // 浏览器原生校验会阻止 submit 事件，导致自定义 data-msg 不显示）
             form.setAttribute('novalidate', '');
 
@@ -42,9 +44,18 @@ htmx.defineExtension('bny-validate', {
             // - 校验通过 + 无 htmx 提交（纯演示 form）：阻止默认刷新，给出通过提示
             form.addEventListener('submit', function (e) {
                 var ok = validateForm(form);
+                // valid-alert：开启后校验失败/通过时自动调 bny.alert 弹窗
+                // （失败弹第一条错误，成功弹通过提示），与 bny.alert 零耦合组合
+                var useAlert = form.hasAttribute('valid-alert') &&
+                    typeof bny !== 'undefined' && bny.alert;
                 if (!ok) {
                     e.preventDefault();
                     e.stopImmediatePropagation();
+                    if (useAlert) {
+                        var inv = form.querySelector('[aria-invalid="true"]');
+                        var msg = inv ? getFieldError(inv) : '校验未通过';
+                        bny.alert(msg, 3);  // code 3 = 红色错误
+                    }
                     return false;
                 }
                 var hasHx = form.getAttribute('hx-post') || form.getAttribute('hx-get') ||
@@ -53,8 +64,9 @@ htmx.defineExtension('bny-validate', {
                     // 在 SPA 上下文中，放行让 SPA 接管导航（不 preventDefault）
                     if (form.closest('[hx-ext~="bny-spa"]')) return;
                     e.preventDefault();
-                    if (typeof bny !== 'undefined' && bny.alert) {
-                        bny.alert('校验通过');
+                    // 非 hx 表单（纯演示）校验通过：弹成功提示，需 valid-alert 开启
+                    if (useAlert) {
+                        bny.alert('校验通过', 1);  // code 1 = 绿色成功
                     }
                 }
             }, true); // capture 阶段
@@ -84,12 +96,14 @@ htmx.defineExtension('bny-validate', {
 /**
  * 校验单个字段
  * @param {HTMLElement} field input/textarea/select
+ * @param {boolean} [show=true] 是否标红并显示错误（valid-alert 提交时仅第一个错误标红）
  * @returns {boolean}
  */
-function validateField(field) {
+function validateField(field, show) {
+    if (show === undefined) show = true;
     var error = getFieldError(field);
     if (error) {
-        showError(field, error);
+        if (show) showError(field, error);
         return false;
     }
     clearError(field);
@@ -103,12 +117,14 @@ function validateField(field) {
  */
 function validateForm(form) {
     var fields = form.querySelectorAll('input, textarea, select');
+    // valid-alert 模式：提交时只标红第一个错误字段，避免多框全红分不清（弹窗已提示该唯一错误）
+    var useAlert = form.hasAttribute('valid-alert');
     var allOk = true;
     var firstInvalid = null;
     Array.prototype.forEach.call(fields, function (field) {
         // 跳过 disabled / 无 name 的字段
         if (field.disabled || !field.name) return;
-        var ok = validateField(field);
+        var ok = validateField(field, !(useAlert && firstInvalid));
         if (!ok && !firstInvalid) {
             firstInvalid = field;
             allOk = false;
@@ -249,6 +265,11 @@ function getFieldError(field) {
 function showError(field, msg) {
     field.setAttribute('aria-invalid', 'true');
     field.classList.add('bny-input-error');
+    // valid-alert 模式：错误已通过 bny.alert 弹窗提示，不在输入框下方重复插入文本
+    // （红框保留，作为 alert 消失后的持久定位标记）
+    if (field.closest('form') && field.closest('form').hasAttribute('valid-alert')) {
+        return;
+    }
     // 找到所属 .form-item 容器
     var item = field.closest('.form-item');
     if (!item) {

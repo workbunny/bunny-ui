@@ -77,7 +77,7 @@
     <div class="doc-container">
         <span class="eyebrow"><i class="bny-icon icon-calendar"></i> Changelog</span>
         <h1 class="section-title">更新日志</h1>
-        <p class="section-subtitle">BunnyUI 组件库版本发布记录，按发布时间（新 → 旧）排列。当前最新版本 v2.1.1。</p>
+        <p class="section-subtitle">BunnyUI 组件库版本发布记录，按发布时间（新 → 旧）排列。当前最新版本 v2.2.0。</p>
     </div>
 </section>
 
@@ -87,6 +87,21 @@
         <h2 id="n01">版本时间线</h2>
         <div class="bny-timeline">
             <div class="bny-timeline-item is-primary">
+                <div class="bny-timeline-node"></div>
+                <div class="bny-timestamp">2026-08-22</div>
+                <div class="bny-timeline-title">v2.2.0</div>
+                <div class="bny-timeline-content">
+                    <p class="cl"><span class="bny-tag" tag-color="green">新增</span> 属性管理扩展（bny-attr）：对属性名/属性值的增删改查、追加、切换、改名（attr-rename）与多值替换（attr-replace）；配合 htmx 事件与响应 JSON 驱动（批量取值 / attr-value 单值映射 / attr-json="path:期望" 条件触发）；内置注入防护（拒绝 on* 事件属性与 javascript:/vbscript: 危险值）；应用后派发 attr-applied 事件。</p>
+                    <p class="cl"><span class="bny-tag" tag-color="green">新增</span> 表格树形（父子展开/折叠）：children 任意层级嵌套、逐级缩进、点击箭头展开/收起整棵子树，移动端自动卡片式缩进。</p>
+                    <p class="cl"><span class="bny-tag" tag-color="green">新增</span> 骨架屏扩展（bny-skeleton）：自定义草图（skeleton-sketch 声明式组合）与自动克隆（skeleton-clone 根据真实结构生成骨架），配合 hx-indicator 或 attr-auto 常显。</p>
+                    <p class="cl"><span class="bny-tag" tag-color="blue">优化</span> 表格移动端新增顶部排序条，序列三态（升序/降序/默认）可恢复默认并持久化；轮播与图片预览（缩略图/灯箱）加载时默认骨架占位。</p>
+                    <p class="cl"><span class="bny-tag" tag-color="blue">优化</span> 导航栏（默认/手机端/侧边收缩态）与菜单点击外部自动收起。</p>
+                    <p class="cl"><span class="bny-tag" tag-color="red">修复</span> 评分组件鼠标移入错乱；表格颜色演示属性名写错（table-tab→table-color）；树形深层子行渲染为 [object Object]；网格/图片占位尺寸与随机图不匹配的跳变。</p>
+                    <p class="cl"><span class="bny-tag" tag-color="yellow">文档</span> 新增属性管理页与 API 表；表格补充树形示例；各组件示例与效果补全。</p>
+                    <p class="dl"><a class="bny-btn" btn-model="border" btn-size="sm" href="https://github.com/workbunny/bunny.ui/releases/download/v2.2.0/bunny.zip" target="_blank" spa-skip><i class="bny-icon icon-download"></i> 下载 bunny.zip</a></p>
+                </div>
+            </div>
+            <div class="bny-timeline-item is-success">
                 <div class="bny-timeline-node"></div>
                 <div class="bny-timestamp">2026-08-20</div>
                 <div class="bny-timeline-title">v2.1.1</div>

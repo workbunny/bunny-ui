@@ -89,7 +89,7 @@
                     <div class="body">
                         <div>
                             <div class="p-12">
-                                <table hx-ext="bny-table" table-tab="green">
+                                <table hx-ext="bny-table" table-color="green">
                                     <thead>
                                         <tr>
                                             <th>人物</th>
@@ -457,6 +457,63 @@
                 </div>
             </div>
 
+            <h2 id="n06d">树形表格（父子展开/折叠）</h2>
+            <div class="bny-card">
+                <div hx-ext="bny-tab">
+                    <ul class="head">
+                        <li>Preview</li>
+                        <li>Code</li>
+                        <li>Json</li>
+                    </ul>
+                    <div class="body">
+                        <div>
+                            <div class="p-12">
+                                <p style="margin-bottom:12px; font-size:13px; color:var(--black-shallow);">
+                                    rows 里的行可用 <code>children</code> 嵌套任意层级子行；首列带箭头<i class="bny-icon icon-caret-right bny-table-tree-toggle"></i>的可点开/收起整棵子树。
+                                    手机端自动切换为卡片式，子行按层级缩进。
+                                </p>
+                                <button class="bny-btn" hx-ext="bny-table" hx-get="/test/data/table-tree.json"
+                                    hx-target="#table-tree-demo" hx-swap="innerHTML" hx-trigger="click">加载树形表格</button>
+                                <div id="table-tree-demo" class="mt-12"></div>
+                            </div>
+                        </div>
+                        <div>
+                            <pre hx-ext="bny-code">
+&lt;button hx-ext=&quot;bny-table&quot; hx-get=&quot;/test/data/table-tree.json&quot;
+    hx-target=&quot;#table-tree-demo&quot;&gt;加载树形表格&lt;/button&gt;
+
+&lt;div id=&quot;table-tree-demo&quot;&gt;&lt;/div&gt;
+                </pre>
+                        </div>
+                        <div>
+                            <pre hx-ext="bny-code">
+// table-tree.json
+{
+    "cols": ["部门/成员", "负责人", "人数", "状态"],
+    "rows": [
+        {
+            "cells": ["技术部", "阿明", "18", "正常"],
+            "children": [
+                {
+                    "cells": ["前端组", "小张", "7", "正常"],
+                    "children": [
+                        { "cells": ["体验小组", "小李", "3", "正常"] },
+                        { "cells": ["工程小组", "小王", "4", "正常"] }
+                    ]
+                },
+                { "cells": ["后端组", "阿亮", "6", "正常"] },
+                { "cells": ["测试组", "小美", "5", "正常"] }
+            ]
+        },
+        { "cells": ["财务部", "阿燕", "5", "正常"] }
+    ]
+}
+                </pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <h2 id="n07">API</h2>
             <h3>标签属性</h3>
             <table hx-ext="bny-table">
@@ -556,6 +613,7 @@
                 <li class="link" anchor-target="#n04">自定义排序值</li>
                 <li class="link" anchor-target="#n05">Htmx用法</li>
                 <li class="link" anchor-target="#n06">Htmx-动态追加行</li>
+                <li class="link" anchor-target="#n06d">树形表格</li>
                 <li class="link" anchor-target="#n07">API</li>
             </ul>
         </div>

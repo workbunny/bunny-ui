@@ -26,11 +26,13 @@ const jsFiles = [
   path.resolve(__dirname, 'src/js/datepicker.js'),
   path.resolve(__dirname, 'src/js/backtop.js'),
   path.resolve(__dirname, 'src/js/button.js'),
-  path.resolve(__dirname, 'src/js/validate.js'),
+  path.resolve(__dirname, 'src/js/form.js'),
   path.resolve(__dirname, 'src/js/pagination.js'),
   path.resolve(__dirname, 'src/js/image.js'),
   path.resolve(__dirname, 'src/js/carousel.js'),
   path.resolve(__dirname, 'src/js/rate.js'),
+  path.resolve(__dirname, 'src/js/skeleton.js'),
+  path.resolve(__dirname, 'src/js/attr.js'),
   // 如需新增JS文件，直接追加即可：
   // path.resolve(__dirname, 'src/js/entry3.js'),
 ];

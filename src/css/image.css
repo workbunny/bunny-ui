@@ -1,9 +1,32 @@
 /* ========== 图片预览 ========== */
 
 /* 缩略图：可点击的预览触发元素 */
+/* 图片加载前骨架占位流光动画（组件内自包含） */
+@keyframes bny-image-shimmer {
+    0%   { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+}
+
 .bny-image-thumb {
     cursor: zoom-in;
     transition: var(--transition);
+    /* 加载前骨架占位，加载完成后由 JS 加 .bny-img-loaded 清除 */
+    background: linear-gradient(90deg,
+        var(--gray-shallow) 25%,
+        var(--white-middle) 37%,
+        var(--gray-shallow) 63%);
+    background-size: 200% 100%;
+    animation: bny-image-shimmer 1.6s ease-in-out infinite;
+
+    &.bny-img-loaded {
+        background: none;
+        animation: none;
+    }
+
+    /* 未加载时给最小占位高度，让骨架可见（裸缩略图 src 未就绪时为 0 高度） */
+    &:not(.bny-img-loaded) {
+        min-height: 56px;
+    }
 
     &:hover {
         opacity: 0.85;
@@ -61,7 +84,16 @@
         }
 
         &.loading {
-            opacity: 0.5;
+            /* 加载中骨架占位，src 就绪后移除 loading 即恢复正常图 */
+            background: linear-gradient(90deg,
+                var(--gray-shallow) 25%,
+                var(--white-middle) 37%,
+                var(--gray-shallow) 63%);
+            background-size: 200% 100%;
+            animation: bny-image-shimmer 1.6s ease-in-out infinite;
+            /* src 未就绪时给一组较小占位，尽量与随机尺寸大图落差小、少跳变 */
+            min-width: min(46vw, 420px);
+            min-height: min(32vh, 300px);
         }
     }
 

@@ -58,6 +58,10 @@ htmx.defineExtension('bny-table', {
             const tableKey = table.getAttribute('table-key') || '';
             const storeKey = tableKey ? 'bny-table-sort:' + tableKey : '';
 
+            // 记录当前（未排序）的初始行顺序，作为“默认/取消排序”的还原快照
+            const tbodyCaptured = table.querySelector('tbody');
+            const defaultRows = tbodyCaptured ? Array.from(tbodyCaptured.querySelectorAll('tr')) : [];
+
             /**
              * 持久化排序状态到 sessionStorage
              * @param {number} colIndex
@@ -74,6 +78,14 @@ htmx.defineExtension('bny-table', {
             }
 
             /**
+             * 清除持久化排序状态（回到默认时调用，刷新后不再自动排序）
+             */
+            function clearPersist() {
+                if (!storeKey) return;
+                try { sessionStorage.removeItem(storeKey); } catch (_) { }
+            }
+
+            /**
              * 读取持久化的排序状态
              * @returns {{colIndex:number,type:string,asc:boolean}|null}
              */
@@ -86,37 +98,84 @@ htmx.defineExtension('bny-table', {
                 } catch (_) { return null; }
             }
 
+            // 记录每列索引，供表头与移动端排序条共用
             ths.forEach(function (th) {
-                const colIndex = Array.from(th.parentElement.querySelectorAll('th')).indexOf(th);
+                th._colIndex = Array.from(th.parentElement.querySelectorAll('th')).indexOf(th);
+            });
 
+            /**
+             * 渲染排序条的某一列 chip 状态（无排序/升序/降序）
+             * @param {HTMLElement} th
+             * @param {string|null} state
+             */
+            function renderChip(th, state) {
+                if (!th || !th._chip) return;
+                const chip = th._chip;
+                chip.classList.toggle('active', !!state);
+                const label = chip.getAttribute('data-col') || th.textContent.trim();
+                chip.textContent = state === 'asc' ? label + ' ↑'
+                    : state === 'desc' ? label + ' ↓'
+                        : label;
+            }
+
+            /**
+             * 三态排序：无 → 升序 → 降序 → 默认（取消排序）
+             * 表头 th 与移动端排序条 chip 共用此逻辑，状态彼此同步
+             * @param {HTMLElement} th
+             */
+            function cycleColumn(th) {
+                const colIndex = th._colIndex;
+                const isAsc = th.classList.contains('sort-asc');
+                const isDesc = th.classList.contains('sort-desc');
+
+                // 清除所有可排序列的排序标志（含表头与移动端 chip）
+                ths.forEach(function (t) {
+                    t.classList.remove('sort-asc', 'sort-desc');
+                    renderChip(t, null);
+                });
+
+                const type = th.getAttribute('table-sort') || 'string';
+                const tbody = table.querySelector('tbody');
+
+                // 第三态：降序再点 → 回到默认（取消排序），恢复初始顺序、图标/文本回归
+                if (isDesc) {
+                    clearPersist();
+                    if (tbody && defaultRows.length) {
+                        defaultRows.forEach(function (r) { tbody.appendChild(r); });
+                    }
+                    return;
+                }
+
+                // 无排序 → 升序；升序 → 降序
+                const asc = !isAsc;
+                th.classList.add(asc ? 'sort-asc' : 'sort-desc');
+                renderChip(th, asc ? 'asc' : 'desc');
+                if (tbody) {
+                    sortRows(tbody, colIndex, type, asc);
+                }
+                persistSort(colIndex, type, asc);
+            }
+
+            ths.forEach(function (th) {
                 th.style.cursor = 'pointer';
                 th.setAttribute('title', '点击排序');
                 th.classList.add('sortable');
+                th.addEventListener('click', function () { cycleColumn(th); });
+            });
 
-                th.addEventListener('click', function () {
-                    const isAsc = th.classList.contains('sort-asc');
-
-                    // 清除所有排序列的类名
-                    ths.forEach(function (t) {
-                        t.classList.remove('sort-asc', 'sort-desc');
-                    });
-
-                    // 设置当前列排序状态
-                    if (isAsc) {
-                        th.classList.add('sort-desc');
-                    } else {
-                        th.classList.add('sort-asc');
-                    }
-
-                    const type = th.getAttribute('table-sort') || 'string';
-                    const asc = th.classList.contains('sort-asc');
-                    const tbody = table.querySelector('tbody');
-                    if (tbody) {
-                        sortRows(tbody, colIndex, type, asc);
-                    }
-                    // 持久化排序状态
-                    persistSort(colIndex, type, asc);
-                });
+            // 移动端排序条（手机端隐藏了 thead，用顶部排序条提供排序入口）
+            const sortBar = document.createElement('div');
+            sortBar.className = 'bny-table-sort-bar';
+            table.parentNode.insertBefore(sortBar, table);
+            ths.forEach(function (th) {
+                const chip = document.createElement('button');
+                chip.type = 'button';
+                chip.className = 'bny-table-sort-chip';
+                chip.setAttribute('data-col', th.textContent.trim());
+                chip.textContent = th.textContent.trim();
+                th._chip = chip;
+                chip.addEventListener('click', function () { cycleColumn(th); });
+                sortBar.appendChild(chip);
             });
 
             // 恢复持久化的排序状态（HTMX 重新请求后自动应用）
@@ -125,6 +184,7 @@ htmx.defineExtension('bny-table', {
                 const targetTh = ths[saved.colIndex];
                 if (targetTh) {
                     targetTh.classList.add(saved.asc ? 'sort-asc' : 'sort-desc');
+                    renderChip(targetTh, saved.asc ? 'asc' : 'desc');
                     const tbody = table.querySelector('tbody');
                     if (tbody) {
                         sortRows(tbody, saved.colIndex, saved.type, saved.asc);
@@ -152,11 +212,38 @@ htmx.defineExtension('bny-table', {
             }
         }
 
+        /**
+         * 树形展开/折叠：点击首列箭头，折叠/展开该节点整棵子树
+         * @param {HTMLElement} table
+         */
+        function initTree(table) {
+            table.querySelectorAll('.bny-table-tree-toggle').forEach(function (btn) {
+                btn.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    const tr = btn.closest('tr');
+                    if (!tr) return;
+                    const level = parseInt(tr.getAttribute('data-tree-level') || '0', 10);
+                    const willCollapse = !tr.classList.contains('tree-collapsed');
+                    tr.classList.toggle('tree-collapsed', willCollapse);
+                    // 箭头方向由 CSS 依据 tree-collapsed 旋转（展开朝下、收起朝右）
+                    // 从下一行起，折叠/展开所有层级比当前深的行（即其后代），直到遇到同级或更浅
+                    let n = tr.nextElementSibling;
+                    while (n && n.tagName === 'TR' &&
+                        parseInt(n.getAttribute('data-tree-level') || '-1', 10) > level) {
+                        n.style.display = willCollapse ? 'none' : '';
+                        n = n.nextElementSibling;
+                    }
+                });
+            });
+        }
+
         // 在htmx初始化节点后触发
         if (name === 'htmx:afterProcessNode') {
             if (bny.hasExtName(evt.target, 'bny-table')) {
                 initLabels(evt.target);
                 initSort(evt.target);
+                initTree(evt.target);
                 return false;
             } else if (evt.target.tagName === 'TR') {
                 const tds = evt.target.querySelectorAll('td');
@@ -232,6 +319,79 @@ htmx.defineExtension('bny-table', {
             h += '<table hx-ext="bny-table"' + (color ? ' table-color="' + color + '"' : '');
             if (tableKey) h += ' table-key="' + bny.escapeChars(tableKey) + '"';
             h += '>';
+
+            // 树形缩进单位（px）：层级 × 该值
+            const indentUnit = 20;
+
+            /**
+             * 渲染一棵父行（首列插展开箭头 + 层级缩进）
+             * @param {object} row 父行 { cells:[], children:[] }
+             * @param {Array} cells 当前行各列
+             * @param {number} level 层级（0 为顶层）
+             */
+            function treeRowHtml(row, cells, level) {
+                const hasKids = Array.isArray(row.children) && row.children.length > 0;
+                let r = '<tr data-tree-level="' + level + '"' + (hasKids ? ' data-tree-parent="1"' : '') + '>';
+                cells.forEach(function (cell, ci) {
+                    let content = renderCell(cell);
+                    if (ci === 0) {
+                        content = '<span class="bny-table-tree-indent" style="padding-left:' + (level * indentUnit) + 'px"></span>' +
+                            (hasKids ? '<span class="bny-table-tree-toggle"><i class="bny-icon icon-caret-right"></i></span>' : '') +
+                            content;
+                    }
+                    r += '<td' + (ci === 0 ? ' class="bny-table-tree-cell"' : '') + '>' + content + '</td>';
+                });
+                r += '</tr>';
+                return r;
+            }
+
+            /**
+             * 递归追加一行（含其子树）。父行：{ cells, children: [...] }；子级同构，可任意嵌套。
+             * @param {*} row
+             * @param {number} level
+             */
+            function appendRow(row, level) {
+                // 树形行：整行对象（含 cells，可选 children）
+                if (row && !Array.isArray(row) && typeof row === 'object') {
+                    if (Array.isArray(row.cells) || Array.isArray(row.children)) {
+                        const hasChildren = Array.isArray(row.children) && row.children.length > 0;
+                        const cells = Array.isArray(row.cells) ? row.cells : [row.cells];
+                        h += treeRowHtml(row, cells, level);
+                        if (hasChildren) {
+                            (row.children || []).forEach(function (child) { appendRow(child, level + 1); });
+                        }
+                        return;
+                    }
+                    // 整行原始 HTML（自定义行结构）
+                    if (typeof row.__html !== 'undefined' && row.__html) {
+                        h += row.__html;
+                        return;
+                    }
+                    // 对象单格行
+                    h += '<tr data-tree-level="' + level + '">';
+                    [row].forEach(function (cell, ci) {
+                        let content = renderCell(cell);
+                        if (ci === 0 && level > 0) {
+                            content = '<span class="bny-table-tree-indent" style="padding-left:' + (level * indentUnit) + 'px"></span>' + content;
+                        }
+                        h += '<td>' + content + '</td>';
+                    });
+                    h += '</tr>';
+                    return;
+                }
+                // 平铺数组 / 单值 行
+                const vals = Array.isArray(row) ? row : [row];
+                h += '<tr data-tree-level="' + level + '">';
+                vals.forEach(function (cell, ci) {
+                    let content = renderCell(cell);
+                    if (ci === 0 && level > 0) {
+                        content = '<span class="bny-table-tree-indent" style="padding-left:' + (level * indentUnit) + 'px"></span>' + content;
+                    }
+                    h += '<td>' + content + '</td>';
+                });
+                h += '</tr>';
+            }
+
             h += '<thead><tr>';
             cols.forEach(function (col) {
                 h += renderCol(col);
@@ -242,20 +402,7 @@ htmx.defineExtension('bny-table', {
                 // 空状态：合并所有列显示占位文案
                 h += '<tr class="bny-table-empty"><td colspan="' + cols.length + '">' + bny.escapeChars(emptyText) + '</td></tr>';
             } else {
-                rows.forEach(function (row) {
-                    h += '<tr>';
-                    if (Array.isArray(row)) {
-                        row.forEach(function (cell) {
-                            h += '<td>' + renderCell(cell) + '</td>';
-                        });
-                    } else if (row && typeof row === 'object' && row.__html) {
-                        // 整行原始 HTML（用于自定义行结构）
-                        h += row.__html;
-                    } else {
-                        h += '<td>' + renderCell(row) + '</td>';
-                    }
-                    h += '</tr>';
-                });
+                rows.forEach(function (row) { appendRow(row, 0); });
             }
             h += '</tbody></table>';
             return h;

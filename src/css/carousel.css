@@ -1,5 +1,11 @@
 /* ========== 轮播 ========== */
 
+/* 图片加载前骨架占位流光动画（模块内自包含，避免依赖其他组件样式） */
+@keyframes bny-skeleton-shimmer {
+    0%   { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+}
+
 /* 根：定位上下文（箭头/指示器的定位基准），直接子元素自动成为轮播项 */
 [hx-ext~="bny-carousel"] {
     position: relative;
@@ -51,8 +57,20 @@
         width: 100%;
         height: 100%;
         object-fit: cover;
+        /* 加载前骨架占位：流光背景，图片加载完成后由 JS 加 .bny-img-loaded 清除 */
+        background: linear-gradient(90deg,
+            var(--gray-shallow) 25%,
+            var(--white-middle) 37%,
+            var(--gray-shallow) 63%);
+        background-size: 200% 100%;
+        animation: bny-skeleton-shimmer 1.6s ease-in-out infinite;
         /* 阻止图片原生拖拽，避免干扰指针拖拽 */
         -webkit-user-drag: none;
+
+        &.bny-img-loaded {
+            background: none;
+            animation: none;
+        }
     }
 
     /* 图片标题浮层：底部渐变遮罩（不挡点击） */

@@ -703,6 +703,282 @@
                 </div>
             </div>
 
+            <h2 id="n-validate">表单校验</h2>
+            <blockquote class="bny-blockquote">
+                基于 htmx 事件链的表单校验：在 <code>&lt;form hx-ext="bny-form"&gt;</code> 上启用，支持 HTML5 原生约束（required/pattern/minlength 等）和自定义 <code>valid-rules</code>，校验失败阻止请求并显示错误提示。
+            </blockquote>
+
+            <h3 id="n-validate-basic">基础用法</h3>
+            <div hx-ext="bny-tab">
+                <ul class="head">
+                    <li>Preview</li>
+                    <li>Code</li>
+                </ul>
+                <div class="body">
+                    <div>
+                        <div class="p-12">
+                            <form hx-ext="bny-form" style="max-width:420px;">
+                                <div class="form-item">
+                                    <label>用户名</label>
+                                    <input class="bny-input" name="user" required
+                                           valid-msg-required="请输入用户名"
+                                           placeholder="必填，3-20 个字符">
+                                </div>
+                                <div class="form-item">
+                                    <label>邮箱</label>
+                                    <input class="bny-input" type="email" name="email" required
+                                           valid-msg-required="邮箱必填"
+                                           valid-msg-type="邮箱格式不正确"
+                                           placeholder="example@mail.com">
+                                </div>
+                                <div class="form-item">
+                                    <label>密码</label>
+                                    <input class="bny-input" type="password" name="pwd" required
+                                           minlength="6"
+                                           valid-msg-required="请输入密码"
+                                           valid-msg-min="密码至少 6 位"
+                                           placeholder="至少 6 位">
+                                </div>
+                                <div class="form-item">
+                                    <label>确认密码</label>
+                                    <input class="bny-input" type="password" name="pwd2"
+                                           valid-rules="equals:pwd"
+                                           valid-msg-equals="两次密码不一致"
+                                           placeholder="再次输入密码">
+                                </div>
+                                <button class="bny-btn" type="submit">提交</button>
+                            </form>
+                            <blockquote class="bny-blockquote" style="margin-top:14px;">
+                                点击提交触发校验：错误字段标红、显示提示、阻止表单提交。修正后实时清除错误。
+                            </blockquote>
+                        </div>
+                    </div>
+                    <div>
+                        <pre hx-ext="bny-code">
+&lt;form hx-ext=&quot;bny-form&quot; style=&quot;max-width:420px;&quot;&gt;
+    &lt;div class=&quot;form-item&quot;&gt;
+        &lt;label&gt;用户名&lt;/label&gt;
+        &lt;input class=&quot;bny-input&quot; name=&quot;user&quot; required
+               valid-msg-required=&quot;请输入用户名&quot;&gt;
+    &lt;/div&gt;
+    &lt;div class=&quot;form-item&quot;&gt;
+        &lt;label&gt;邮箱&lt;/label&gt;
+        &lt;input class=&quot;bny-input&quot; type=&quot;email&quot; name=&quot;email&quot; required
+               valid-msg-required=&quot;邮箱必填&quot;
+               valid-msg-type=&quot;邮箱格式不正确&quot;&gt;
+    &lt;/div&gt;
+    &lt;div class=&quot;form-item&quot;&gt;
+        &lt;label&gt;密码&lt;/label&gt;
+        &lt;input class=&quot;bny-input&quot; type=&quot;password&quot; name=&quot;pwd&quot;
+               required minlength=&quot;6&quot;
+               valid-msg-min=&quot;密码至少 6 位&quot;&gt;
+    &lt;/div&gt;
+    &lt;div class=&quot;form-item&quot;&gt;
+        &lt;label&gt;确认密码&lt;/label&gt;
+        &lt;input class=&quot;bny-input&quot; type=&quot;password&quot; name=&quot;pwd2&quot;
+               valid-rules=&quot;equals:pwd&quot;
+               valid-msg-equals=&quot;两次密码不一致&quot;&gt;
+    &lt;/div&gt;
+    &lt;button class=&quot;bny-btn&quot; type=&quot;submit&quot;&gt;提交&lt;/button&gt;
+&lt;/form&gt;
+                        </pre>
+                    </div>
+                </div>
+            </div>
+
+            <h3 id="n-validate-rules">自定义规则 valid-rules</h3>
+            <div hx-ext="bny-tab">
+                <ul class="head">
+                    <li>Preview</li>
+                    <li>Code</li>
+                </ul>
+                <div class="body">
+                    <div>
+                        <div class="p-12">
+                            <form hx-ext="bny-form" style="max-width:420px;">
+                                <div class="form-item">
+                                    <label>用户名（3-20 字符）</label>
+                                    <input class="bny-input" name="user2" required
+                                           valid-rules="min:3,max:20"
+                                           valid-msg-required="请输入用户名"
+                                           valid-msg-min="不能少于 3 字符"
+                                           valid-msg-max="不能超过 20 字符"
+                                           placeholder="3-20 字符">
+                                </div>
+                                <div class="form-item">
+                                    <label>年龄（18-99）</label>
+                                    <input class="bny-input" name="age" type="number" required
+                                           valid-rules="min-val:18,max-val:99"
+                                           valid-msg-required="请输入年龄"
+                                           valid-msg-min="不能小于 18"
+                                           valid-msg-max="不能大于 99"
+                                           placeholder="18-99">
+                                </div>
+                                <div class="form-item">
+                                    <label>手机号（正则）</label>
+                                    <input class="bny-input" name="phone" required
+                                           valid-rules="regexp:^1[3-9]\d{9}$"
+                                           valid-msg-required="请输入手机号"
+                                           valid-msg-pattern="手机号格式不正确"
+                                           placeholder="11 位手机号">
+                                </div>
+                                <button class="bny-btn" type="submit">提交</button>
+                            </form>
+                        </div>
+                    </div>
+                    <div>
+                        <pre hx-ext="bny-code">
+&lt;!-- 长度规则 --&gt;
+&lt;input required valid-rules=&quot;min:3,max:20&quot;&gt;
+
+&lt;!-- 数值范围 --&gt;
+&lt;input type=&quot;number&quot; required valid-rules=&quot;min-val:18,max-val:99&quot;&gt;
+
+&lt;!-- 正则 --&gt;
+&lt;input required valid-rules=&quot;regexp:^1[3-9]\d{9}$&quot;&gt;
+                        </pre>
+                    </div>
+                </div>
+            </div>
+
+            <h3 id="n-validate-htmx">配合 HTMX 提交</h3>
+            <div hx-ext="bny-tab">
+                <ul class="head">
+                    <li>Preview</li>
+                    <li>Code</li>
+                </ul>
+                <div class="body">
+                    <div>
+                        <div class="p-12">
+                            <form hx-ext="bny-form"
+                                  hx-get="/test/data/validate-success.html"
+                                  hx-target="#validate-result"
+                                  hx-swap="innerHTML"
+                                  style="max-width:420px;">
+                                <div class="form-item">
+                                    <label>用户名</label>
+                                    <input class="bny-input" name="user" required
+                                           valid-msg-required="请输入用户名"
+                                           placeholder="必填">
+                                </div>
+                                <div class="form-item">
+                                    <label>邮箱</label>
+                                    <input class="bny-input" type="email" name="email" required
+                                           valid-msg-required="请输入邮箱"
+                                           valid-msg-type="邮箱格式不正确"
+                                           placeholder="example@mail.com">
+                                </div>
+                                <button class="bny-btn" type="submit">提交</button>
+                            </form>
+                            <div id="validate-result"></div>
+                            <blockquote class="bny-blockquote" style="margin-top:14px;">
+                                校验通过后才会发起 <code>hx-post</code> 请求，结果回填到下方。失败时阻止提交并标红。
+                            </blockquote>
+                        </div>
+                    </div>
+                    <div>
+                        <pre hx-ext="bny-code">
+&lt;form hx-ext=&quot;bny-form&quot;
+      hx-post=&quot;/api/save&quot;
+      hx-target=&quot;#result&quot; hx-swap=&quot;innerHTML&quot;&gt;
+    &lt;div class=&quot;form-item&quot;&gt;
+        &lt;label&gt;用户名&lt;/label&gt;
+        &lt;input class=&quot;bny-input&quot; name=&quot;user&quot; required
+               valid-msg-required=&quot;请输入用户名&quot;&gt;
+    &lt;/div&gt;
+    &lt;div class=&quot;form-item&quot;&gt;
+        &lt;label&gt;邮箱&lt;/label&gt;
+        &lt;input class=&quot;bny-input&quot; type=&quot;email&quot; name=&quot;email&quot; required
+               valid-msg-required=&quot;请输入邮箱&quot;&gt;
+    &lt;/div&gt;
+    &lt;button class=&quot;bny-btn&quot; type=&quot;submit&quot;&gt;提交&lt;/button&gt;
+&lt;/form&gt;
+&lt;div id=&quot;result&quot;&gt;&lt;/div&gt;
+                        </pre>
+                    </div>
+                </div>
+            </div>
+
+            <h3 id="n-validate-alert">配合 bny-alert 弹窗提示</h3>
+            <blockquote class="bny-blockquote">
+                在 <code>&lt;form hx-ext="bny-form"&gt;</code> 上加 <code>valid-alert</code> 属性，校验失败时除行内红字外，会自动调用 <code>bny.alert()</code> 弹出第一条错误；校验通过时弹“校验通过”。与 bny-alert 组件零耦合组合，不加属性则完全不弹窗。
+            </blockquote>
+            <div hx-ext="bny-tab">
+                <ul class="head">
+                    <li>Preview</li>
+                    <li>Code</li>
+                </ul>
+                <div class="body">
+                    <div>
+                        <div class="p-12">
+                            <form hx-ext="bny-form" valid-alert style="max-width:420px;">
+                                <div class="form-item">
+                                    <label>用户名</label>
+                                    <input class="bny-input" name="user" required
+                                           valid-rules="min:3,max:20"
+                                           valid-msg-required="请输入用户名"
+                                           valid-msg-min="不能少于 3 字符"
+                                           valid-msg-max="不能超过 20 字符"
+                                           placeholder="3-20 字符">
+                                </div>
+                                <div class="form-item">
+                                    <label>邮箱</label>
+                                    <input class="bny-input" type="email" name="email" required
+                                           valid-msg-required="请输入邮箱"
+                                           valid-msg-type="邮箱格式不正确"
+                                           placeholder="example@mail.com">
+                                </div>
+                                <button class="bny-btn" type="submit">提交</button>
+                            </form>
+                            <blockquote class="bny-blockquote" style="margin-top:14px;">
+                                留空或填错后点提交：顶部弹出红色 alert 显示第一条错误，同时字段标红。全部填对后点提交：弹出绿色“校验通过”。
+                            </blockquote>
+                        </div>
+                    </div>
+                    <div>
+                        <pre hx-ext="bny-code">
+&lt;form hx-ext=&quot;bny-form&quot; valid-alert style=&quot;max-width:420px;&quot;&gt;
+    &lt;div class=&quot;form-item&quot;&gt;
+        &lt;label&gt;用户名&lt;/label&gt;
+        &lt;input class=&quot;bny-input&quot; name=&quot;user&quot; required
+               valid-rules=&quot;min:3,max:20&quot;
+               valid-msg-required=&quot;请输入用户名&quot;
+               valid-msg-min=&quot;不能少于 3 字符&quot;
+               valid-msg-max=&quot;不能超过 20 字符&quot;&gt;
+    &lt;/div&gt;
+    &lt;div class=&quot;form-item&quot;&gt;
+        &lt;label&gt;邮箱&lt;/label&gt;
+        &lt;input class=&quot;bny-input&quot; type=&quot;email&quot; name=&quot;email&quot; required
+               valid-msg-required=&quot;请输入邮箱&quot;
+               valid-msg-type=&quot;邮箱格式不正确&quot;&gt;
+    &lt;/div&gt;
+    &lt;button class=&quot;bny-btn&quot; type=&quot;submit&quot;&gt;提交&lt;/button&gt;
+&lt;/form&gt;
+                        </pre>
+                    </div>
+                </div>
+            </div>
+
+            <h3 id="n-validate-api">校验属性 API</h3>
+            <table hx-ext="bny-table">
+                <thead>
+                    <tr><th>属性</th><th>说明</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td><code>hx-ext="bny-form"</code></td><td>在 <code>&lt;form&gt;</code> 上启用表单组件（布局 + 校验）</td></tr>
+                    <tr><td><code>required</code></td><td>HTML5 原生必填，空值触发 <code>valid-msg-required</code></td></tr>
+                    <tr><td><code>valid-msg-required</code></td><td>必填（valueMissing）错误消息</td></tr>
+                    <tr><td><code>valid-msg-type</code></td><td>类型不匹配（typeMismatch，如 email）错误消息</td></tr>
+                    <tr><td><code>valid-msg-pattern</code></td><td>正则不匹配（patternMismatch / 自定义 regexp 规则）错误消息</td></tr>
+                    <tr><td><code>valid-msg-min</code></td><td>最短长度（tooShort / min / min-val 规则）错误消息</td></tr>
+                    <tr><td><code>valid-msg-max</code></td><td>最长长度（tooLong / max / max-val 规则）错误消息</td></tr>
+                    <tr><td><code>valid-msg-equals</code></td><td>equals 规则（两字段相等）错误消息</td></tr>
+                    <tr><td><code>valid-msg</code></td><td>通用兜底消息，任意校验失败且未配置对应专用消息时使用</td></tr>
+                    <tr><td><code>valid-rules</code></td><td>自定义规则，逗号分隔，如 <code>min:3,max:20,min-val:18,max-val:99,regexp:^1[3-9]\d{9}$,equals:pwd</code></td></tr>
+                    <tr><td><code>valid-alert</code></td><td>表单级开关：开启后校验失败自动 <code>bny.alert()</code> 弹第一条错误（code 3 红），校验通过弹“校验通过”（code 1 绿）；不开启则完全不弹窗</td></tr>
+                </tbody>
+            </table>
+
             <h2 id="n08">API</h2>
             <h3>属性（表单控件）</h3>
             <table hx-ext="bny-table">
@@ -732,7 +1008,7 @@
                     <tr><td><code>form-item</code></td><td>表单项容器（配合 <code>hx-ext="bny-form"</code>），统一 label + 控件间距</td></tr>
                     <tr><td><code>input-group</code></td><td>表单项内的控件行，支持多控件横向排列（如 input + 按钮）</td></tr>
                     <tr><td><code>bny-input-error</code></td><td>校验失败态类，加在 input/textarea/select 上，边框变红</td></tr>
-                    <tr><td><code>bny-form-error</code></td><td>校验错误提示文本元素，由 bny-validate 自动注入到 <code>.form-item</code> 末尾</td></tr>
+                    <tr><td><code>bny-form-error</code></td><td>校验错误提示文本元素，由 bny-form 自动注入到 <code>.form-item</code> 末尾</td></tr>
                     <tr><td><code>is-valid</code></td><td>（可选）加在 <code>.form-item</code> 上，使内部控件边框变绿，标记校验通过</td></tr>
                 </tbody>
             </table>
@@ -742,8 +1018,7 @@
                     <tr><th>扩展名</th><th>说明</th></tr>
                 </thead>
                 <tbody>
-                    <tr><td><code>bny-form</code></td><td>表单布局扩展：在 <code>&lt;form hx-ext="bny-form"&gt;</code> 上启用，配合 <code>form-item</code> / <code>input-group</code> 实现统一排版</td></tr>
-                    <tr><td><code>bny-validate</code></td><td>表单校验扩展（validate.js）：接管原生校验，支持 HTML5 约束与 <code>valid-rules</code> / <code>valid-msg</code> 自定义规则；失败时加 <code>bny-input-error</code> 并显示 <code>bny-form-error</code></td></tr>
+                    <tr><td><code>bny-form</code></td><td>表单组件（布局 + 校验）：在 <code>&lt;form hx-ext="bny-form"&gt;</code> 上启用，配合 <code>form-item</code> / <code>input-group</code> 实现统一排版；同时接管原生校验，支持 HTML5 约束与 <code>valid-rules</code> / <code>valid-msg</code> 自定义规则，失败时加 <code>bny-input-error</code> 并显示 <code>bny-form-error</code></td></tr>
                 </tbody>
             </table>
         </div>
@@ -760,6 +1035,7 @@
                     <li class="link" anchor-target="#n05">开关框</li>
                     <li class="link" anchor-target="#n06">滑块</li>
                     <li class="link" anchor-target="#n07">表单集合</li>
+                    <li class="link" anchor-target="#n-validate">表单校验</li>
                     <li class="link" anchor-target="#n08">API</li>
                 </ul>
         </div>

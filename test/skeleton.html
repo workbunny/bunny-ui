@@ -454,6 +454,135 @@
                 </div>
             </div>
 
+            <h2 id="n08">自定义骨架屏（skeleton-sketch）</h2>
+            <div class="bny-card">
+                <div hx-ext="bny-tab">
+                    <ul class="head">
+                        <li>Preview</li>
+                        <li>Code</li>
+                    </ul>
+                    <div class="body">
+                        <div>
+                            <div class="p-12">
+                                <p style="margin-bottom:16px; font-size:13px; color:var(--black-shallow);">
+                                    用 <code>skeleton-sketch</code> 属性声明形状，骨架作为初始占位常显；
+                                    点击“加载”，约 2 秒后替换为真实内容，便于观察骨架形态与加载过程。
+                                </p>
+                                <div class="flex gap-8" style="margin-bottom:20px;">
+                                    <button class="bny-btn" hx-get="/test/data/skeleton-paragraph.html"
+                                        hx-target="#sketch-view" hx-swap="innerHTML" hx-trigger="click delay:2s">
+                                        加载
+                                    </button>
+                                    <button class="bny-btn" onclick="resetSketch()">重置</button>
+                                </div>
+                                <div id="sketch-view">
+                                    <div id="sketch-skel" class="bny-skeleton-active" hx-ext="bny-skeleton"
+                                        skeleton-sketch="avatar x1, list:{ text x2, text short }"
+                                        style="width:100%;">
+                                    </div>
+                                </div>
+                                <script>
+function resetSketch() {
+    document.getElementById('sketch-view').innerHTML =
+        '<div id="sketch-skel" class="bny-skeleton-active" hx-ext="bny-skeleton" ' +
+        'skeleton-sketch="avatar x1, list:{ text x2, text short }" style="width:100%;"></div>';
+    htmx.process(document.getElementById('sketch-view'));
+}
+                                </script>
+                            </div>
+                        </div>
+                        <div>
+                            <pre hx-ext="bny-code">
+&lt;!-- 骨架作为初始占位，常显等待加载 --&gt;
+&lt;div id="sketch-view"&gt;
+    &lt;div class="bny-skeleton-active" hx-ext="bny-skeleton"
+         skeleton-sketch="avatar x1, list:{ text x2, text short }"&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+
+&lt;button class="bny-btn" hx-get="/data/xxx"
+    hx-target="#sketch-view" hx-swap="innerHTML"
+    hx-trigger="click delay:2s"&gt;加载&lt;/button&gt;
+                </pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h2 id="n09">自动骨架屏（skeleton-clone）</h2>
+            <div class="bny-card">
+                <div hx-ext="bny-tab">
+                    <ul class="head">
+                        <li>Preview</li>
+                        <li>Code</li>
+                    </ul>
+                    <div class="body">
+                        <div>
+                            <div class="p-12">
+                                <p style="margin-bottom:16px; font-size:13px; color:var(--black-shallow);">
+                                    用 <code>skeleton-clone="#template"</code> 克隆真实结构生成骨架并常显为初始占位；
+                                    点击“加载”，约 2 秒后替换为真实卡片内容。
+                                </p>
+                                <div class="flex gap-8" style="margin-bottom:20px;">
+                                    <button class="bny-btn" hx-get="/test/data/skeleton-card.html"
+                                        hx-target="#clone-view" hx-swap="innerHTML" hx-trigger="click delay:2s">
+                                        加载卡片
+                                    </button>
+                                    <button class="bny-btn" onclick="resetClone()">重置</button>
+                                </div>
+                                <div id="clone-view">
+                                    <div id="clone-skel" class="bny-skeleton-active" hx-ext="bny-skeleton"
+                                        skeleton-clone="#clone-template"
+                                        style="width:100%; max-width:360px;">
+                                    </div>
+                                </div>
+                                <script>
+function resetClone() {
+    document.getElementById('clone-view').innerHTML =
+        '<div id="clone-skel" class="bny-skeleton-active" hx-ext="bny-skeleton" ' +
+        'skeleton-clone="#clone-template" style="width:100%; max-width:360px;"></div>';
+    htmx.process(document.getElementById('clone-view'));
+}
+                                </script>
+                                <!-- 自动克隆的真实结构模板（隐藏，仅作骨架来源） -->
+                                <div id="clone-template" hidden>
+                                    <div class="bny-card" style="max-width:360px;">
+                                        <img src="/bunny.png" alt="bunny" style="width:100%; height:160px; object-fit:contain; background:var(--white-shallow);">
+                                        <div class="body">
+                                            <h4 class="title">卡片标题</h4>
+                                            <p class="content">简介占位文本，用于自动生成骨架。</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <pre hx-ext="bny-code">
+&lt;!-- 隐藏的真实结构模板 --&gt;
+&lt;div id="clone-template" hidden&gt;
+    &lt;div class="bny-card"&gt;
+        &lt;img src="/img.png"&gt;
+        &lt;h4 class="title"&gt;标题&lt;/h4&gt;
+        &lt;p class="content"&gt;简介&lt;/p&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+
+&lt;!-- 克隆模板生成骨架，作为初始占位常显 --&gt;
+&lt;div id="clone-view"&gt;
+    &lt;div class="bny-skeleton-active" hx-ext="bny-skeleton"
+         skeleton-clone="#clone-template"&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+
+&lt;button class="bny-btn" hx-get="/data/xxx"
+    hx-target="#clone-view" hx-swap="innerHTML"
+    hx-trigger="click delay:2s"&gt;加载&lt;/button&gt;
+                </pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <h2 id="n07">API</h2>
             <h3>CSS 类</h3>
             <table hx-ext="bny-table">
@@ -534,6 +663,51 @@
                     </tr>
                 </tbody>
             </table>
+
+            <h3>bny-skeleton 扩展属性</h3>
+            <p style="margin-bottom:12px; font-size:13px; color:var(--black-shallow);">
+                在元素上加 <code>hx-ext="bny-skeleton"</code> 启用声明式骨架。
+            </p>
+            <table hx-ext="bny-table">
+                <thead>
+                    <tr><th>属性</th><th>说明</th></tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>skeleton-sketch="…"</code></td>
+                        <td>自定义草图：DSL 按形状组合生成骨架块（见下）</td>
+                    </tr>
+                    <tr>
+                        <td><code>skeleton-clone="#template"</code></td>
+                        <td>自动克隆：按目标真实结构生成骨架（img→image 块、圆形→circle 块、文本保留透明占位）</td>
+                    </tr>
+                    <tr>
+                        <td><code>bny-skeleton-active</code></td>
+                        <td>常显（不依赖 hx-indicator）；也可作为 hx-indicator 在请求期间显示、结束后隐藏</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>skeleton-sketch DSL</h3>
+            <p style="margin-bottom:12px; font-size:13px; color:var(--black-shallow);">
+                逗号分隔条目，格式 <code>type [x数量] [short] [:宽度]</code>；支持 <code>name:{ 子项,… }</code> 嵌套组合。
+            </p>
+            <table hx-ext="bny-table">
+                <thead>
+                    <tr><th>type</th><th>含义</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td><code>text</code> / <code>line</code></td><td>文本行（可加 short 变短行）</td></tr>
+                    <tr><td><code>title</code></td><td>标题块</td></tr>
+                    <tr><td><code>circle</code> / <code>avatar</code></td><td>圆形/头像（:宽度 同时决定宽高）</td></tr>
+                    <tr><td><code>image</code></td><td>大图占位</td></tr>
+                    <tr><td><code>button</code></td><td>按钮占位</td></tr>
+                    <tr><td><code>list:{ … }</code> / <code>card:{ … }</code> / <code>grid:{ … }</code></td><td>嵌套组合容器</td></tr>
+                </tbody>
+            </table>
+            <p style="margin-top:8px; font-size:12px; color:var(--black-shallow);">
+                例：<code>skeleton-sketch="avatar x1, list:{ text x2, text short }"</code>
+            </p>
         </div>
     </div>
     <div class="right-anchor-box hidden-xs col-sm3">
@@ -545,6 +719,8 @@
                 <li class="link" anchor-target="#n04">静默模式</li>
                 <li class="link" anchor-target="#n05">配合 HTMX 使用</li>
                 <li class="link" anchor-target="#n06">扩展组合布局</li>
+                <li class="link" anchor-target="#n08">自定义骨架屏</li>
+                <li class="link" anchor-target="#n09">自动骨架屏</li>
                 <li class="link" anchor-target="#n07">API</li>
             </ul>
         </div>

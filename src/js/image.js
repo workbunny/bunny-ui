@@ -380,6 +380,11 @@
             img.classList.add('bny-image-thumb');
             ensureItem(img); // 包 .bny-image-item 并注入左上角标签
 
+            // 骨架占位：加载完成/失败后清除（.bny-img-loaded），已缓存则立即清除
+            var markLoaded = function () { img.classList.add('bny-img-loaded') };
+            if (img.complete) markLoaded();
+            else { img.addEventListener('load', markLoaded); img.addEventListener('error', markLoaded); }
+
             img.addEventListener('click', function () {
                 var fullSrc = img.getAttribute('img-preview-src') || img.src;
                 // 优先：容器就近分组（.bny-image-group 内所有图片翻页）

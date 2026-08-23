@@ -161,6 +161,8 @@ table[hx-ext~="bny-table"] th.sortable {
                 display: flex;
                 align-items: center;
                 flex: 0 0 90px;
+                /* 标签高度贯穿整行，避免多行内容时标签块悬浮、上下留空 */
+                align-self: stretch;
                 text-align: left;
                 white-space: nowrap;
                 overflow: hidden;
@@ -189,6 +191,42 @@ table[hx-ext~="bny-table"] th.sortable {
     }
 }
 
+/* ========== 移动端顶部排序条（手机端隐藏 thead 后的排序入口） ========== */
+.bny-table-sort-bar {
+    display: none;
+}
+
+@media screen and (max-width: 767px) {
+    .bny-table-sort-bar {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        /* 贴卡片区上方，不额外占页边距 */
+        margin-bottom: -6px;
+        padding: 14px 14px 0;
+    }
+
+    .bny-table-sort-chip {
+        border: 1px solid var(--gray-middle);
+        background-color: var(--white);
+        color: var(--black-middle);
+        border-radius: 16px;
+        padding: 4px 12px;
+        font-size: var(--font-size-sm);
+        font-family: inherit;
+        line-height: 1.5;
+        cursor: pointer;
+        transition: background-color var(--transition-fast), color var(--transition-fast),
+            border-color var(--transition-fast);
+    }
+
+    .bny-table-sort-chip.active {
+        border-color: var(--default);
+        color: var(--default-middle);
+        background-color: var(--default-alpha-10);
+    }
+}
+
 /* ========== 空状态占位 ========== */
 table[hx-ext~="bny-table"] tbody tr.bny-table-empty td {
     text-align: center;
@@ -200,4 +238,57 @@ table[hx-ext~="bny-table"] tbody tr.bny-table-empty td {
 
 html.dark table[hx-ext~="bny-table"] tbody tr.bny-table-empty td {
     color: var(--gray-shallow);
+}
+
+/* ========== 树形表格 ========== */
+
+/* 展开箭头（图标版，可点击）与层级缩进占位 */
+.bny-table-tree-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    margin: -3px 2px -3px -4px;
+    cursor: pointer;
+    user-select: none;
+    color: var(--default-middle);
+    vertical-align: middle;
+    border-radius: var(--border-radius-sm);
+
+    &:hover {
+        background-color: var(--default-alpha-10);
+        color: var(--default);
+    }
+
+    & i {
+        font-size: 12px;
+        transition: transform var(--transition-fast);
+        /* 默认展开态：朝下 */
+        transform: rotate(90deg);
+    }
+}
+
+/* 折叠态：箭头朝右（icon-caret-right 原位） */
+tr.tree-collapsed .bny-table-tree-toggle i {
+    transform: rotate(0deg);
+}
+
+.bny-table-tree-indent {
+    display: inline-block;
+    vertical-align: middle;
+    white-space: nowrap;
+}
+
+/* 移动到端卡片式：首列缩进保持不变，箭头可点击；缩进量随层级渐变易于区分 */
+@media screen and (max-width: 767px) {
+    table[hx-ext~="bny-table"] td.bny-table-tree-cell {
+        & .bny-table-tree-toggle,
+        & .bny-table-tree-indent {
+            line-height: 1;
+        }
+        & .bny-table-tree-toggle {
+            margin-right: 2px;
+        }
+    }
 }

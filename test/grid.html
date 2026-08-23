@@ -429,6 +429,47 @@
                     </div>
                 </div>
             </div>
+            <h2 id="n03">行占据（span）</h2>
+            <div class="bny-card">
+                <div hx-ext="bny-tab">
+                    <ul class="head">
+                        <li>Preview</li>
+                        <li>Code</li>
+                    </ul>
+                    <div class="body">
+                        <div>
+                            <div class="p-12">
+                                <p style="margin-bottom:12px; font-size:13px; color:var(--black-shallow);">
+                                    用 <code>span</code> 让某个格子纵向占多行（1~12），其余格子按 12 ≤ 列自动排布。
+                                </p>
+                                <div class="bny-row" grid-gap>
+                                    <div class="col-md4 col-md-span2"
+                                        style="background:var(--green-shallow); border-radius:4px; min-height:76px; display:flex; align-items:center; justify-content:center;">
+                                        占 2 行
+                                    </div>
+                                    <div class="col-md4" style="background:var(--gray-shallow); border-radius:4px; padding:10px;">普通列</div>
+                                    <div class="col-md4" style="background:var(--gray-shallow); border-radius:4px; padding:10px;">普通列</div>
+                                    <div class="col-md8" style="background:var(--blue-shallow); border-radius:4px; padding:10px;">下一行，占剩余宽度</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <pre hx-ext="bny-code">
+&lt;!-- 占 2 行：其余格子自动排在 12 ≤ 列网格内 --&gt;
+&lt;div class=&quot;bny-row&quot; grid-gap&gt;
+    &lt;div class=&quot;col-md4 col-md-span2&quot;&gt;
+        占 2 行
+    &lt;/div&gt;
+    &lt;div class=&quot;col-md4&quot;&gt;普通列&lt;/div&gt;
+    &lt;div class=&quot;col-md4&quot;&gt;普通列&lt;/div&gt;
+    &lt;div class=&quot;col-md8&quot;&gt;下一行，占剩余宽度&lt;/div&gt;
+&lt;/div&gt;
+                            </pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <h3>栅格布局规则</h3>
             <table hx-ext="bny-table">
                 <colgroup>
@@ -583,6 +624,7 @@
             <ul hx-ext="bny-anchor" anchor-rail>
                 <li class="link" anchor-target="#n01">自适应容器</li>
                 <li class="link" anchor-target="#n02">网格布局</li>
+                <li class="link" anchor-target="#n03">行占据</li>
             </ul>
         </div>
     </div>

@@ -527,6 +527,24 @@ htmx.defineExtension('bny-carousel', {
         }
 
         /**
+         * 为轮播内图片绑定骨架占位：加载完成/失败后清除流光背景（加 .bny-img-loaded）
+         * 用 dataset 标记防止重复绑定（refresh 重建克隆项时也会调用）
+         * @param {HTMLElement} root 轮播根元素
+         */
+        function bindImgSkeleton(root) {
+            root.querySelectorAll('img').forEach(function (img) {
+                if (img.dataset.bnySkLoaded) return
+                img.dataset.bnySkLoaded = '1'
+                function mark() { img.classList.add('bny-img-loaded') }
+                if (img.complete) mark()
+                else {
+                    img.addEventListener('load', mark)
+                    img.addEventListener('error', mark)
+                }
+            })
+        }
+
+        /**
          * 刷新：单项标记 / 索引同步 / 指示器重建 / 克隆重建 / 状态应用 / 自动播放重建
          * @param {HTMLElement} root 轮播根元素
          */
@@ -547,6 +565,8 @@ htmx.defineExtension('bny-carousel', {
             else renderPosition(root)
             // 箭头禁用态
             updateArrows(root)
+            // 图片骨架占位绑定
+            bindImgSkeleton(root)
             // 自动播放
             updateAutoplay(root)
         }

@@ -317,3 +317,54 @@
         & .bny-skeleton-text:last-child { width: 55%; margin-bottom: 16px; }
     }
 }
+
+/* ========== bny-skeleton 扩展（自定义草图 + 自动克隆） ========== */
+
+/* ---- 作为 hx-indicator：默认隐藏，请求期间(.htmx-request)才显示 ---- */
+[skeleton-sketch],
+[skeleton-clone] {
+    display: none;
+}
+
+/* 手动开启：不依赖 hx-indicator，直接常显（class 类名或裸属性写法均可） */
+[skeleton-sketch].bny-skeleton-active, [skeleton-sketch][bny-skeleton-active],
+[skeleton-clone].bny-skeleton-active,  [skeleton-clone][bny-skeleton-active] {
+    display: block;
+}
+
+/* 请求进行中显示骨架 */
+[skeleton-sketch].htmx-request,
+[skeleton-clone].htmx-request {
+    display: block;
+}
+
+/* ---- 自动克隆：保留文本占位但完全隐藏，避免布局塌陷 ---- */
+.bny-skeleton-cloned,
+.bny-skeleton-cloned * {
+    color: transparent !important;
+    -webkit-text-fill-color: transparent !important;
+}
+
+/* ---- 嵌套组合容器（自定义草图）默认撑满，仅作布局分组 ---- */
+.bny-skeleton-sketch-list,
+.bny-skeleton-sketch-grid,
+.bny-skeleton-sketch-card {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.bny-skeleton-sketch-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 14px;
+}
+
+.bny-skeleton-sketch-card {
+    & .bny-skeleton-image { height: 120px; }
+    & .bny-skeleton-title  { margin: 12px 0 8px; }
+}
+
+.bny-skeleton-sketch-list {
+    & .bny-skeleton-avatar { flex-shrink: 0; }
+}
