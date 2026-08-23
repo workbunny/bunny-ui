@@ -663,6 +663,51 @@ function resetClone() {
                     </tr>
                 </tbody>
             </table>
+
+            <h3>bny-skeleton 扩展属性</h3>
+            <p style="margin-bottom:12px; font-size:13px; color:var(--black-shallow);">
+                在元素上加 <code>hx-ext="bny-skeleton"</code> 启用声明式骨架。
+            </p>
+            <table hx-ext="bny-table">
+                <thead>
+                    <tr><th>属性</th><th>说明</th></tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>skeleton-sketch="…"</code></td>
+                        <td>自定义草图：DSL 按形状组合生成骨架块（见下）</td>
+                    </tr>
+                    <tr>
+                        <td><code>skeleton-clone="#template"</code></td>
+                        <td>自动克隆：按目标真实结构生成骨架（img→image 块、圆形→circle 块、文本保留透明占位）</td>
+                    </tr>
+                    <tr>
+                        <td><code>bny-skeleton-active</code></td>
+                        <td>常显（不依赖 hx-indicator）；也可作为 hx-indicator 在请求期间显示、结束后隐藏</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>skeleton-sketch DSL</h3>
+            <p style="margin-bottom:12px; font-size:13px; color:var(--black-shallow);">
+                逗号分隔条目，格式 <code>type [x数量] [short] [:宽度]</code>；支持 <code>name:{ 子项,… }</code> 嵌套组合。
+            </p>
+            <table hx-ext="bny-table">
+                <thead>
+                    <tr><th>type</th><th>含义</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td><code>text</code> / <code>line</code></td><td>文本行（可加 short 变短行）</td></tr>
+                    <tr><td><code>title</code></td><td>标题块</td></tr>
+                    <tr><td><code>circle</code> / <code>avatar</code></td><td>圆形/头像（:宽度 同时决定宽高）</td></tr>
+                    <tr><td><code>image</code></td><td>大图占位</td></tr>
+                    <tr><td><code>button</code></td><td>按钮占位</td></tr>
+                    <tr><td><code>list:{ … }</code> / <code>card:{ … }</code> / <code>grid:{ … }</code></td><td>嵌套组合容器</td></tr>
+                </tbody>
+            </table>
+            <p style="margin-top:8px; font-size:12px; color:var(--black-shallow);">
+                例：<code>skeleton-sketch="avatar x1, list:{ text x2, text short }"</code>
+            </p>
         </div>
     </div>
     <div class="right-anchor-box hidden-xs col-sm3">
