@@ -3755,7 +3755,7 @@
     hasExtName: function(elt, ext) {
       const attrs = elt.getAttribute("hx-ext");
       if (!attrs) return false;
-      const exts = attrs.trim().split(/\s+/);
+      const exts = attrs.split(",").map((s) => s.trim()).filter(Boolean);
       return exts.includes(ext);
     },
     /**
@@ -4467,6 +4467,7 @@
         bny.alert(data.msg, data.code || 0, data.anim || "scale", data.time || 3);
         return elt.innerHTML;
       }
+      return text;
     }
   });
   function closeDropdown(target) {

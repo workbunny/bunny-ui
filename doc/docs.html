@@ -39,202 +39,136 @@
 </head>
 
 <body hx-ext="bny-spa" spa-mode="hash">
-<header class="site-header">
-    <div hx-ext="bny-nav" nav-color="white">
-        <div class="head">
-            <a class="logo-box" href="/doc/home.html">
-                <span class="logo"><img src="/bunny.png" alt="BunnyUI"></span>
-                <span>BunnyUI</span>
-            </a>
-        </div>
-        <ul class="menu">
-            <li><a class="trigger" href="/doc/home.html"><i class="bny-icon icon-home"></i><span>首页</span></a></li>
-            <li><a class="trigger" href="/doc/docs.html"><i class="bny-icon icon-book"></i><span>文档</span></a></li>
-            <li><a class="trigger" href="/doc/ext.html"><i class="bny-icon icon-rocket"></i><span>拓展</span></a></li>
-            <li><a class="trigger" href="/doc/log.html"><i class="bny-icon icon-calendar"></i><span>日志</span></a></li>
-            <li><a class="trigger" href="javascript:void(0)" id="mode-btn" spa-skip title="切换主题">
-                <span class="mode-icons">
-                    <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4.5"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.5 4.5l1.8 1.8M17.7 17.7l1.8 1.8M19.5 4.5l-1.8 1.8M6.3 17.7l-1.8 1.8"/></svg>
-                    <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/></svg>
-                </span>
-            </a></li>
-            <li><a class="trigger" href="https://github.com/workbunny/bunny.ui" target="_blank" spa-skip><i class="bny-icon icon-github-fill"></i><span></span></a></li>
-        </ul>
-    </div>
-</header>
-
-<main spa-view>
-    <div class="docs-layout">
-        <!-- 左侧菜单 -->
-        <aside class="docs-sidebar hidden-xs">
-            <div hx-ext="bny-nav" nav-side nav-color="white" style="flex-direction: row;">
-                <ul class="menu">
-                    <li class="show">
-                        <div class="trigger">
-                            <span>基础</span>
-                        </div>
-                        <ul class="sub-menu">
-                            <li><a class="trigger" spa-view-target="#docs-view" href="/test/base.html"><span>开始使用</span></a></li>
-                            <li><a class="trigger" spa-view-target="#docs-view" href="/test/js.html"><span>底层方法</span></a></li>
-                            <li><a class="trigger" spa-view-target="#docs-view" href="/test/class.html"><span>公共类</span></a></li>
-                            <li><a class="trigger" spa-view-target="#docs-view" href="/test/attr.html"><span>属性</span></a></li>
-                        </ul>
-                    </li>
-                    <li class="show">
-                        <div class="trigger">
-                            <span>通用</span>
-                        </div>
-                        <ul class="sub-menu">
-                            <li><a class="trigger" spa-view-target="#docs-view" href="/test/color.html"><span>颜色</span></a></li>
-                            <li><a class="trigger" spa-view-target="#docs-view" href="/test/button.html"><span>按钮</span></a></li>
-                            <li><a class="trigger" spa-view-target="#docs-view" href="/test/tag.html"><span>标签</span></a></li>
-                            <li><a class="trigger" spa-view-target="#docs-view" href="/test/icons.html"><span>图标</span></a></li>
-                            <li><a class="trigger" spa-view-target="#docs-view" href="/test/subsidiary.html"><span>辅助</span></a></li>
-                            <li><a class="trigger" spa-view-target="#docs-view" href="/test/grid.html"><span>网格</span></a></li>
-                            <li><a class="trigger" spa-view-target="#docs-view" href="/test/card.html"><span>卡片</span></a></li>
-                        </ul>
-                    </li>
-                    <li class="show">
-                        <div class="trigger">
-                            <span>导航</span>
-                        </div>
-                        <ul class="sub-menu">
-                            <li><a class="trigger" spa-view-target="#docs-view" href="/test/menu.html"><span>菜单</span></a></li>
-                            <li><a class="trigger" spa-view-target="#docs-view" href="/test/nav.html"><span>导航栏</span></a></li>
-                            <li><a class="trigger" spa-view-target="#docs-view" href="/test/anchor.html"><span>锚点</span></a></li>
-                            <li><a class="trigger" spa-view-target="#docs-view" href="/test/dropdown.html"><span>下拉菜单</span></a></li>
-                            <li><a class="trigger" spa-view-target="#docs-view" href="/test/tab.html"><span>选项卡</span></a></li>
-                            <li><a class="trigger" spa-view-target="#docs-view" href="/test/breadcrumb.html"><span>面包屑</span></a></li>
-                            <li><a class="trigger" spa-view-target="#docs-view" href="/test/backtop.html"><span>回到顶部</span></a></li>
-                        </ul>
-                    </li>
-                    <li class="show">
-                        <div class="trigger">
-                            <span>数据展示</span>
-                        </div>
-                        <ul class="sub-menu">
-                            <li><a class="trigger" spa-view-target="#docs-view" href="/test/table.html"><span>表格</span></a></li>
-                            <li><a class="trigger" spa-view-target="#docs-view" href="/test/code.html"><span>代码</span></a></li>
-                            <li><a class="trigger" spa-view-target="#docs-view" href="/test/collapse.html"><span>折叠面板</span></a></li>
-                            <li><a class="trigger" spa-view-target="#docs-view" href="/test/skeleton.html"><span>骨架屏</span></a></li>
-                            <li><a class="trigger" spa-view-target="#docs-view" href="/test/empty.html"><span>空状态</span></a></li>
-                            <li><a class="trigger" spa-view-target="#docs-view" href="/test/avatar.html"><span>头像 & 徽标</span></a></li>
-                            <li><a class="trigger" spa-view-target="#docs-view" href="/test/tip.html"><span>提示</span></a></li>
-                            <li><a class="trigger" spa-view-target="#docs-view" href="/test/image.html"><span>图片预览</span></a></li>
-                            <li><a class="trigger" spa-view-target="#docs-view" href="/test/carousel.html"><span>轮播</span></a></li>
-                            <li><a class="trigger" spa-view-target="#docs-view" href="/test/timeline.html"><span>时间线</span></a></li>
-                            <li><a class="trigger" spa-view-target="#docs-view" href="/test/steps.html"><span>步骤条</span></a></li>
-                        </ul>
-                    </li>
-                    <li class="show">
-                        <div class="trigger">
-                            <span>反馈</span>
-                        </div>
-                        <ul class="sub-menu">
-                            <li><a class="trigger" spa-view-target="#docs-view" href="/test/alert.html"><span>警示信息</span></a></li>
-                            <li><a class="trigger" spa-view-target="#docs-view" href="/test/confirm.html"><span>确认信息</span></a></li>
-                            <li><a class="trigger" spa-view-target="#docs-view" href="/test/page.html"><span>页面信息</span></a></li>
-                            <li><a class="trigger" spa-view-target="#docs-view" href="/test/load.html"><span>加载</span></a></li>
-                        </ul>
-                    </li>
-                    <li class="show">
-                        <div class="trigger">
-                            <span>表单</span>
-                        </div>
-                        <ul class="sub-menu">
-                            <li><a class="trigger" spa-view-target="#docs-view" href="/test/form.html"><span>表单</span></a></li>
-                            <li><a class="trigger" spa-view-target="#docs-view" href="/test/datepicker.html"><span>日期选择</span></a></li>
-                            <li><a class="trigger" spa-view-target="#docs-view" href="/test/rate.html"><span>评分</span></a></li>
-                        </ul>
-                    </li>
-                    <li class="show">
-                        <div class="trigger">
-                            <span>数据交互</span>
-                        </div>
-                        <ul class="sub-menu">
-                            <li><a class="trigger" spa-view-target="#docs-view" href="/test/pagination.html"><span>分页</span></a></li>
-                        </ul>
-                    </li>
-                </ul>
+    <header class="site-header">
+        <div hx-ext="bny-nav" nav-color="white">
+            <div class="head">
+                <a class="logo-box" href="/doc/home.html">
+                    <span class="logo"><img src="/bunny.png" alt="BunnyUI"></span>
+                    <span>BunnyUI</span>
+                </a>
             </div>
-        </aside>
-        <!-- 右侧内容区（嵌套 spa-view） -->
-        <div class="docs-content">
-            <div spa-view id="docs-view">
-                <a href="/test/base.html" id="docs-auto-nav" spa-view-target="#docs-view" style="display:none"></a>
-                <script>
-                    // 文档页自动导航：根据 hash 加载对应内容，默认加载"开始使用"
-                    // 全站 hash 模式：刷新时浏览器加载 index.html（入口页），
-                    // 通过 hash 路由自动导航到 docs.html，再由本脚本加载 #docs-view 内容
-                    // 放在 #docs-view 内，确保从其他页面 SPA 导航到 docs.html 时
-                    // 随 main 视口替换一起被 executeScripts 执行
-                    // 使用 bny.spaReady 确保 SPA 扩展初始化完成后再触发点击
-                    function triggerAutoNav() {
-                        var autoNav = document.getElementById('docs-auto-nav');
-                        if (!autoNav) return; // autoNav 不存在说明 #docs-view 已被内容替换
-                        // popstate 回退时不重新触发自动导航，避免后退陷阱
-                        if (typeof bny !== 'undefined' && bny.spaIsPopstate && bny.spaIsPopstate()) return;
-                        // 读取 hash 路径，仅接受 /test/ 内容页作为目标
-                        // 避免将框架页（如 /doc/docs.html）误加载进 #docs-view
-                        var targetUrl = '/test/base.html'; // 默认
-                        if (location.hash && location.hash.length > 1) {
-                            var path = location.hash.substring(1);
-                            if (path.charAt(0) === '/' && path.indexOf('/test/') === 0) {
-                                targetUrl = path;
+            <ul class="menu">
+                <li><a class="trigger" href="/doc/home.html"><i class="bny-icon icon-home"></i><span>首页</span></a></li>
+                <li><a class="trigger" href="/doc/docs.html"><i class="bny-icon icon-book"></i><span>文档</span></a></li>
+                <li><a class="trigger" href="/doc/ext.html"><i class="bny-icon icon-rocket"></i><span>拓展</span></a></li>
+                <li><a class="trigger" href="/doc/log.html"><i class="bny-icon icon-calendar"></i><span>日志</span></a>
+                </li>
+                <li><a class="trigger" href="javascript:void(0)" id="mode-btn" spa-skip title="切换主题">
+                        <span class="mode-icons">
+                            <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="4.5" />
+                                <path
+                                    d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.5 4.5l1.8 1.8M17.7 17.7l1.8 1.8M19.5 4.5l-1.8 1.8M6.3 17.7l-1.8 1.8" />
+                            </svg>
+                            <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z" />
+                            </svg>
+                        </span>
+                    </a></li>
+                <li><a class="trigger" href="https://github.com/workbunny/bunny.ui" target="_blank" spa-skip><i
+                            class="bny-icon icon-github-fill"></i><span></span></a></li>
+            </ul>
+        </div>
+    </header>
+
+    <main spa-view>
+        <div class="docs-layout">
+            <!-- 左侧菜单 -->
+            <aside class="docs-sidebar hidden-xs">
+                <div hx-get="/doc/menu.html" hx-swap="outerHTML" hx-trigger="load"></div>
+            </aside>
+            <!-- 右侧内容区（嵌套 spa-view） -->
+            <div class="docs-content">
+                <div spa-view id="docs-view">
+                    <a href="/test/base.html" id="docs-auto-nav" spa-view-target="#docs-view" style="display:none"></a>
+                    <script>
+                        // 文档页自动导航：根据 hash 加载对应内容，默认加载"开始使用"
+                        // 全站 hash 模式：刷新时浏览器加载 index.html（入口页），
+                        // 通过 hash 路由自动导航到 docs.html，再由本脚本加载 #docs-view 内容
+                        // 放在 #docs-view 内，确保从其他页面 SPA 导航到 docs.html 时
+                        // 随 main 视口替换一起被 executeScripts 执行
+                        // 使用 bny.spaReady 确保 SPA 扩展初始化完成后再触发点击
+                        function triggerAutoNav() {
+                            var autoNav = document.getElementById('docs-auto-nav');
+                            if (!autoNav) return; // autoNav 不存在说明 #docs-view 已被内容替换
+                            // popstate 回退时不重新触发自动导航，避免后退陷阱
+                            if (typeof bny !== 'undefined' && bny.spaIsPopstate && bny.spaIsPopstate()) return;
+                            // 读取 hash 路径，仅接受 /test/ 内容页作为目标
+                            // 避免将框架页（如 /doc/docs.html）误加载进 #docs-view
+                            var targetUrl = '/test/base.html'; // 默认
+                            if (location.hash && location.hash.length > 1) {
+                                var path = location.hash.substring(1);
+                                if (path.charAt(0) === '/' && path.indexOf('/test/') === 0) {
+                                    targetUrl = path;
+                                }
                             }
+                            autoNav.href = targetUrl;
+                            autoNav.click();
                         }
-                        autoNav.href = targetUrl;
-                        autoNav.click();
-                    }
 
-                    if (typeof bny !== 'undefined' && bny.spaReady) {
-                        bny.spaReady(triggerAutoNav);
-                    } else {
-                        window.addEventListener('DOMContentLoaded', triggerAutoNav);
-                    }
-                </script>
-            </div>
-        </div>
-    </div>
-    <!-- 移动端菜单按钮 -->
-    <div class="mobile-menu-btn">
-        <button class="bny-btn" model="border circle" hx-ext="bny-page" hx-get="/doc/menu.html" hx-trigger="click" title="false" page-anim="left" page-width="250px" page-height="100%" page-offset="left" page-shade spa-skip>
-            <i class="bny-icon icon-menu"></i>
-        </button>
-    </div>
-</main>
-
-<footer class="site-footer">
-    <div class="doc-container">
-        <div class="footer-grid">
-            <div class="footer-brand">
-                <div class="logo-line"><img src="/bunny.png" alt="BunnyUI"><span>BunnyUI</span></div>
-                <p>基于 HTMX 拓展的轻量级 Web UI 组件库，服务端渲染友好，声明式编程。</p>
-                <div class="footer-social">
-                    <a class="bny-btn" model="border circle" href="https://github.com/workbunny/bunny.ui" target="_blank" spa-skip title="GitHub"><i class="bny-icon icon-github-fill"></i></a>
+                        if (typeof bny !== 'undefined' && bny.spaReady) {
+                            bny.spaReady(triggerAutoNav);
+                        } else {
+                            window.addEventListener('DOMContentLoaded', triggerAutoNav);
+                        }
+                    </script>
                 </div>
             </div>
-            <div class="footer-links">
-                <div class="footer-col"><h4>导航</h4><a href="/doc/home.html">首页</a><a href="/doc/docs.html">文档</a><a href="/doc/ext.html">拓展</a></div>
-                <div class="footer-col"><h4>资源</h4><a href="https://github.com/workbunny/bunny.ui" target="_blank" spa-skip>GitHub</a><a href="/test/base.html">快速开始</a></div>
-                <div class="footer-col"><h4>拓展</h4><a href="/ext/spa/index.html" spa-skip>SPA</a><a href="/ext/markdown/index.html" spa-skip>Markdown</a></div>
+        </div>
+        <!-- 移动端菜单按钮 -->
+        <div class="mobile-menu-btn">
+            <button class="bny-btn" model="border circle" hx-ext="bny-page" hx-get="/doc/menu.html" hx-trigger="click"
+                title="false" page-anim="left" page-width="250px" page-height="100%" page-offset="left" page-shade
+                spa-skip>
+                <i class="bny-icon icon-menu"></i>
+            </button>
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <div class="doc-container">
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <div class="logo-line"><img src="/bunny.png" alt="BunnyUI"><span>BunnyUI</span></div>
+                    <p>基于 HTMX 拓展的轻量级 Web UI 组件库，服务端渲染友好，声明式编程。</p>
+                    <div class="footer-social">
+                        <a class="bny-btn" model="border circle" href="https://github.com/workbunny/bunny.ui"
+                            target="_blank" spa-skip title="GitHub"><i class="bny-icon icon-github-fill"></i></a>
+                    </div>
+                </div>
+                <div class="footer-links">
+                    <div class="footer-col">
+                        <h4>导航</h4><a href="/doc/home.html">首页</a><a href="/doc/docs.html">文档</a><a
+                            href="/doc/ext.html">拓展</a>
+                    </div>
+                    <div class="footer-col">
+                        <h4>资源</h4><a href="https://github.com/workbunny/bunny.ui" target="_blank" spa-skip>GitHub</a><a
+                            href="/test/base.html">快速开始</a>
+                    </div>
+                    <div class="footer-col">
+                        <h4>拓展</h4><a href="/ext/spa/index.html" spa-skip>SPA</a><a href="/ext/markdown/index.html"
+                            spa-skip>Markdown</a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <span>© 2026 BunnyUI. MIT Licensed.</span>
+                <span><i class="bny-icon icon-code"></i> Built with HTMX.</span>
             </div>
         </div>
-        <div class="footer-bottom">
-            <span>© 2026 BunnyUI. MIT Licensed.</span>
-            <span><i class="bny-icon icon-code"></i> Built with HTMX.</span>
-        </div>
-    </div>
-</footer>
+    </footer>
 
-<script>
-    // 文档页自动导航脚本在 #docs-view 内部，确保 SPA 导航到本页时能随视口替换一起执行
-</script>
-<script>
-    document.getElementById('mode-btn').addEventListener('click', function () {
-        var isDark = document.documentElement.classList.toggle('dark');
-        try { localStorage.setItem('bny-theme', isDark ? 'dark' : 'light'); } catch (e) { }
-    });
-</script>
+    <script>
+        // 文档页自动导航脚本在 #docs-view 内部，确保 SPA 导航到本页时能随视口替换一起执行
+    </script>
+    <script>
+        document.getElementById('mode-btn').addEventListener('click', function () {
+            var isDark = document.documentElement.classList.toggle('dark');
+            try { localStorage.setItem('bny-theme', isDark ? 'dark' : 'light'); } catch (e) { }
+        });
+    </script>
 </body>
+
 </html>
