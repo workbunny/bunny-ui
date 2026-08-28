@@ -4630,6 +4630,71 @@ tr.tree-collapsed .bny-table-tree-toggle i {
         }
     }
 }
+
+/* ========== JSON 渲染：列类型单元格 ========== */
+
+/* image 类型：图片/头像 */
+.bny-table-img {
+    display: block;
+    object-fit: cover;
+    border-radius: var(--border-radius-sm);
+}
+
+/* actions 类型：操作按钮组 */
+.bny-table-actions {
+    display: inline-flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 6px;
+
+    /* 禁止按钮文本断行：CJK 可逐字断行会拉低列的 min-content 宽度，
+       导致表格布局压缩操作列、按钮文字竖排/组溢出 */
+    & .bny-btn,
+    & .bny-table-dropdown-item {
+        white-space: nowrap;
+    }
+
+    /* nowrap 弹性容器的 min-content 按"最宽子项"计算，表格布局会压缩操作列；
+       max-content 让列宽分配看到按钮组的真实宽度 */
+    & .bny-btn-group {
+        width: max-content;
+    }
+}
+
+/* actions"更多"下拉面板（面板容器样式来自 dropdown 组件） */
+.bny-dropdown .bny-table-dropdown-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: 4px;
+    min-width: 120px;
+}
+
+.bny-dropdown .bny-table-dropdown-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 5px 10px;
+    border: none;
+    border-radius: var(--border-radius-sm);
+    background-color: transparent;
+    color: var(--black-middle);
+    font-size: var(--font-size-sm);
+    line-height: 1.4;
+    text-align: left;
+    cursor: pointer;
+    transition: var(--transition-fast);
+    white-space: nowrap;
+
+    &:hover {
+        background-color: var(--default-alpha-10);
+        color: var(--default);
+    }
+
+    & .bny-icon {
+        font-size: var(--font-size);
+    }
+}
 [hx-ext~="bny-tab"] {
     width: 100%;
     position: relative;
@@ -8117,6 +8182,38 @@ html.dark .bny-backtop {
             }
         }
     }
+
+    /* 条数选择 */
+    & .bny-pagination-sizes {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        margin-left: 8px;
+        color: var(--black-shallow);
+        font-size: var(--font-size-sm);
+
+        & .bny-pagination-select {
+            height: 32px;
+            padding: 0 6px;
+            border: 1.5px solid var(--gray-middle);
+            border-radius: var(--border-radius-sm);
+            background-color: var(--white);
+            color: var(--black);
+            font-size: var(--font-size-sm);
+            cursor: pointer;
+            transition: var(--transition-fast);
+
+            &:hover {
+                border-color: var(--gray);
+            }
+
+            &:focus {
+                border-color: var(--default);
+                box-shadow: var(--focus-ring);
+                outline: none;
+            }
+        }
+    }
 }
 
 /* 主题色变体 */
@@ -8125,9 +8222,7 @@ html.dark .bny-backtop {
 .bny-pagination[pg-color="green"] .bny-pagination-next.active {
     background-color: var(--green);
     border-color: var(--green);
-}
-
-.bny-pagination[pg-color="blue"] .bny-pagination-btn.active,
+}.bny-pagination[pg-color="blue"] .bny-pagination-btn.active,
 .bny-pagination[pg-color="blue"] .bny-pagination-prev.active,
 .bny-pagination[pg-color="blue"] .bny-pagination-next.active {
     background-color: var(--blue);

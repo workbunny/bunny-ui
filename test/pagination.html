@@ -4,7 +4,8 @@
             <h1>Pagination 分页</h1>
             <hr>
             <blockquote class="bny-blockquote">
-                分页组件，服务端返回 JSON 自动渲染分页条。与 htmx 集成，点击页码通过 hx-get 请求新数据。
+                分页组件，服务端返回 JSON（含 total）自动渲染分页条。与 htmx 集成，点击页码通过 hx-get 请求新数据。<br>
+                <strong>带数据的分页表格不需要本组件</strong>：表格组件（bny-table）已内置分页——JSON 带 <code>total</code> 时表格后自动渲染分页条，见<a href="/test/table.html" class="bny-link">表格组件</a>。
             </blockquote>
 
             <h2 id="n01">基础用法</h2>
@@ -22,7 +23,8 @@
                                      hx-target="#pagination-demo"
                                      hx-swap="innerHTML"
                                      hx-trigger="load"
-                                     pg-max-buttons="7">
+                                     pg-max-buttons="7"
+                                     pg-page-sizes="10,20,50">
                                 </div>
                                 <div id="pagination-demo"></div>
                                 <blockquote class="bny-blockquote" style="margin-top:14px;">
@@ -86,53 +88,6 @@
                 </div>
             </div>
 
-            <h2 id="n-table">与表格组合</h2>
-            <div class="bny-card">
-                <div hx-ext="bny-tab">
-                    <ul class="head">
-                        <li>Preview</li>
-                        <li>Code</li>
-                    </ul>
-                    <div class="body">
-                        <div>
-                            <div class="p-12">
-                                <div hx-ext="bny-pagination"
-                                     hx-get="/test/data/pagination-table.json"
-                                     hx-target="#pagination-table-demo"
-                                     hx-swap="innerHTML"
-                                     hx-trigger="load"
-                                     pg-render-list="true"
-                                     pg-page-size="5"
-                                     pg-max-buttons="5">
-                                </div>
-                                <div id="pagination-table-demo"></div>
-                                <blockquote class="bny-blockquote" style="margin-top:14px;">
-                                    <code>pg-render-list="true"</code> 配合 JSON 中的 <code>columns</code> 与 <code>allList</code>，自动渲染表格 + 分页条，点击页码切换数据（前端分页）。
-                                </blockquote>
-                            </div>
-                        </div>
-                        <div>
-                            <pre hx-ext="bny-code">
-&lt;div hx-ext=&quot;bny-pagination&quot;
-     hx-get=&quot;/api/users&quot;
-     hx-target=&quot;#table-demo&quot;
-     hx-swap=&quot;innerHTML&quot;
-     hx-trigger=&quot;load&quot;
-     pg-render-list=&quot;true&quot;
-     pg-page-size=&quot;5&quot;&gt;
-&lt;/div&gt;
-&lt;div id=&quot;table-demo&quot;&gt;&lt;/div&gt;
-
-&lt;!-- 服务端返回 JSON： --&gt;
-&lt;!-- { &quot;total&quot;: 30, &quot;pageSize&quot;: 5, --&gt;
-&lt;!--   &quot;columns&quot;: [{&quot;field&quot;:&quot;id&quot;,&quot;title&quot;:&quot;ID&quot;},...], --&gt;
-&lt;!--   &quot;allList&quot;: [{&quot;id&quot;:1,...},...] } --&gt;
-                            </pre>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
             <h2 id="n03">配置项</h2>
             <div class="bny-card">
                 <div hx-ext="bny-tab">
@@ -147,9 +102,11 @@
                                     常用配置：<br>
                                     <code>pg-max-buttons</code>：最多页码按钮数（默认 7）<br>
                                     <code>pg-page-size</code>：每页条数（默认 10）<br>
+                                    <code>pg-page-sizes</code>：条数选择列表（如 "10,20,50"，设置后出现条数选择器）<br>
                                     <code>pg-jumper="false"</code>：隐藏跳转框<br>
                                     <code>pg-total="false"</code>：隐藏总数<br>
                                     <code>pg-page-param</code>：URL 参数名（默认 page）<br>
+                                    <code>pg-size-param</code>：URL 条数参数名（默认 pageSize）<br>
                                     <code>pg-color</code>：主题色（default/green/blue/yellow/red）<br>
                                     <code>pg-model="simple"</code>：无边框简洁模式
                                 </blockquote>
@@ -184,7 +141,9 @@
                     <tr><td><code>pg-page-param</code></td><td>URL 分页参数名，默认 page</td></tr>
                     <tr><td><code>pg-jumper</code></td><td>设为 false 隐藏跳转框</td></tr>
                     <tr><td><code>pg-total</code></td><td>设为 false 隐藏总数</td></tr>
-                    <tr><td><code>pg-render-list</code></td><td>设为 true 时按 JSON 的 columns / allList / list 自动渲染表格或列表</td></tr>
+                    <tr><td><code>pg-render-list</code></td><td>（已移除）数据渲染与分页表格归属表格组件，见 <code>bny-table</code> 内置分页</td></tr>
+                    <tr><td><code>pg-page-sizes</code></td><td>条数选择列表（逗号分隔，如 "10,20,50"），设置后分页条出现"X 条/页"选择器，切换自动回第 1 页并携带条数参数重新请求</td></tr>
+                    <tr><td><code>pg-size-param</code></td><td>URL 条数参数名，默认 pageSize</td></tr>
                     <tr><td><code>pg-color</code></td><td>主题色：default/green/blue/yellow/red</td></tr>
                     <tr><td><code>pg-model</code></td><td>设为 simple 无边框简洁模式</td></tr>
                 </tbody>
@@ -200,7 +159,9 @@
                     <tr><td><code>bny-pagination-ellipsis</code></td><td>省略号</td></tr>
                     <tr><td><code>bny-pagination-jump</code></td><td>跳转区域</td></tr>
                     <tr><td><code>bny-pagination-input</code></td><td>跳转输入框</td></tr>
-                    <tr><td><code>bny-pagination-list</code> / <code>bny-pagination-list-item</code></td><td>render-list 时的简单列表</td></tr>
+                    <tr><td><code>bny-pagination-sizes</code> / <code>bny-pagination-select</code></td><td>条数选择区域 / 条数下拉选择器</td></tr>
+                    <tr><td><code>bny-pagination-list</code> / <code>bny-pagination-list-item</code></td><td>（已移除）简单列表渲染随 pg-render-list 一并归属表格组件</td></tr>
+                    <tr><td><code>bny-pagination-actions</code> / <code>bny-pagination-img</code></td><td>（已移除）随数据渲染一并归属表格组件（<code>bny-table-actions</code> / <code>bny-table-img</code>）</td></tr>
                 </tbody>
             </table>
         </div>
@@ -210,7 +171,6 @@
             <ul hx-ext="bny-anchor" anchor-rail>
                 <li class="link" anchor-target="#n01">基础用法</li>
                 <li class="link" anchor-target="#n02">简洁模式</li>
-                <li class="link" anchor-target="#n-table">与表格组合</li>
                 <li class="link" anchor-target="#n03">配置项</li>
                 <li class="link" anchor-target="#n04">API</li>
             </ul>

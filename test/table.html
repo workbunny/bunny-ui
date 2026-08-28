@@ -514,6 +514,149 @@
                 </div>
             </div>
 
+            <h2 id="n06e">列类型（对象行富列）</h2>
+            <div class="bny-card">
+                <div hx-ext="bny-tab">
+                    <ul class="head">
+                        <li>Preview</li>
+                        <li>Code</li>
+                        <li>Json</li>
+                    </ul>
+                    <div class="body">
+                        <div>
+                            <div class="p-12">
+                                <button class="bny-btn" hx-ext="bny-table" hx-get="/test/data/pagination-table.json"
+                                    hx-target="#table-typed-demo" hx-swap="innerHTML" hx-trigger="click"
+                                    pg-page-size="5" pg-page-sizes="5,10,20">加载列类型表格</button>
+                                <div id="table-typed-demo" class="mt-12"></div>
+                                <blockquote class="bny-blockquote">
+                                    对象行（<code>list</code>/<code>allList</code>）配合 <code>columns</code> 列模型，单元格按 <code>type</code> 声明渲染富内容：
+                                    <code>image</code> 头像、<code>tag</code> 标签（map 值映射）、<code>link</code> 链接、<code>template</code> 自定义模板、
+                                    <code>actions</code> 操作按钮组（confirm 确认 / url 请求 / event 事件派发；<code>group</code> 按钮组、<code>children</code> "更多"下拉收纳次要操作）。
+                                    声明 <code>sortable</code>/<code>sort</code> 的列可点击表头排序（<code>sortVal</code> 指定排序取值字段）。<br>
+                                    JSON 带 <code>total</code> 时表格后自动渲染<strong>内置分页条</strong>（allList 按 page/pageSize 前端切片，点击页码自动重新请求）。
+                                </blockquote>
+                            </div>
+                        </div>
+                        <div>
+                            <pre hx-ext="bny-code">
+&lt;button hx-ext=&quot;bny-table&quot; hx-get=&quot;/test/data/pagination-table.json&quot;
+    hx-target=&quot;#table-typed-demo&quot; hx-swap=&quot;innerHTML&quot;&gt;加载列类型表格&lt;/button&gt;
+
+// 对象行用 field 取值；列模型按 type 声明单元格渲染方式
+// actions：主操作平铺按钮；列级 "group": true 渲染为 bny-btn-group 按钮组；
+//         动作带 "children" 时渲染为"更多"下拉（bny-dropdown），次要操作收进面板，
+//         下拉项与主按钮走同一 confirm/url/event 协议，执行后面板自动关闭
+// 业务侧监听 event 动作派发的自定义事件：
+document.addEventListener('user-log', e =&gt; console.log(e.detail)) // {row, page}
+
+// JSON 带 total 时自动渲染内置分页条（allList 按 page/pageSize 前端切片）
+            </pre>
+                        </div>
+                        <div>
+                            <pre hx-ext="bny-code">
+// pagination-table.json
+{
+    "total": 30,
+    "pageSize": 5,
+    "columns": [
+        {"field": "id",     "title": "ID",   "width": "56px", "align": "center"},
+        {"field": "avatar", "title": "头像", "type": "image", "round": true,
+         "src": "https://picsum.photos/seed/u{id}/80/80"},
+        {"field": "name",   "title": "姓名", "template": "&lt;b&gt;{name}&lt;/b&gt;", "sortable": true},
+        {"field": "role",   "title": "角色", "type": "tag",
+         "map": {"管理员": "red", "编辑": "blue", "default": "green"}},
+        {"field": "status", "title": "状态", "type": "tag", "sortable": true, "sort": "number",
+         "sortVal": "status",
+         "map": {"1": {"text": "在职", "color": "green"},
+                  "0": {"text": "离职", "color": "yellow"}}},
+        {"field": "email",  "title": "邮箱", "type": "link", "href": "mailto:{email}"},
+        {"field": "age",    "title": "年龄", "align": "center", "sortable": true, "sort": "number"},
+        {"field": "id",     "title": "操作", "type": "actions", "align": "center",
+         "group": true,
+         "actions": [
+            {"text": "编辑", "color": "blue", "icon": "icon-edit", "event": "pg-user-edit"},
+            {"text": "删除", "color": "red", "icon": "icon-delete",
+             "confirm": "确定删除 {name} 吗？", "url": "/user/{id}", "method": "DELETE"},
+            {"text": "更多", "icon": "icon-ellipsis", "children": [
+                {"text": "重置密码", "icon": "icon-key",
+                 "confirm": "确定重置 {name} 的密码吗？", "url": "/user/{id}/reset", "method": "POST"},
+                {"text": "导出日志", "event": "user-log"}
+            ]}
+         ]}
+    ],
+    "allList": [{"id": 1, "name": "张伟", ...}, ...]
+}
+            </pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h2 id="n06f">搜索与联动</h2>
+            <div class="bny-card">
+                <div hx-ext="bny-tab">
+                    <ul class="head">
+                        <li>Preview</li>
+                        <li>Code</li>
+                    </ul>
+                    <div class="body">
+                        <div>
+                            <div class="p-12">
+                                <h3 style="margin:0 0 10px;">多条件搜索</h3>
+                                <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;">
+                                    <input class="bny-input" style="width:150px" name="name" placeholder="按姓名搜索"
+                                           hx-ext="bny-table" hx-get="/test/data/pagination-table.json"
+                                           hx-target="#table-search-demo" hx-swap="innerHTML"
+                                           hx-trigger="input changed delay:400ms, search"
+                                           hx-include="closest div">
+                                    <input class="bny-input" style="width:210px" name="email" placeholder="按邮箱搜索"
+                                           hx-ext="bny-table" hx-get="/test/data/pagination-table.json"
+                                           hx-target="#table-search-demo" hx-swap="innerHTML"
+                                           hx-trigger="input changed delay:400ms, search"
+                                           hx-include="closest div">
+                                    <select class="bny-select" style="width:120px" name="status"
+                                            hx-ext="bny-table" hx-get="/test/data/pagination-table.json"
+                                            hx-target="#table-search-demo" hx-swap="innerHTML"
+                                            hx-trigger="change"
+                                            hx-include="closest div">
+                                        <option value="">全部状态</option>
+                                        <option value="1">在职</option>
+                                        <option value="0">离职</option>
+                                    </select>
+                                </div>
+                                <div hx-ext="bny-table" hx-get="/test/data/pagination-table.json"
+                                     hx-target="#table-search-demo" hx-swap="innerHTML" hx-trigger="load"
+                                     table-filter="name,email,status" pg-page-sizes="5,10"></div>
+                                <div id="table-search-demo"></div>
+                                <blockquote class="bny-blockquote" style="margin-top:14px;">
+                                    多条件搜索：条件控件放同一容器，<code>hx-include="closest div"</code> 让任一控件触发时带上全部条件（AND 组合）；
+                                    表格 <code>table-filter</code> 声明可过滤字段（URL 同名参数本地过滤，allList 模式，total 同步）；
+                                    翻页/切条数自动保持当前条件。
+                                </blockquote>
+                            </div>
+                        </div>
+                        <div>
+                            <pre hx-ext="bny-code">
+&lt;!-- 多条件搜索：条件控件同一容器，hx-include 让任一控件带上全部条件 --&gt;
+&lt;div style=&quot;display:flex;gap:8px&quot;&gt;
+    &lt;input name=&quot;name&quot; hx-ext=&quot;bny-table&quot; hx-get=&quot;/api/list&quot;
+        hx-target=&quot;#demo&quot; hx-trigger=&quot;input changed delay:400ms, search&quot;
+        hx-include=&quot;closest div&quot;&gt;
+    &lt;select name=&quot;status&quot; hx-ext=&quot;bny-table&quot; hx-get=&quot;/api/list&quot;
+        hx-target=&quot;#demo&quot; hx-trigger=&quot;change&quot; hx-include=&quot;closest div&quot;&gt;
+&lt;/div&gt;
+&lt;div hx-ext=&quot;bny-table&quot; hx-get=&quot;/api/list&quot; hx-target=&quot;#demo&quot; hx-trigger=&quot;load&quot;
+     table-filter=&quot;name,email,status&quot;&gt;&lt;/div&gt;
+&lt;div id=&quot;demo&quot;&gt;&lt;/div&gt;
+
+&lt;!-- 翻页/切条数自动保持当前条件（分页条携带查询串，内置行为） --&gt;
+                            </pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <h2 id="n07">API</h2>
             <h3>标签属性</h3>
             <table hx-ext="bny-table">
@@ -555,6 +698,20 @@
                         <td>作用于 td，指定该单元格参与排序的值（显示与排序值不同时使用）</td>
                         <td></td>
                     </tr>
+                    <tr>
+                        <td>table-page-size / table-page-param</td>
+                        <td>10 / page</td>
+                        <td>否</td>
+                        <td>allList 前端分页切片的每页条数与 URL 分页参数名</td>
+                        <td>v2.3.0</td>
+                    </tr>
+                    <tr>
+                        <td>pg-*</td>
+                        <td>—</td>
+                        <td>否</td>
+                        <td>内置分页条配置（JSON 带 total 时生效）：pg-page-size、pg-page-sizes（条数选择列表，如 "10,20,50"）、pg-size-param、pg-max-buttons、pg-page-param、pg-jumper="false"、pg-total="false"、pg-color、pg-model，详见<a href="/test/pagination.html" class="bny-link">分页组件</a></td>
+                        <td>v2.3.0</td>
+                    </tr>
                 </tbody>
             </table>
 
@@ -571,28 +728,90 @@
                 </thead>
                 <tbody>
                     <tr>
-                        <td>tab </td>
+                        <td>color</td>
                         <td>—</td>
                         <td>否</td>
                         <td>表头颜色：green/yellow/red/blue</td>
                         <td></td>
                     </tr>
                     <tr>
-                        <td>cols</td>
+                        <td>key</td>
+                        <td>—</td>
+                        <td>否</td>
+                        <td>表格唯一标识，用于排序状态持久化（sessionStorage）</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>empty</td>
+                        <td>暂无数据</td>
+                        <td>否</td>
+                        <td>空数据占位文案</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>cols / columns</td>
                         <td>[]</td>
                         <td>是</td>
-                        <td>列名字符串数组</td>
-                        <td></td>
+                        <td>列定义：字符串或对象（name/title、sortable、sort、field、type、align、width 等，见下方"单元格类型"）</td>
+                        <td>columns 为 v2.3.0 新增</td>
                     </tr>
                     <tr>
                         <td>rows</td>
                         <td>[]</td>
-                        <td>是</td>
-                        <td>二维数组，每行为一条数据</td>
+                        <td>否</td>
+                        <td>位置行：二维数组；支持树形行 {cells, children} 与 {__html} 原始行</td>
                         <td></td>
+                    </tr>
+                    <tr>
+                        <td>list / allList</td>
+                        <td>[]</td>
+                        <td>否</td>
+                        <td>对象行：配合 columns 按 field 取值，支持全部列类型；allList 为全量数据自动按 page/pageSize 前端分页切片</td>
+                        <td>v2.3.0</td>
+                    </tr>
+                    <tr>
+                        <td>total</td>
+                        <td>—</td>
+                        <td>否</td>
+                        <td>内置分页：带 total 时表格后自动渲染分页条（pg-* 属性配置样式与行为，见分页组件文档）</td>
+                        <td>v2.3.0</td>
+                    </tr>
+                    <tr>
+                        <td>table-filter</td>
+                        <td>—</td>
+                        <td>否</td>
+                        <td>本地过滤（仅 allList 模式）：逗号分隔的可过滤字段列表，请求 URL 里同名非空参数作为条件（AND 组合、包含匹配），total 同步过滤后条数</td>
+                        <td>v2.3.0</td>
+                    </tr>
+                    <tr>
+                        <td>pageSize / page</td>
+                        <td>10 / 1</td>
+                        <td>否</td>
+                        <td>allList 前端分页：每页条数与当前页（page 优先取请求 URL 的 page 参数）；元素属性 table-page-size / table-page-param 可覆盖</td>
+                        <td>v2.3.0</td>
                     </tr>
                 </tbody>
             </table>
+
+            <h3>单元格类型（columns 的 type）</h3>
+            <table hx-ext="bny-table">
+                <thead><tr><th>type</th><th>渲染为</th><th>列配置</th></tr></thead>
+                <tbody>
+                    <tr><td><code>text</code>（默认）</td><td>纯文本（一律转义）</td><td>—</td></tr>
+                    <tr><td><code>tag</code></td><td><code>bny-tag</code> 标签</td><td><code>map</code>：值 → 颜色（"red"）或 {text, color}；<code>default</code> 键兜底</td></tr>
+                    <tr><td><code>link</code></td><td><code>&lt;a&gt;</code> 链接</td><td><code>href</code>（{field} 占位，值 URL 编码）、<code>text</code>、<code>target</code></td></tr>
+                    <tr><td><code>image</code></td><td>图片/头像</td><td><code>src</code>（{field} 占位）、<code>width</code>、<code>height</code>、<code>round</code></td></tr>
+                            <tr><td><code>actions</code></td><td>操作按钮（bny-btn，<code>group: true</code> 时为 bny-btn-group 按钮组）</td><td><code>actions[]</code>：text/icon/color/model/size/title/confirm/url/method/target/event；带 <code>children[]</code> 的项渲染为"更多"下拉，收纳次要操作（子项配置同主按钮）</td></tr>
+                    <tr><td><code>template</code></td><td>自定义模板</td><td><code>template</code>：{field} 占位符替换为转义后的行数据，模板本身可含 HTML</td></tr>
+                    <tr><td>任意 + <code>html: true</code></td><td>原样 HTML</td><td>列级逃生门；cell 级用 <code>{__html}</code>（rows 位置行同样支持）。仅限受信任的服务端内容</td></tr>
+                </tbody>
+            </table>
+            <blockquote class="bny-blockquote" style="margin-top:14px;">
+                所有列均支持 <code>title</code>/<code>name</code>、<code>width</code>、<code>align</code>（left/center/right）、<code>sortable</code>/<code>sort</code>（列排序）、<code>sortVal</code>（排序取值字段）。<br>
+                actions 动作：<code>confirm</code> 先弹确认框；<code>url</code>（配 <code>method</code>/<code>target</code>）发请求，无 target 默认刷回表格容器；
+                <code>event</code> 派发自定义事件（detail: <code>{row, page}</code>）交由业务处理。<br>
+                安全约定：行数据一律转义/URL 编码；<code>actions</code> 按钮仅输出白名单属性（拒绝 on* 注入）；链接协议拒绝 <code>javascript:/data:/vbscript:</code>。
+            </blockquote>
 
             <h3>排序行为</h3>
             <ol style="line-height:var(--line-height); tab :var(--black-middle);">
@@ -601,6 +820,9 @@
                 <li><code>table-sort="number"</code> 按数值排序，否则按字符串排序</li>
                 <li>单元格可通过 <code>table-sort-val</code> 指定参与排序的实际值</li>
                 <li>JSON 响应自动渲染为完整表格，同时支持直接追加 HTML 行</li>
+                <li>JSON 列模型（columns）里用 <code>sortable</code> / <code>sort</code> 声明列排序（v2.3.0），对象行同样生效</li>
+                <li>列配置 <code>sortVal</code> 指定排序取值字段（v2.3.0）——显示文案与排序值不同时使用（如 tag 映射列按底层值排序）</li>
+                <li>树形表格自动禁用排序（行序即层级从属，排序会打乱父子结构）</li>
             </ol>
         </div>
     </div>
@@ -614,6 +836,8 @@
                 <li class="link" anchor-target="#n05">Htmx用法</li>
                 <li class="link" anchor-target="#n06">Htmx-动态追加行</li>
                 <li class="link" anchor-target="#n06d">树形表格</li>
+                <li class="link" anchor-target="#n06e">列类型</li>
+                <li class="link" anchor-target="#n06f">搜索与联动</li>
                 <li class="link" anchor-target="#n07">API</li>
             </ul>
         </div>
