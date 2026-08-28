@@ -4,7 +4,9 @@
             <h1>表格</h1>
             <hr>
             <blockquote class="bny-blockquote">
-                表格是一种用于展示数据的结构化布局，支持表头排序和移动端响应式。
+                表格是一种用于展示数据的结构化布局，两种用法开箱即用：<code>&lt;table hx-ext="bny-table"&gt;</code> 静态表格（表头排序、移动端响应式卡片）；
+                数据表格（hx-get 请求 JSON）自动渲染，支持列模型富内容（标签/链接/头像/操作按钮组）、内置分页与搜索过滤、
+                长文本省略与放大镜查看、加载骨架屏与渐显动画。
             </blockquote>
 
             <h2 id="n01">基础表格</h2>
@@ -78,6 +80,12 @@
                     </div>
                 </div>
             </div>
+
+            <blockquote class="bny-blockquote">
+                静态表格（<code>&lt;table hx-ext="bny-table"&gt;</code> 手写 HTML）开箱获得表头排序与移动端响应式能力；
+                数据表格（hx-get 请求 JSON 自动渲染）在此基础上增加列模型富内容、内置分页、搜索过滤、长文本省略与加载骨架屏，见下文各章节。<br>
+                移动端（&lt; 768px）自动切换卡片式布局：隐藏表头，每行渲染为"字段名 + 值"卡片（字段名取自表头 th），内容不再受列宽限制，可完整换行展示。
+            </blockquote>
 
             <h2 id="n02">颜色</h2>
             <div class="bny-card">
@@ -534,7 +542,8 @@
                                     <code>image</code> 头像、<code>tag</code> 标签（map 值映射）、<code>link</code> 链接、<code>template</code> 自定义模板、
                                     <code>actions</code> 操作按钮组（confirm 确认 / url 请求 / event 事件派发；<code>group</code> 按钮组、<code>children</code> "更多"下拉收纳次要操作）。
                                     声明 <code>sortable</code>/<code>sort</code> 的列可点击表头排序（<code>sortVal</code> 指定排序取值字段）。<br>
-                                    JSON 带 <code>total</code> 时表格后自动渲染<strong>内置分页条</strong>（allList 按 page/pageSize 前端切片，点击页码自动重新请求）。
+                                    桌面端长文本省略、放大镜查看完整内容与加载骨架屏渐显，见下节<a href="#n06g" class="bny-link">"长文本省略与加载动画"</a>。<br>
+                                    JSON 带 <code>total</code> 时表格后自动渲染<strong>内置分页条</strong>（allList 按 page/pageSize 前端切片，点击页码自动重新请求）。<br>
                                 </blockquote>
                             </div>
                         </div>
@@ -544,8 +553,10 @@
     hx-target=&quot;#table-typed-demo&quot; hx-swap=&quot;innerHTML&quot;&gt;加载列类型表格&lt;/button&gt;
 
 // 对象行用 field 取值；列模型按 type 声明单元格渲染方式
+// 文本/链接列默认单行省略：悬停由 tip 组件提示"点击展开"，点击右侧放大镜查看完整内容、点击空白处收回：
+//         ellipsis: false 恢复换行；ellipsis: true 对 template 等列强制开启；移动端不截断
 // actions：主操作平铺按钮；列级 "group": true 渲染为 bny-btn-group 按钮组；
-//         动作带 "children" 时渲染为"更多"下拉（bny-dropdown），次要操作收进面板，
+//         动作带 "children" 时渲染为"更多"弹出菜单（菜单组件垂直菜单白主题），次要操作收进面板，
 //         下拉项与主按钮走同一 confirm/url/event 协议，执行后面板自动关闭
 // 业务侧监听 event 动作派发的自定义事件：
 document.addEventListener('user-log', e =&gt; console.log(e.detail)) // {row, page}
@@ -572,6 +583,7 @@ document.addEventListener('user-log', e =&gt; console.log(e.detail)) // {row, pa
                   "0": {"text": "离职", "color": "yellow"}}},
         {"field": "email",  "title": "邮箱", "type": "link", "href": "mailto:{email}"},
         {"field": "age",    "title": "年龄", "align": "center", "sortable": true, "sort": "number"},
+        {"field": "remark", "title": "备注"},
         {"field": "id",     "title": "操作", "type": "actions", "align": "center",
          "group": true,
          "actions": [
@@ -586,6 +598,66 @@ document.addEventListener('user-log', e =&gt; console.log(e.detail)) // {row, pa
          ]}
     ],
     "allList": [{"id": 1, "name": "张伟", ...}, ...]
+}
+            </pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h2 id="n06g">长文本省略与加载动画</h2>
+            <div class="bny-card">
+                <div hx-ext="bny-tab">
+                    <ul class="head">
+                        <li>Preview</li>
+                        <li>Code</li>
+                        <li>Json</li>
+                    </ul>
+                    <div class="body">
+                        <div>
+                            <div class="p-12">
+                                <button class="bny-btn" hx-ext="bny-table" hx-get="/test/data/pagination-table.json"
+                                    hx-target="#table-ellipsis-demo" hx-swap="innerHTML" hx-trigger="click"
+                                    pg-page-size="5">加载示例表格</button>
+                                <div id="table-ellipsis-demo" class="mt-12"></div>
+                                <blockquote class="bny-blockquote">
+                                    <strong>长文本省略</strong>：桌面端文本/链接列默认单行省略，行高不因长文本撑高；内容真实溢出的单元格右侧出现<strong>放大镜图标</strong>（未溢出不渲染）。<br>
+                                    <strong>查看完整内容</strong>：悬停溢出单元格由 tip 组件提示"点击展开"；点击放大镜固定弹出完整内容，鼠标可移入气泡<strong>框选复制</strong>；
+                                    放大镜按钮在链接外，查看内容<strong>不会触发链接跳转</strong>。再点一次放大镜 / 点击空白处 / 滚动表格即收回。<br>
+                                    <strong>省略开关</strong>：列配置 <code>ellipsis: false</code> 关闭省略（恢复换行），<code>ellipsis: true</code> 对 template 等列强制开启；移动端卡片布局不做截断、不渲染放大镜。<br>
+                                    <strong>加载骨架屏与渐显</strong>：加载/重载超过 200ms 未返回时，目标容器自动渲染表格形骨架（表头条 + 行条，复用骨架屏组件流光，行数取
+                                    <code>table-page-size</code>/<code>pg-page-size</code>，介于 3~10）；数据到位后骨架随内容交换被替换，表格与内置分页条同拍渐显（0.35s）；
+                                    快响应不显示骨架不闪烁，请求失败自动清理。可用浏览器 DevTools 网络限速体验完整流程。
+                                </blockquote>
+                            </div>
+                        </div>
+                        <div>
+                            <pre hx-ext="bny-code">
+&lt;button hx-ext=&quot;bny-table&quot; hx-get=&quot;/test/data/pagination-table.json&quot;
+    hx-target=&quot;#table-ellipsis-demo&quot; hx-swap=&quot;innerHTML&quot;&gt;加载示例表格&lt;/button&gt;
+
+// 长文本：文本/链接列默认单行省略；ellipsis:false 恢复换行、true 对 template 等列强制开启
+// 悬停溢出单元格：tip 组件提示"点击展开"；点击右侧放大镜：固定查看完整内容（可框选复制，不触发链接跳转）
+// 加载/重载 &gt; 200ms 未返回：自动渲染表格骨架屏（复用骨架屏组件流光）；到位后表格与分页条渐显
+            </pre>
+                        </div>
+                        <div>
+                            <pre hx-ext="bny-code">
+// pagination-table.json（节选）
+{
+    "columns": [
+        {"field": "name",   "title": "姓名"},
+        {"field": "email",  "title": "邮箱", "type": "link", "href": "mailto:{email}"},
+        {"field": "remark", "title": "备注"},
+        // 关闭省略（恢复换行）示例：
+        // {"field": "remark", "title": "备注(换行)", "ellipsis": false},
+        {"field": "id",     "title": "操作", "type": "actions", "actions": [...]}
+    ],
+    "allList": [
+        {"id": 1, "name": "张伟", "email": "zhangwei@test.com",
+         "remark": "较长的备注文本，桌面端单行省略，悬停提示点击展开，点放大镜查看全部"},
+        ...
+    ]
 }
             </pre>
                         </div>
@@ -797,17 +869,17 @@ document.addEventListener('user-log', e =&gt; console.log(e.detail)) // {row, pa
             <table hx-ext="bny-table">
                 <thead><tr><th>type</th><th>渲染为</th><th>列配置</th></tr></thead>
                 <tbody>
-                    <tr><td><code>text</code>（默认）</td><td>纯文本（一律转义）</td><td>—</td></tr>
+                    <tr><td><code>text</code>（默认）</td><td>纯文本（一律转义）</td><td><code>ellipsis: false</code> 关闭单行省略（默认开启，行高统一；溢出单元格悬停由 tip 组件提示"点击展开"，点击右侧放大镜查看完整内容，不触发链接跳转；移动端不截断）</td></tr>
                     <tr><td><code>tag</code></td><td><code>bny-tag</code> 标签</td><td><code>map</code>：值 → 颜色（"red"）或 {text, color}；<code>default</code> 键兜底</td></tr>
                     <tr><td><code>link</code></td><td><code>&lt;a&gt;</code> 链接</td><td><code>href</code>（{field} 占位，值 URL 编码）、<code>text</code>、<code>target</code></td></tr>
                     <tr><td><code>image</code></td><td>图片/头像</td><td><code>src</code>（{field} 占位）、<code>width</code>、<code>height</code>、<code>round</code></td></tr>
-                            <tr><td><code>actions</code></td><td>操作按钮（bny-btn，<code>group: true</code> 时为 bny-btn-group 按钮组）</td><td><code>actions[]</code>：text/icon/color/model/size/title/confirm/url/method/target/event；带 <code>children[]</code> 的项渲染为"更多"下拉，收纳次要操作（子项配置同主按钮）</td></tr>
+                            <tr><td><code>actions</code></td><td>操作按钮（bny-btn，<code>group: true</code> 时为 bny-btn-group 按钮组）</td><td><code>actions[]</code>：text/icon/color/model/size/title/confirm/url/method/target/event；带 <code>children[]</code> 的项渲染为"更多"垂直菜单（菜单组件白主题），收纳次要操作（子项配置同主按钮）</td></tr>
                     <tr><td><code>template</code></td><td>自定义模板</td><td><code>template</code>：{field} 占位符替换为转义后的行数据，模板本身可含 HTML</td></tr>
                     <tr><td>任意 + <code>html: true</code></td><td>原样 HTML</td><td>列级逃生门；cell 级用 <code>{__html}</code>（rows 位置行同样支持）。仅限受信任的服务端内容</td></tr>
                 </tbody>
             </table>
             <blockquote class="bny-blockquote" style="margin-top:14px;">
-                所有列均支持 <code>title</code>/<code>name</code>、<code>width</code>、<code>align</code>（left/center/right）、<code>sortable</code>/<code>sort</code>（列排序）、<code>sortVal</code>（排序取值字段）。<br>
+                所有列均支持 <code>title</code>/<code>name</code>、<code>width</code>、<code>align</code>（left/center/right）、<code>sortable</code>/<code>sort</code>（列排序）、<code>sortVal</code>（排序取值字段）、<code>ellipsis</code>（单行省略：文本/链接列默认开启，false 关闭，true 强制开启；仅桌面端生效）。<br>
                 actions 动作：<code>confirm</code> 先弹确认框；<code>url</code>（配 <code>method</code>/<code>target</code>）发请求，无 target 默认刷回表格容器；
                 <code>event</code> 派发自定义事件（detail: <code>{row, page}</code>）交由业务处理。<br>
                 安全约定：行数据一律转义/URL 编码；<code>actions</code> 按钮仅输出白名单属性（拒绝 on* 注入）；链接协议拒绝 <code>javascript:/data:/vbscript:</code>。
@@ -824,6 +896,15 @@ document.addEventListener('user-log', e =&gt; console.log(e.detail)) // {row, pa
                 <li>列配置 <code>sortVal</code> 指定排序取值字段（v2.3.0）——显示文案与排序值不同时使用（如 tag 映射列按底层值排序）</li>
                 <li>树形表格自动禁用排序（行序即层级从属，排序会打乱父子结构）</li>
             </ol>
+
+            <h3>交互与加载行为</h3>
+            <ol style="line-height:var(--line-height);">
+                <li>桌面端文本/链接列默认单行省略；<code>ellipsis: false</code> 关闭（恢复换行）、<code>ellipsis: true</code> 对 template 等列强制开启；移动端卡片布局不截断</li>
+                <li>内容真实溢出的单元格右侧渲染放大镜图标（未溢出不渲染；图标字体就绪与窗口尺寸变化自动校准）</li>
+                <li>悬停溢出单元格：tip 组件提示"点击展开"；点击放大镜：固定弹出完整内容（可框选复制、不触发链接跳转）；再点一次 / 点击空白处 / 滚动表格收回</li>
+                <li>加载/重载超过 200ms 未返回：目标容器自动渲染表格骨架屏（行数取 table-page-size / pg-page-size，介于 3~10）；数据到位后表格与内置分页条渐显；请求失败自动清理骨架</li>
+                <li>"更多"弹出菜单复用菜单组件垂直菜单观感（白主题，暗色模式自动适配），菜单项走 actions 同一协议（confirm/url/event）</li>
+            </ol>
         </div>
     </div>
     <div class="right-anchor-box hidden-xs col-sm3">
@@ -837,6 +918,7 @@ document.addEventListener('user-log', e =&gt; console.log(e.detail)) // {row, pa
                 <li class="link" anchor-target="#n06">Htmx-动态追加行</li>
                 <li class="link" anchor-target="#n06d">树形表格</li>
                 <li class="link" anchor-target="#n06e">列类型</li>
+                <li class="link" anchor-target="#n06g">长文本与加载动画</li>
                 <li class="link" anchor-target="#n06f">搜索与联动</li>
                 <li class="link" anchor-target="#n07">API</li>
             </ul>

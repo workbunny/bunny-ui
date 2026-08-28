@@ -242,15 +242,53 @@ htmx.defineExtension('bny-table', {
         }
 
         // 在htmx初始化节点后触发
+        if (name === 'htmx:beforeRequest') {
+            // 数据表格加载/重载：目标容器排定骨架屏（响应超过 200ms 才显示，避免闪烁）
+            var src = evt.target;
+            if (src && src.nodeType === 1 && bny.hasExtName(src, 'bny-table') &&
+                (src.getAttribute('hx-get') !== null || src.getAttribute('hx-post') !== null) &&
+                (!src.getAttribute('hx-swap') || src.getAttribute('hx-swap') === 'innerHTML')) {
+                var skelTarget = resolveSwapTarget(src);
+                if (skelTarget) scheduleTableSkeleton(skelTarget, src);
+            }
+            return true;
+        }
+        if (name === 'htmx:afterRequest') {
+            // 请求收尾（成功/失败都会触发，且在请求源上触发、扩展必收到）：
+            // 取消未显示的骨架定时器。注意 afterSwap 在目标容器上触发，
+            // 容器通常没有 hx-ext，扩展收不到，不能用它做清理
+            var arSrc = evt.target;
+            if (arSrc && arSrc.nodeType === 1 && bny.hasExtName(arSrc, 'bny-table')) {
+                clearTableSkeleton(resolveSwapTarget(arSrc), false);
+            }
+            return true;
+        }
+        if (name === 'htmx:afterSwap') {
+            // 容器自身带 hx-ext 时 afterSwap 才会到达这里，同样做收尾兜底
+            clearTableSkeleton(evt.target, false);
+            return true;
+        }
+        if (name === 'htmx:responseError' || name === 'htmx:sendError') {
+            // 请求失败不会有 swap，主动清掉已显示的骨架
+            var errSrc = evt.target;
+            if (errSrc && errSrc.nodeType === 1 && bny.hasExtName(errSrc, 'bny-table')) {
+                var errTarget = resolveSwapTarget(errSrc);
+                if (errTarget) clearTableSkeleton(errTarget, true);
+            }
+            return true;
+        }
+        // 在htmx初始化节点后触发
         if (name === 'htmx:afterProcessNode') {
             if (bny.hasExtName(evt.target, 'bny-table')) {
-                // 操作按钮（actions 列）与内置分页条交互：document 级委托，只注册一次
+                // 操作按钮（actions 列）与长文本提示层、内置分页条交互：document 级委托，只注册一次
                 setupActionsDelegation();
+                setupEllipsisTipsDelegation();
                 bny.setupPaginationDelegation();
                 initLabels(evt.target);
                 initSort(evt.target);
                 initTree(evt.target);
                 fitActionsWidths(evt.target);
+                appendZoomButtons(evt.target);
                 return false;
             } else if (evt.target.tagName === 'TR') {
                 const tds = evt.target.querySelectorAll('td');
@@ -396,6 +434,20 @@ function thStyleAttr(col) {
 function tdAlignAttr(col) {
     if (col.align === 'center' || col.align === 'right') return ' style="text-align:' + col.align + ';"';
     return '';
+}
+
+/**
+ * 列是否单行省略：文本/链接列默认开启，行高不因长文本撑高；
+ * ellipsis:false 关闭（恢复换行），ellipsis:true 对任意列强制开启（如 template）
+ * 仅桌面端生效（移动端卡片布局多行更易读），完整内容在真实截断时由提示层展示
+ * @param {Object} col 列定义
+ * @returns {Boolean}
+ */
+function colEllipsis(col) {
+    if (col.ellipsis === true) return true;
+    if (col.ellipsis === false) return false;
+    var t = col.type || 'text';
+    return t === 'text' || t === 'link';
 }
 
 /**
@@ -600,10 +652,11 @@ function buildActionAttrs(act, row) {
 
 /**
  * 渲染"更多"弹出菜单：返回 { trigger, panel } 两段 HTML
+ * - 面板复用菜单组件垂直菜单观感（.bny-menu 白主题，item/trigger 结构），
+ *   外层保留 .bny-dropdown 承担 fixed 定位与显隐；不带 hx-ext，不初始化菜单扩展行为
  * - 触发器留在按钮组内（保持 :last-child，右边框正常）；面板放组外作为组的兄弟节点
  *   （组内溢出隐藏 + :last-child 分隔线规则，面板放组内会顶掉触发器的右边框）
- * - 面板复用 .bny-dropdown 样式（fixed 定位 + .show 显隐），开关与定位由
- *   setupActionsDelegation / openDropdown 处理；菜单项走 actions 委托
+ * - 菜单项走 actions 委托（data-bny-action），confirm/url/event 协议同主按钮
  * @param {Object} act 动作配置（children 为二级动作列表）
  * @param {Object} row 行数据
  * @returns {{trigger: string, panel: string}}
@@ -621,12 +674,12 @@ function renderDropdownAction(act, row) {
         if (!child || typeof child !== 'object') return;
         var c = actionContent(child, row);
         if (!c) return;
-        items += '<button type="button" class="bny-table-dropdown-item"' + buildActionAttrs(child, row) + ' data-bny-action>' + c + '</button>';
+        items += '<div class="item"><div class="trigger"' + buildActionAttrs(child, row) + ' data-bny-action>' + c + '</div></div>';
     });
 
     return {
         trigger: '<button type="button"' + attrs + ' data-bny-dropdown>' + content + '</button>',
-        panel: '<div class="bny-dropdown"><div class="bny-table-dropdown-actions">' + items + '</div></div>'
+        panel: '<div class="bny-dropdown bny-menu" menu-mode="vertical" menu-color="white">' + items + '</div>'
     };
 }
 
@@ -706,6 +759,8 @@ function objectRowHtml(row, cols) {
     var r = '<tr>';
     cols.forEach(function (col) {
         var attrs = tdAlignAttr(col);
+        // 单行省略列：悬停经 tip 组件提示"点击展开"（未溢出的单元格由 appendZoomButtons 摘除 tip）
+        if (colEllipsis(col)) attrs += ' class="bny-table-ellipsis" tip="点击展开"';
         // 自定义排序值：sortVal 指定取值字段（显示文案与排序值不同时使用，如 tag 映射列）
         if (col.sortVal) {
             attrs += ' table-sort-val="' + bny.escapeChars(String(getVal(row, col.sortVal))) + '"';
@@ -780,7 +835,8 @@ function buildTable(data, xhr, elt) {
     let h = '';
     // 先拼完所有属性，最后再加 '>' 闭合 <table> 标签
     // 否则 data-table-key 会跑到 table 标签后面变成文本节点（页面多出 '>' 符号）
-    h += '<table hx-ext="bny-table"' + (color ? ' table-color="' + color + '"' : '');
+    // bny-table-fade：表格与紧邻的分页条渐显（加载/重载动画）
+    h += '<table hx-ext="bny-table" class="bny-table-fade"' + (color ? ' table-color="' + color + '"' : '');
     if (tableKey) h += ' table-key="' + bny.escapeChars(tableKey) + '"';
     h += '>';
 
@@ -939,6 +995,265 @@ function fitActionsWidths(table) {
         });
         if (max > 0) th.style.width = Math.ceil(max + pad) + 'px';
     });
+}
+
+/**
+ * 单行省略单元格提示层（桌面端长文本配套，layui 式深色气泡）：
+ * 悬停真实截断的单元格弹出完整内容；提示层本身可悬停进入，文本可框选复制
+ * 截断检测在悬停时实时进行（scrollWidth > clientWidth），渲染后无需测量钩子
+ */
+
+var _bnyTableTips = null;      // 共享提示层元素
+var _bnyTableTipsCell = null;  // 当前触发单元格
+var _bnyTableTipsTimer = null; // 延迟收起计时器
+
+function tableTipsPanel() {
+    if (_bnyTableTips) return _bnyTableTips;
+    var panel = document.createElement('div');
+    panel.className = 'bny-table-tips';
+    panel.setAttribute('role', 'tooltip');
+    document.body.appendChild(panel);
+    // 指针从单元格移入面板期间保持显示，可在面板内框选复制
+    panel.addEventListener('mouseenter', function () { clearTimeout(_bnyTableTipsTimer); });
+    panel.addEventListener('mouseleave', function () {
+        // 框选中不收起（复制场景），点击面板外由 document mousedown 统一收起
+        var sel = window.getSelection ? window.getSelection() : null;
+        if (sel && !sel.isCollapsed && panel.contains(sel.anchorNode)) return;
+        hideTableTips(120);
+    });
+    _bnyTableTips = panel;
+    return panel;
+}
+
+/**
+ * 定位并显示提示层：完整内容（优先下方，空间不足上翻；左右钳制在视口内）
+ * 仅由点击放大镜触发；悬停提示"点击展开"由 tip 组件承接
+ * @param {HTMLElement} td 触发单元格
+ */
+function showTableTips(td) {
+    var text = td.textContent.trim();
+    if (!text || td.scrollWidth <= td.clientWidth) return;
+    var panel = tableTipsPanel();
+    clearTimeout(_bnyTableTipsTimer);
+    _bnyTableTipsCell = td;
+    panel.textContent = text;
+    // 先隐形渲染拿到尺寸再定位
+    panel.classList.add('show');
+    panel.style.visibility = 'hidden';
+    var rect = td.getBoundingClientRect();
+    var pRect = panel.getBoundingClientRect();
+    var gap = 8;
+    var top;
+    if (window.innerHeight - rect.bottom >= pRect.height + gap) {
+        top = rect.bottom + gap;
+        panel.classList.remove('up');
+    } else {
+        top = rect.top - pRect.height - gap;
+        panel.classList.add('up');
+    }
+    var left = Math.min(Math.max(gap, rect.left), window.innerWidth - gap - pRect.width);
+    panel.style.top = top + 'px';
+    panel.style.left = left + 'px';
+    panel.style.visibility = 'visible';
+}
+
+/**
+ * 收起提示层
+ * @param {Number} delay 延迟毫秒数（给指针移入面板留出时间）
+ */
+function hideTableTips(delay) {
+    clearTimeout(_bnyTableTipsTimer);
+    _bnyTableTipsTimer = setTimeout(function () {
+        if (!_bnyTableTips) return;
+        _bnyTableTips.classList.remove('show', 'up');
+        _bnyTableTipsCell = null;
+    }, delay || 0);
+}
+
+var _bnyTableTipsDelegated = false;
+
+var _bnyTableTipsPinned = false; // 点击放大镜固定显示：不随鼠标移出收起，点击空白处/其他区域收回
+
+/** 点击放大镜固定显示完整内容 */
+function pinTableTips(td) {
+    clearTimeout(_bnyTableTipsTimer);
+    _bnyTableTipsPinned = true;
+    showTableTips(td, true);
+}
+
+/** 解除固定并收起提示层 */
+function unpinTableTips() {
+    _bnyTableTipsPinned = false;
+    hideTableTips(0);
+}
+
+/**
+ * 为真实溢出的文本列单元格追加放大镜查看按钮（仅桌面端）：
+ * - 内容未溢出不加，溢出恢复后移除（悬停/点击功能都只在溢出单元格上，
+ *   同时同步 tip 属性——悬停提示"点击展开"由 tip 组件承接，绑定在 htmx:load 时已完成，
+ *   属性实时读取，摘除后悬停不再提示）
+ * - 移动端卡片布局不做省略，清掉窗口缩窄前残留的按钮与 tip
+ * - 加内边距可能使原本未溢出的单元格溢出，跑两轮收敛；
+ *   布局受字体加载影响就绪后幂等校准，窗口尺寸变化时重新校准
+ * @param {HTMLElement} table
+ */
+function appendZoomButtons(table) {
+    var desktop = window.matchMedia && window.matchMedia('(min-width: 768px)').matches;
+    if (!desktop) {
+        table.querySelectorAll('td.bny-table-ellipsis').forEach(function (td) {
+            var btn = td.querySelector('.bny-table-zoom');
+            if (btn) {
+                btn.remove();
+                td.classList.remove('has-zoom');
+            }
+            td.removeAttribute('tip');
+        });
+        return;
+    }
+    for (var pass = 0; pass < 2; pass++) {
+        table.querySelectorAll('td.bny-table-ellipsis').forEach(function (td) {
+            var btn = td.querySelector('.bny-table-zoom');
+            if (td.scrollWidth > td.clientWidth) {
+                if (!btn) {
+                    btn = document.createElement('button');
+                    btn.type = 'button';
+                    btn.className = 'bny-table-zoom';
+                    btn.setAttribute('aria-label', '查看完整内容');
+                    btn.innerHTML = '<i class="bny-icon icon-zoomin"></i>';
+                    td.appendChild(btn);
+                    td.classList.add('has-zoom');
+                }
+                if (!td.hasAttribute('tip')) td.setAttribute('tip', '点击展开');
+            } else {
+                if (btn) {
+                    btn.remove();
+                    td.classList.remove('has-zoom');
+                }
+                td.removeAttribute('tip');
+            }
+        });
+    }
+}
+
+var _bnyTableZoomResizeTimer = null;
+window.addEventListener('resize', function () {
+    clearTimeout(_bnyTableZoomResizeTimer);
+    _bnyTableZoomResizeTimer = setTimeout(function () {
+        document.querySelectorAll('table[hx-ext~="bny-table"]').forEach(appendZoomButtons);
+    }, 150);
+});
+// 图标字体晚于首次布局就位会改变列宽与截断状态，就绪后对已渲染表格幂等校准一次
+if (document.fonts && document.fonts.ready) {
+    document.fonts.ready.then(function () {
+        document.querySelectorAll('table[hx-ext~="bny-table"]').forEach(appendZoomButtons);
+    }).catch(function () { });
+}
+
+/**
+ * 注册长文本单元格交互委托（document 级，只注册一次，渲染后无需重新绑定）：
+ * - 悬停溢出单元格：tip 组件提示"点击展开"（渲染时写入 tip 属性，tip 扫描自动绑定）
+ * - 点击溢出单元格右侧放大镜：固定显示完整内容，可在其中框选复制；
+ *   再点一次收回；点击空白处/其他区域收回；不触发单元格内链接跳转
+ */
+function setupEllipsisTipsDelegation() {
+    if (_bnyTableTipsDelegated) return;
+    _bnyTableTipsDelegated = true;
+    // 点击：放大镜固定/收回；其他区域收回
+    document.addEventListener('click', function (e) {
+        // 提示层内部的点击（框选正文）不处理
+        if (_bnyTableTips && _bnyTableTips.contains(e.target)) return;
+        // 放大镜：固定/收回提示层（按钮在 td 下、链接外，点击不触发跳转）
+        var zoom = e.target.closest && e.target.closest('.bny-table-zoom');
+        if (zoom) {
+            e.preventDefault();
+            var td = zoom.closest('td.bny-table-ellipsis');
+            if (!td) return;
+            if (_bnyTableTipsPinned && td === _bnyTableTipsCell) unpinTableTips();
+            else pinTableTips(td);
+            return;
+        }
+        // 点击空白处或其他区域：收回
+        if (_bnyTableTipsPinned) unpinTableTips();
+    });
+    // 滚动/缩放立即收起并解除固定，避免提示层与单元格错位（提示层自身滚动除外）
+    document.addEventListener('scroll', function (e) {
+        if (_bnyTableTips && e.target && _bnyTableTips.contains(e.target)) return;
+        unpinTableTips();
+    }, true);
+    window.addEventListener('resize', function () { unpinTableTips(); });
+}
+
+/* ============================================================
+ * 数据表格加载骨架屏
+ * 请求发出 200ms 内返回则不显示（避免快响应闪烁）；超时未返回则在
+ * 目标容器内渲染表格形骨架（表头条 + 行条，复用骨架屏组件流光基类），
+ * 内容交换时骨架随 swap 一起被替换，新表格以渐显动画呈现。
+ * ============================================================ */
+
+/**
+ * 解析请求源的交换目标容器（hx-target，缺省为请求源自身）
+ * @param {HTMLElement} src 请求源元素
+ * @returns {HTMLElement|null}
+ */
+function resolveSwapTarget(src) {
+    var sel = src.getAttribute('hx-target');
+    if (!sel) return src;
+    try {
+        return document.querySelector(sel);
+    } catch (_) {
+        return null;
+    }
+}
+
+/**
+ * 排定骨架屏显示（200ms 延迟，同一容器重复请求时重置）
+ * @param {HTMLElement} target 交换目标容器
+ * @param {HTMLElement} src 请求源元素（读取行数配置）
+ */
+function scheduleTableSkeleton(target, src) {
+    clearTimeout(target._bnyTableSkeletonTimer);
+    target._bnyTableSkeletonShown = false;
+    target._bnyTableSkeletonTimer = setTimeout(function () {
+        target._bnyTableSkeletonShown = true;
+        var rows = parseInt(src.getAttribute('table-page-size'), 10) ||
+            parseInt(src.getAttribute('pg-page-size'), 10) || 5;
+        rows = Math.min(Math.max(rows, 3), 10);
+        target.innerHTML = tableSkeletonHtml(rows);
+    }, 200);
+}
+
+/**
+ * 收尾：取消未显示的定时器；请求失败时连已显示的骨架一起清掉
+ * @param {HTMLElement} target 交换目标容器
+ * @param {Boolean} removeShown 是否移除已显示的骨架（错误场景）
+ */
+function clearTableSkeleton(target, removeShown) {
+    if (!target || !target._bnyTableSkeletonTimer) return;
+    clearTimeout(target._bnyTableSkeletonTimer);
+    if (removeShown && target._bnyTableSkeletonShown) {
+        target.innerHTML = '';
+    }
+    target._bnyTableSkeletonShown = false;
+}
+
+/**
+ * 表格形骨架 HTML：表头条 + N 行占位条（宽度错落模拟列布局）
+ * @param {Number} rows 行数
+ * @returns {string}
+ */
+function tableSkeletonHtml(rows) {
+    var widths = ['8%', '18%', '40%', '14%', '22%'];
+    var h = '<div class="bny-table-skeleton" aria-hidden="true">';
+    h += '<div class="bny-table-skeleton-head"><div class="bny-skeleton bny-table-skeleton-bar" style="width:12%"></div></div>';
+    for (var i = 0; i < rows; i++) {
+        h += '<div class="bny-table-skeleton-row">';
+        for (var j = 0; j < widths.length; j++) {
+            h += '<div class="bny-skeleton bny-table-skeleton-bar" style="width:' + widths[j] + '"></div>';
+        }
+        h += '</div>';
+    }
+    h += '</div>';
+    return h;
 }
 
 /* ============================================================

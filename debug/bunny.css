@@ -2991,7 +2991,9 @@ p {
 }
 
 /* ========== 水平/默认菜单 ========== */
-[hx-ext~="bny-menu"] {
+/* .bny-menu 类别名：供其他组件复用菜单观感（不带 hx-ext，不初始化 bny-menu 扩展行为） */
+[hx-ext~="bny-menu"],
+.bny-menu {
     display: flex;
     flex-direction: row;
     align-items: flex-start;
@@ -3140,7 +3142,8 @@ p {
 }
 
 /* ========== 垂直菜单 ========== */
-[hx-ext~="bny-menu"][menu-mode="vertical"] {
+[hx-ext~="bny-menu"][menu-mode="vertical"],
+.bny-menu[menu-mode="vertical"] {
     flex-direction: column;
     width: 100%;
     padding: 6px 0;
@@ -4578,6 +4581,45 @@ html.dark table[hx-ext~="bny-table"] tbody tr.bny-table-empty td {
     color: var(--gray-shallow);
 }
 
+/* ========== 数据表格加载骨架屏与渐显 ========== */
+/* JSON 表格加载/重载超过 200ms 未返回时，目标容器内渲染表格形骨架
+   （表头条 + 行条，复用骨架屏组件 .bny-skeleton 流光基类）；内容交换后
+   表格与紧邻的内置分页条同拍渐显（仅动 opacity，transform 填充会破坏
+   actions 下拉的 fixed 定位） */
+.bny-table-skeleton {
+    border: 1px solid var(--gray-shallow);
+    border-radius: var(--border-radius);
+    padding: 14px 16px;
+}
+
+.bny-table-skeleton-head {
+    margin-bottom: 16px;
+}
+
+.bny-table-skeleton-row {
+    display: flex;
+    gap: 24px;
+    margin-bottom: 20px;
+
+    &:last-child {
+        margin-bottom: 0;
+    }
+}
+
+.bny-table-skeleton-bar {
+    height: 14px;
+}
+
+@keyframes bny-table-fade-in {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+table.bny-table-fade,
+table.bny-table-fade + .bny-pagination {
+    animation: bny-table-fade-in 0.35s ease both;
+}
+
 /* ========== 树形表格 ========== */
 
 /* 展开箭头（图标版，可点击）与层级缩进占位 */
@@ -4631,6 +4673,107 @@ tr.tree-collapsed .bny-table-tree-toggle i {
     }
 }
 
+/* ========== 桌面端数据表格：文本列单行省略 ========== */
+/* 仅列模型（columns+list）渲染的文本/链接列加 bny-table-ellipsis，行高统一不因长文本撑高；
+   悬停真实溢出的单元格由 tip 组件提示"点击展开"（tip 属性渲染时写入、未溢出时摘除），
+   点击单元格右侧放大镜固定查看完整内容（.bny-table-tips），点击空白处/其他区域收回；
+   移动端卡片布局不做截断 */
+@media screen and (min-width: 768px) {
+    table[hx-ext~="bny-table"] td.bny-table-ellipsis {
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+
+        /* 有放大镜按钮的单元格：右侧留出按钮位（按钮绝对定位，不参与文本流） */
+        &.has-zoom {
+            position: relative;
+            padding-right: 30px;
+        }
+    }
+}
+
+/* 放大镜查看按钮：JS 仅对桌面端真实溢出的单元格渲染，点击固定查看完整内容（不触发链接跳转） */
+@media screen and (min-width: 768px) {
+    .bny-table-zoom {
+        position: absolute;
+        right: 5px;
+        top: 50%;
+        transform: translateY(-50%);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 20px;
+        height: 20px;
+        padding: 0;
+        border: none;
+        background-color: transparent;
+        color: var(--gray);
+        cursor: pointer;
+        border-radius: var(--border-radius-sm);
+        transition: var(--transition-fast);
+
+        &:hover {
+            color: var(--default);
+            background-color: var(--default-alpha-10);
+        }
+
+        & .bny-icon {
+            font-size: 12px;
+        }
+    }
+}
+
+/* 长文本提示层（点击放大镜后固定显示完整内容）：面板可悬停进入，文本可框选复制 */
+.bny-table-tips {
+    position: fixed;
+    z-index: 1000;
+    max-width: 360px;
+    max-height: 60vh;
+    overflow-y: auto;
+    padding: 8px 12px;
+    background-color: var(--black);
+    color: var(--white);
+    font-size: var(--font-size-sm);
+    line-height: 1.6;
+    text-align: left;
+    border-radius: var(--border-radius-sm);
+    box-shadow: var(--box-shadow-055);
+    overflow-wrap: anywhere;
+    user-select: text;
+    cursor: auto;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(4px);
+    transition: opacity var(--transition-fast), transform var(--transition-fast),
+        visibility var(--transition-fast);
+    pointer-events: none;
+
+    /* 箭头：默认在下方弹出，箭头朝上 */
+    &::after {
+        content: "";
+        position: absolute;
+        left: 16px;
+        bottom: 100%;
+        border: 5px solid transparent;
+        border-bottom-color: var(--black);
+    }
+
+    &.up::after {
+        bottom: auto;
+        top: 100%;
+        border-bottom-color: transparent;
+        border-top-color: var(--black);
+    }
+
+    /* 仅可见时接收指针，隐藏后不遮挡下层点击 */
+    &.show {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0);
+        pointer-events: auto;
+    }
+}
+
 /* ========== JSON 渲染：列类型单元格 ========== */
 
 /* image 类型：图片/头像 */
@@ -4650,7 +4793,7 @@ tr.tree-collapsed .bny-table-tree-toggle i {
     /* 禁止按钮文本断行：CJK 可逐字断行会拉低列的 min-content 宽度，
        导致表格布局压缩操作列、按钮文字竖排/组溢出 */
     & .bny-btn,
-    & .bny-table-dropdown-item {
+    & .bny-dropdown .trigger {
         white-space: nowrap;
     }
 
@@ -4661,39 +4804,13 @@ tr.tree-collapsed .bny-table-tree-toggle i {
     }
 }
 
-/* actions"更多"下拉面板（面板容器样式来自 dropdown 组件） */
-.bny-dropdown .bny-table-dropdown-actions {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-    padding: 4px;
-    min-width: 120px;
-}
-
-.bny-dropdown .bny-table-dropdown-item {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    padding: 5px 10px;
-    border: none;
-    border-radius: var(--border-radius-sm);
-    background-color: transparent;
-    color: var(--black-middle);
-    font-size: var(--font-size-sm);
-    line-height: 1.4;
-    text-align: left;
-    cursor: pointer;
-    transition: var(--transition-fast);
-    white-space: nowrap;
-
-    &:hover {
-        background-color: var(--default-alpha-10);
-        color: var(--default);
-    }
-
-    & .bny-icon {
-        font-size: var(--font-size);
-    }
+/* actions"更多"弹出菜单：面板即菜单组件垂直菜单（.bny-menu 白主题），
+   定位与显隐由 .bny-dropdown 承担，菜单项动作走 actions 委托；
+   垂直菜单的 width:100% 在 fixed 面板上等于视口宽，收回内容宽 */
+.bny-table-actions .bny-dropdown[menu-mode="vertical"] {
+    width: auto;
+    min-width: 140px;
+    box-shadow: var(--box-shadow-055);
 }
 [hx-ext~="bny-tab"] {
     width: 100%;
