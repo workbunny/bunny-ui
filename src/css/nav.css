@@ -1,4 +1,4 @@
-[hx-ext~="bny-nav"] {
+[hx-ext*="bny-nav"] {
     width: 100%;
     display: flex;
     align-items: center;
@@ -322,7 +322,7 @@
 }
 
 /* ========== 顶部导航（非侧边） ========== */
-[hx-ext~="bny-nav"]:not([nav-side]) {
+[hx-ext*="bny-nav"]:not([nav-side]) {
     & > .head > .toggle-btn {
         display: none;
     }
@@ -353,7 +353,7 @@
 
 /* ========== 移动端响应式 ========== */
 @media screen and (max-width: 768px) {
-    [hx-ext~="bny-nav"]:not([nav-side]) {
+    [hx-ext*="bny-nav"]:not([nav-side]) {
         flex-direction: column;
         overflow: hidden;
 
@@ -416,7 +416,7 @@
 }
 
 /* ========== 侧边导航 ========== */
-[hx-ext~="bny-nav"][nav-side] {
+[hx-ext*="bny-nav"][nav-side] {
     display: flex;
     flex-direction: column;
     width: 240px;

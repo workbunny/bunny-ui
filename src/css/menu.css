@@ -1,6 +1,6 @@
 /* ========== 水平/默认菜单 ========== */
 /* .bny-menu 类别名：供其他组件复用菜单观感（不带 hx-ext，不初始化 bny-menu 扩展行为） */
-[hx-ext~="bny-menu"],
+[hx-ext*="bny-menu"],
 .bny-menu {
     display: flex;
     flex-direction: row;
@@ -150,7 +150,7 @@
 }
 
 /* ========== 垂直菜单 ========== */
-[hx-ext~="bny-menu"][menu-mode="vertical"],
+[hx-ext*="bny-menu"][menu-mode="vertical"],
 .bny-menu[menu-mode="vertical"] {
     flex-direction: column;
     width: 100%;

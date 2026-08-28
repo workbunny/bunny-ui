@@ -1,4 +1,4 @@
-[hx-ext~="bny-anchor"] {
+[hx-ext*="bny-anchor"] {
     width: 100%;
     display: flex;
     flex-direction: column;

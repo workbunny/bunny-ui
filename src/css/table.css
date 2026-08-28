@@ -1,5 +1,5 @@
 /* ========== 表格 ========== */
-table.bny-table, table[hx-ext~="bny-table"] {
+table.bny-table, table[hx-ext*="bny-table"] {
     width: 100%;
     border-collapse: collapse;
     box-shadow: var(--box-shadow-005);
@@ -63,7 +63,7 @@ table.bny-table, table[hx-ext~="bny-table"] {
 
 /* ========== 表头排序 ========== */
 
-table[hx-ext~="bny-table"] th.sortable {
+table[hx-ext*="bny-table"] th.sortable {
     cursor: pointer;
     user-select: none;
     position: relative;
@@ -120,7 +120,7 @@ table[hx-ext~="bny-table"] th.sortable {
 
 /* ========== 移动端响应式表格 ========== */
 @media screen and (max-width: 767px) {
-    table[hx-ext~="bny-table"] {
+    table[hx-ext*="bny-table"] {
         box-shadow: none;
         border-radius: 0;
         border: none;
@@ -228,7 +228,7 @@ table[hx-ext~="bny-table"] th.sortable {
 }
 
 /* ========== 空状态占位 ========== */
-table[hx-ext~="bny-table"] tbody tr.bny-table-empty td {
+table[hx-ext*="bny-table"] tbody tr.bny-table-empty td {
     text-align: center;
     padding: 32px 16px;
     color: var(--gray);
@@ -236,7 +236,7 @@ table[hx-ext~="bny-table"] tbody tr.bny-table-empty td {
     background-color: var(--white-alpha-04, rgba(255, 255, 255, 0.04));
 }
 
-html.dark table[hx-ext~="bny-table"] tbody tr.bny-table-empty td {
+html.dark table[hx-ext*="bny-table"] tbody tr.bny-table-empty td {
     color: var(--gray-shallow);
 }
 
@@ -321,7 +321,7 @@ tr.tree-collapsed .bny-table-tree-toggle i {
 
 /* 移动到端卡片式：首列缩进保持不变，箭头可点击；缩进量随层级渐变易于区分 */
 @media screen and (max-width: 767px) {
-    table[hx-ext~="bny-table"] td.bny-table-tree-cell {
+    table[hx-ext*="bny-table"] td.bny-table-tree-cell {
         & .bny-table-tree-toggle,
         & .bny-table-tree-indent {
             line-height: 1;
@@ -338,7 +338,7 @@ tr.tree-collapsed .bny-table-tree-toggle i {
    点击单元格右侧放大镜固定查看完整内容（.bny-table-tips），点击空白处/其他区域收回；
    移动端卡片布局不做截断 */
 @media screen and (min-width: 768px) {
-    table[hx-ext~="bny-table"] td.bny-table-ellipsis {
+    table[hx-ext*="bny-table"] td.bny-table-ellipsis {
         overflow: hidden;
         white-space: nowrap;
         text-overflow: ellipsis;

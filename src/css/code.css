@@ -1,4 +1,4 @@
-[hx-ext~="bny-code"] {
+[hx-ext*="bny-code"] {
     border-radius: var(--border-radius);
     overflow: auto;
     padding: 18px;

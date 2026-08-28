@@ -2992,7 +2992,7 @@ p {
 
 /* ========== 水平/默认菜单 ========== */
 /* .bny-menu 类别名：供其他组件复用菜单观感（不带 hx-ext，不初始化 bny-menu 扩展行为） */
-[hx-ext~="bny-menu"],
+[hx-ext*="bny-menu"],
 .bny-menu {
     display: flex;
     flex-direction: row;
@@ -3142,7 +3142,7 @@ p {
 }
 
 /* ========== 垂直菜单 ========== */
-[hx-ext~="bny-menu"][menu-mode="vertical"],
+[hx-ext*="bny-menu"][menu-mode="vertical"],
 .bny-menu[menu-mode="vertical"] {
     flex-direction: column;
     width: 100%;
@@ -3571,7 +3571,7 @@ p {
         opacity: 0.45;
     }
 }
-[hx-ext~="bny-collapse"] {
+[hx-ext*="bny-collapse"] {
     display: flex;
     flex-direction: column;
     width: 100%;
@@ -3899,7 +3899,7 @@ p {
             border: none;
         }
     }
-}[hx-ext~="bny-code"] {
+}[hx-ext*="bny-code"] {
     border-radius: var(--border-radius);
     overflow: auto;
     padding: 18px;
@@ -4340,7 +4340,7 @@ hr {
     100% { transform: translateX(400%); }
 }
 /* ========== 表格 ========== */
-table.bny-table, table[hx-ext~="bny-table"] {
+table.bny-table, table[hx-ext*="bny-table"] {
     width: 100%;
     border-collapse: collapse;
     box-shadow: var(--box-shadow-005);
@@ -4404,7 +4404,7 @@ table.bny-table, table[hx-ext~="bny-table"] {
 
 /* ========== 表头排序 ========== */
 
-table[hx-ext~="bny-table"] th.sortable {
+table[hx-ext*="bny-table"] th.sortable {
     cursor: pointer;
     user-select: none;
     position: relative;
@@ -4461,7 +4461,7 @@ table[hx-ext~="bny-table"] th.sortable {
 
 /* ========== 移动端响应式表格 ========== */
 @media screen and (max-width: 767px) {
-    table[hx-ext~="bny-table"] {
+    table[hx-ext*="bny-table"] {
         box-shadow: none;
         border-radius: 0;
         border: none;
@@ -4569,7 +4569,7 @@ table[hx-ext~="bny-table"] th.sortable {
 }
 
 /* ========== 空状态占位 ========== */
-table[hx-ext~="bny-table"] tbody tr.bny-table-empty td {
+table[hx-ext*="bny-table"] tbody tr.bny-table-empty td {
     text-align: center;
     padding: 32px 16px;
     color: var(--gray);
@@ -4577,7 +4577,7 @@ table[hx-ext~="bny-table"] tbody tr.bny-table-empty td {
     background-color: var(--white-alpha-04, rgba(255, 255, 255, 0.04));
 }
 
-html.dark table[hx-ext~="bny-table"] tbody tr.bny-table-empty td {
+html.dark table[hx-ext*="bny-table"] tbody tr.bny-table-empty td {
     color: var(--gray-shallow);
 }
 
@@ -4662,7 +4662,7 @@ tr.tree-collapsed .bny-table-tree-toggle i {
 
 /* 移动到端卡片式：首列缩进保持不变，箭头可点击；缩进量随层级渐变易于区分 */
 @media screen and (max-width: 767px) {
-    table[hx-ext~="bny-table"] td.bny-table-tree-cell {
+    table[hx-ext*="bny-table"] td.bny-table-tree-cell {
         & .bny-table-tree-toggle,
         & .bny-table-tree-indent {
             line-height: 1;
@@ -4679,7 +4679,7 @@ tr.tree-collapsed .bny-table-tree-toggle i {
    点击单元格右侧放大镜固定查看完整内容（.bny-table-tips），点击空白处/其他区域收回；
    移动端卡片布局不做截断 */
 @media screen and (min-width: 768px) {
-    table[hx-ext~="bny-table"] td.bny-table-ellipsis {
+    table[hx-ext*="bny-table"] td.bny-table-ellipsis {
         overflow: hidden;
         white-space: nowrap;
         text-overflow: ellipsis;
@@ -4812,7 +4812,7 @@ tr.tree-collapsed .bny-table-tree-toggle i {
     min-width: 140px;
     box-shadow: var(--box-shadow-055);
 }
-[hx-ext~="bny-tab"] {
+[hx-ext*="bny-tab"] {
     width: 100%;
     position: relative;
     max-width: 100%;
@@ -5282,7 +5282,7 @@ tr.tree-collapsed .bny-table-tree-toggle i {
 }
 
 /* ========== 表单布局 ========== */
-[hx-ext~="bny-form"] {
+[hx-ext*="bny-form"] {
     & .form-item {
         position: relative;
         margin-bottom: 18px;
@@ -6339,7 +6339,7 @@ tr.tree-collapsed .bny-table-tree-toggle i {
             display: inline-block;
         }
     }
-}[hx-ext~="bny-nav"] {
+}[hx-ext*="bny-nav"] {
     width: 100%;
     display: flex;
     align-items: center;
@@ -6663,7 +6663,7 @@ tr.tree-collapsed .bny-table-tree-toggle i {
 }
 
 /* ========== 顶部导航（非侧边） ========== */
-[hx-ext~="bny-nav"]:not([nav-side]) {
+[hx-ext*="bny-nav"]:not([nav-side]) {
     & > .head > .toggle-btn {
         display: none;
     }
@@ -6694,7 +6694,7 @@ tr.tree-collapsed .bny-table-tree-toggle i {
 
 /* ========== 移动端响应式 ========== */
 @media screen and (max-width: 768px) {
-    [hx-ext~="bny-nav"]:not([nav-side]) {
+    [hx-ext*="bny-nav"]:not([nav-side]) {
         flex-direction: column;
         overflow: hidden;
 
@@ -6757,7 +6757,7 @@ tr.tree-collapsed .bny-table-tree-toggle i {
 }
 
 /* ========== 侧边导航 ========== */
-[hx-ext~="bny-nav"][nav-side] {
+[hx-ext*="bny-nav"][nav-side] {
     display: flex;
     flex-direction: column;
     width: 240px;
@@ -6910,7 +6910,7 @@ tr.tree-collapsed .bny-table-tree-toggle i {
         background: var(--white) !important;
     }
 }
-[hx-ext~="bny-anchor"] {
+[hx-ext*="bny-anchor"] {
     width: 100%;
     display: flex;
     flex-direction: column;
@@ -8703,7 +8703,7 @@ html.dark .bny-image-viewer .bny-image-counter {
 }
 
 /* 根：定位上下文（箭头/指示器的定位基准），直接子元素自动成为轮播项 */
-[hx-ext~="bny-carousel"] {
+[hx-ext*="bny-carousel"] {
     position: relative;
     width: 100%;
 
