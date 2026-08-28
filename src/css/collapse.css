@@ -1,4 +1,4 @@
-[hx-ext~="bny-collapse"] {
+[hx-ext*="bny-collapse"] {
     display: flex;
     flex-direction: column;
     width: 100%;

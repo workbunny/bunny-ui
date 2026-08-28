@@ -306,7 +306,7 @@
 }
 
 /* ========== 表单布局 ========== */
-[hx-ext~="bny-form"] {
+[hx-ext*="bny-form"] {
     & .form-item {
         position: relative;
         margin-bottom: 18px;

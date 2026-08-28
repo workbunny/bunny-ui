@@ -77,7 +77,7 @@
     <div class="doc-container">
         <span class="eyebrow"><i class="bny-icon icon-calendar"></i> Changelog</span>
         <h1 class="section-title">更新日志</h1>
-        <p class="section-subtitle">BunnyUI 组件库版本发布记录，按发布时间（新 → 旧）排列。当前最新版本 v2.2.0。</p>
+        <p class="section-subtitle">BunnyUI 组件库版本发布记录，按发布时间（新 → 旧）排列。当前最新版本 v2.3.0。</p>
     </div>
 </section>
 
@@ -87,6 +87,23 @@
         <h2 id="n01">版本时间线</h2>
         <div class="bny-timeline">
             <div class="bny-timeline-item is-primary">
+                <div class="bny-timeline-node"></div>
+                <div class="bny-timestamp">2026-08-28</div>
+                <div class="bny-timeline-title">v2.3.0</div>
+                <div class="bny-timeline-content">
+                    <p class="cl"><span class="bny-tag" tag-color="green">新增</span> 表格组件升级多功能表格（bny-table）：JSON 渲染新增对象行（list/allList，按 page/pageSize 前端分页切片）与列模型（field/title/type/align/width），单元格按列声明类型渲染富内容——tag（map 值映射）、link（协议防护）、image（头像/圆形）、actions（操作按钮组）、template（占位符模板）、html:true / {__html}（受信任服务端内容逃生门）。</p>
+                    <p class="cl"><span class="bny-tag" tag-color="green">新增</span> 表格内置分页：JSON 带 total 时表格后自动渲染分页条（allList 前端切片、点击页码自动重新请求）；分页条构建/事件委托下沉为内置函数（bny.paginationBar / bny.setupPaginationDelegation），与分页组件共用同一实现；支持条数选择器（pg-page-sizes，如 "10,20,50"，切换回第 1 页并携带 pageSize 重新请求）；顺带修复分页条 pg-color/pg-model 属性未回写导致简洁模式与主题色不生效的问题。</p>
+                    <p class="cl"><span class="bny-tag" tag-color="green">新增</span> 表格搜索与联动：table-filter 声明可过滤字段，请求 URL 同名参数做多条件本地过滤（AND 组合、total 同步，仅 allList 模式）；分页条携带当前查询串，翻页/切条数自动保持搜索与筛选条件；文档新增"搜索与联动"章节（多条件搜索框配方）。</p>
+                    <p class="cl"><span class="bny-tag" tag-color="blue">优化</span> 表格排序补全：JSON 列模型声明 sortable/sort 即可排序（对象行生效）；列配置 sortVal 指定排序取值字段（显示文案与排序值不同时使用）；树形表格自动禁用排序（行序即层级从属，防止排序打乱父子结构）。</p>
+                    <p class="cl"><span class="bny-tag" tag-color="green">新增</span> 表格操作按钮动作协议（actions）：confirm 先弹确认框；url 请求无 target 默认刷回表格容器（同结构 JSON 整块刷新），target 可 swap 到指定容器；event 派发自定义事件（detail: {row, page}）交由业务处理；仅输出白名单属性，拒绝 on* 注入。支持列级 group 按钮组（bny-btn-group）与动作 children"更多"弹出菜单（复用菜单组件垂直菜单观感收纳次要操作，菜单项走同一协议、执行后或点击外部自动关闭）；操作列宽按内容自适应（table-layout: fixed 下渲染后自动回写列宽，不再压缩溢出）。</p>
+                    <p class="cl"><span class="bny-tag" tag-color="green">新增</span> 表格长文本省略与完整内容查看：桌面端文本/链接列默认单行省略（行高统一不因长文本撑高），列配置 ellipsis: false 关闭（恢复换行）、true 对 template 等列强制开启；内容真实溢出的单元格右侧渲染放大镜图标（icon-zoomin，未溢出不渲染，图标字体与窗口尺寸变化自动校准）；悬停溢出单元格由 tip 组件提示"点击展开"，点击放大镜固定弹出完整内容，鼠标可移入气泡框选复制，且不触发链接跳转；再点一次/点击空白处/滚动收回；移动端卡片布局不做截断。</p>
+                    <p class="cl"><span class="bny-tag" tag-color="green">新增</span> 表格加载骨架屏与渐显：加载/重载超过 200ms 未返回时自动在目标容器渲染表格形骨架（表头条 + 行条，复用骨架屏组件流光基类，行数取 table-page-size/pg-page-size），数据到位后骨架随内容交换替换、表格与内置分页条同拍渐显；快响应不显示骨架不闪烁，请求失败自动清理。</p>
+                    <p class="cl"><span class="bny-tag" tag-color="blue">优化</span> 表格"更多"弹出菜单改用菜单组件垂直菜单观感（白主题，暗色模式自动适配）：menu.css 新增 .bny-menu 类别名供其他组件复用菜单样式（不初始化 bny-menu 扩展行为，组件原用法零影响）；菜单项动作协议不变（confirm/url/event，点击外部或执行后自动关闭）。</p>
+                    <p class="cl"><span class="bny-tag" tag-color="yellow">文档</span> 表格页新增"长文本省略与加载动画"章节，补全数据表格交互与加载行为说明、基础用法与移动端卡片布局说明。</p>
+                    <p class="cl"><span class="bny-tag" tag-color="yellow">文档</span> 表格页新增"列类型"章节与单元格类型 API 表；分页组件回归纯分页条（pg-render-list 已移除，分页表格直接用表格内置分页）；修复表格 JSON 属性表 color 字段笔误。</p>
+                </div>
+            </div>
+            <div class="bny-timeline-item is-success">
                 <div class="bny-timeline-node"></div>
                 <div class="bny-timestamp">2026-08-22</div>
                 <div class="bny-timeline-title">v2.2.0</div>

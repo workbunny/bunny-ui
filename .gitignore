@@ -6,3 +6,4 @@ dist
 .git
 .workbuddy
 _*.txt
+.zcode

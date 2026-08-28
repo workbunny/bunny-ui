@@ -1,4 +1,4 @@
-[hx-ext~="bny-tab"] {
+[hx-ext*="bny-tab"] {
     width: 100%;
     position: relative;
     max-width: 100%;

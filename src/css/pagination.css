@@ -116,6 +116,38 @@
             }
         }
     }
+
+    /* 条数选择 */
+    & .bny-pagination-sizes {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        margin-left: 8px;
+        color: var(--black-shallow);
+        font-size: var(--font-size-sm);
+
+        & .bny-pagination-select {
+            height: 32px;
+            padding: 0 6px;
+            border: 1.5px solid var(--gray-middle);
+            border-radius: var(--border-radius-sm);
+            background-color: var(--white);
+            color: var(--black);
+            font-size: var(--font-size-sm);
+            cursor: pointer;
+            transition: var(--transition-fast);
+
+            &:hover {
+                border-color: var(--gray);
+            }
+
+            &:focus {
+                border-color: var(--default);
+                box-shadow: var(--focus-ring);
+                outline: none;
+            }
+        }
+    }
 }
 
 /* 主题色变体 */
@@ -124,9 +156,7 @@
 .bny-pagination[pg-color="green"] .bny-pagination-next.active {
     background-color: var(--green);
     border-color: var(--green);
-}
-
-.bny-pagination[pg-color="blue"] .bny-pagination-btn.active,
+}.bny-pagination[pg-color="blue"] .bny-pagination-btn.active,
 .bny-pagination[pg-color="blue"] .bny-pagination-prev.active,
 .bny-pagination[pg-color="blue"] .bny-pagination-next.active {
     background-color: var(--blue);

@@ -7,7 +7,7 @@
 }
 
 /* 根：定位上下文（箭头/指示器的定位基准），直接子元素自动成为轮播项 */
-[hx-ext~="bny-carousel"] {
+[hx-ext*="bny-carousel"] {
     position: relative;
     width: 100%;
 

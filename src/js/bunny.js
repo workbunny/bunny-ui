@@ -91,7 +91,7 @@ window.bny = {
     hasExtName: function (elt, ext) {
         const attrs = elt.getAttribute('hx-ext')
         if (!attrs) return false
-        const exts = attrs.trim().split(/\s+/)
+        const exts = attrs.split(',').map(s => s.trim()).filter(Boolean)
         return exts.includes(ext)
     },
     /**
@@ -655,5 +655,322 @@ window.bny = {
         // 加载页面
         document.body.appendChild(load)
         return load
+    },
+    /**
+     * 提取 URL 查询串（内置函数）—— 分页翻页时回带当前查询条件
+     * @param {String} url URL
+     * @param {Array<String>} [except] 需要剔除的参数名（如 page/pageSize，由调用方每次给新值）
+     * @returns {String} "k1=v1&k2=v2" 形式的查询串（值已编码），无则空串
+     */
+    carryQuery: function (url, except) {
+        if (!url) return ''
+        var ex = Array.isArray(except) ? except : []
+        try {
+            var u = new URL(url, window.location.href)
+            var parts = []
+            u.searchParams.forEach(function (v, k) {
+                if (v !== '' && ex.indexOf(k) < 0) parts.push(k + '=' + encodeURIComponent(v))
+            })
+            return parts.join('&')
+        } catch (e) {
+            return ''
+        }
+    },
+    /**
+     * 解析条数选择列表（内置函数）
+     * @param {String} v 逗号分隔的条数串，如 "10,20,50"
+     * @returns {Array<Number>|null} 条数数组（升序前由调用方处理），无有效值返回 null
+     */
+    parsePageSizes: function (v) {
+        if (!v) return null
+        var arr = String(v).split(',').map(function (s) { return parseInt(s.trim(), 10) }).filter(function (n) { return n > 0 })
+        return arr.length ? arr : null
+    },
+    /**
+     * 渲染分页条 HTML（bny-pagination 组件与 bny-table 内置分页共用）
+     *
+     * @param {Object} o 配置
+     * @param {Number} o.total 总条数（必需）
+     * @param {Number} [o.page=1] 当前页
+     * @param {Number} [o.pageSize=10] 每页条数
+     * @param {String} [o.paramName='page'] URL 分页参数名
+     * @param {String} [o.sizeParam='pageSize'] URL 条数参数名
+     * @param {Array<Number>} [o.sizes] 条数选择列表（传入则渲染"条/页"选择器）
+     * @param {String} [o.query=''] 当前查询串（翻页时原样回带，实现搜索/筛选条件保持）
+     * @param {Number} [o.maxButtons=7] 最多页码按钮数（含首尾与省略号）
+     * @param {Boolean} [o.jumper=true] 是否显示跳转框
+     * @param {Boolean} [o.showTotal=true] 是否显示总数
+     * @param {String} [o.carryAttrs=''] 附加到根节点的属性串（需已转义，如 ' pg-color="blue"'）
+     * @returns {String} 分页条 HTML
+     */
+    paginationBar: function (o) {
+        o = o || {}
+        var total = parseInt(o.total, 10) || 0
+        var pageSize = parseInt(o.pageSize, 10) || 10
+        var paramName = o.paramName || 'page'
+        var sizeParam = o.sizeParam || 'pageSize'
+        var maxButtons = parseInt(o.maxButtons, 10) || 7
+        var showJumper = o.jumper !== false
+        var showTotal = o.showTotal !== false
+        var page = parseInt(o.page, 10) || 1
+
+        // 条数选择列表：当前条数不在列表中时自动补入
+        var sizes = Array.isArray(o.sizes) ? o.sizes.map(function (s) { return parseInt(s, 10) }).filter(function (n) { return n > 0 }) : []
+        if (sizes.length && sizes.indexOf(pageSize) < 0) sizes.push(pageSize)
+        if (sizes.length) sizes.sort(function (a, b) { return a - b })
+
+        var totalPages = Math.max(1, Math.ceil(total / pageSize))
+        if (page > totalPages) page = totalPages
+        if (page < 1) page = 1
+
+        // 构建分页条外层 div：注意不携带 hx-get/hx-target/hx-swap ——
+        // div+hx-get 无 hx-trigger 会被 htmx 注册默认 click 触发，与事件委托冲突
+        // 请求所需的 htmx 配置由内部 _pgTriggerRequest 反查原始配置元素读取
+        var h = '<div class="bny-pagination"'
+        if (o.carryAttrs) h += o.carryAttrs
+        h += ' pg-current="' + page + '"'
+        h += ' pg-total-pages="' + totalPages + '"'
+        h += ' pg-page-param="' + bny.escapeChars(paramName) + '"'
+        h += ' pg-size-param="' + bny.escapeChars(sizeParam) + '"'
+        if (o.query) h += ' pg-query="' + bny.escapeChars(o.query) + '"'
+        h += '>'
+
+        // 总数
+        if (showTotal) {
+            h += '<span class="bny-pagination-total">共 <em>' + total + '</em> 条</span>'
+        }
+
+        // 条数选择
+        if (sizes.length) {
+            h += '<span class="bny-pagination-sizes">'
+            h += '<select class="bny-pagination-select" aria-label="每页条数">'
+            sizes.forEach(function (s) {
+                h += '<option value="' + s + '"' + (s === pageSize ? ' selected' : '') + '>' + s + '</option>'
+            })
+            h += '</select> 条/页</span>'
+        }
+
+        // 上一页
+        h += '<a class="bny-pagination-prev' + (page <= 1 ? ' disabled' : '') + '"'
+        h += ' pg-page="' + Math.max(1, page - 1) + '"'
+        h += ' title="上一页"><i class="bny-icon icon-left"></i></a>'
+
+        // 页码按钮
+        var btns = _pgComputeButtons(page, totalPages, maxButtons)
+        for (var i = 0; i < btns.length; i++) {
+            var b = btns[i]
+            if (b === '...') {
+                h += '<span class="bny-pagination-ellipsis">...</span>'
+            } else {
+                h += '<a class="bny-pagination-btn' + (b === page ? ' active' : '') + '"'
+                h += ' pg-page="' + b + '"'
+                h += '>' + b + '</a>'
+            }
+        }
+
+        // 下一页
+        h += '<a class="bny-pagination-next' + (page >= totalPages ? ' disabled' : '') + '"'
+        h += ' pg-page="' + Math.min(totalPages, page + 1) + '"'
+        h += ' title="下一页"><i class="bny-icon icon-right"></i></a>'
+
+        // 跳转
+        if (showJumper && totalPages > 1) {
+            h += '<span class="bny-pagination-jump">'
+            h += '前往 <input type="number" class="bny-pagination-input" min="1" max="' + totalPages + '" value="' + page + '"> 页'
+            h += '</span>'
+        }
+
+        h += '</div>'
+        return h
+    },
+    /**
+     * 从 URL 解析分页参数值（内置函数）
+     * - 静态 JSON 场景 page 固定为 1，需从请求 URL 查询串反映实际点击页码
+     *
+     * @param {String} url URL
+     * @param {String} paramName 参数名
+     * @returns {Number} 页码，无则 0
+     */
+    parsePageParam: function (url, paramName) {
+        if (!url) return 0
+        try {
+            var u = new URL(url, window.location.href)
+            var p = u.searchParams.get(paramName)
+            return parseInt(p, 10) || 0
+        } catch (e) {
+            // 兜底：正则提取
+            var re = new RegExp('[?&]' + encodeURIComponent(paramName) + '=([^&]+)')
+            var m = String(url).match(re)
+            if (m) return parseInt(decodeURIComponent(m[1]), 10) || 0
+            return 0
+        }
+    },
+    /**
+     * 注册分页条事件委托（内置函数，只注册一次，渲染后无需重新绑定）
+     * - 点击页码 / 上一页 / 下一页 → 反查配置元素发起 htmx 请求
+     * - 跳转输入框回车 → 同上
+     */
+    setupPaginationDelegation: function () {
+        if (bny._pgDelegated) return
+        bny._pgDelegated = true
+
+        // 点击页码 / 上一页 / 下一页
+        document.addEventListener('click', function (e) {
+            var btn = e.target.closest && e.target.closest('.bny-pagination-btn, .bny-pagination-prev, .bny-pagination-next')
+            if (!btn) return
+            var bar = btn.closest('.bny-pagination')
+            if (!bar) return
+            if (btn.classList.contains('disabled') || btn.classList.contains('active')) {
+                e.preventDefault()
+                return
+            }
+            var p = btn.getAttribute('pg-page')
+            if (!p) return
+            _pgTriggerRequest(bar, p)
+        })
+
+        // 跳转输入框回车
+        document.addEventListener('keydown', function (e) {
+            if (e.key !== 'Enter') return
+            var input = e.target
+            if (!input.classList || !input.classList.contains('bny-pagination-input')) return
+            e.preventDefault()
+            var bar = input.closest && input.closest('.bny-pagination')
+            if (!bar) return
+            var totalPages = parseInt(bar.getAttribute('pg-total-pages'), 10) || 1
+            var p = parseInt(input.value, 10)
+            if (isNaN(p) || p < 1) p = 1
+            if (p > totalPages) p = totalPages
+            _pgTriggerRequest(bar, String(p))
+        })
+
+        // 条数选择：切换后回到第 1 页并携带 pageSize 重新请求
+        document.addEventListener('change', function (e) {
+            var select = e.target
+            if (!select.classList || !select.classList.contains('bny-pagination-select')) return
+            var bar = select.closest && select.closest('.bny-pagination')
+            if (!bar) return
+            var n = parseInt(select.value, 10)
+            if (!n || n < 1) return
+            _pgTriggerRequest(bar, '1', n)
+        })
+    },
+    /**
+     * 分页事件委托注册标志（内部使用）
+     * @type {Boolean}
+     */
+    _pgDelegated: false
+}
+
+/**
+ * 计算要显示的页码按钮序列（内部函数，配合 bny.paginationBar）
+ * - 始终包含第一页与最后一页，中间用 '...' 表示省略
+ * @param {number} current 当前页
+ * @param {number} total 总页数
+ * @param {number} max 最多按钮数（含首尾与省略号）
+ * @returns {Array<number|string>}
+ */
+function _pgComputeButtons(current, total, max) {
+    if (total <= max) {
+        var arr = []
+        for (var i = 1; i <= total; i++) arr.push(i)
+        return arr
     }
+
+    // max 至少为 5（首 + ... + 当前 + ... + 尾）
+    if (max < 5) max = 5
+
+    var result = []
+    // 中间连续区域最多放 max-2 个按钮（去掉首尾各占一位）
+    var remaining = max - 2
+    var half = Math.floor(remaining / 2)
+
+    // 左右边界（不含首尾页）
+    var left = Math.max(2, current - half)
+    var right = Math.min(total - 1, current + half)
+
+    // 若左侧贴近首页，则右扩填满中间区域
+    if (left <= 2) {
+        left = 2
+        right = Math.min(total - 1, remaining + 1)
+    }
+    // 若右侧贴近末页，则左扩填满中间区域
+    if (right >= total - 1) {
+        right = total - 1
+        left = Math.max(2, total - remaining)
+    }
+
+    result.push(1)
+    if (left > 2) result.push('...')
+    for (var j = left; j <= right; j++) result.push(j)
+    if (right < total - 1) result.push('...')
+    result.push(total)
+    return result
+}
+
+/**
+ * 反查分页条所在容器的请求源配置元素（内部函数）
+ * - 配置元素是容器的兄弟节点，携带 hx-get/hx-target，渲染后仍保留在 DOM 中
+ * - 以配置元素为 source，htmx 才能命中其扩展的 transformResponse
+ * @param {HTMLElement} bar 分页条根 div
+ * @returns {HTMLElement|null}
+ */
+function _pgFindConfig(bar) {
+    var container = bar.parentElement
+    if (!container || !container.id) return null
+    var candidates = document.querySelectorAll('[hx-target="#' + container.id + '"]')
+    for (var i = 0; i < candidates.length; i++) {
+        if (candidates[i].getAttribute('hx-get')) return candidates[i]
+    }
+    return null
+}
+
+/**
+ * 触发分页请求：携带 page/pageSize 参数发起 htmx.ajax（内部函数）
+ * @param {HTMLElement} bar 分页条根 div
+ * @param {string} page 目标页码
+ * @param {string} [pageSize] 目标条数（条数选择器切换时传入）
+ */
+function _pgTriggerRequest(bar, page, pageSize) {
+    var src = _pgFindConfig(bar) || bar
+    var url = src.getAttribute('hx-get')
+    if (!url) return
+    var targetSel = src.getAttribute('hx-target')
+    var swapStyle = src.getAttribute('hx-swap') || 'innerHTML'
+    var paramName = bar.getAttribute('pg-page-param') || 'page'
+    var vals = {}
+    // 回带当前查询条件（搜索/菜单联动设置的参数，翻页/切条数时保持）
+    var query = bar.getAttribute('pg-query')
+    if (query) {
+        try {
+            new URLSearchParams(query).forEach(function (v, k) {
+                if (v !== '') vals[k] = v
+            })
+        } catch (_) { }
+    }
+    vals[paramName] = page
+    var sizeParam = bar.getAttribute('pg-size-param') || 'pageSize'
+    if (pageSize) {
+        vals[sizeParam] = pageSize
+    } else {
+        // 条数选择器存在时，页码点击携带当前选中的条数（否则选择会在翻页后丢失）
+        var select = bar.querySelector('.bny-pagination-select')
+        if (select) {
+            var ps = parseInt(select.value, 10)
+            if (ps > 0) vals[sizeParam] = ps
+        }
+    }
+    // 同时保留原有 hx-vals
+    var existingVals = src.getAttribute('hx-vals')
+    if (existingVals) {
+        try { Object.assign(vals, JSON.parse(existingVals)); } catch (_) { }
+    }
+    var target = targetSel ? document.querySelector(targetSel) : src
+    if (targetSel && !target) target = src
+    htmx.ajax('GET', url, {
+        source: src,
+        target: target,
+        swap: swapStyle,
+        values: vals
+    })
 }

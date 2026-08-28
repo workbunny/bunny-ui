@@ -3755,7 +3755,7 @@
     hasExtName: function(elt, ext) {
       const attrs = elt.getAttribute("hx-ext");
       if (!attrs) return false;
-      const exts = attrs.trim().split(/\s+/);
+      const exts = attrs.split(",").map((s) => s.trim()).filter(Boolean);
       return exts.includes(ext);
     },
     /**
@@ -4223,8 +4223,275 @@
       }
       document.body.appendChild(load);
       return load;
-    }
+    },
+    /**
+     * 提取 URL 查询串（内置函数）—— 分页翻页时回带当前查询条件
+     * @param {String} url URL
+     * @param {Array<String>} [except] 需要剔除的参数名（如 page/pageSize，由调用方每次给新值）
+     * @returns {String} "k1=v1&k2=v2" 形式的查询串（值已编码），无则空串
+     */
+    carryQuery: function(url, except) {
+      if (!url) return "";
+      var ex = Array.isArray(except) ? except : [];
+      try {
+        var u = new URL(url, window.location.href);
+        var parts = [];
+        u.searchParams.forEach(function(v, k) {
+          if (v !== "" && ex.indexOf(k) < 0) parts.push(k + "=" + encodeURIComponent(v));
+        });
+        return parts.join("&");
+      } catch (e) {
+        return "";
+      }
+    },
+    /**
+     * 解析条数选择列表（内置函数）
+     * @param {String} v 逗号分隔的条数串，如 "10,20,50"
+     * @returns {Array<Number>|null} 条数数组（升序前由调用方处理），无有效值返回 null
+     */
+    parsePageSizes: function(v) {
+      if (!v) return null;
+      var arr = String(v).split(",").map(function(s) {
+        return parseInt(s.trim(), 10);
+      }).filter(function(n) {
+        return n > 0;
+      });
+      return arr.length ? arr : null;
+    },
+    /**
+     * 渲染分页条 HTML（bny-pagination 组件与 bny-table 内置分页共用）
+     *
+     * @param {Object} o 配置
+     * @param {Number} o.total 总条数（必需）
+     * @param {Number} [o.page=1] 当前页
+     * @param {Number} [o.pageSize=10] 每页条数
+     * @param {String} [o.paramName='page'] URL 分页参数名
+     * @param {String} [o.sizeParam='pageSize'] URL 条数参数名
+     * @param {Array<Number>} [o.sizes] 条数选择列表（传入则渲染"条/页"选择器）
+     * @param {String} [o.query=''] 当前查询串（翻页时原样回带，实现搜索/筛选条件保持）
+     * @param {Number} [o.maxButtons=7] 最多页码按钮数（含首尾与省略号）
+     * @param {Boolean} [o.jumper=true] 是否显示跳转框
+     * @param {Boolean} [o.showTotal=true] 是否显示总数
+     * @param {String} [o.carryAttrs=''] 附加到根节点的属性串（需已转义，如 ' pg-color="blue"'）
+     * @returns {String} 分页条 HTML
+     */
+    paginationBar: function(o) {
+      o = o || {};
+      var total = parseInt(o.total, 10) || 0;
+      var pageSize = parseInt(o.pageSize, 10) || 10;
+      var paramName = o.paramName || "page";
+      var sizeParam = o.sizeParam || "pageSize";
+      var maxButtons = parseInt(o.maxButtons, 10) || 7;
+      var showJumper = o.jumper !== false;
+      var showTotal = o.showTotal !== false;
+      var page = parseInt(o.page, 10) || 1;
+      var sizes = Array.isArray(o.sizes) ? o.sizes.map(function(s) {
+        return parseInt(s, 10);
+      }).filter(function(n) {
+        return n > 0;
+      }) : [];
+      if (sizes.length && sizes.indexOf(pageSize) < 0) sizes.push(pageSize);
+      if (sizes.length) sizes.sort(function(a, b2) {
+        return a - b2;
+      });
+      var totalPages = Math.max(1, Math.ceil(total / pageSize));
+      if (page > totalPages) page = totalPages;
+      if (page < 1) page = 1;
+      var h = '<div class="bny-pagination"';
+      if (o.carryAttrs) h += o.carryAttrs;
+      h += ' pg-current="' + page + '"';
+      h += ' pg-total-pages="' + totalPages + '"';
+      h += ' pg-page-param="' + bny.escapeChars(paramName) + '"';
+      h += ' pg-size-param="' + bny.escapeChars(sizeParam) + '"';
+      if (o.query) h += ' pg-query="' + bny.escapeChars(o.query) + '"';
+      h += ">";
+      if (showTotal) {
+        h += '<span class="bny-pagination-total">共 <em>' + total + "</em> 条</span>";
+      }
+      if (sizes.length) {
+        h += '<span class="bny-pagination-sizes">';
+        h += '<select class="bny-pagination-select" aria-label="每页条数">';
+        sizes.forEach(function(s) {
+          h += '<option value="' + s + '"' + (s === pageSize ? " selected" : "") + ">" + s + "</option>";
+        });
+        h += "</select> 条/页</span>";
+      }
+      h += '<a class="bny-pagination-prev' + (page <= 1 ? " disabled" : "") + '"';
+      h += ' pg-page="' + Math.max(1, page - 1) + '"';
+      h += ' title="上一页"><i class="bny-icon icon-left"></i></a>';
+      var btns = _pgComputeButtons(page, totalPages, maxButtons);
+      for (var i = 0; i < btns.length; i++) {
+        var b = btns[i];
+        if (b === "...") {
+          h += '<span class="bny-pagination-ellipsis">...</span>';
+        } else {
+          h += '<a class="bny-pagination-btn' + (b === page ? " active" : "") + '"';
+          h += ' pg-page="' + b + '"';
+          h += ">" + b + "</a>";
+        }
+      }
+      h += '<a class="bny-pagination-next' + (page >= totalPages ? " disabled" : "") + '"';
+      h += ' pg-page="' + Math.min(totalPages, page + 1) + '"';
+      h += ' title="下一页"><i class="bny-icon icon-right"></i></a>';
+      if (showJumper && totalPages > 1) {
+        h += '<span class="bny-pagination-jump">';
+        h += '前往 <input type="number" class="bny-pagination-input" min="1" max="' + totalPages + '" value="' + page + '"> 页';
+        h += "</span>";
+      }
+      h += "</div>";
+      return h;
+    },
+    /**
+     * 从 URL 解析分页参数值（内置函数）
+     * - 静态 JSON 场景 page 固定为 1，需从请求 URL 查询串反映实际点击页码
+     *
+     * @param {String} url URL
+     * @param {String} paramName 参数名
+     * @returns {Number} 页码，无则 0
+     */
+    parsePageParam: function(url, paramName) {
+      if (!url) return 0;
+      try {
+        var u = new URL(url, window.location.href);
+        var p = u.searchParams.get(paramName);
+        return parseInt(p, 10) || 0;
+      } catch (e) {
+        var re = new RegExp("[?&]" + encodeURIComponent(paramName) + "=([^&]+)");
+        var m = String(url).match(re);
+        if (m) return parseInt(decodeURIComponent(m[1]), 10) || 0;
+        return 0;
+      }
+    },
+    /**
+     * 注册分页条事件委托（内置函数，只注册一次，渲染后无需重新绑定）
+     * - 点击页码 / 上一页 / 下一页 → 反查配置元素发起 htmx 请求
+     * - 跳转输入框回车 → 同上
+     */
+    setupPaginationDelegation: function() {
+      if (bny._pgDelegated) return;
+      bny._pgDelegated = true;
+      document.addEventListener("click", function(e) {
+        var btn = e.target.closest && e.target.closest(".bny-pagination-btn, .bny-pagination-prev, .bny-pagination-next");
+        if (!btn) return;
+        var bar = btn.closest(".bny-pagination");
+        if (!bar) return;
+        if (btn.classList.contains("disabled") || btn.classList.contains("active")) {
+          e.preventDefault();
+          return;
+        }
+        var p = btn.getAttribute("pg-page");
+        if (!p) return;
+        _pgTriggerRequest(bar, p);
+      });
+      document.addEventListener("keydown", function(e) {
+        if (e.key !== "Enter") return;
+        var input = e.target;
+        if (!input.classList || !input.classList.contains("bny-pagination-input")) return;
+        e.preventDefault();
+        var bar = input.closest && input.closest(".bny-pagination");
+        if (!bar) return;
+        var totalPages = parseInt(bar.getAttribute("pg-total-pages"), 10) || 1;
+        var p = parseInt(input.value, 10);
+        if (isNaN(p) || p < 1) p = 1;
+        if (p > totalPages) p = totalPages;
+        _pgTriggerRequest(bar, String(p));
+      });
+      document.addEventListener("change", function(e) {
+        var select = e.target;
+        if (!select.classList || !select.classList.contains("bny-pagination-select")) return;
+        var bar = select.closest && select.closest(".bny-pagination");
+        if (!bar) return;
+        var n = parseInt(select.value, 10);
+        if (!n || n < 1) return;
+        _pgTriggerRequest(bar, "1", n);
+      });
+    },
+    /**
+     * 分页事件委托注册标志（内部使用）
+     * @type {Boolean}
+     */
+    _pgDelegated: false
   };
+  function _pgComputeButtons(current, total, max) {
+    if (total <= max) {
+      var arr = [];
+      for (var i = 1; i <= total; i++) arr.push(i);
+      return arr;
+    }
+    if (max < 5) max = 5;
+    var result = [];
+    var remaining = max - 2;
+    var half = Math.floor(remaining / 2);
+    var left = Math.max(2, current - half);
+    var right = Math.min(total - 1, current + half);
+    if (left <= 2) {
+      left = 2;
+      right = Math.min(total - 1, remaining + 1);
+    }
+    if (right >= total - 1) {
+      right = total - 1;
+      left = Math.max(2, total - remaining);
+    }
+    result.push(1);
+    if (left > 2) result.push("...");
+    for (var j = left; j <= right; j++) result.push(j);
+    if (right < total - 1) result.push("...");
+    result.push(total);
+    return result;
+  }
+  function _pgFindConfig(bar) {
+    var container = bar.parentElement;
+    if (!container || !container.id) return null;
+    var candidates = document.querySelectorAll('[hx-target="#' + container.id + '"]');
+    for (var i = 0; i < candidates.length; i++) {
+      if (candidates[i].getAttribute("hx-get")) return candidates[i];
+    }
+    return null;
+  }
+  function _pgTriggerRequest(bar, page, pageSize) {
+    var src = _pgFindConfig(bar) || bar;
+    var url = src.getAttribute("hx-get");
+    if (!url) return;
+    var targetSel = src.getAttribute("hx-target");
+    var swapStyle = src.getAttribute("hx-swap") || "innerHTML";
+    var paramName = bar.getAttribute("pg-page-param") || "page";
+    var vals = {};
+    var query = bar.getAttribute("pg-query");
+    if (query) {
+      try {
+        new URLSearchParams(query).forEach(function(v, k) {
+          if (v !== "") vals[k] = v;
+        });
+      } catch (_) {
+      }
+    }
+    vals[paramName] = page;
+    var sizeParam = bar.getAttribute("pg-size-param") || "pageSize";
+    if (pageSize) {
+      vals[sizeParam] = pageSize;
+    } else {
+      var select = bar.querySelector(".bny-pagination-select");
+      if (select) {
+        var ps = parseInt(select.value, 10);
+        if (ps > 0) vals[sizeParam] = ps;
+      }
+    }
+    var existingVals = src.getAttribute("hx-vals");
+    if (existingVals) {
+      try {
+        Object.assign(vals, JSON.parse(existingVals));
+      } catch (_) {
+      }
+    }
+    var target = targetSel ? document.querySelector(targetSel) : src;
+    if (targetSel && !target) target = src;
+    htmx.ajax("GET", url, {
+      source: src,
+      target,
+      swap: swapStyle,
+      values: vals
+    });
+  }
   htmx.defineExtension("bny-menu", {
     // 事件
     onEvent: function(name, evt) {
@@ -4467,6 +4734,7 @@
         bny.alert(data.msg, data.code || 0, data.anim || "scale", data.time || 3);
         return elt.innerHTML;
       }
+      return text;
     }
   });
   function closeDropdown(target) {
@@ -4760,6 +5028,7 @@
       function initSort(table) {
         let ths = table.querySelectorAll("thead th[table-sort]");
         if (!ths.length) return;
+        if (table.querySelector("tbody tr[data-tree-level]")) return;
         const tableKey = table.getAttribute("table-key") || "";
         const storeKey = tableKey ? "bny-table-sort:" + tableKey : "";
         const tbodyCaptured = table.querySelector("tbody");
@@ -4897,11 +5166,43 @@
           });
         });
       }
+      if (name === "htmx:beforeRequest") {
+        var src = evt.target;
+        if (src && src.nodeType === 1 && bny.hasExtName(src, "bny-table") && (src.getAttribute("hx-get") !== null || src.getAttribute("hx-post") !== null) && (!src.getAttribute("hx-swap") || src.getAttribute("hx-swap") === "innerHTML")) {
+          var skelTarget = resolveSwapTarget(src);
+          if (skelTarget) scheduleTableSkeleton(skelTarget, src);
+        }
+        return true;
+      }
+      if (name === "htmx:afterRequest") {
+        var arSrc = evt.target;
+        if (arSrc && arSrc.nodeType === 1 && bny.hasExtName(arSrc, "bny-table")) {
+          clearTableSkeleton(resolveSwapTarget(arSrc), false);
+        }
+        return true;
+      }
+      if (name === "htmx:afterSwap") {
+        clearTableSkeleton(evt.target, false);
+        return true;
+      }
+      if (name === "htmx:responseError" || name === "htmx:sendError") {
+        var errSrc = evt.target;
+        if (errSrc && errSrc.nodeType === 1 && bny.hasExtName(errSrc, "bny-table")) {
+          var errTarget = resolveSwapTarget(errSrc);
+          if (errTarget) clearTableSkeleton(errTarget, true);
+        }
+        return true;
+      }
       if (name === "htmx:afterProcessNode") {
         if (bny.hasExtName(evt.target, "bny-table")) {
+          setupActionsDelegation();
+          setupEllipsisTipsDelegation();
+          bny.setupPaginationDelegation();
           initLabels(evt.target);
           initSort(evt.target);
           initTree(evt.target);
+          fitActionsWidths(evt.target);
+          appendZoomButtons(evt.target);
           return false;
         } else if (evt.target.tagName === "TR") {
           const tds = evt.target.querySelectorAll("td");
@@ -4913,114 +5214,677 @@
       }
       return true;
     },
-    // 响应转换
+    // 响应转换：JSON → 表格 HTML（无表格数据的 JSON 返回空串，把内容渲染留给组合链上的下一个扩展）
     transformResponse: function(text, xhr, elt) {
-      function renderCell(cell) {
-        if (cell !== null && typeof cell === "object" && typeof cell.__html !== "undefined") {
-          return String(cell.__html);
-        }
-        return bny.escapeChars(String(cell));
+      var ct = xhr.getResponseHeader("Content-Type") || "";
+      if (!ct.includes("application/json")) return text;
+      var json;
+      try {
+        json = JSON.parse(xhr.responseText);
+      } catch (e) {
+        return text;
       }
-      function renderCol(col) {
-        if (col !== null && typeof col === "object") {
-          var name = bny.escapeChars(String(col.name ?? ""));
-          var attrs = "";
-          if (col.sort) {
-            attrs += ' table-sort="' + bny.escapeChars(String(col.sort)) + '"';
-          } else if (col.sortable) {
-            attrs += " table-sort";
-          }
-          return "<th" + attrs + ">" + name + "</th>";
-        }
-        return "<th>" + bny.escapeChars(String(col)) + "</th>";
-      }
-      function buildTable(data) {
-        const cols = data.cols || [];
-        const rows = data.rows || [];
-        const color = data.color || "";
-        const emptyText = data.empty || "暂无数据";
-        const tableKey = data.key || color || "";
-        let h = "";
-        h += '<table hx-ext="bny-table"' + (color ? ' table-color="' + color + '"' : "");
-        if (tableKey) h += ' table-key="' + bny.escapeChars(tableKey) + '"';
-        h += ">";
-        const indentUnit = 20;
-        function treeRowHtml(row, cells, level) {
-          const hasKids = Array.isArray(row.children) && row.children.length > 0;
-          let r = '<tr data-tree-level="' + level + '"' + (hasKids ? ' data-tree-parent="1"' : "") + ">";
-          cells.forEach(function(cell, ci) {
-            let content = renderCell(cell);
-            if (ci === 0) {
-              content = '<span class="bny-table-tree-indent" style="padding-left:' + level * indentUnit + 'px"></span>' + (hasKids ? '<span class="bny-table-tree-toggle"><i class="bny-icon icon-caret-right"></i></span>' : "") + content;
-            }
-            r += "<td" + (ci === 0 ? ' class="bny-table-tree-cell"' : "") + ">" + content + "</td>";
-          });
-          r += "</tr>";
-          return r;
-        }
-        function appendRow(row, level) {
-          if (row && !Array.isArray(row) && typeof row === "object") {
-            if (Array.isArray(row.cells) || Array.isArray(row.children)) {
-              const hasChildren = Array.isArray(row.children) && row.children.length > 0;
-              const cells = Array.isArray(row.cells) ? row.cells : [row.cells];
-              h += treeRowHtml(row, cells, level);
-              if (hasChildren) {
-                (row.children || []).forEach(function(child) {
-                  appendRow(child, level + 1);
-                });
-              }
-              return;
-            }
-            if (typeof row.__html !== "undefined" && row.__html) {
-              h += row.__html;
-              return;
-            }
-            h += '<tr data-tree-level="' + level + '">';
-            [row].forEach(function(cell, ci) {
-              let content = renderCell(cell);
-              if (ci === 0 && level > 0) {
-                content = '<span class="bny-table-tree-indent" style="padding-left:' + level * indentUnit + 'px"></span>' + content;
-              }
-              h += "<td>" + content + "</td>";
-            });
-            h += "</tr>";
-            return;
-          }
-          const vals = Array.isArray(row) ? row : [row];
-          h += '<tr data-tree-level="' + level + '">';
-          vals.forEach(function(cell, ci) {
-            let content = renderCell(cell);
-            if (ci === 0 && level > 0) {
-              content = '<span class="bny-table-tree-indent" style="padding-left:' + level * indentUnit + 'px"></span>' + content;
-            }
-            h += "<td>" + content + "</td>";
-          });
-          h += "</tr>";
-        }
-        h += "<thead><tr>";
-        cols.forEach(function(col) {
-          h += renderCol(col);
-        });
-        h += "</tr></thead>";
-        h += "<tbody>";
-        if (rows.length === 0) {
-          h += '<tr class="bny-table-empty"><td colspan="' + cols.length + '">' + bny.escapeChars(emptyText) + "</td></tr>";
-        } else {
-          rows.forEach(function(row) {
-            appendRow(row, 0);
-          });
-        }
-        h += "</tbody></table>";
-        return h;
-      }
-      if (xhr.getResponseHeader("Content-Type") && xhr.getResponseHeader("Content-Type").includes("application/json")) {
-        const json = JSON.parse(xhr.responseText);
-        const data = json.data || json;
-        return buildTable(data);
-      }
-      return text;
+      const data = json.data || json;
+      return buildTable(data, xhr, resolveElt(elt));
     }
   });
+  function resolveElt(elt) {
+    if (!elt || elt.getAttribute("table-filter") !== null) return elt;
+    var target = elt.getAttribute("hx-target");
+    if (!target) return elt;
+    try {
+      var alt = document.querySelector('[hx-target="' + target + '"][table-filter]');
+      if (alt) return alt;
+    } catch (_) {
+    }
+    return elt;
+  }
+  function renderCell(cell) {
+    if (cell !== null && typeof cell === "object" && typeof cell.__html !== "undefined") {
+      return String(cell.__html);
+    }
+    return bny.escapeChars(String(cell));
+  }
+  function renderCol(col) {
+    if (col !== null && typeof col === "object") {
+      var name = bny.escapeChars(String(col.title ?? col.name ?? ""));
+      var attrs = "";
+      if (col.sort) {
+        attrs += ' table-sort="' + bny.escapeChars(String(col.sort)) + '"';
+      } else if (col.sortable) {
+        attrs += " table-sort";
+      }
+      return "<th" + attrs + thStyleAttr(col) + ">" + name + "</th>";
+    }
+    return "<th>" + bny.escapeChars(String(col)) + "</th>";
+  }
+  function getVal(row, field) {
+    var val = row ? row[field] : "";
+    return val === null || val === void 0 ? "" : val;
+  }
+  function thStyleAttr(col) {
+    var style = "";
+    if (col.width) style += "width:" + col.width + ";";
+    if (col.align === "center" || col.align === "right") style += "text-align:" + col.align + ";";
+    return style ? ' style="' + bny.escapeChars(style) + '"' : "";
+  }
+  function tdAlignAttr(col) {
+    if (col.align === "center" || col.align === "right") return ' style="text-align:' + col.align + ';"';
+    return "";
+  }
+  function colEllipsis(col) {
+    if (col.ellipsis === true) return true;
+    if (col.ellipsis === false) return false;
+    var t = col.type || "text";
+    return t === "text" || t === "link";
+  }
+  function tplInterpolate(tpl, row, mode) {
+    return String(tpl === void 0 || tpl === null ? "" : tpl).replace(/\{([a-zA-Z0-9_]+)\}/g, function(m, key) {
+      var val = String(getVal(row, key));
+      return mode === "url" ? encodeURIComponent(val) : bny.escapeChars(val);
+    });
+  }
+  function safeHref(url) {
+    if (typeof url !== "string") return "";
+    var s = url.trim().replace(/^[\u0000-\u001F\u007F]+/, "");
+    if (!s) return "";
+    if (/^(javascript|data|vbscript)\s*:/i.test(s)) return "";
+    return s;
+  }
+  function safeImgSrc(src) {
+    if (typeof src !== "string") return "";
+    var s = src.trim().replace(/^[\u0000-\u001F\u007F]+/, "");
+    if (/^(javascript|vbscript)\s*:/i.test(s)) return "";
+    if (/^data:/i.test(s)) return /^data:image\//i.test(s) ? s : "";
+    return s;
+  }
+  function renderTypedCell(row, col) {
+    if (col.html === true) {
+      return String(getVal(row, col.field));
+    }
+    switch (col.type) {
+      case "tag":
+        return renderTagCell(row, col);
+      case "link":
+        return renderLinkCell(row, col);
+      case "image":
+        return renderImageCell(row, col);
+      case "actions":
+        return renderActionsCell(row, col);
+      case "template":
+        return renderTemplateCell(row, col);
+      default:
+        return bny.escapeChars(String(getVal(row, col.field)));
+    }
+  }
+  function renderTagCell(row, col) {
+    var val = String(getVal(row, col.field));
+    var map = col.map || {};
+    var hit = Object.prototype.hasOwnProperty.call(map, val) ? map[val] : map["default"];
+    var text = val, color = "";
+    if (hit && typeof hit === "object") {
+      if (hit.text !== void 0 && hit.text !== null) text = hit.text;
+      color = hit.color || "";
+    } else if (typeof hit === "string") {
+      color = hit;
+    }
+    var attr = color ? ' tag-color="' + bny.escapeChars(color) + '"' : "";
+    return '<span class="bny-tag"' + attr + ">" + bny.escapeChars(String(text)) + "</span>";
+  }
+  function renderLinkCell(row, col) {
+    var val = String(getVal(row, col.field));
+    var href = safeHref(tplInterpolate(col.href || "", row, "url"));
+    var text = col.text !== void 0 && col.text !== null ? tplInterpolate(col.text, row, "html") : bny.escapeChars(val);
+    if (!href) return text;
+    var attr = ' href="' + bny.escapeChars(href) + '"';
+    if (col.target) attr += ' target="' + bny.escapeChars(String(col.target)) + '"';
+    return "<a" + attr + ">" + text + "</a>";
+  }
+  function renderImageCell(row, col) {
+    var src = safeImgSrc(tplInterpolate(col.src || "{" + col.field + "}", row, "url"));
+    if (!src) return "";
+    var style = "";
+    if (col.width) style += "width:" + col.width + ";";
+    if (col.height) style += "height:" + col.height + ";";
+    if (col.round) style += "border-radius:50%;";
+    var attr = ' class="bny-table-img" src="' + bny.escapeChars(src) + '" alt="' + bny.escapeChars(col.title || col.field) + '" loading="lazy"';
+    return "<img" + attr + (style ? ' style="' + bny.escapeChars(style) + '"' : "") + ">";
+  }
+  function renderActionsCell(row, col) {
+    var actions = Array.isArray(col.actions) ? col.actions : [];
+    var group = col.group === true;
+    var h = '<div class="bny-table-actions">';
+    if (group) h += '<div class="bny-btn-group">';
+    var panels = "";
+    actions.forEach(function(act) {
+      if (!act || typeof act !== "object") return;
+      if (Array.isArray(act.children) && act.children.length) {
+        var dd = renderDropdownAction(act, row);
+        h += dd.trigger;
+        panels += dd.panel;
+        return;
+      }
+      var content = actionContent(act, row);
+      if (!content) return;
+      var attrs = ' class="bny-btn"';
+      attrs += ' btn-size="' + bny.escapeChars(String(act.size || "sm")) + '"';
+      attrs += ' btn-model="' + bny.escapeChars(String(act.model || "border")) + '"';
+      if (act.color) attrs += ' btn-color="' + bny.escapeChars(String(act.color)) + '"';
+      h += '<button type="button"' + attrs + buildActionAttrs(act, row) + " data-bny-action>" + content + "</button>";
+    });
+    if (group) h += "</div>";
+    h += panels;
+    h += "</div>";
+    return h;
+  }
+  function actionContent(act, row) {
+    var text = tplInterpolate(act.text || act.name || "", row, "html");
+    var icon = act.icon ? '<i class="bny-icon ' + bny.escapeChars(String(act.icon)) + '"></i>' : "";
+    if (!text && !icon) return null;
+    return icon + text;
+  }
+  function buildActionAttrs(act, row) {
+    var attrs = "";
+    if (act.title) attrs += ' title="' + bny.escapeChars(tplInterpolate(act.title, row, "html")) + '"';
+    if (act.confirm) attrs += ' data-confirm="' + bny.escapeChars(tplInterpolate(act.confirm, row, "html")) + '"';
+    if (act.event) attrs += ' data-event="' + bny.escapeChars(String(act.event)) + '"';
+    var url = act.url || act.href;
+    if (url) {
+      var method = String(act.method || "GET").toUpperCase();
+      if (["GET", "POST", "PUT", "DELETE", "PATCH"].indexOf(method) < 0) method = "GET";
+      attrs += ' data-url="' + bny.escapeChars(tplInterpolate(url, row, "url")) + '"';
+      attrs += ' data-method="' + method + '"';
+    }
+    if (act.target) attrs += ' data-target="' + bny.escapeChars(String(act.target)) + '"';
+    attrs += ' data-row="' + bny.escapeChars(JSON.stringify(row)) + '"';
+    return attrs;
+  }
+  function renderDropdownAction(act, row) {
+    var content = actionContent(act, row) || "";
+    var attrs = ' class="bny-btn"';
+    attrs += ' btn-size="' + bny.escapeChars(String(act.size || "sm")) + '"';
+    attrs += ' btn-model="' + bny.escapeChars(String(act.model || "border")) + '"';
+    if (act.color) attrs += ' btn-color="' + bny.escapeChars(String(act.color)) + '"';
+    attrs += ' title="' + bny.escapeChars(act.title ? tplInterpolate(act.title, row, "html") : "更多") + '"';
+    var items = "";
+    (Array.isArray(act.children) ? act.children : []).forEach(function(child) {
+      if (!child || typeof child !== "object") return;
+      var c = actionContent(child, row);
+      if (!c) return;
+      items += '<div class="item"><div class="trigger"' + buildActionAttrs(child, row) + " data-bny-action>" + c + "</div></div>";
+    });
+    return {
+      trigger: '<button type="button"' + attrs + " data-bny-dropdown>" + content + "</button>",
+      panel: '<div class="bny-dropdown bny-menu" menu-mode="vertical" menu-color="white">' + items + "</div>"
+    };
+  }
+  function dropdownPanelOf(trigger) {
+    var scope = trigger.parentElement && trigger.parentElement.classList.contains("bny-btn-group") ? trigger.parentElement : trigger;
+    var next = scope.nextElementSibling;
+    return next && next.classList.contains("bny-dropdown") ? next : null;
+  }
+  function openDropdown(trigger, panel) {
+    panel.style.visibility = "hidden";
+    panel.style.opacity = 0;
+    panel.classList.add("show");
+    var rect = trigger.getBoundingClientRect();
+    var pRect = panel.getBoundingClientRect();
+    var gap = 8;
+    var top, left;
+    if (window.innerHeight - rect.bottom >= pRect.height + gap || window.innerHeight - rect.bottom >= rect.top) {
+      top = rect.bottom + gap;
+      panel.classList.remove("up");
+    } else {
+      top = rect.top - pRect.height - gap;
+      panel.classList.add("up");
+    }
+    left = rect.left;
+    if (left + pRect.width > window.innerWidth - gap) left = window.innerWidth - gap - pRect.width;
+    if (left < gap) left = gap;
+    panel.style.top = top + "px";
+    panel.style.left = left + "px";
+    panel.style.visibility = "visible";
+    panel.style.opacity = 1;
+  }
+  function closeDropdownPanel(panel) {
+    panel.classList.remove("show", "up");
+    panel.style.visibility = "hidden";
+    panel.style.opacity = 0;
+  }
+  function renderTemplateCell(row, col) {
+    return tplInterpolate(col.template || "", row, "html");
+  }
+  function objectRowHtml(row, cols) {
+    var r = "<tr>";
+    cols.forEach(function(col) {
+      var attrs = tdAlignAttr(col);
+      if (colEllipsis(col)) attrs += ' class="bny-table-ellipsis" tip="点击展开"';
+      if (col.sortVal) {
+        attrs += ' table-sort-val="' + bny.escapeChars(String(getVal(row, col.sortVal))) + '"';
+      }
+      r += "<td" + attrs + ">" + renderTypedCell(row, col) + "</td>";
+    });
+    r += "</tr>";
+    return r;
+  }
+  function buildTable(data, xhr, elt) {
+    const cols = data.columns || data.cols || [];
+    const rows = data.rows || [];
+    let list = Array.isArray(data.list) ? data.list : [];
+    const color = data.color || "";
+    const emptyText = data.empty || "暂无数据";
+    const tableKey = data.key || color || "";
+    const paramName = elt && elt.getAttribute("pg-page-param") || "page";
+    const sizeParam = elt && elt.getAttribute("pg-size-param") || "pageSize";
+    const pageSize = bny.parsePageParam(xhr && xhr.responseURL, sizeParam) || parseInt(data.pageSize, 10) || parseInt(elt && elt.getAttribute("table-page-size"), 10) || 10;
+    const page = bny.parsePageParam(xhr && xhr.responseURL, paramName) || parseInt(data.page, 10) || 1;
+    const filterFields = (elt && elt.getAttribute("table-filter") || "").split(",").map(function(s) {
+      return s.trim();
+    }).filter(Boolean);
+    const conditions = [];
+    if (xhr && xhr.responseURL && filterFields.length) {
+      try {
+        new URL(xhr.responseURL).searchParams.forEach(function(v, k) {
+          if (v !== "" && filterFields.indexOf(k) >= 0) conditions.push([k, v.toLowerCase()]);
+        });
+      } catch (_) {
+      }
+    }
+    let filteredCount = null;
+    if (Array.isArray(data.allList)) {
+      let all = data.allList;
+      if (conditions.length) {
+        all = all.filter(function(row) {
+          return conditions.every(function(c) {
+            return String(getVal(row, c[0])).toLowerCase().indexOf(c[1]) >= 0;
+          });
+        });
+        filteredCount = all.length;
+      }
+      const start = (page - 1) * pageSize;
+      list = all.slice(start, start + pageSize);
+    }
+    if (!cols.length && !rows.length && !list.length) return "";
+    let h = "";
+    h += '<table hx-ext="bny-table" class="bny-table-fade"' + (color ? ' table-color="' + color + '"' : "");
+    if (tableKey) h += ' table-key="' + bny.escapeChars(tableKey) + '"';
+    h += ">";
+    const indentUnit = 20;
+    function treeRowHtml(row, cells, level) {
+      const hasKids = Array.isArray(row.children) && row.children.length > 0;
+      let r = '<tr data-tree-level="' + level + '"' + (hasKids ? ' data-tree-parent="1"' : "") + ">";
+      cells.forEach(function(cell, ci) {
+        let content = renderCell(cell);
+        if (ci === 0) {
+          content = '<span class="bny-table-tree-indent" style="padding-left:' + level * indentUnit + 'px"></span>' + (hasKids ? '<span class="bny-table-tree-toggle"><i class="bny-icon icon-caret-right"></i></span>' : "") + content;
+        }
+        r += "<td" + (ci === 0 ? ' class="bny-table-tree-cell"' : "") + ">" + content + "</td>";
+      });
+      r += "</tr>";
+      return r;
+    }
+    function appendRow(row, level) {
+      if (row && !Array.isArray(row) && typeof row === "object") {
+        if (Array.isArray(row.cells) || Array.isArray(row.children)) {
+          const hasChildren = Array.isArray(row.children) && row.children.length > 0;
+          const cells = Array.isArray(row.cells) ? row.cells : [row.cells];
+          h += treeRowHtml(row, cells, level);
+          if (hasChildren) {
+            (row.children || []).forEach(function(child) {
+              appendRow(child, level + 1);
+            });
+          }
+          return;
+        }
+        if (typeof row.__html !== "undefined" && row.__html) {
+          h += row.__html;
+          return;
+        }
+        h += '<tr data-tree-level="' + level + '">';
+        [row].forEach(function(cell, ci) {
+          let content = renderCell(cell);
+          if (ci === 0 && level > 0) {
+            content = '<span class="bny-table-tree-indent" style="padding-left:' + level * indentUnit + 'px"></span>' + content;
+          }
+          h += "<td>" + content + "</td>";
+        });
+        h += "</tr>";
+        return;
+      }
+      const vals = Array.isArray(row) ? row : [row];
+      h += '<tr data-tree-level="' + level + '">';
+      vals.forEach(function(cell, ci) {
+        let content = renderCell(cell);
+        if (ci === 0 && level > 0) {
+          content = '<span class="bny-table-tree-indent" style="padding-left:' + level * indentUnit + 'px"></span>' + content;
+        }
+        h += "<td>" + content + "</td>";
+      });
+      h += "</tr>";
+    }
+    h += "<thead><tr>";
+    cols.forEach(function(col) {
+      h += renderCol(col);
+    });
+    h += "</tr></thead>";
+    h += "<tbody>";
+    if (rows.length === 0 && list.length === 0) {
+      h += '<tr class="bny-table-empty"><td colspan="' + cols.length + '">' + bny.escapeChars(emptyText) + "</td></tr>";
+    } else {
+      rows.forEach(function(row) {
+        appendRow(row, 0);
+      });
+      list.forEach(function(row) {
+        h += objectRowHtml(row, cols);
+      });
+    }
+    h += "</tbody></table>";
+    const total = filteredCount !== null ? filteredCount : parseInt(data.total, 10);
+    if (!isNaN(total)) {
+      h += bny.paginationBar({
+        total,
+        page,
+        pageSize,
+        paramName,
+        sizeParam,
+        sizes: bny.parsePageSizes(elt && elt.getAttribute("pg-page-sizes")),
+        // 携带当前查询串（剥掉 page/pageSize），翻页/切条数时回带，保持搜索与筛选条件
+        query: bny.carryQuery(xhr && xhr.responseURL, [paramName, sizeParam]),
+        maxButtons: elt && elt.getAttribute("pg-max-buttons"),
+        jumper: elt ? elt.getAttribute("pg-jumper") !== "false" : true,
+        showTotal: elt ? elt.getAttribute("pg-total") !== "false" : true,
+        carryAttrs: carryAttrsFrom$1(elt, ["pg-color", "pg-model", "data-max-buttons", "data-jumper", "data-total", "data-page-size"])
+      });
+    }
+    return h;
+  }
+  function carryAttrsFrom$1(elt, names) {
+    var s = "";
+    if (!elt) return s;
+    names.forEach(function(n) {
+      var v = elt.getAttribute(n);
+      if (v !== null) {
+        s += " " + n + '="' + bny.escapeChars(v) + '"';
+      }
+    });
+    return s;
+  }
+  function fitActionsWidths(table) {
+    const ths = table.querySelectorAll("thead th");
+    if (!ths.length) return;
+    const rows = table.querySelectorAll("tbody tr");
+    ths.forEach(function(th, ci) {
+      if (th.style.width) return;
+      let max = 0;
+      let pad = 0;
+      rows.forEach(function(tr) {
+        const box = tr.cells[ci] && tr.cells[ci].querySelector(".bny-table-actions");
+        if (!box) return;
+        const w = box.getBoundingClientRect().width;
+        if (w > max) max = w;
+        const cs = getComputedStyle(tr.cells[ci]);
+        pad = parseFloat(cs.paddingLeft) + parseFloat(cs.paddingRight);
+      });
+      if (max > 0) th.style.width = Math.ceil(max + pad) + "px";
+    });
+  }
+  var _bnyTableTips = null;
+  var _bnyTableTipsCell = null;
+  var _bnyTableTipsTimer = null;
+  function tableTipsPanel() {
+    if (_bnyTableTips) return _bnyTableTips;
+    var panel = document.createElement("div");
+    panel.className = "bny-table-tips";
+    panel.setAttribute("role", "tooltip");
+    document.body.appendChild(panel);
+    panel.addEventListener("mouseenter", function() {
+      clearTimeout(_bnyTableTipsTimer);
+    });
+    panel.addEventListener("mouseleave", function() {
+      var sel = window.getSelection ? window.getSelection() : null;
+      if (sel && !sel.isCollapsed && panel.contains(sel.anchorNode)) return;
+      hideTableTips(120);
+    });
+    _bnyTableTips = panel;
+    return panel;
+  }
+  function showTableTips(td) {
+    var text = td.textContent.trim();
+    if (!text || td.scrollWidth <= td.clientWidth) return;
+    var panel = tableTipsPanel();
+    clearTimeout(_bnyTableTipsTimer);
+    _bnyTableTipsCell = td;
+    panel.textContent = text;
+    panel.classList.add("show");
+    panel.style.visibility = "hidden";
+    var rect = td.getBoundingClientRect();
+    var pRect = panel.getBoundingClientRect();
+    var gap = 8;
+    var top;
+    if (window.innerHeight - rect.bottom >= pRect.height + gap) {
+      top = rect.bottom + gap;
+      panel.classList.remove("up");
+    } else {
+      top = rect.top - pRect.height - gap;
+      panel.classList.add("up");
+    }
+    var left = Math.min(Math.max(gap, rect.left), window.innerWidth - gap - pRect.width);
+    panel.style.top = top + "px";
+    panel.style.left = left + "px";
+    panel.style.visibility = "visible";
+  }
+  function hideTableTips(delay) {
+    clearTimeout(_bnyTableTipsTimer);
+    _bnyTableTipsTimer = setTimeout(function() {
+      if (!_bnyTableTips) return;
+      _bnyTableTips.classList.remove("show", "up");
+      _bnyTableTipsCell = null;
+    }, delay || 0);
+  }
+  var _bnyTableTipsDelegated = false;
+  var _bnyTableTipsPinned = false;
+  function pinTableTips(td) {
+    clearTimeout(_bnyTableTipsTimer);
+    _bnyTableTipsPinned = true;
+    showTableTips(td);
+  }
+  function unpinTableTips() {
+    _bnyTableTipsPinned = false;
+    hideTableTips(0);
+  }
+  function appendZoomButtons(table) {
+    var desktop = window.matchMedia && window.matchMedia("(min-width: 768px)").matches;
+    if (!desktop) {
+      table.querySelectorAll("td.bny-table-ellipsis").forEach(function(td) {
+        var btn = td.querySelector(".bny-table-zoom");
+        if (btn) {
+          btn.remove();
+          td.classList.remove("has-zoom");
+        }
+        td.removeAttribute("tip");
+      });
+      return;
+    }
+    for (var pass = 0; pass < 2; pass++) {
+      table.querySelectorAll("td.bny-table-ellipsis").forEach(function(td) {
+        var btn = td.querySelector(".bny-table-zoom");
+        if (td.scrollWidth > td.clientWidth) {
+          if (!btn) {
+            btn = document.createElement("button");
+            btn.type = "button";
+            btn.className = "bny-table-zoom";
+            btn.setAttribute("aria-label", "查看完整内容");
+            btn.innerHTML = '<i class="bny-icon icon-zoomin"></i>';
+            td.appendChild(btn);
+            td.classList.add("has-zoom");
+          }
+          if (!td.hasAttribute("tip")) td.setAttribute("tip", "点击展开");
+        } else {
+          if (btn) {
+            btn.remove();
+            td.classList.remove("has-zoom");
+          }
+          td.removeAttribute("tip");
+        }
+      });
+    }
+  }
+  var _bnyTableZoomResizeTimer = null;
+  window.addEventListener("resize", function() {
+    clearTimeout(_bnyTableZoomResizeTimer);
+    _bnyTableZoomResizeTimer = setTimeout(function() {
+      document.querySelectorAll('table[hx-ext~="bny-table"]').forEach(appendZoomButtons);
+    }, 150);
+  });
+  if (document.fonts && document.fonts.ready) {
+    document.fonts.ready.then(function() {
+      document.querySelectorAll('table[hx-ext~="bny-table"]').forEach(appendZoomButtons);
+    }).catch(function() {
+    });
+  }
+  function setupEllipsisTipsDelegation() {
+    if (_bnyTableTipsDelegated) return;
+    _bnyTableTipsDelegated = true;
+    document.addEventListener("click", function(e) {
+      if (_bnyTableTips && _bnyTableTips.contains(e.target)) return;
+      var zoom = e.target.closest && e.target.closest(".bny-table-zoom");
+      if (zoom) {
+        e.preventDefault();
+        var td = zoom.closest("td.bny-table-ellipsis");
+        if (!td) return;
+        if (_bnyTableTipsPinned && td === _bnyTableTipsCell) unpinTableTips();
+        else pinTableTips(td);
+        return;
+      }
+      if (_bnyTableTipsPinned) unpinTableTips();
+    });
+    document.addEventListener("scroll", function(e) {
+      if (_bnyTableTips && e.target && _bnyTableTips.contains(e.target)) return;
+      unpinTableTips();
+    }, true);
+    window.addEventListener("resize", function() {
+      unpinTableTips();
+    });
+  }
+  function resolveSwapTarget(src) {
+    var sel = src.getAttribute("hx-target");
+    if (!sel) return src;
+    try {
+      return document.querySelector(sel);
+    } catch (_) {
+      return null;
+    }
+  }
+  function scheduleTableSkeleton(target, src) {
+    clearTimeout(target._bnyTableSkeletonTimer);
+    target._bnyTableSkeletonShown = false;
+    target._bnyTableSkeletonTimer = setTimeout(function() {
+      target._bnyTableSkeletonShown = true;
+      var rows = parseInt(src.getAttribute("table-page-size"), 10) || parseInt(src.getAttribute("pg-page-size"), 10) || 5;
+      rows = Math.min(Math.max(rows, 3), 10);
+      target.innerHTML = tableSkeletonHtml(rows);
+    }, 200);
+  }
+  function clearTableSkeleton(target, removeShown) {
+    if (!target || !target._bnyTableSkeletonTimer) return;
+    clearTimeout(target._bnyTableSkeletonTimer);
+    if (removeShown && target._bnyTableSkeletonShown) {
+      target.innerHTML = "";
+    }
+    target._bnyTableSkeletonShown = false;
+  }
+  function tableSkeletonHtml(rows) {
+    var widths = ["8%", "18%", "40%", "14%", "22%"];
+    var h = '<div class="bny-table-skeleton" aria-hidden="true">';
+    h += '<div class="bny-table-skeleton-head"><div class="bny-skeleton bny-table-skeleton-bar" style="width:12%"></div></div>';
+    for (var i = 0; i < rows; i++) {
+      h += '<div class="bny-table-skeleton-row">';
+      for (var j = 0; j < widths.length; j++) {
+        h += '<div class="bny-skeleton bny-table-skeleton-bar" style="width:' + widths[j] + '"></div>';
+      }
+      h += "</div>";
+    }
+    h += "</div>";
+    return h;
+  }
+  var _bnyTableActionsDelegated = false;
+  function setupActionsDelegation() {
+    if (_bnyTableActionsDelegated) return;
+    _bnyTableActionsDelegated = true;
+    document.addEventListener("click", function(e) {
+      var trigger = e.target.closest && e.target.closest(".bny-table-actions [data-bny-dropdown]");
+      if (trigger) {
+        e.preventDefault();
+        var panel = dropdownPanelOf(trigger);
+        if (!panel) return;
+        var isOpen = panel.classList.contains("show");
+        closeAllDropdownPanels();
+        if (!isOpen) openDropdown(trigger, panel);
+        return;
+      }
+      if (!e.target.closest || !e.target.closest(".bny-table-actions .bny-dropdown")) {
+        closeAllDropdownPanels();
+      }
+      var btn = e.target.closest && e.target.closest(".bny-table-actions [data-bny-action]");
+      if (!btn) return;
+      e.preventDefault();
+      runAction(btn);
+    });
+  }
+  function closeAllDropdownPanels() {
+    document.querySelectorAll(".bny-table-actions .bny-dropdown.show").forEach(closeDropdownPanel);
+  }
+  function findRequestSource(container) {
+    if (container && container.id) {
+      return document.querySelector('[hx-get][hx-target="#' + container.id + '"]');
+    }
+    return null;
+  }
+  function runAction(btn) {
+    var table = btn.closest("table");
+    var container = table ? table.parentElement : null;
+    var bar = container ? container.querySelector(":scope > .bny-pagination") : null;
+    var dd = btn.closest(".bny-dropdown");
+    if (dd) {
+      dd.classList.remove("show", "up");
+      dd.style.visibility = "hidden";
+    }
+    var confirmMsg = btn.getAttribute("data-confirm");
+    var run = function() {
+      var eventName = btn.getAttribute("data-event");
+      if (eventName) {
+        var row = null;
+        try {
+          row = JSON.parse(btn.getAttribute("data-row"));
+        } catch (_) {
+        }
+        document.dispatchEvent(new CustomEvent(eventName, {
+          detail: {
+            row,
+            page: bar ? parseInt(bar.getAttribute("pg-current"), 10) || 1 : 1
+          }
+        }));
+        return;
+      }
+      var url = btn.getAttribute("data-url");
+      if (!url || !container) return;
+      var method = (btn.getAttribute("data-method") || "GET").toUpperCase();
+      var targetSel = btn.getAttribute("data-target");
+      var src = findRequestSource(container) || table || container;
+      var target = targetSel ? document.querySelector(targetSel) : container;
+      if (!target) target = container;
+      htmx.ajax(method, url, {
+        source: src,
+        target,
+        swap: "innerHTML"
+      });
+    };
+    if (confirmMsg) {
+      bny.confirm(confirmMsg, { yes_cb: run });
+    } else {
+      run();
+    }
+  }
   htmx.defineExtension("bny-tab", {
     onEvent: function(name, evt) {
       function addMoveBtn(target) {
@@ -6642,12 +7506,12 @@
     onEvent: function(name, evt) {
       if (name === "htmx:afterProcessNode") {
         if (!bny.hasExtName(evt.target, "bny-pagination")) return false;
-        setupDelegation();
+        bny.setupPaginationDelegation();
         return false;
       }
       return true;
     },
-    // 响应转换：JSON → 分页条 HTML（数据部分保留原样由 htmx swap）
+    // 响应转换：JSON（含 total）→ 分页条 HTML（替换响应内容，数据部分由其他扩展/swap 处理）
     transformResponse: function(text, xhr, elt) {
       var ct = xhr.getResponseHeader("Content-Type") || "";
       if (!ct.includes("application/json")) return text;
@@ -6658,125 +7522,35 @@
         return text;
       }
       var data = json.data || json;
-      var total = parseInt(data.total, 10) || 0;
-      var pageSize = parseInt(data.pageSize || data.size, 10) || parseInt(elt.getAttribute("pg-page-size"), 10) || 10;
+      var total = parseInt(data.total, 10);
+      if (isNaN(total)) return text;
       var paramName = elt.getAttribute("pg-page-param") || "page";
-      var page = parsePageFromURL(xhr.responseURL, paramName) || parseInt(data.page, 10) || 1;
-      var maxButtons = parseInt(elt.getAttribute("pg-max-buttons"), 10) || 7;
-      var showJumper = elt.getAttribute("pg-jumper") !== "false";
-      var showTotal = elt.getAttribute("pg-total") !== "false";
-      var totalPages = Math.max(1, Math.ceil(total / pageSize));
-      if (page > totalPages) page = totalPages;
-      if (page < 1) page = 1;
-      var h = '<div class="bny-pagination"';
-      h += carryAttrs(elt, [
-        "color",
-        "model",
-        "data-max-buttons",
-        "data-jumper",
-        "data-total",
-        "data-page-size"
-      ]);
-      h += ' pg-current="' + page + '"';
-      h += ' pg-total-pages="' + totalPages + '"';
-      h += ' pg-page-param="' + bny.escapeChars(paramName) + '"';
-      h += ">";
-      if (showTotal) {
-        h += '<span class="bny-pagination-total">共 <em>' + total + "</em> 条</span>";
-      }
-      h += '<a class="bny-pagination-prev' + (page <= 1 ? " disabled" : "") + '"';
-      h += ' pg-page="' + Math.max(1, page - 1) + '"';
-      h += ' title="上一页"><i class="bny-icon icon-left"></i></a>';
-      var btns = computeButtons(page, totalPages, maxButtons);
-      for (var i = 0; i < btns.length; i++) {
-        var b = btns[i];
-        if (b === "...") {
-          h += '<span class="bny-pagination-ellipsis">...</span>';
-        } else {
-          h += '<a class="bny-pagination-btn' + (b === page ? " active" : "") + '"';
-          h += ' pg-page="' + b + '"';
-          h += ">" + b + "</a>";
+      var sizeParam = elt.getAttribute("pg-size-param") || "pageSize";
+      if (elt.getAttribute("pg-page-sizes") === null && elt.getAttribute("hx-target")) {
+        try {
+          var alt = document.querySelector('[hx-target="' + elt.getAttribute("hx-target") + '"][pg-page-sizes]');
+          if (alt) elt = alt;
+        } catch (_) {
         }
       }
-      h += '<a class="bny-pagination-next' + (page >= totalPages ? " disabled" : "") + '"';
-      h += ' pg-page="' + Math.min(totalPages, page + 1) + '"';
-      h += ' title="下一页"><i class="bny-icon icon-right"></i></a>';
-      if (showJumper && totalPages > 1) {
-        h += '<span class="bny-pagination-jump">';
-        h += '前往 <input type="number" class="bny-pagination-input" min="1" max="' + totalPages + '" value="' + page + '"> 页';
-        h += "</span>";
-      }
-      h += "</div>";
-      if (elt.getAttribute("pg-render-list") === "true") {
-        var list = [];
-        var columns = data.columns || [];
-        if (Array.isArray(data.allList)) {
-          var start = (page - 1) * pageSize;
-          list = data.allList.slice(start, start + pageSize);
-        } else if (Array.isArray(data.list)) {
-          list = data.list;
-        }
-        if (list.length && columns.length) {
-          return renderTable(list, columns) + h;
-        } else if (list.length) {
-          var listHtml = '<div class="bny-pagination-list">';
-          list.forEach(function(item) {
-            listHtml += '<div class="bny-pagination-list-item">' + bny.escapeChars(String(item)) + "</div>";
-          });
-          listHtml += "</div>";
-          return listHtml + h;
-        }
-      }
-      return h;
+      return bny.paginationBar({
+        total,
+        // 优先从 responseURL 解析 page/pageSize 参数（静态 JSON 测试数据也能反映点击的页码/条数）
+        page: bny.parsePageParam(xhr.responseURL, paramName) || parseInt(data.page, 10) || 1,
+        pageSize: bny.parsePageParam(xhr.responseURL, sizeParam) || parseInt(data.pageSize || data.size, 10) || elt.getAttribute("pg-page-size") || 10,
+        paramName,
+        sizeParam,
+        sizes: bny.parsePageSizes(elt.getAttribute("pg-page-sizes")),
+        // 携带当前查询串（剥掉 page/pageSize），翻页/切条数时回带，保持搜索与筛选条件
+        query: bny.carryQuery(xhr.responseURL, [paramName, sizeParam]),
+        maxButtons: elt.getAttribute("pg-max-buttons"),
+        jumper: elt.getAttribute("pg-jumper") !== "false",
+        showTotal: elt.getAttribute("pg-total") !== "false",
+        carryAttrs: carryAttrsFrom(elt, ["pg-color", "pg-model", "data-max-buttons", "data-jumper", "data-total", "data-page-size"])
+      });
     }
   });
-  function renderTable(list, columns) {
-    var h = '<table class="bny-table" style="margin-bottom:16px;">';
-    h += "<thead><tr>";
-    columns.forEach(function(col) {
-      h += "<th>" + bny.escapeChars(col.title || col.field) + "</th>";
-    });
-    h += "</tr></thead><tbody>";
-    list.forEach(function(row) {
-      h += "<tr>";
-      columns.forEach(function(col) {
-        var val = row[col.field];
-        if (val === null || val === void 0) val = "";
-        h += "<td>" + bny.escapeChars(String(val)) + "</td>";
-      });
-      h += "</tr>";
-    });
-    h += "</tbody></table>";
-    return h;
-  }
-  function computeButtons(current, total, max) {
-    if (total <= max) {
-      var arr = [];
-      for (var i = 1; i <= total; i++) arr.push(i);
-      return arr;
-    }
-    if (max < 5) max = 5;
-    var result = [];
-    var remaining = max - 2;
-    var half = Math.floor(remaining / 2);
-    var left = Math.max(2, current - half);
-    var right = Math.min(total - 1, current + half);
-    if (left <= 2) {
-      left = 2;
-      right = Math.min(total - 1, remaining + 1);
-    }
-    if (right >= total - 1) {
-      right = total - 1;
-      left = Math.max(2, total - remaining);
-    }
-    result.push(1);
-    if (left > 2) result.push("...");
-    for (var j = left; j <= right; j++) result.push(j);
-    if (right < total - 1) result.push("...");
-    result.push(total);
-    return result;
-  }
-  function carryAttrs(elt, names) {
+  function carryAttrsFrom(elt, names) {
     var s = "";
     names.forEach(function(n) {
       var v = elt.getAttribute(n);
@@ -6785,80 +7559,6 @@
       }
     });
     return s;
-  }
-  function parsePageFromURL(url, paramName) {
-    if (!url) return 0;
-    try {
-      var u = new URL(url, window.location.href);
-      var p = u.searchParams.get(paramName);
-      return parseInt(p, 10) || 0;
-    } catch (e) {
-      var re = new RegExp("[?&]" + encodeURIComponent(paramName) + "=([^&]+)");
-      var m = String(url).match(re);
-      if (m) return parseInt(decodeURIComponent(m[1]), 10) || 0;
-      return 0;
-    }
-  }
-  var _bnyPageDelegated = false;
-  function setupDelegation() {
-    if (_bnyPageDelegated) return;
-    _bnyPageDelegated = true;
-    document.addEventListener("click", function(e) {
-      var btn = e.target.closest && e.target.closest(".bny-pagination-btn, .bny-pagination-prev, .bny-pagination-next");
-      if (!btn) return;
-      var bar = btn.closest(".bny-pagination");
-      if (!bar) return;
-      if (btn.classList.contains("disabled") || btn.classList.contains("active")) {
-        e.preventDefault();
-        return;
-      }
-      var p = btn.getAttribute("pg-page");
-      if (!p) return;
-      triggerPageRequest(bar, p);
-    });
-    document.addEventListener("keydown", function(e) {
-      if (e.key !== "Enter") return;
-      var input = e.target;
-      if (!input.classList || !input.classList.contains("bny-pagination-input")) return;
-      e.preventDefault();
-      var bar = input.closest && input.closest(".bny-pagination");
-      if (!bar) return;
-      var totalPages = parseInt(bar.getAttribute("pg-total-pages"), 10) || 1;
-      var p = parseInt(input.value, 10);
-      if (isNaN(p) || p < 1) p = 1;
-      if (p > totalPages) p = totalPages;
-      triggerPageRequest(bar, String(p));
-    });
-  }
-  function triggerPageRequest(bar, page) {
-    var container = bar.parentElement;
-    var configDiv = null;
-    if (container && container.id) {
-      configDiv = document.querySelector('[hx-ext~="bny-pagination"][hx-target="#' + container.id + '"]');
-    }
-    var src = configDiv || bar;
-    var url = src.getAttribute("hx-get");
-    if (!url) return;
-    var targetSel = src.getAttribute("hx-target");
-    var swapStyle = src.getAttribute("hx-swap") || "innerHTML";
-    var paramName = src.getAttribute("pg-page-param") || "page";
-    var vals = {};
-    vals[paramName] = page;
-    var existingVals = src.getAttribute("hx-vals");
-    if (existingVals) {
-      try {
-        Object.assign(vals, JSON.parse(existingVals));
-      } catch (_) {
-      }
-    }
-    var target = targetSel ? document.querySelector(targetSel) : src;
-    if (targetSel && !target) target = src;
-    htmx.ajax("GET", url, {
-      source: src,
-      target,
-      swap: swapStyle,
-      values: vals
-    });
   }
   (function() {
     var viewer = null;
