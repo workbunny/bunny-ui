@@ -2,8 +2,16 @@
  * bny-attr — 声明式属性管理扩展（减少为追加/修改/删除属性而写 JS）
  *
  * 在带此扩展的元素上声明要做的操作，扩展按触发时机把变更应用到目标元素：
- * - 目标：默认扩展元素自身；也可用 attr-target="#id" 指定
- * - 触发：默认 click；可用 attr-trigger="change|mouseenter|..." 指定；
+ * - 目标：默认扩展元素自身；用 hx-target="#id" 指定（与 htmx 命名一致），
+ *         支持 htmx 选择器语法 "find x" / "closest x"；支持一对多：
+ *         逗号分隔多目标或 "all x" 批量选取；每次应用时实时解析目标，
+ *         动态插入/替换的节点也能找到
+ *         （元素自身带请求属性时 hx-target 归 htmx 交换所有，须单个目标）
+ * - 触发：默认 click；用 hx-trigger="change|mouseenter|..." 指定（与 htmx 命名一致），
+ *         逗号分隔可多个，每个取首个词为事件名（忽略 changed/
+ *         delay: 等修饰符），"load" = 初始化应用一次；也可填 htmx 事件名如 htmx:afterSwap
+ * - 请求：元素自身携带 hx-get / hx-post 等请求属性时，请求完成后自动应用
+ *         （含 attr-json 响应写入），无需再声明触发事件；hx-trigger 归 htmx 请求触发所有
  *         加 attr-auto 则在初始化即应用一次（不做事件绑定）
  * - 操作（DSL），多个键值用逗号分隔，每对 "name:value"：
  *     attr-set="name:value"      整体设置 attr 值（覆盖全值；适合单值属性）
@@ -20,52 +28,82 @@
  *
  * 安全（防注入）：写操作拒绝事件处理属性名（on*）与危险协议值（javascript:/vbscript:），
  *               attr 值若来自服务端/用户输入不会被执行任意脚本。
+ * 表单控件：写 checkbox/radio 的 checked、input/textarea 的 value、option 的 selected 时
+ *           同步 DOM property——用户交互过（浏览器 dirty 标志置位）后 attribute 变化
+ *           不再反映到视觉，同步保证操作始终生效（如全选/反选）
  *
  * 用法示例：
- *   <button hx-ext="bny-attr" attr-target="#dialog" attr-add="class:open">打开</button>
+ *   <button hx-ext="bny-attr" hx-target="#dialog" attr-add="class:open">打开</button>
  *   <div hx-ext="bny-attr" attr-auto attr-set="aria-busy:false, data-state:ready"></div>
+ *   <div hx-ext="bny-attr" hx-get="/api/status" hx-swap="none" attr-json="data" hx-target="#box">…</div>
  */
 htmx.defineExtension('bny-attr', {
     onEvent: function (name, evt) {
+        // 元素自身请求完成：自动应用（含 attr-json 响应写入），无需声明触发事件
+        if (name === 'htmx:afterRequest') {
+            const req = evt.target;
+            if (req && req._bnyAttrInit && evt.detail && evt.detail.elt === req && req._bnyAttrApply) {
+                req._bnyAttrApply(evt.detail.xhr);
+            }
+            return true;
+        }
         if (name !== 'htmx:afterProcessNode') return true;
         const el = evt.target;
         if (!bny.hasExtName(el, 'bny-attr')) return true;
         if (el._bnyAttrInit) return true;
         el._bnyAttrInit = true;
 
-        // 收集声明的操作属性（随项目规范：hx-ext="bny-attr"，属性用 attr-* 前缀）
+        // 收集声明的操作属性（随项目规范：hx-ext="bny-attr"，操作用 attr-* 前缀）
         const opAttrs = ['attr-set', 'attr-add', 'attr-remove', 'attr-toggle', 'attr-rename', 'attr-replace']
             .filter(function (a) { return el.hasAttribute(a); });
         const hasJson = el.hasAttribute('attr-json');
         // 无任何操作且无 attr-json（数据驱动）时，无需绑定
         if (!opAttrs.length && !hasJson) return true;
 
-        // 目标元素（默认自身）
-        const target = resolveTarget(el);
-
-        // 统一应用所有操作（应用后向目标派发 attr-applied，便于读取/联动）
-        const applyAll = function () {
-            opAttrs.forEach(function (opAttr) { applyOp(el, opAttr, target); });
-            if (target && document.dispatchEvent) {
-                target.dispatchEvent(new CustomEvent('attr-applied', { bubbles: true, detail: { by: el } }));
-            }
+        // 统一应用所有操作：每次触发实时解析目标（动态节点也能找到）；
+        // 目标可一对多（hx-target 逗号分隔多选择器 / all 前缀批量选取）；
+        // 应用后向每个目标派发 attr-applied，便于读取/联动
+        el._bnyAttrApply = function (xhr) {
+            resolveTargets(el).forEach(function (target) {
+                const jsonPath = el.getAttribute('attr-json');
+                if (jsonPath !== null && xhr) {
+                    applyJsonFromResponse(target, jsonPath, xhr, el.getAttribute('attr-value'));
+                }
+                opAttrs.forEach(function (opAttr) { applyOp(el, opAttr, target); });
+                if (target && target.dispatchEvent) {
+                    target.dispatchEvent(new CustomEvent('attr-applied', { bubbles: true, detail: { by: el } }));
+                }
+            });
         };
 
         // 初始化即应用一次
         if (el.hasAttribute('attr-auto')) {
-            applyAll();
+            el._bnyAttrApply();
         }
 
-        // 事件触发
-        const trigger = el.getAttribute('attr-trigger') || 'click';
-        el.addEventListener(trigger, function (e) {
-            // 根据响应 JSON 管理属性：attr-json 指定路径；
-            // + attr-value="目标属性" 把该路径的【值】写入目标属性；否则把该路径【对象的键值】批量写入目标
-            const jsonPath = el.getAttribute('attr-json');
-            if (jsonPath !== null && e && e.detail && e.detail.xhr) {
-                applyJsonFromResponse(target, jsonPath, e.detail.xhr, el.getAttribute('attr-value'));
+        // 请求元素：hx-trigger 归 htmx 请求触发所有，应用挂在自身请求完成后（见上）
+        const isRequester = ['hx-get', 'hx-post', 'hx-put', 'hx-delete', 'hx-patch']
+            .some(function (a) { return el.hasAttribute(a); });
+        if (isRequester) return true;
+
+        // 触发：hx-trigger（与 htmx 命名一致），缺省 click。
+        // 逗号分隔多个触发，每个取首个词为事件名（忽略 changed/delay: 等修饰符）；
+        // "load" = 初始化应用一次
+        const triggerAttr = el.getAttribute('hx-trigger');
+        const specs = String(triggerAttr || 'click').split(',');
+        const bound = {};
+        specs.forEach(function (spec) {
+            const ev = (spec || '').trim().split(/\s+/)[0];
+            if (!ev || bound[ev]) return;
+            bound[ev] = true;
+            if (ev === 'load') {
+                el._bnyAttrApply();
+                return;
             }
-            applyAll();
+            el.addEventListener(ev, function (e) {
+                // htmx 事件（如 afterRequest/afterSwap 冒泡到此处）可携带 xhr，供 attr-json 使用
+                el._bnyAttrApply(e && e.detail ? e.detail.xhr : undefined);
+            });
         });
 
         return true;
@@ -73,17 +111,42 @@ htmx.defineExtension('bny-attr', {
 });
 
 /**
- * 解析目标元素：attr-target 选择器；缺省为扩展元素自身
+ * 解析目标元素列表：hx-target 支持一对多——
+ *   · 逗号分隔多个目标片段，逐个解析后按出现顺序去重合并
+ *   · 每个片段支持 htmx 选择器语法 "find x" / "closest x"（相对扩展元素）
+ *   · 新增 "all x" 前缀：document.querySelectorAll 批量选取（含动态节点）
+ *   · 普通选择器：先匹配祖先再全局查找单个
+ * 每次应用时调用，目标元素动态插入/替换后依然有效；缺省为扩展元素自身
+ * 注意：元素自身带请求属性（hx-get/post…）时 hx-target 归 htmx 交换所有，须单个目标；
+ *       一对多写法用于纯 attr 元素
  * @param {HTMLElement} el
- * @returns {HTMLElement}
+ * @returns {HTMLElement[]}
  */
-function resolveTarget(el) {
-    const sel = el.getAttribute('attr-target');
-    if (typeof sel === 'string' && sel.trim()) {
-        const t = el.closest(sel) || document.querySelector(sel.trim());
-        if (t) return t;
-    }
-    return el;
+function resolveTargets(el) {
+    const raw = el.getAttribute('hx-target');
+    if (raw === null || !String(raw).trim()) return [el];
+    const found = [];
+    String(raw).split(',').forEach(function (spec) {
+        spec = spec.trim();
+        if (!spec) return;
+        let nodes = [];
+        try {
+            if (spec.indexOf('find ') === 0) {
+                const t = el.querySelector(spec.slice(5));
+                if (t) nodes = [t];
+            } else if (spec.indexOf('closest ') === 0) {
+                const t = el.closest(spec.slice(8));
+                if (t) nodes = [t];
+            } else if (spec.indexOf('all ') === 0) {
+                nodes = Array.prototype.slice.call(document.querySelectorAll(spec.slice(4)));
+            } else {
+                const t = el.closest(spec) || document.querySelector(spec);
+                if (t) nodes = [t];
+            }
+        } catch (e) { nodes = []; }
+        nodes.forEach(function (n) { if (n && found.indexOf(n) === -1) found.push(n); });
+    });
+    return found.length ? found : [el];
 }
 
 /**
@@ -147,7 +210,7 @@ function applyJsonFromResponse(target, attrJson, xhr, valueAttr) {
         if (/^on/i.test(valueAttr)) { console.warn('[bny-attr] 已拦截 json 事件属性:', valueAttr); return; }
         const val = String(src == null ? '' : src);
         if (/^(javascript|vbscript):/i.test(val.trim())) { console.warn('[bny-attr] 已拦截 json 危险值:', val); return; }
-        try { target.setAttribute(valueAttr, val); } catch (_) { }
+        try { attrSet(target, valueAttr, val); } catch (_) { }
         return;
     }
 
@@ -160,7 +223,7 @@ function applyJsonFromResponse(target, attrJson, xhr, valueAttr) {
         if (/^on/i.test(k)) { console.warn('[bny-attr] 已拦截 json 事件属性:', k); return; }
         const v = String(src[k]);
         if (/^(javascript|vbscript):/i.test(v.trim())) { console.warn('[bny-attr] 已拦截 json 危险值:', v); return; }
-        try { target.setAttribute(k, v); } catch (_) { }
+        try { attrSet(target, k, v); } catch (_) { }
     });
 }
 
@@ -188,6 +251,39 @@ function resolveJsonPath(obj, path) {
 }
 
 /**
+ * 表单控件 attribute → property 同步：
+ * checkbox/radio 的 checked、input/textarea 的 value、option 的 selected 存在
+ * 浏览器"dirty 标志"——用户交互过（点击/输入）后，content attribute 的变化
+ * 不再反映到控件状态（视觉冻结），attr-* 操作看似失效。
+ * 显式写 attribute 后同步 property，保证操作始终生效
+ * @param {HTMLElement} target
+ * @param {string} key 刚写入/移除的属性名
+ */
+function syncFormProp(target, key) {
+    if (!target || !target.tagName) return;
+    const tag = target.tagName;
+    if (key === 'checked' && tag === 'INPUT' && (target.type === 'checkbox' || target.type === 'radio')) {
+        target.checked = target.hasAttribute('checked');
+    } else if (key === 'value' && (tag === 'INPUT' || tag === 'TEXTAREA')) {
+        target.value = target.hasAttribute('value') ? target.getAttribute('value') : target.defaultValue;
+    } else if (key === 'selected' && tag === 'OPTION') {
+        target.selected = target.hasAttribute('selected');
+    }
+}
+
+/** setAttribute + 表单 property 同步（bny-attr 内部统一入口） */
+function attrSet(target, key, value) {
+    target.setAttribute(key, value);
+    syncFormProp(target, key);
+}
+
+/** removeAttribute + 表单 property 同步 */
+function attrRemove(target, key) {
+    target.removeAttribute(key);
+    syncFormProp(target, key);
+}
+
+/**
  * 对目标应用单条操作（含注入防护）
  * - 拒绝事件处理属性名（onclick/onerror 等）与改名目标为 on*
  * - 拒绝危险协议值（javascript:/vbscript:）
@@ -210,7 +306,7 @@ function applyOne(target, op, key, value) {
     }
     switch (op) {
         case 'set':
-            target.setAttribute(key, value);
+            attrSet(target, key, value);
             break;
         case 'add': {
             // 多值批量增（值内空格分隔多个 token，各自不重复）
@@ -218,27 +314,27 @@ function applyOne(target, op, key, value) {
             const addTokens = value.split(/\s+/).filter(Boolean);
             const addArr = target.hasAttribute(key) ? (target.getAttribute(key) || '').split(/\s+/) : [];
             addTokens.forEach(function (t) { if (t && addArr.indexOf(t) === -1) addArr.push(t); });
-            target.setAttribute(key, addArr.join(' '));
+            attrSet(target, key, addArr.join(' '));
             break;
         }
         case 'remove': {
             if (!value) {
-                target.removeAttribute(key);
+                attrRemove(target, key);
                 break;
             }
             if (!target.hasAttribute(key)) break;
             const rmTokens = value.split(/\s+/).filter(Boolean);
             const remain = (target.getAttribute(key)).split(/\s+/).filter(function (t) { return rmTokens.indexOf(t) === -1; });
-            if (remain.length) target.setAttribute(key, remain.join(' '));
-            else target.removeAttribute(key);
+            if (remain.length) attrSet(target, key, remain.join(' '));
+            else attrRemove(target, key);
             break;
         }
         case 'rename': {
             // 改属性名：old:new（值保留）
             if (key && value && target.hasAttribute(key)) {
                 const saved = target.getAttribute(key);
-                target.removeAttribute(key);
-                target.setAttribute(value, saved);
+                attrRemove(target, key);
+                attrSet(target, value, saved);
             }
             break;
         }
@@ -255,23 +351,23 @@ function applyOne(target, op, key, value) {
                     if (i > -1) repArr[i] = n;
                 }
             });
-            target.setAttribute(key, repArr.join(' '));
+            attrSet(target, key, repArr.join(' '));
             break;
         }
         case 'toggle': {
             if (!target.hasAttribute(key)) {
-                target.setAttribute(key, value);
+                attrSet(target, key, value);
             } else if (value) {
                 const cur = target.getAttribute(key);
                 if (cur.split(/\s+/).indexOf(value) > -1) {
                     const arr = cur.split(/\s+/).filter(function (t) { return t !== value; });
-                    if (arr.length) target.setAttribute(key, arr.join(' '));
-                    else target.removeAttribute(key);
+                    if (arr.length) attrSet(target, key, arr.join(' '));
+                    else attrRemove(target, key);
                 } else {
-                    target.setAttribute(key, (cur ? cur + ' ' : '') + value);
+                    attrSet(target, key, (cur ? cur + ' ' : '') + value);
                 }
             } else {
-                target.removeAttribute(key);
+                attrRemove(target, key);
             }
             break;
         }

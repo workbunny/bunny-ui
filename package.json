@@ -1,7 +1,8 @@
 {
     "scripts": {
         "debug": "vite build --debug",
-        "build": "vite build"
+        "build": "vite build",
+        "test:select": "node test/select.spec.js"
     },
     "devDependencies": {
         "terser": "^5.46.0",

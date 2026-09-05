@@ -281,8 +281,15 @@ table.bny-table-fade + .bny-pagination {
 
 /* ========== 树形表格 ========== */
 
-/* 展开箭头（图标版，可点击）与层级缩进占位 */
+/* 展开箭头（图标版，可点击）与层级缩进占位。
+   视觉对齐既有组件的展开箭头（collapse 的 ::before、分页条的 prev/next）：
+   icon-right 裸图标，静息 --black-shallow、悬停转主题色 --default；
+   button 仅作点击热区，不带底色方框 */
 .bny-table-tree-toggle {
+    /* 重置 UA button 默认样式（buttonface 底色/边框/内边距），仅保留点击热区 */
+    background: none;
+    border: none;
+    padding: 0;
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -291,24 +298,22 @@ table.bny-table-fade + .bny-pagination {
     margin: -3px 2px -3px -4px;
     cursor: pointer;
     user-select: none;
-    color: var(--default-middle);
+    color: var(--black-shallow);
     vertical-align: middle;
-    border-radius: var(--border-radius-sm);
 
     &:hover {
-        background-color: var(--default-alpha-10);
         color: var(--default);
     }
 
     & i {
-        font-size: 12px;
-        transition: transform var(--transition-fast);
+        font-size: var(--font-size-16);
+        transition: var(--transition);
         /* 默认展开态：朝下 */
         transform: rotate(90deg);
     }
 }
 
-/* 折叠态：箭头朝右（icon-caret-right 原位） */
+/* 折叠态：箭头朝右（icon-right 原位） */
 tr.tree-collapsed .bny-table-tree-toggle i {
     transform: rotate(0deg);
 }

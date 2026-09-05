@@ -1,0 +1,576 @@
+<div class="bny-row">
+    <div class="text-content-box col-xs12 col-sm9">
+        <div class="text-content">
+            <h1>选择框</h1>
+            <hr>
+            <blockquote class="bny-blockquote">
+                基于 htmx 拓展 <code>bny-select</code> 的多功能选择框：单选、多选、树形单选、树形多选（父子联动）、禁用。
+                推荐 <code>&lt;ul hx-ext="bny-select"&gt;</code> 直接承载（<b>ul 本身变身组件</b>，子 li 即选项）；
+                也支持<b>原生 select 渐进增强</b>或 <code>hx-get</code> 拉取服务端数据（HTML 片段 / JSON 自动识别）；
+                值写入视觉隐藏的值域元素（多选逗号合并，如 <code>tags=1,2,3</code>），
+                与 <code>bny-form</code> 校验、htmx 表单序列化零改动协作。
+            </blockquote>
+
+            <!-- ========== n01 基础单选 ========== -->
+            <h2 id="n01">基础单选</h2>
+            <div class="bny-card">
+                <div hx-ext="bny-tab">
+                    <ul class="head">
+                        <li>Preview</li>
+                        <li>Code</li>
+                    </ul>
+                    <div class="body">
+                        <div>
+                            <div class="p-12">
+                                <p style="margin:0 0 12px; font-size:13px; color:var(--black-shallow);">
+                                    选项静态直写，点击选项回显到触发框并自动收起面板。
+                                </p>
+                                <ul id="sel-basic" hx-ext="bny-select" select-name="city"
+                                    select-placeholder="请选择城市" style="max-width:320px;">
+                                    <li option-value="1">北京</li>
+                                    <li option-value="2">上海</li>
+                                    <li option-value="3" option-disabled>天津（停用）</li>
+                                    <li option-value="4">广州</li>
+                                    <li option-value="5">深圳</li>
+                                </ul>
+                                <p class="select-value-view">值域：<b data-view="sel-basic">（空）</b></p>
+                            </div>
+                        </div>
+                        <div>
+                            <pre hx-ext="bny-code">
+&lt;ul hx-ext="bny-select" select-name="city" select-placeholder="请选择城市"&gt;
+    &lt;li option-value="1"&gt;北京&lt;/li&gt;
+    &lt;li option-value="2"&gt;上海&lt;/li&gt;
+    &lt;li option-value="3" option-disabled&gt;天津（停用）&lt;/li&gt;
+&lt;/ul&gt;
+</pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ========== n02 多选 ========== -->
+            <h2 id="n02">多选</h2>
+            <div class="bny-card">
+                <div hx-ext="bny-tab">
+                    <ul class="head">
+                        <li>Preview</li>
+                        <li>Code</li>
+                    </ul>
+                    <div class="body">
+                        <div>
+                            <div class="p-12">
+                                <p style="margin:0 0 12px; font-size:13px; color:var(--black-shallow);">
+                                    <code>select-multiple</code> 开启多选：已选项以 chips 回显、可单个移除，值逗号合并提交。
+                                    <code>select-max</code> 限制上限，<code>select-clearable</code> 显示清空按钮。
+                                </p>
+                                <ul id="sel-multi" hx-ext="bny-select" select-name="tags" select-multiple
+                                    select-max="3" select-clearable select-value="1"
+                                    select-placeholder="请选择标签（最多 3 个）" style="max-width:360px;">
+                                    <li option-value="1">前端</li>
+                                    <li option-value="2">后端</li>
+                                    <li option-value="3">运维</li>
+                                    <li option-value="4">测试</li>
+                                    <li option-value="5">产品</li>
+                                </ul>
+                                <p class="select-value-view">值域：<b data-view="sel-multi">（空）</b></p>
+                            </div>
+                        </div>
+                        <div>
+                            <pre hx-ext="bny-code">
+&lt;ul hx-ext="bny-select" select-name="tags" select-multiple
+    select-max="3" select-clearable select-value="1"
+    select-placeholder="请选择标签（最多 3 个）"&gt;
+    &lt;li option-value="1"&gt;前端&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;!-- 提交格式：tags=1,2,3 --&gt;
+</pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ========== n03 禁用 ========== -->
+            <h2 id="n03">禁用</h2>
+            <div class="bny-card">
+                <div hx-ext="bny-tab">
+                    <ul class="head">
+                        <li>Preview</li>
+                        <li>Code</li>
+                    </ul>
+                    <div class="body">
+                        <div>
+                            <div class="p-12">
+                                <p style="margin:0 0 12px; font-size:13px; color:var(--black-shallow);">
+                                    <code>select-disabled</code> 禁用：不可展开，值域同步 <code>disabled</code>（bny-form 跳过校验、表单不提交）。
+                                </p>
+                                <ul id="sel-disabled" hx-ext="bny-select" select-name="locked" select-disabled
+                                    select-value="2" select-placeholder="禁用状态" style="max-width:320px;">
+                                    <li option-value="1">选项一</li>
+                                    <li option-value="2">选项二</li>
+                                </ul>
+                                <p class="select-value-view">值域：<b data-view="sel-disabled">（空）</b></p>
+                            </div>
+                        </div>
+                        <div>
+                            <pre hx-ext="bny-code">
+&lt;ul hx-ext="bny-select" select-name="locked" select-disabled select-value="2"&gt;
+    &lt;li option-value="1"&gt;选项一&lt;/li&gt;
+&lt;/ul&gt;
+</pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ========== n04 树形单选 ========== -->
+            <h2 id="n04">树形单选</h2>
+            <div class="bny-card">
+                <div hx-ext="bny-tab">
+                    <ul class="head">
+                        <li>Preview</li>
+                        <li>Code</li>
+                    </ul>
+                    <div class="body">
+                        <div>
+                            <div class="p-12">
+                                <p style="margin:0 0 12px; font-size:13px; color:var(--black-shallow);">
+                                    <code>select-tree</code> 开启树形：选项用 <code>option-parent</code> 引用父级的
+                                    <code>option-value</code> 表达层级，缩进与折叠箭头由组件注入
+                                    （服务端片段无需关心顺序与缩进），点箭头折叠/展开后代，任意层级均可选择。
+                                </p>
+                                <ul id="sel-tree" hx-ext="bny-select" select-name="dept" select-tree
+                                    select-placeholder="请选择部门" style="max-width:320px;"
+                                    hx-get="/test/data/select-tree.html"></ul>
+                                <p class="select-value-view">值域：<b data-view="sel-tree">（空）</b></p>
+                            </div>
+                        </div>
+                        <div>
+                            <pre hx-ext="bny-code">
+&lt;ul hx-ext="bny-select" select-name="dept" select-tree
+    select-placeholder="请选择部门"
+    hx-get="/test/data/select-tree.html"&gt;&lt;/ul&gt;
+
+&lt;!-- 服务端片段：option-parent 引用父级 option-value（顺序无关，按引用还原树形） --&gt;
+&lt;li option-value="10"&gt;总部&lt;/li&gt;
+&lt;li option-value="11" option-parent="10"&gt;研发中心&lt;/li&gt;
+&lt;li option-value="12" option-parent="11"&gt;前端组&lt;/li&gt;
+</pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ========== n05 树形多选（父子联动） ========== -->
+            <h2 id="n05">树形多选（父子联动）</h2>
+            <div class="bny-card">
+                <div hx-ext="bny-tab">
+                    <ul class="head">
+                        <li>Preview</li>
+                        <li>Code</li>
+                    </ul>
+                    <div class="body">
+                        <div>
+                            <div class="p-12">
+                                <p style="margin:0 0 12px; font-size:13px; color:var(--black-shallow);">
+                                    <code>select-tree</code> + <code>select-multiple</code>：勾选父节点自动全选后代，
+                                    取消任一后代后祖先显示<b>半选</b>状态；<code>select-tree-strict</code> 可关闭联动。
+                                </p>
+                                <ul id="sel-tree-multi" hx-ext="bny-select" select-name="depts" select-tree
+                                    select-multiple select-clearable select-placeholder="请选择部门（可多选）"
+                                    style="max-width:400px;" hx-get="/test/data/select-tree.html"></ul>
+                                <p class="select-value-view">值域：<b data-view="sel-tree-multi">（空）</b></p>
+                            </div>
+                        </div>
+                        <div>
+                            <pre hx-ext="bny-code">
+&lt;ul hx-ext="bny-select" select-name="depts" select-tree select-multiple
+    select-clearable select-placeholder="请选择部门（可多选）"
+    hx-get="/test/data/select-tree.html"&gt;&lt;/ul&gt;
+</pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ========== n06 树形多选（关闭联动） ========== -->
+            <h2 id="n06">树形多选（关闭联动）</h2>
+            <div class="bny-card">
+                <div hx-ext="bny-tab">
+                    <ul class="head">
+                        <li>Preview</li>
+                        <li>Code</li>
+                    </ul>
+                    <div class="body">
+                        <div>
+                            <div class="p-12">
+                                <p style="margin:0 0 12px; font-size:13px; color:var(--black-shallow);">
+                                    加 <code>select-tree-strict</code> 后父子互不牵连，勾选只作用于当前节点本身。
+                                </p>
+                                <ul id="sel-tree-strict" hx-ext="bny-select" select-name="depts2" select-tree
+                                    select-multiple select-tree-strict select-placeholder="请选择部门（独立勾选）"
+                                    style="max-width:400px;" hx-get="/test/data/select-tree.html"></ul>
+                                <p class="select-value-view">值域：<b data-view="sel-tree-strict">（空）</b></p>
+                            </div>
+                        </div>
+                        <div>
+                            <pre hx-ext="bny-code">
+&lt;ul hx-ext="bny-select" select-name="depts2" select-tree select-multiple
+    select-tree-strict hx-get="/test/data/select-tree.html"&gt;&lt;/ul&gt;
+</pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ========== n07 远程 JSON 选项 ========== -->
+            <h2 id="n07">远程选项（JSON / 片段）</h2>
+            <div class="bny-card">
+                <div hx-ext="bny-tab">
+                    <ul class="head">
+                        <li>Preview</li>
+                        <li>Code</li>
+                    </ul>
+                    <div class="body">
+                        <div>
+                            <div class="p-12">
+                                <p style="margin:0 0 12px; font-size:13px; color:var(--black-shallow);">
+                                    <code>hx-get</code> 声明选项源，<b>首次展开面板时自动请求一次</b>；
+                                    响应为 JSON 数组或 HTML 片段自动识别渲染（JSON 支持 <code>{data:[...]}</code> 包装自动解包）。
+                                </p>
+                                <ul id="sel-remote" hx-ext="bny-select" select-name="cityJson" select-multiple
+                                    select-clearable select-placeholder="请选择城市（远程 JSON）" style="max-width:360px;"
+                                    hx-get="/test/data/select-options.json"></ul>
+                                <p class="select-value-view">值域：<b data-view="sel-remote">（空）</b></p>
+                            </div>
+                        </div>
+                        <div>
+                            <pre hx-ext="bny-code">
+&lt;ul hx-ext="bny-select" select-name="cityJson" select-multiple
+    hx-get="/test/data/select-options.json"&gt;&lt;/ul&gt;
+
+&lt;!-- JSON 契约：字符串 / 对象 / 分组 / 树形父节点 --&gt;
+[
+  "北京",
+  {"value": "2", "label": "上海"},
+  {"label": "华东", "children": [
+    {"value": "3", "label": "杭州"},
+    {"value": "4", "label": "苏州", "disabled": true}
+  ]},
+  {"value": "5", "label": "广东省", "children": [
+    {"value": "6", "label": "深圳"}
+  ]}
+]
+</pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ========== n08 原生 select 渐进增强 ========== -->
+            <h2 id="n08">原生 select 渐进增强</h2>
+            <div class="bny-card">
+                <div hx-ext="bny-tab">
+                    <ul class="head">
+                        <li>Preview</li>
+                        <li>Code</li>
+                    </ul>
+                    <div class="body">
+                        <div>
+                            <div class="p-12">
+                                <p style="margin:0 0 12px; font-size:13px; color:var(--black-shallow);">
+                                    直接写在原生 <code>&lt;select&gt;</code> 上：组件读取 <code>option</code> / <code>optgroup</code>
+                                    作为选项，原生 select 继续充当值域（name、required、表单序列化完全不变）。
+                                </p>
+                                <select id="sel-native" hx-ext="bny-select" select-tree select-multiple
+                                    name="nativeCity" style="max-width:320px;">
+                                    <option value="1">北京</option>
+                                    <option value="2">上海</option>
+                                    <optgroup label="华南地区">
+                                        <option value="3">广州</option>
+                                        <option value="4">深圳</option>
+                                    </optgroup>
+                                </select>
+                                <p class="select-value-view">值域：<b data-view="sel-native">（空）</b></p>
+                            </div>
+                        </div>
+                        <div>
+                            <pre hx-ext="bny-code">
+&lt;select hx-ext="bny-select" select-tree select-multiple name="nativeCity"&gt;
+    &lt;option value="1"&gt;北京&lt;/option&gt;
+    &lt;optgroup label="华南地区"&gt;
+        &lt;option value="3"&gt;广州&lt;/option&gt;
+    &lt;/optgroup&gt;
+&lt;/select&gt;
+</pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ========== n09 尺寸 ========== -->
+            <h2 id="n09">尺寸</h2>
+            <div class="bny-card">
+                <div hx-ext="bny-tab">
+                    <ul class="head">
+                        <li>Preview</li>
+                        <li>Code</li>
+                    </ul>
+                    <div class="body">
+                        <div>
+                            <div class="p-12">
+                                <p style="margin:0 0 12px; font-size:13px; color:var(--black-shallow);">
+                                    沿用表单统一的 <code>form-size</code>：sm 30px / 默认 35px / lg 46px。
+                                </p>
+                                <div style="max-width:280px; display:flex; flex-direction:column; gap:10px;">
+                                    <ul hx-ext="bny-select" form-size="sm" select-name="s1"
+                                        select-placeholder="form-size=sm">
+                                        <li option-value="1">选项一</li>
+                                        <li option-value="2">选项二</li>
+                                    </ul>
+                                    <ul hx-ext="bny-select" select-name="s2" select-placeholder="默认尺寸 35px">
+                                        <li option-value="1">选项一</li>
+                                        <li option-value="2">选项二</li>
+                                    </ul>
+                                    <ul hx-ext="bny-select" form-size="lg" select-name="s3"
+                                        select-placeholder="form-size=lg">
+                                        <li option-value="1">选项一</li>
+                                        <li option-value="2">选项二</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <pre hx-ext="bny-code">
+&lt;ul hx-ext="bny-select" form-size="sm" select-name="s1"&gt;
+    &lt;li option-value="1"&gt;选项一&lt;/li&gt;
+&lt;/ul&gt;
+&lt;ul hx-ext="bny-select" select-name="s2"&gt;...&lt;/ul&gt;
+&lt;ul hx-ext="bny-select" form-size="lg" select-name="s3"&gt;...&lt;/ul&gt;
+</pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ========== n10 配合 bny-form 校验 ========== -->
+            <h2 id="n10">配合 bny-form 校验</h2>
+            <div class="bny-card">
+                <div hx-ext="bny-tab">
+                    <ul class="head">
+                        <li>Preview</li>
+                        <li>Code</li>
+                    </ul>
+                    <div class="body">
+                        <div>
+                            <div class="p-12">
+                                <p style="margin:0 0 12px; font-size:13px; color:var(--black-shallow);">
+                                    <code>select-required</code> 透传 required 到值域，空值提交时 bny-form 拦截，
+                                    红框投射到触发框；选中后自动清除错误。
+                                </p>
+                                <form hx-ext="bny-form" valid-alert style="max-width:360px;">
+                                    <div class="form-item">
+                                        <label>城市（必选）</label>
+                                        <ul id="sel-form" hx-ext="bny-select" select-name="city3" select-required
+                                            valid-msg-required="请选择城市" select-placeholder="请选择城市">
+                                            <li option-value="1">北京</li>
+                                            <li option-value="2">上海</li>
+                                            <li option-value="3">广州</li>
+                                        </ul>
+                                    </div>
+                                    <button class="bny-btn" type="submit" btn-color="blue">提交</button>
+                                </form>
+                            </div>
+                        </div>
+                        <div>
+                            <pre hx-ext="bny-code">
+&lt;form hx-ext="bny-form" valid-alert&gt;
+  &lt;div class="form-item"&gt;
+    &lt;label&gt;城市（必选）&lt;/label&gt;
+    &lt;ul hx-ext="bny-select" select-name="city3" select-required
+        valid-msg-required="请选择城市"&gt;
+        &lt;li option-value="1"&gt;北京&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/div&gt;
+  &lt;button class="bny-btn" type="submit"&gt;提交&lt;/button&gt;
+&lt;/form&gt;
+</pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ========== n11 API ========== -->
+            <h2 id="n11">API</h2>
+            <div class="bny-card">
+                <table hx-ext="bny-table" style="width:100%;">
+                    <thead>
+                        <tr>
+                            <th>属性（声明在扩展元素上）</th>
+                            <th>说明</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>select-name="字段名"</td>
+                            <td><b>必填</b>（原生 select 承载时改用原生 name）：值域字段名，多选逗号合并提交</td>
+                        </tr>
+                        <tr>
+                            <td>select-value="1,3"</td>
+                            <td>初始值，逗号分隔；优先级高于片段/JSON 上的 option-selected / selected</td>
+                        </tr>
+                        <tr>
+                            <td>select-placeholder="文本"</td>
+                            <td>占位文本，缺省"请选择"</td>
+                        </tr>
+                        <tr>
+                            <td>select-multiple</td>
+                            <td>多选：chips 回显、可逐个移除，值逗号合并</td>
+                        </tr>
+                        <tr>
+                            <td>select-max="5"</td>
+                            <td>多选上限，超出时静默忽略新增</td>
+                        </tr>
+                        <tr>
+                            <td>select-tree</td>
+                            <td>树形：option-parent 引用父级或 JSON children 表达层级，可折叠</td>
+                        </tr>
+                        <tr>
+                            <td>select-tree-strict</td>
+                            <td>树形下关闭父子联动（默认勾父全选子、祖先半选）</td>
+                        </tr>
+                        <tr>
+                            <td>select-clearable</td>
+                            <td>有值时显示清空按钮</td>
+                        </tr>
+                        <tr>
+                            <td>select-disabled</td>
+                            <td>禁用：不可展开，值域同步 disabled</td>
+                        </tr>
+                        <tr>
+                            <td>select-required</td>
+                            <td>透传 required 到值域（bny-form 校验）</td>
+                        </tr>
+                        <tr>
+                            <td>select-empty="文本"</td>
+                            <td>无选项时的空态文案，缺省"无匹配数据"</td>
+                        </tr>
+                        <tr>
+                            <td>select-panel-max="300px"</td>
+                            <td>面板最大高度，缺省 260px</td>
+                        </tr>
+                        <tr>
+                            <td>form-size="sm|lg"</td>
+                            <td>尺寸变体（30px / 35px / 46px）</td>
+                        </tr>
+                        <tr>
+                            <td>hx-get / hx-post="地址"</td>
+                            <td>远程选项源：未声明 hx-trigger 时首次展开自动请求一次；响应 HTML 片段 / JSON 自动识别，
+                                由组件接管渲染（不做 htmx 交换）</td>
+                        </tr>
+                        <tr>
+                            <td>valid-msg-* / valid-rules</td>
+                            <td>透传到值域，供 bny-form 取错误文案</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <table hx-ext="bny-table" style="width:100%; margin-top:12px;">
+                    <thead>
+                        <tr>
+                            <th>片段节点标记</th>
+                            <th>说明</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>&lt;li option-value="1"&gt;北京&lt;/li&gt;</td>
+                            <td>选项：值缺省用 <code>li</code> 文本；<code>option-disabled</code>（停用）、
+                                <code>option-selected</code>（默认选中）、<code>option-parent</code>（树形：引用父节点的 option-value，缺省即顶层）</td>
+                        </tr>
+                        <tr>
+                            <td>&lt;li option-group&gt;分组&lt;/li&gt;</td>
+                            <td>分组标题，不可选</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <table hx-ext="bny-table" style="width:100%; margin-top:12px;">
+                    <thead>
+                        <tr>
+                            <th>JSON 契约（数组或 {data|list|options:[...]}）</th>
+                            <th>说明</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>"北京" / 1</td>
+                            <td>字符串/数字 → value 与显示文本相同</td>
+                        </tr>
+                        <tr>
+                            <td>{value, label, disabled, selected, level}</td>
+                            <td>选项，与片段 li 的 option-* 一一对应</td>
+                        </tr>
+                        <tr>
+                            <td>{label, children:[...]}</td>
+                            <td>分组标题（无 value，不可选），children 同级渲染</td>
+                        </tr>
+                        <tr>
+                            <td>{value, label, children:[...]}</td>
+                            <td>树形父节点（有 value，配 select-tree），children 层级 +1</td>
+                        </tr>
+                        <tr>
+                            <td>{data:[...]}</td>
+                            <td>对象包装（ThinkPHP/Laravel paginate 风格）自动解包</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <blockquote class="bny-blockquote" style="margin-top:12px;">
+                    事件：值变化时向值域派发原生 <code>change</code> / <code>input</code>，
+                    并向扩展元素派发冒泡的 <code>bny:select:change</code>，
+                    <code>detail = {values, items, elt}</code>。
+                </blockquote>
+            </div>
+        </div>
+    </div>
+    <div class="right-anchor-box hidden-xs col-sm3">
+        <div class="right-anchor">
+            <ul hx-ext="bny-anchor" anchor-rail>
+                <li class="link" anchor-target="#n01">基础单选</li>
+                <li class="link" anchor-target="#n02">多选</li>
+                <li class="link" anchor-target="#n03">禁用</li>
+                <li class="link" anchor-target="#n04">树形单选</li>
+                <li class="link" anchor-target="#n05">树形多选</li>
+                <li class="link" anchor-target="#n06">关闭联动</li>
+                <li class="link" anchor-target="#n07">远程选项</li>
+                <li class="link" anchor-target="#n08">原生增强</li>
+                <li class="link" anchor-target="#n09">尺寸</li>
+                <li class="link" anchor-target="#n10">表单校验</li>
+                <li class="link" anchor-target="#n11">API</li>
+            </ul>
+        </div>
+    </div>
+</div>
+<style>
+    .select-value-view {
+        margin: 8px 0 0;
+        font-size: 12px;
+        color: var(--gray);
+    }
+
+    .select-value-view b {
+        color: var(--default);
+        font-weight: var(--font-weight-medium);
+    }
+</style>
+<script>
+    (function () {
+        // 演示页：把各 demo 的值域实时回显出来
+        document.querySelectorAll('[data-view]').forEach(function (el) {
+            var host = document.getElementById(el.getAttribute('data-view'));
+            if (!host) return;
+            host.addEventListener('bny:select:change', function (e) {
+                el.textContent = e.detail.values.length ? e.detail.values.join(',') : '（空）';
+            });
+        });
+    })();
+</script>

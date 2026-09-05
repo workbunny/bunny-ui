@@ -1,0 +1,14 @@
+[
+  "北京",
+  {"value": "2", "label": "上海"},
+  {"label": "华东", "children": [
+    {"value": "3", "label": "杭州"},
+    {"value": "4", "label": "苏州", "disabled": true}
+  ]},
+  {"value": "5", "label": "广东省", "children": [
+    {"value": "6", "label": "深圳"},
+    {"value": "7", "label": "珠海"}
+  ]},
+  {"value": "9", "label": "成都", "selected": true},
+  {"value": "10", "label": "重庆"}
+]

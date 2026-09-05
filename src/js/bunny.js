@@ -155,13 +155,16 @@ window.bny = {
     },
     /**
      * 显示警示弹窗
-     * 
+     *
      * @param {String} msg 消息
      * @param {Number} code 状态码 默认0
      * @param {String} anim 动画 默认scale
      * @param {Number} time 时间 默认3秒
+     * @param {Function} fn 结束回调 默认无。弹窗关闭（定时到期或手动关闭）
+     *                          且退场动画完成后触发一次，无论以何种方式结束。
+     *                          无参数回调（不传响应数据，区别于 alert-fn 属性的 data/elt）
      */
-    alert: function (msg, code = 0, anim = 'scale', time = 3) {
+    alert: function (msg, code = 0, anim = 'scale', time = 3, fn = null) {
 
         /**
          * 根据状态码获取颜色
@@ -199,6 +202,7 @@ window.bny = {
         this.alertContainer().appendChild(alert)
         // 计时器句柄，便于提前关闭时清除
         let timer = null
+        let ended = false // fn 防重复：正常路径 parentElement 守卫已兜底，双保险
         const removeAlert = () => {
             if (timer) { clearTimeout(timer); timer = null }
             // 防止重复移除
@@ -208,6 +212,13 @@ window.bny = {
                 // 容器内无 alert 时移除容器，避免空白占位
                 const box = document.getElementById('bny-alert-box')
                 if (box && box.children.length === 0) box.remove()
+                // 结束回调：弹窗完全关闭后退场触发一次（异常兜底，不影响弹窗流程）
+                if (typeof fn === 'function' && !ended) {
+                    ended = true
+                    try { fn() } catch (e) {
+                        console.error('[bny-alert] alert-fn 回调执行失败:', e)
+                    }
+                }
             })
         }
         closeBtn.addEventListener('click', removeAlert)
@@ -916,13 +927,59 @@ function _pgComputeButtons(current, total, max) {
  * @returns {HTMLElement|null}
  */
 function _pgFindConfig(bar) {
-    var container = bar.parentElement
-    if (!container || !container.id) return null
-    var candidates = document.querySelectorAll('[hx-target="#' + container.id + '"]')
-    for (var i = 0; i < candidates.length; i++) {
-        if (candidates[i].getAttribute('hx-get')) return candidates[i]
+    // 请求方法不限 GET：hx-get / hx-post（及带 method 的 hx-method）都视为有效配置
+    function isReq(elt) {
+        return (elt.getAttribute('hx-get') !== null || elt.getAttribute('hx-post') !== null) &&
+            elt.getAttribute('hx-target') !== null
     }
+    var container = bar.parentElement
+    if (container && container.id) {
+        var candidates = document.querySelectorAll('[hx-target="#' + container.id + '"]')
+        for (var i = 0; i < candidates.length; i++) {
+            if (isReq(candidates[i])) return candidates[i]
+        }
+    }
+    // 静态表格模式（table-static）：配置元素是表格自身（hx-target="find tbody"），
+    // 分页条渲染为表格的下一个兄弟节点，按此反查
+    var prev = bar.previousElementSibling
+    if (prev && prev.tagName === 'TABLE' && isReq(prev)) return prev
     return null
+}
+
+/**
+ * 读取配置元素声明的请求方法（hx-post 优先，hx-get 兜底）
+ * @param {HTMLElement} src 配置元素
+ * @returns {string} 'GET' | 'POST' | 'PUT' | 'DELETE' 等
+ */
+function _pgRequestMethod(src) {
+    if (src.getAttribute('hx-post') !== null) return 'POST'
+    if (src.getAttribute('hx-put') !== null) return 'PUT'
+    if (src.getAttribute('hx-delete') !== null) return 'DELETE'
+    return 'GET'
+}
+
+/**
+ * 读取配置元素声明的请求地址（hx-post / hx-get 任一）
+ * @param {HTMLElement} src 配置元素
+ * @returns {string} 请求 URL
+ */
+function _pgRequestUrl(src) {
+    return src.getAttribute('hx-post') || src.getAttribute('hx-get') || ''
+}
+
+/**
+ * 解析 htmx 风格的 hx-target（this/find/closest 及普通选择器）
+ * 裸 querySelector 解析不了 find/closest 关键字（静态表格 hx-target="find tbody" 场景，
+ * 解析失败会回退到整个 src 做 innerHTML 交换，把 thead 冲掉）
+ * @param {HTMLElement} src 配置元素
+ * @param {string} targetSel hx-target 值
+ * @returns {HTMLElement|null}
+ */
+function _pgResolveTarget(src, targetSel) {
+    if (!targetSel || targetSel === 'this') return src
+    if (targetSel.indexOf('find ') === 0) return src.querySelector(targetSel.slice(5))
+    if (targetSel.indexOf('closest ') === 0) return src.closest(targetSel.slice(7))
+    try { return document.querySelector(targetSel) } catch (e) { return null }
 }
 
 /**
@@ -933,8 +990,9 @@ function _pgFindConfig(bar) {
  */
 function _pgTriggerRequest(bar, page, pageSize) {
     var src = _pgFindConfig(bar) || bar
-    var url = src.getAttribute('hx-get')
+    var url = _pgRequestUrl(src)
     if (!url) return
+    var method = _pgRequestMethod(src)
     var targetSel = src.getAttribute('hx-target')
     var swapStyle = src.getAttribute('hx-swap') || 'innerHTML'
     var paramName = bar.getAttribute('pg-page-param') || 'page'
@@ -965,9 +1023,9 @@ function _pgTriggerRequest(bar, page, pageSize) {
     if (existingVals) {
         try { Object.assign(vals, JSON.parse(existingVals)); } catch (_) { }
     }
-    var target = targetSel ? document.querySelector(targetSel) : src
+    var target = _pgResolveTarget(src, targetSel)
     if (targetSel && !target) target = src
-    htmx.ajax('GET', url, {
+    htmx.ajax(method, url, {
         source: src,
         target: target,
         swap: swapStyle,

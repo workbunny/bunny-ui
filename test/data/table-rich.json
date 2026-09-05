@@ -1,0 +1,18 @@
+{
+    "total": 3,
+    "per_page": 10,
+    "current_page": 1,
+    "last_page": 1,
+    "data": [
+        { "id": 1, "name": "张伟", "role": "管理员", "status": "1", "email": "zhangwei@test.com", "age": 25,
+          "avatar": "https://picsum.photos/seed/u1/80/80",
+          "remark": "初始管理员账号，负责系统配置与权限分配，请勿随意停用或删除该账号，操作前请先联系系统负责人确认，避免影响其他成员的正常使用。" },
+        { "id": 2, "name": "李娜", "role": "编辑", "status": "1", "email": "lina@test.com", "age": 28,
+          "avatar": "https://picsum.photos/seed/u2/80/80",
+          "remark": "内容编辑，负责日常文章的撰写与发布，拥有内容模块的编辑与发布权限，重大选题需经主编审核后发布。" },
+        { "id": 3, "name": "王强", "role": "访客", "status": "0", "email": "wangqiang@test.com", "age": 31,
+          "avatar": "https://picsum.photos/seed/u3/80/80",
+          "remark": "离职账号，已停用登录权限，保留历史操作记录以备审计查阅，如需恢复请联系管理员重新开通。" }
+    ],
+    "has_more": false
+}

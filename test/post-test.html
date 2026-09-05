@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>POST 复现</title>
+    <link rel="stylesheet" href="/dist/bunny.css">
+</head>
+<body hx-ext="bny-url">
+    <div class="admin-layout" hx-ext="bny-alert">
+    <div class="p-12">
+        <table id="t1" hx-ext="bny-table" table-static table-server table-key="post-demo"
+               hx-post="/test/data/table-static.json" hx-trigger="load"
+               hx-target="find tbody" hx-swap="innerHTML">
+            <thead>
+                <tr>
+                    <th cell-field="id" cell-align="center">ID</th>
+                    <th cell-field="name" cell-sort>姓名</th>
+                    <th cell-field="role">角色</th>
+                    <th cell-field="email">邮箱</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+    </div>
+    <script src="/debug/bunny.js?v=27"></script>
+    <script>
+        var m = (location.hash || '').replace('#', '');
+        if (m === 'dist') {
+            document.getElementById('t1').setAttribute('data-mode', 'dist');
+            // 需要时可用 /bunny/bunny.js 或 dist 下文件，但这里同源测试先不动
+        }
+    </script>
+</body>
+</html>

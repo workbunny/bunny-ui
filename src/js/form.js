@@ -79,12 +79,14 @@ htmx.defineExtension('bny-form', {
                 field.addEventListener('blur', function () {
                     validateField(field);
                 });
-                // 输入时清除错误提示（不立即校验，避免打扰）
-                field.addEventListener('input', function () {
-                    if (field.getAttribute('aria-invalid') === 'true') {
-                        clearError(field);
-                    }
-                });
+            });
+            // 输入时清除错误提示（不立即校验，避免打扰）。
+            // 委托到 form 上监听：bny-select 等组件的值域元素是表单初始化之后才生成的，
+            // 逐字段绑定会漏掉动态字段；input 事件冒泡，委托天然覆盖它们
+            form.addEventListener('input', function (e) {
+                var field = e.target;
+                if (!field.getAttribute || field.getAttribute('aria-invalid') !== 'true') return;
+                clearError(field);
             });
             return false;
         }

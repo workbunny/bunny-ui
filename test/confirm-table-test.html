@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>confirm 表格复现</title>
+    <link rel="stylesheet" href="/debug/bunny.css">
+</head>
+<body>
+    <div class="p-12">
+        <table hx-ext="bny-table" table-static table-server table-key="op-demo"
+               hx-get="/test/data/table-rich.json" hx-trigger="load"
+               hx-target="find tbody" hx-swap="innerHTML">
+            <thead>
+                <tr>
+                    <th cell-field="id">ID</th>
+                    <th cell-field="name">名称</th>
+                    <th cell-template="#tpl-op">操作</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+        <template id="tpl-op">
+            <button hx-ext="bny-dropdown" class="bny-btn" btn-model="border">更多
+                <div class="bny-dropdown">
+                    <div hx-ext="bny-menu" menu-mode="vertical">
+                        <div class="item">
+                            <div class="trigger"><span>编辑</span></div>
+                        </div>
+                        <div class="item">
+                            <div class="trigger" hx-ext="bny-confirm" hx-confirm="确认删除吗？"
+                                hx-get="/test/data/table-static.json" hx-include="[id='{{data.id}}']">
+                                <span>删除</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </button>
+        </template>
+    </div>
+    <script src="/debug/bunny.js?v=27"></script>
+</body>
+</html>

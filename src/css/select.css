@@ -1,0 +1,324 @@
+/**
+ * bny-select — 多功能选择框
+ *
+ * 说明：
+ * - 生成元素锚点 .bny-select-box / .bny-select-panel（与 datepicker 的
+ *   .bny-datepicker-* 同风格），与 form.css 中原生 select 增强所用的
+ *   .bny-select / select[hx-ext="bny-select"] 互不干扰，二者可以同时存在
+ * - 内部子元素统一短类名（.trigger / .option / .check …），靠嵌套作用域隔离；
+ *   值域元素（生成的 input.value 或渐进增强复用的原生 select）视觉隐藏但保留
+ *   可聚焦能力，bny-form 的 firstInvalid.focus() 与 required 校验可正常作用其上，
+ *   校验红框通过兄弟选择器投射到触发框
+ */
+
+.bny-select-box {
+    position: relative;
+    display: block;
+    width: 100%;
+
+    /* ul 直接承载时 box 即 ul 本身：重置列表默认样式（div 场景无影响） */
+    margin: 0;
+    padding: 0;
+    list-style: none;
+
+    /* 值域：视觉隐藏但可聚焦（display:none 会让 focus 与校验失效） */
+    & > .value,
+    & > select {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: 0;
+        border: 0;
+        opacity: 0;
+        pointer-events: none;
+    }
+
+    /* ====== 触发框（与 form.css 输入框基线对齐：默认 35px，chips 换行可长高） ====== */
+    & .trigger {
+        position: relative;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        min-height: 35px;
+        padding: 0 30px 0 12px;
+        border: 1.5px solid var(--gray-middle);
+        border-radius: var(--border-radius);
+        background: var(--white-common);
+        color: var(--black);
+        font-size: var(--font-size);
+        cursor: pointer;
+        transition: border-color .15s;
+        box-sizing: border-box;
+
+        &:hover {
+            border-color: var(--default-shallow);
+        }
+
+        /* 单选回显文本 */
+        & .text {
+            flex: 1;
+            min-width: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+
+            &.placeholder {
+                color: var(--gray);
+            }
+        }
+
+        /* 下拉箭头 */
+        & .arrow {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 12px;
+            color: var(--gray);
+            transition: transform .2s;
+            pointer-events: none;
+        }
+
+        /* 清空按钮 */
+        & .clear {
+            position: absolute;
+            right: 26px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 11px;
+            color: var(--gray);
+            line-height: 1;
+
+            &:hover {
+                color: var(--red);
+            }
+        }
+
+        /* ====== 多选 chips ====== */
+        & .chips {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 4px;
+            flex: 1;
+            min-width: 0;
+            padding: 4px 0;
+
+            & .chip {
+                display: inline-flex;
+                align-items: center;
+                gap: 4px;
+                max-width: 100%;
+                padding: 1px 6px;
+                border: 1px solid var(--default-alpha-20);
+                border-radius: var(--border-radius-sm);
+                background: var(--default-alpha-10);
+                color: var(--default);
+                font-size: var(--font-size-xs);
+                line-height: 18px;
+
+                & > span {
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    white-space: nowrap;
+                }
+
+                & .close {
+                    font-size: 10px;
+                    opacity: .6;
+                    cursor: pointer;
+
+                    &:hover {
+                        opacity: 1;
+                    }
+                }
+            }
+        }
+    }
+
+    /* 展开态：边框高亮 + 箭头翻转 */
+    &.open .trigger {
+        border-color: var(--default);
+
+        & .arrow {
+            transform: translateY(-50%) rotate(180deg);
+        }
+    }
+
+    /* 禁用态 */
+    &.disabled .trigger {
+        border-color: var(--gray-middle);
+        background: var(--white-shallow);
+        color: var(--gray);
+        cursor: not-allowed;
+
+        &:hover {
+            border-color: var(--gray-middle);
+        }
+    }
+
+    /* 校验错误：红框投射到触发框（红框由 bny-form 打在值域上） */
+    & > .bny-input-error + .trigger {
+        border-color: var(--red);
+    }
+
+    /* ====== 尺寸变体（与 form.css 的 form-size 对齐） ====== */
+    &[form-size="sm"] .trigger {
+        min-height: 30px;
+        padding: 0 28px 0 8px;
+        font-size: var(--font-size-sm);
+        border-radius: var(--border-radius-sm);
+    }
+
+    &[form-size="lg"] .trigger {
+        min-height: 46px;
+        padding: 0 32px 0 16px;
+        font-size: var(--font-size-16);
+        border-radius: var(--border-radius-8);
+    }
+}
+
+/* ====== 浮层面板（挂 body，避免被祖先 overflow 裁剪） ====== */
+.bny-select-panel {
+    position: fixed;
+    z-index: 1000;
+    display: none;
+    overflow: hidden;
+    border: 1px solid var(--gray-middle);
+    border-radius: var(--border-radius);
+    background: var(--white-common);
+    box-shadow: var(--box-shadow-055);
+    box-sizing: border-box;
+
+    & .options {
+        max-height: 260px;
+        margin: 0;
+        padding: 4px;
+        overflow-y: auto;
+        list-style: none;
+    }
+
+    /* ====== 选项行 ====== */
+    & .option {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        padding: 7px 12px;
+        border-radius: var(--border-radius-sm);
+        color: var(--black);
+        font-size: var(--font-size);
+        line-height: 1.4;
+        cursor: pointer;
+
+        &:hover,
+        &.focus {
+            background: var(--black-alpha-05);
+        }
+
+        &.selected {
+            background: var(--default-alpha-10);
+            color: var(--default);
+            font-weight: var(--font-weight-medium);
+        }
+
+        &.disabled {
+            color: var(--gray);
+            cursor: not-allowed;
+
+            &:hover {
+                background: transparent;
+            }
+        }
+
+        & .text {
+            flex: 1;
+            min-width: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        /* ====== 多选框（含半选） ====== */
+        & .check {
+            position: relative;
+            flex: none;
+            width: 14px;
+            height: 14px;
+            border: 1px solid var(--gray-middle);
+            border-radius: 3px;
+            box-sizing: border-box;
+
+            &.checked {
+                border-color: var(--default);
+                background: var(--default);
+
+                &::after {
+                    content: '';
+                    position: absolute;
+                    left: 3px;
+                    top: 1px;
+                    width: 5px;
+                    height: 8px;
+                    border: solid var(--white-common);
+                    border-width: 0 2px 2px 0;
+                    transform: rotate(45deg);
+                }
+            }
+
+            /* 半选：写在 .checked 之后，同为选中态时以半选视觉为准 */
+            &.half {
+                border-color: var(--default);
+                background: var(--default);
+
+                &::after {
+                    content: '';
+                    position: absolute;
+                    left: 2px;
+                    top: 5px;
+                    width: 8px;
+                    height: 2px;
+                    border: 0;
+                    background: var(--white-common);
+                    transform: none;
+                }
+            }
+        }
+
+        /* ====== 树形折叠箭头 ====== */
+        & .toggle {
+            flex: none;
+            width: 14px;
+            font-size: 12px;
+            color: var(--black-shallow);
+            text-align: center;
+            cursor: pointer;
+
+            &:hover {
+                color: var(--default);
+            }
+
+            /* 无子节点的占位，保持与有箭头项缩进对齐 */
+            &.empty {
+                display: inline-block;
+                cursor: default;
+            }
+        }
+    }
+
+    /* 分组标题（不可选） */
+    & .group {
+        padding: 6px 12px;
+        color: var(--gray);
+        font-size: var(--font-size-xs);
+        cursor: default;
+    }
+
+    /* 空态（列表的直接子行，区别于 .toggle.empty 占位） */
+    & .options > .empty {
+        padding: 16px;
+        color: var(--gray);
+        font-size: var(--font-size-sm);
+        text-align: center;
+    }
+}

@@ -70,6 +70,39 @@ title="删除" anim="up"&gt;其他&lt;/button&gt;
                     </div>
                 </div>
             </div>
+            <h2 id="n02b2">确认/取消回调</h2>
+            <div class="bny-card">
+                <div hx-ext="bny-tab">
+                    <ul class="head">
+                        <li>Preview</li>
+                        <li>Code</li>
+                    </ul>
+                    <div class="body">
+                        <div>
+                            <div class="p-12">
+                                <button hx-ext="bny-confirm" class="bny-btn" hx-get="/test/data/confirm.json"
+                                    hx-confirm="确定执行该操作吗？" confirm-yes="console.log('确认了：', elt); bny.alert('确认回调已执行');"
+                                    confirm-no="console.log('取消了：', elt); bny.alert('取消回调已执行', 2);">带回调确认</button>
+                                <blockquote class="bny-blockquote">
+                                    confirm-yes / confirm-no 直接写<b>内联 JS 表达式</b>（与 hx-on 同风格），表达式中可用变量 <code>elt</code>（触发元素）。<b>confirm-yes 在请求发出、响应转换完成后执行</b>；confirm-no 取消时执行，不发起请求。
+                                </blockquote>
+                            </div>
+                        </div>
+                        <div>
+                            <pre hx-ext="bny-code">
+&lt;button hx-ext="bny-confirm" class="bny-btn" hx-get="/test/data/confirm.json"
+hx-confirm="确定执行该操作吗？"
+confirm-yes="console.log('确认了：', elt); bny.alert('确认回调已执行');"
+confirm-no="console.log('取消了：', elt); bny.alert('取消回调已执行', 2);"&gt;带回调确认&lt;/button&gt;
+
+// confirm-yes / confirm-no 均为内联 JS 表达式（与 hx-on 同风格），
+// 表达式中可用变量 elt（触发元素）。
+// confirm-yes 在确认后请求发出、响应转换完成时执行；confirm-no 在取消时执行。
+                </pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
             <h2 id="n02b">键盘交互</h2>
             <div class="bny-card">
                 <div hx-ext="bny-tab">
@@ -80,7 +113,8 @@ title="删除" anim="up"&gt;其他&lt;/button&gt;
                     <div class="body">
                         <div>
                             <div class="p-12">
-                                <button class="bny-btn" onclick="bny.confirm('按 Enter 确认 / 按 ESC 取消 / 点击遮罩取消')">弹出确认</button>
+                                <button class="bny-btn"
+                                    onclick="bny.confirm('按 Enter 确认 / 按 ESC 取消 / 点击遮罩取消')">弹出确认</button>
                                 <blockquote class="bny-blockquote">
                                     打开确认框后：Enter = 确认回调，Escape = 取消回调，点击遮罩 = 取消。多个 confirm 叠加时仅响应最上层。
                                 </blockquote>
@@ -125,6 +159,20 @@ title="删除" anim="up"&gt;其他&lt;/button&gt;
                         <td>'scale'</td>
                         <td>否</td>
                         <td>提示动画:scale-缩放,left-左移,right-右移,up-上移,down-下移</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>confirm-yes</td>
+                        <td>-</td>
+                        <td>否</td>
+                        <td>确认回调函数名（挂 bny 或 window 上），确认时先执行回调再发请求，回调参数为触发元素</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>confirm-no</td>
+                        <td>-</td>
+                        <td>否</td>
+                        <td>取消回调函数名（挂 bny 或 window 上），取消时执行回调，不发起请求</td>
                         <td></td>
                     </tr>
                 </tbody>
@@ -235,6 +283,8 @@ title="删除" anim="up"&gt;其他&lt;/button&gt;
             <ul hx-ext="bny-anchor" anchor-rail>
                 <li class="link" anchor-target="#n01">样式</li>
                 <li class="link" anchor-target="#n02">Htmx-组件</li>
+                <li class="link" anchor-target="#n02b2">确认/取消回调</li>
+                <li class="link" anchor-target="#n02b">键盘交互</li>
                 <li class="link" anchor-target="#n03">API</li>
             </ul>
         </div>
