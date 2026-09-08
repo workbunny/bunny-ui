@@ -117,6 +117,7 @@ bun run build
 - **DatePicker 日期选择**：日期选择器
 - **Rate 评分**：星级评分
 - **Dropdown 下拉**：下拉选择菜单
+- **Select 选择框**：单选/多选/树形（父子联动、半选）、远程选项、原生 select 增强
 
 ### 反馈
 - **Alert 警告框**：信息提示弹窗

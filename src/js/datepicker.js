@@ -19,7 +19,10 @@
         if (globalBound) return;
         globalBound = true;
 
-        // document click：点击面板外部时关闭
+        // document click：点击面板外部时关闭。
+        // 捕获阶段监听（第三参 true）：先于任何目标阶段的 stopPropagation 执行，
+        // 否则 tab/menu 等组件点击会截断冒泡导致面板关不掉（与 bny-select/bny-dropdown 同款陷阱）。
+        // input/面板豁免判断与阶段无关，行为不变。
         document.addEventListener('click', function (e) {
             // 逆序遍历，便于安全清理已断开连接的实例
             for (var i = instances.length - 1; i >= 0; i--) {
@@ -36,7 +39,7 @@
                     inst.close();
                 }
             }
-        });
+        }, true);
 
         // window resize：面板打开时重新定位
         window.addEventListener('resize', function () {

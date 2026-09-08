@@ -1,0 +1,175 @@
+/* ========== 文件上传组件 ========== */
+.bny-upload {
+    border: 2px dashed var(--gray-middle);
+    border-radius: var(--border-radius);
+    background-color: var(--white-shallow);
+    padding: 14px;
+    min-height: 90px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    cursor: pointer;
+    transition: border-color var(--transition), background-color var(--transition);
+
+    &:hover {
+        border-color: var(--gray);
+        background-color: var(--white-middle);
+    }
+
+    /* 拖拽悬停态：边框变绿、背景浅绿 */
+    &.bny-upload-dragover {
+        border-color: var(--green);
+        background-color: var(--green-alpha-10);
+    }
+}
+
+/* 提示文案 */
+.bny-upload-hint {
+    color: var(--gray);
+    font-size: var(--font-size);
+    user-select: none;
+}
+
+/* ========== 文件列表 ========== */
+.bny-upload-list {
+    list-style: none;
+    margin: 12px 0 0;
+    padding: 0;
+    max-height: 240px;
+    overflow-y: auto;
+}
+
+/* ========== 列表项 ========== */
+.bny-upload-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--gray-shallow);
+    margin: 0;
+
+    &:last-child {
+        border-bottom: none;
+    }
+
+    /* 成功项：整体文字绿色 */
+    &.is-success .bny-upload-name,
+    &.is-success .bny-upload-size,
+    &.is-success .bny-upload-status {
+        color: var(--green);
+    }
+
+    /* 失败项：整体文字红色 + 边框 */
+    &.is-error .bny-upload-name,
+    &.is-error .bny-upload-size,
+    &.is-error .bny-upload-status {
+        color: var(--red);
+    }
+
+    &.is-error {
+        border-bottom-color: var(--red-shallow);
+    }
+}
+
+/* ========== 缩略图 ========== */
+.bny-upload-thumb {
+    flex-shrink: 0;
+    width: 64px;
+    height: 52px;
+    border-radius: var(--border-radius-sm);
+    background-color: var(--gray-shallow);
+    overflow: hidden;
+
+    & img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+    }
+}
+
+/* ========== 文件信息 ========== */
+.bny-upload-info {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.bny-upload-name {
+    font-size: var(--font-size);
+    color: var(--black);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.bny-upload-size {
+    font-size: var(--font-size-sm);
+    color: var(--gray);
+}
+
+/* ========== 进度条 ========== */
+.bny-upload-progress {
+    flex-shrink: 0;
+    width: 120px;
+    height: 6px;
+    background-color: var(--gray-shallow);
+    border-radius: var(--border-radius-full);
+    overflow: hidden;
+
+    & i {
+        display: block;
+        width: 0;
+        height: 100%;
+        background-color: var(--green);
+        border-radius: var(--border-radius-full);
+        transition: width var(--transition);
+    }
+}
+
+/* 上传完成/失败后隐藏进度条 */
+.bny-upload-item.is-success .bny-upload-progress,
+.bny-upload-item.is-error .bny-upload-progress {
+    display: none;
+}
+
+/* ========== 状态文本 ========== */
+.bny-upload-status {
+    flex-shrink: 0;
+    font-size: var(--font-size-sm);
+    color: var(--gray);
+}
+
+/* ========== 重新上传按钮 ========== */
+.bny-upload-retry {
+    flex-shrink: 0;
+    font-size: var(--font-size-sm);
+    color: var(--blue);
+    cursor: pointer;
+    padding: 2px 6px;
+    user-select: none;
+    transition: color var(--transition-fast);
+
+    &:hover {
+        color: var(--blue-middle);
+    }
+}
+
+/* ========== 删除按钮 ========== */
+.bny-upload-remove {
+    flex-shrink: 0;
+    font-size: var(--font-size-18);
+    line-height: 1;
+    color: var(--gray);
+    cursor: pointer;
+    padding: 2px 4px;
+    user-select: none;
+    transition: color var(--transition-fast);
+
+    &:hover {
+        color: var(--red);
+    }
+}

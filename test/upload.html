@@ -1,0 +1,260 @@
+<div class="bny-row">
+    <div class="text-content-box col-xs12 col-sm9">
+        <div class="text-content">
+            <h1>文件上传</h1>
+            <hr>
+            <blockquote class="bny-blockquote">
+                基于 htmx 拓展 bny-upload 的文件上传组件：点击/拖拽选择文件、自动上传、进度反馈、前置校验、文件列表管理。
+            </blockquote>
+
+            <h2 id="n01">基础用法</h2>
+            <div class="bny-card">
+                <div hx-ext="bny-tab">
+                    <ul class="head">
+                        <li>Preview</li>
+                        <li>Code</li>
+                    </ul>
+                    <div class="body">
+                        <div>
+                            <div class="p-12">
+                                <div hx-ext="bny-upload" class="bny-upload" hx-post="/test/data/upload-response.json" upload-hint="点击选择文件后上传"></div>
+                                <blockquote class="bny-blockquote">
+                                    复用 htmx 原生请求：hx-post 决定上传地址。点击元素选择文件后自动上传，成功/失败由组件内置 bny.alert 提示。
+                                </blockquote>
+                            </div>
+                        </div>
+                        <div>
+                            <pre hx-ext="bny-code">
+&lt;div hx-ext="bny-upload" class="bny-upload" hx-post="/test/data/upload-response.json" upload-hint="点击选择文件后上传"&gt;&lt;/div&gt;
+                </pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h2 id="n02">多文件与校验</h2>
+            <div class="bny-card">
+                <div hx-ext="bny-tab">
+                    <ul class="head">
+                        <li>Preview</li>
+                        <li>Code</li>
+                    </ul>
+                    <div class="body">
+                        <div>
+                            <div class="p-12">
+                                <div hx-ext="bny-upload" class="bny-upload" hx-post="/test/data/upload-response.json"
+                                    upload-multi upload-accept="image/*" upload-ext="jpg,png,gif" upload-size="2048"
+                                    upload-limit="5" upload-hint="点击选择文件后上传（可多选）"></div>
+                                <blockquote class="bny-blockquote">
+                                    upload-multi 多选；upload-ext 扩展名白名单；upload-size 单文件大小上限(KB)；upload-limit 数量上限。
+                                </blockquote>
+                            </div>
+                        </div>
+                        <div>
+                            <pre hx-ext="bny-code">
+&lt;div hx-ext="bny-upload" class="bny-upload" hx-post="/test/data/upload-response.json"
+    upload-multi upload-accept="image/*" upload-ext="jpg,png,gif" upload-size="2048" upload-limit="5"
+    upload-hint="点击选择文件后上传（可多选）"&gt;&lt;/div&gt;
+                </pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h2 id="n03">拖拽上传</h2>
+            <div class="bny-card">
+                <div hx-ext="bny-tab">
+                    <ul class="head">
+                        <li>Preview</li>
+                        <li>Code</li>
+                    </ul>
+                    <div class="body">
+                        <div>
+                            <div class="p-12">
+                                <div hx-ext="bny-upload" class="bny-upload" hx-post="/test/data/upload-response.json"
+                                    upload-drag upload-multi upload-preview upload-hint="点击或拖拽文件到此处"></div>
+                                <blockquote class="bny-blockquote">
+                                    upload-drag 拖拽，upload-preview 图片缩略图。
+                                </blockquote>
+                            </div>
+                        </div>
+                        <div>
+                            <pre hx-ext="bny-code">
+&lt;div hx-ext="bny-upload" class="bny-upload" hx-post="/test/data/upload-response.json" upload-drag upload-multi upload-preview upload-hint="点击或拖拽文件到此处"&gt;&lt;/div&gt;
+                </pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h2 id="n03b">按钮触发</h2>
+            <div class="bny-card">
+                <div hx-ext="bny-tab">
+                    <ul class="head">
+                        <li>Preview</li>
+                        <li>Code</li>
+                    </ul>
+                    <div class="body">
+                        <div>
+                            <div class="p-12">
+                                <button class="bny-btn" btn-color="blue" hx-ext="bny-upload"
+                                    hx-post="/test/data/upload-response.json" hx-trigger="click"
+                                    upload-multi upload-list="#upload-list"><i class="bny-icon icon-folder-add"></i> 选择文件上传</button>
+                                <blockquote class="bny-blockquote">
+                                    任意元素（按钮等）加 hx-ext="bny-upload" + hx-post 即成为触发点。upload-list 控制列表渲染：缺省不渲染，写选择器则渲染到指定元素（"this"=元素自身）。
+                                </blockquote>
+                                <div class="bny-card" style="margin-top:12px"><div class="body"><ul id="upload-list"></ul></div></div>
+                            </div>
+                        </div>
+                        <div>
+                            <pre hx-ext="bny-code">
+&lt;button class="bny-btn" hx-ext="bny-upload"
+        hx-post="/test/data/upload-response.json" hx-trigger="click"
+        upload-multi upload-list="#upload-list"&gt;&lt;i class="bny-icon icon-folder-add"&gt;&lt;/i&gt; 选择文件上传&lt;/button&gt;
+
+&lt;ul id="upload-list"&gt;&lt;/ul&gt;
+                </pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h2 id="n04">API</h2>
+            <h3>标签属性</h3>
+            <table hx-ext="bny-table">
+                <thead>
+                    <tr>
+                        <th>属性</th>
+                        <th>默认值</th>
+                        <th>必须</th>
+                        <th>描述</th>
+                        <th>版本</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>hx-ext</td>
+                        <td>bny-upload</td>
+                        <td>是</td>
+                        <td>拓展属性名</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>hx-post / hx-put / hx-patch / hx-delete / hx-get</td>
+                        <td>-</td>
+                        <td>是</td>
+                        <td>上传接口（htmx 原生请求属性，任选其一；实际携带文件请用可带 body 的动词）。组件自动把隐藏 file input 挂进请求（hx-include），并强制 hx-swap="none" 防止响应 JSON 覆盖元素</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>hx-trigger</td>
+                        <td>click</td>
+                        <td>否</td>
+                        <td>触发方式（htmx 原生）</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>upload-name</td>
+                        <td>file</td>
+                        <td>否</td>
+                        <td>上传字段名（file input 的 name）</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>upload-accept</td>
+                        <td>*</td>
+                        <td>否</td>
+                        <td>允许的 MIME 类型(可逗号分隔, 支持 image/* 通配)</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>upload-ext</td>
+                        <td>空</td>
+                        <td>否</td>
+                        <td>扩展名白名单(逗号分隔, 如 jpg,png,gif)</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>upload-limit</td>
+                        <td>0</td>
+                        <td>否</td>
+                        <td>文件数量上限(0=不限)</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>upload-size</td>
+                        <td>0</td>
+                        <td>否</td>
+                        <td>单文件大小上限(单位 KB, 0=不限)</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>upload-multi</td>
+                        <td>无</td>
+                        <td>否</td>
+                        <td>存在即支持多选</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>upload-hint</td>
+                        <td>点击选择文件后上传</td>
+                        <td>否</td>
+                        <td>元素为空时的提示文案：未配置 upload-list 时显示在框内；upload-list="this" 时为空列表提示（缺省"点击选择文件后上传"）</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>upload-preview</td>
+                        <td>无</td>
+                        <td>否</td>
+                        <td>存在则成功上传的图片显示缩略图并可放大预览</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>upload-drag</td>
+                        <td>无</td>
+                        <td>否</td>
+                        <td>存在则启用拖拽上传</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>upload-list</td>
+                        <td>空</td>
+                        <td>否</td>
+                        <td>列表渲染目标：缺省不渲染；"this"=元素自身内；CSS 选择器（#id/.cls/find x/closest x）=渲染到指定元素</td>
+                        <td></td>
+                    </tr>
+                </tbody>
+            </table>
+            <h3>响应格式</h3>
+            <blockquote class="bny-blockquote">
+                上传接口应返回 JSON：{code:0,msg:"...",url:"..."}。code=0 判为成功（列表项绿色"上传成功"，url 供 upload-preview 缩略图）；code!=0 判为失败（列表项红色"上传失败"）。msg 由组件内置 bny.alert 弹出。
+            </blockquote>
+
+            <h2 id="n05">组件行为</h2>
+            <h3>bny-upload</h3>
+            <blockquote class="bny-blockquote">
+                <ul class="bny-upload-behavior" style="padding-left:16px">
+                    <li>复用 htmx 请求管线：选中文件后组件用 htmx.ajax 发起请求（multipart/form-data），上传进度经 htmx:xhr:progress 实时驱动列表进度条（"上传中 N%"）。</li>
+                    <li>校验失败（upload-ext / upload-size / upload-accept / upload-limit）直接 bny.alert 拦截，不发请求。</li>
+                    <li>响应 code=0/非 0 判定成功/失败；msg 内置 bny.alert 提示，无需再挂 bny-alert。</li>
+                    <li>hx-swap 由组件强制为 none（除非已显式设置），响应不会覆盖触发器/容器，可连续多次上传。</li>
+                    <li>上传成功后重置文件选择，可重复选择同一文件。</li>
+                    <li>失败项显示"重新上传"（点击重发该文件并恢复列表态）；成功项显示删除"×"（移除列表项并释放 upload-limit 配额）。</li>
+                </ul>
+            </blockquote>
+        </div>
+    </div>
+    <div class="right-anchor-box hidden-xs col-sm3">
+        <div class="right-anchor">
+            <ul hx-ext="bny-anchor" anchor-rail>
+                <li class="link">样式暂无</li>
+                <li class="link" anchor-target="#n01">基础用法</li>
+                <li class="link" anchor-target="#n02">多文件与校验</li>
+                <li class="link" anchor-target="#n03">拖拽上传</li>
+                <li class="link" anchor-target="#n03b">按钮触发</li>
+                <li class="link" anchor-target="#n04">API</li>
+                <li class="link" anchor-target="#n05">组件行为</li>
+            </ul>
+        </div>
+    </div>
+</div>

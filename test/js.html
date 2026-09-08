@@ -90,16 +90,20 @@ console.log(hasClass); // 输出：true
 </pre>
 
             <h2 id="alert">显示警示弹窗</h2>
-            <code>bny.alert(msg,code,anim,time)</code>
+            <code>bny.alert(msg,code,anim,time,fn)</code>
             <p>参数：</p>
             <p><code>msg</code> <code>String</code> :弹窗消息。</p>
             <p><code>code</code> <code>Number</code> :状态码 默认0, 1:绿色, 2:黄色, 3:红色, 4:蓝色</p>
             <p><code>anim</code> <code>String</code> :动画 默认scale, 可选值：scale, left, right, up, down</p>
             <p><code>time</code> <code>Number</code> :时间 默认3秒</p>
+            <p><code>fn</code> <code>Function</code> :弹窗结束回调函数（无参数），定时到期或手动关闭、退场动画完成后触发一次。默认null。</p>
             <p>返回：</p>
             <p><code>void</code> :无返回值。</p>
             <pre hx-ext="bny-code">
 bny.alert("这是一个警示弹窗",1,"up",2);
+bny.alert("这是一个警示弹窗",1,"up",2,()=>{
+    console.log("弹窗已关闭");
+});
 </pre>
 
             <h2 id="confirm">显示确认弹窗</h2>
@@ -115,7 +119,7 @@ bny.alert("这是一个警示弹窗",1,"up",2);
             <p><code>void</code> :无返回值。</p>
             <pre hx-ext="bny-code">
 bny.confirm("确定删除吗？",{
-    fn:()=>{
+    yes_cb:()=>{
         console.log("用户点击了确认");
     },
     no_cb:()=>{
@@ -164,6 +168,34 @@ setTimeout(() => {
     load.remove()
 }, 3000) // 3秒后移除加载弹窗
 </pre>
+            <h2 id="tableReload">表格重载</h2>
+            <code>bny.tableReload(target,params)</code>
+            <p>按参数重新请求表格数据（外部搜索表单、筛选/重置按钮触发表格重载的编程入口）。</p>
+            <p>参数：</p>
+            <p><code>target</code> <code>String|HTMLElement</code> :表格元素、其容器或任意 CSS 选择器（内部定位其中的
+                <code>&lt;table&gt;</code>，如 <code>"#users"</code>）。</p>
+            <p><code>params</code> <code>Object</code> :查询参数，如 <code>{ kw: '张', status: '1' }</code>；值为空串
+                <code>''</code> 表示删除该条件。</p>
+            <p>行为：</p>
+            <p>· 保留 URL 上已有的其他查询条件，只覆盖/删除 <code>params</code> 给定的键。</p>
+            <p>· 请求方式跟随表格声明：<code>hx-get</code> 参数合并进 URL 查询串；<code>hx-post</code>（put/delete）
+                参数进请求体，URL 只留纯地址。</p>
+            <p>· 基准地址优先取表格的 <code>table-url</code> 属性，缺省取配置元素的 <code>hx-get</code>/<code>hx-post</code>。</p>
+            <p>· 静态表头模式（<code>table-static</code>）刷新 <code>tbody</code>；JSON 数据模式整容器重建。</p>
+            <pre hx-ext="bny-code">
+// 追加/覆盖条件并重载（其余条件保留）
+bny.tableReload('#users', { kw: '张' });
+
+// 多条件组合搜索
+bny.tableReload('#users', { name: '张伟', status: '1' });
+
+// 清除单个条件（传空串即删除），如清空搜索框时
+bny.tableReload('#users', { kw: '' });
+
+// 回到第一页（配合筛选/重置按钮）
+bny.tableReload('#users', { page: 1 });
+</pre>
+
         </div>
     </div>
     <div class="right-anchor-box hidden-xs col-sm3">
@@ -180,6 +212,7 @@ setTimeout(() => {
                 <li class="link" anchor-target="#confirm">显示确认弹窗</li>
                 <li class="link" anchor-target="#page">显示页面弹窗</li>
                 <li class="link" anchor-target="#load">显示加载弹窗</li>
+                <li class="link" anchor-target="#tableReload">表格重载</li>
             </ul>
         </div>
     </div>

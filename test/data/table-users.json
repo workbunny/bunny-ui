@@ -1,0 +1,13 @@
+{
+    "total": 4,
+    "per_page": 10,
+    "current_page": 1,
+    "last_page": 1,
+    "data": [
+        { "id": 1, "name": "张三", "age": 28, "email": "zhangsan@test.com" },
+        { "id": 2, "name": "李四", "age": 22, "email": "lisi@test.com" },
+        { "id": 3, "name": "王五", "age": 31, "email": "wangwu@test.com" },
+        { "id": 4, "name": "赵六", "age": 25, "email": "zhaoliu@test.com" }
+    ],
+    "has_more": false
+}

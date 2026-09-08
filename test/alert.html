@@ -107,6 +107,9 @@
                                     class="bny-btn">点击我-红色-延时10秒</button>
                                 <button hx-ext="bny-alert" hx-get="/test/data/alert04.json" hx-trigger="click"
                                     class="bny-btn">点击我-蓝色</button>
+                                <button hx-ext="bny-alert" hx-get="/test/data/alert.json" hx-trigger="click"
+                                    alert-fn="elt.textContent='结束回调：code='+data.code"
+                                    class="bny-btn">点击我-结束回调</button>
                             </div>
                         </div>
                         <div>
@@ -121,6 +124,9 @@
     class=&quot;bny-btn&quot;&gt;点击我-红色-延时10秒&lt;/button&gt;
 &lt;button hx-ext=&quot;bny-alert&quot; hx-get=&quot;/test/data/alert04.json&quot; hx-trigger=&quot;click&quot;
     class=&quot;bny-btn&quot;&gt;点击我-蓝色&lt;/button&gt;
+&lt;button hx-ext=&quot;bny-alert&quot; hx-get=&quot;/test/data/alert.json&quot; hx-trigger=&quot;click&quot;
+    alert-fn=&quot;elt.textContent='结束回调：code='+data.code&quot;
+    class=&quot;bny-btn&quot;&gt;点击我-结束回调&lt;/button&gt;
                 </pre>
                         </div>
                         <div>
@@ -163,8 +169,30 @@
                 </div>
             </div>
             <h2 id="n03">API</h2>
-            <h3>JSON属性</h3>
+            <h3>组件属性</h3>
 
+            <table hx-ext="bny-table">
+                <thead>
+                    <tr>
+                        <th>属性</th>
+                        <th>默认值</th>
+                        <th>必须</th>
+                        <th>描述</th>
+                        <th>版本</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>alert-fn</td>
+                        <td>''</td>
+                        <td>否</td>
+                        <td>响应后触发的 JS 代码（与 confirm-yes 同约定）。可用变量：<b>data</b>=响应数据（JSON 响应为解析后的对象，否则为原始文本）、<b>elt</b>=触发元素。JSON 响应时弹窗结束后触发；非 JSON 响应无弹窗、响应完成后立即触发</td>
+                        <td></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>JSON属性</h3>
             <table hx-ext="bny-table">
                 <thead>
                     <tr>
@@ -208,7 +236,7 @@
             </table>
 
             <h3>Js用法</h3>
-            <h4>bny.alert(msg, code, anim, time)</h4>
+            <h4>bny.alert(msg, code, anim, time, fn)</h4>
             <table hx-ext="bny-table">
                 <thead>
                     <tr>
@@ -246,6 +274,13 @@
                         <td>3</td>
                         <td>否</td>
                         <td>提示显示时间,单位秒</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>fn</td>
+                        <td>null</td>
+                        <td>否</td>
+                        <td>弹窗结束回调函数：定时到期或手动关闭、退场动画完成后触发一次（无参数，不携带响应数据）</td>
                         <td></td>
                     </tr>
                 </tbody>

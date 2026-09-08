@@ -1,0 +1,54 @@
+{
+    "total": 14,
+    "per_page": 5,
+    "current_page": 1,
+    "last_page": 3,
+    "has_more": true,
+    "data": [
+        {
+            "id": "1",
+            "name": "张伟",
+            "role": "管理员",
+            "status": "1",
+            "email": "zhangwei@test.com",
+            "reg_time": "2024-03-12",
+            "remark": "初始管理员账号，负责系统配置与权限分配。"
+        },
+        {
+            "id": "2",
+            "name": "王芳",
+            "role": "编辑",
+            "status": "1",
+            "email": "wangfang@test.com",
+            "reg_time": "2024-06-28",
+            "remark": "内容组负责人，管理全部栏目的审稿与发布流程。"
+        },
+        {
+            "id": "3",
+            "name": "李娜",
+            "role": "普通用户",
+            "status": "0",
+            "email": "lina@test.com",
+            "reg_time": "2024-09-03",
+            "remark": "已办理离职，账号保留至月底用于工作交接。"
+        },
+        {
+            "id": "4",
+            "name": "刘强",
+            "role": "编辑",
+            "status": "1",
+            "email": "liuqiang@test.com",
+            "reg_time": "2025-01-15",
+            "remark": "内容审核组，敏感内容需升级至安全委员会复核。"
+        },
+        {
+            "id": "5",
+            "name": "陈静",
+            "role": "普通用户",
+            "status": "1",
+            "email": "chenjing@test.com",
+            "reg_time": "2025-04-22",
+            "remark": "新入职用户，当前处于试用期。"
+        }
+    ]
+}

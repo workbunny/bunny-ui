@@ -1,0 +1,50 @@
+{
+    "total": 4,
+    "per_page": 10,
+    "current_page": 1,
+    "last_page": 1,
+    "has_more": false,
+    "data": [
+        {
+            "name": "技术部",
+            "leader": "阿明",
+            "count": 18,
+            "updated": "2025-08-20",
+            "children": [
+                {
+                    "name": "前端组",
+                    "leader": "小张",
+                    "count": 7,
+                    "updated": "2025-08-18",
+                    "children": [
+                        { "name": "体验小组", "leader": "小李", "count": 3, "updated": "2025-07-30" },
+                        { "name": "工程小组", "leader": "小王", "count": 4, "updated": "2025-08-05" }
+                    ]
+                },
+                {
+                    "name": "后端组",
+                    "leader": "阿亮",
+                    "count": 6,
+                    "updated": "2025-08-12",
+                    "children": [
+                        { "name": "接口小组", "leader": "小赵", "count": 3, "updated": "2025-08-11" },
+                        { "name": "平台小组", "leader": "小钱", "count": 3, "updated": "2025-07-28" }
+                    ]
+                },
+                { "name": "测试组", "leader": "小美", "count": 5, "updated": "2025-08-19" }
+            ]
+        },
+        {
+            "name": "运营部",
+            "leader": "阿芳",
+            "count": 10,
+            "updated": "2025-08-15",
+            "children": [
+                { "name": "内容组", "leader": "阿伟", "count": 4, "updated": "2025-08-01" },
+                { "name": "商务组", "leader": "阿强", "count": 6, "updated": "2025-08-14" }
+            ]
+        },
+        { "name": "财务部", "leader": "阿燕", "count": 5, "updated": "2025-07-22" },
+        { "name": "行政部", "leader": "阿乐", "count": 3, "updated": "2025-06-30" }
+    ]
+}

@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>confirm 复现</title>
+    <link rel="stylesheet" href="/debug/bunny.css">
+</head>
+<body>
+    <div class="p-12">
+        <button hx-ext="bny-dropdown" class="bny-btn" btn-model="border">更多
+            <div class="bny-dropdown">
+                <div hx-ext="bny-menu" menu-mode="vertical">
+                    <div class="item">
+                        <div class="trigger">
+                            <span>编辑</span>
+                        </div>
+                    </div>
+                    <div class="item">
+                        <div class="trigger" hx-ext="bny-confirm" hx-confirm="确认删除吗？"
+                            hx-get="/test/data/table-static.json" hx-toggle="none">
+                            <span>删除</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </button>
+    </div>
+    <script src="/debug/bunny.js?v=27"></script>
+</body>
+</html>

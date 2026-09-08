@@ -5,7 +5,7 @@
     width: 100%;
     display: block;
     padding: 0 12px;
-    height: 38px;
+    height: 35px;
     line-height: 1.5;
     font-size: var(--font-size);
     background-color: var(--white);
@@ -77,12 +77,12 @@
 }
 
 /* ========== 选择框 ========== */
-[hx-ext="bny-select"],
+select[hx-ext="bny-select"],
 .bny-select {
     max-width: 100%;
     width: 100%;
     display: block;
-    height: 38px;
+    height: 35px;
     line-height: 1.5;
     padding: 0 12px;
     font-size: var(--font-size);
@@ -343,7 +343,7 @@
 .bny-select[form-size="sm"],
 [hx-ext="bny-input"][form-size="sm"],
 [hx-ext="bny-textarea"][form-size="sm"],
-[hx-ext="bny-select"][form-size="sm"] {
+select[hx-ext="bny-select"][form-size="sm"] {
     height: 30px;
     font-size: var(--font-size-sm);
     padding: 0 8px;
@@ -355,7 +355,7 @@
 .bny-select[form-size="lg"],
 [hx-ext="bny-input"][form-size="lg"],
 [hx-ext="bny-textarea"][form-size="lg"],
-[hx-ext="bny-select"][form-size="lg"] {
+select[hx-ext="bny-select"][form-size="lg"] {
     height: 46px;
     font-size: var(--font-size-16);
     padding: 0 16px;
@@ -373,19 +373,19 @@
 
 /* ========== select 增强：自定义箭头视觉 + 焦点态 ========== */
 .bny-select:hover,
-[hx-ext="bny-select"]:hover {
+select[hx-ext="bny-select"]:hover {
     border-color: var(--default-middle);
 }
 
 .bny-select:focus,
-[hx-ext="bny-select"]:focus {
+select[hx-ext="bny-select"]:focus {
     border-color: var(--default);
     box-shadow: var(--focus-ring);
 }
 
 /* select 选项组样式（部分浏览器支持） */
 .bny-select option,
-[hx-ext="bny-select"] option {
+select[hx-ext="bny-select"] option {
     padding: 8px 12px;
     background-color: var(--white);
     color: var(--black);
@@ -393,7 +393,7 @@
 
 /* select disabled 视觉 */
 .bny-select:disabled,
-[hx-ext="bny-select"]:disabled {
+select[hx-ext="bny-select"]:disabled {
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23B0B7C0' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
 }
 
@@ -404,7 +404,7 @@
 .bny-select.bny-input-error,
 [hx-ext="bny-input"].bny-input-error,
 [hx-ext="bny-textarea"].bny-input-error,
-[hx-ext="bny-select"].bny-input-error {
+select[hx-ext="bny-select"].bny-input-error {
     border-color: var(--red);
 
     &:focus {

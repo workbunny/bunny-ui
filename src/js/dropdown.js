@@ -21,6 +21,10 @@ function ensureDropdownDelegation() {
     if (_dropdownDelegated) return;
     _dropdownDelegated = true;
 
+    // 捕获阶段监听（第三参 true）：先于任何目标阶段的 stopPropagation 执行。
+    // 若挂冒泡阶段，tab/menu/其他 dropdown 触发按钮点击时会截断冒泡，事件到不了
+    // document，面板就永远关不掉（与 bny-select 同款陷阱）。
+    // 豁免判断与阶段无关：点击面板内部/触发元素自身仍靠 contains 放行。
     document.addEventListener('click', function (e) {
         var openList = document.querySelectorAll('.bny-dropdown.show');
         for (var i = 0; i < openList.length; i++) {
@@ -32,7 +36,7 @@ function ensureDropdownDelegation() {
             if (trigger && trigger.contains(e.target)) continue;
             closeDropdown(dropdown);
         }
-    });
+    }, true);
 }
 
 htmx.defineExtension('bny-dropdown', {

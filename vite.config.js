@@ -33,6 +33,8 @@ const jsFiles = [
   path.resolve(__dirname, 'src/js/rate.js'),
   path.resolve(__dirname, 'src/js/skeleton.js'),
   path.resolve(__dirname, 'src/js/attr.js'),
+  path.resolve(__dirname, 'src/js/upload.js'),
+  path.resolve(__dirname, 'src/js/select.js'),
   // 如需新增JS文件，直接追加即可：
   // path.resolve(__dirname, 'src/js/entry3.js'),
 ];
@@ -74,6 +76,8 @@ const cssFiles = [
   path.resolve(__dirname, 'src/css/rate.css'),
   path.resolve(__dirname, 'src/css/empty.css'),
   path.resolve(__dirname, 'src/css/timeline.css'),
+  path.resolve(__dirname, 'src/css/upload.css'),
+  path.resolve(__dirname, 'src/css/select.css'),
   // 如需新增CSS文件，直接追加即可：
   // path.resolve(__dirname, 'src/css/style3.css'),
   path.resolve(__dirname, 'src/css/common.css'),

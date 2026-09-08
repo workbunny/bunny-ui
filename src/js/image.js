@@ -151,8 +151,10 @@
     function showImage() {
         var src = current.list[current.index];
         if (!src) return;
-        // 加载状态：先清空 src，加载完成后再显示
+        // 加载状态：立即清空旧 src/alt（重开/翻页时旧图不再可见，骨架接管视觉），加载完成后再显示
         imgEl.classList.add('loading');
+        imgEl.removeAttribute('src');
+        imgEl.alt = '';
         var tmp = new Image();
         tmp.onload = function () {
             imgEl.src = src;

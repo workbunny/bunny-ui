@@ -3819,13 +3819,16 @@
     },
     /**
      * 显示警示弹窗
-     * 
+     *
      * @param {String} msg 消息
      * @param {Number} code 状态码 默认0
      * @param {String} anim 动画 默认scale
      * @param {Number} time 时间 默认3秒
+     * @param {Function} fn 结束回调 默认无。弹窗关闭（定时到期或手动关闭）
+     *                          且退场动画完成后触发一次，无论以何种方式结束。
+     *                          无参数回调（不传响应数据，区别于 alert-fn 属性的 data/elt）
      */
-    alert: function(msg, code = 0, anim = "scale", time = 3) {
+    alert: function(msg, code = 0, anim = "scale", time = 3, fn = null) {
       function type(code2) {
         switch (code2) {
           case 1:
@@ -3852,6 +3855,7 @@
       alert.appendChild(closeBtn);
       this.alertContainer().appendChild(alert);
       let timer = null;
+      let ended = false;
       const removeAlert = () => {
         if (timer) {
           clearTimeout(timer);
@@ -3862,6 +3866,14 @@
           alert.remove();
           const box = document.getElementById("bny-alert-box");
           if (box && box.children.length === 0) box.remove();
+          if (typeof fn === "function" && !ended) {
+            ended = true;
+            try {
+              fn();
+            } catch (e) {
+              console.error("[bny-alert] alert-fn 回调执行失败:", e);
+            }
+          }
         });
       };
       closeBtn.addEventListener("click", removeAlert);
@@ -4440,18 +4452,44 @@
     return result;
   }
   function _pgFindConfig(bar) {
-    var container = bar.parentElement;
-    if (!container || !container.id) return null;
-    var candidates = document.querySelectorAll('[hx-target="#' + container.id + '"]');
-    for (var i = 0; i < candidates.length; i++) {
-      if (candidates[i].getAttribute("hx-get")) return candidates[i];
+    function isReq(elt) {
+      return (elt.getAttribute("hx-get") !== null || elt.getAttribute("hx-post") !== null) && elt.getAttribute("hx-target") !== null;
     }
+    var container = bar.parentElement;
+    if (container && container.id) {
+      var candidates = document.querySelectorAll('[hx-target="#' + container.id + '"]');
+      for (var i = 0; i < candidates.length; i++) {
+        if (isReq(candidates[i])) return candidates[i];
+      }
+    }
+    var prev = bar.previousElementSibling;
+    if (prev && prev.tagName === "TABLE" && isReq(prev)) return prev;
     return null;
+  }
+  function _pgRequestMethod(src) {
+    if (src.getAttribute("hx-post") !== null) return "POST";
+    if (src.getAttribute("hx-put") !== null) return "PUT";
+    if (src.getAttribute("hx-delete") !== null) return "DELETE";
+    return "GET";
+  }
+  function _pgRequestUrl(src) {
+    return src.getAttribute("hx-post") || src.getAttribute("hx-get") || "";
+  }
+  function _pgResolveTarget(src, targetSel) {
+    if (!targetSel || targetSel === "this") return src;
+    if (targetSel.indexOf("find ") === 0) return src.querySelector(targetSel.slice(5));
+    if (targetSel.indexOf("closest ") === 0) return src.closest(targetSel.slice(7));
+    try {
+      return document.querySelector(targetSel);
+    } catch (e) {
+      return null;
+    }
   }
   function _pgTriggerRequest(bar, page, pageSize) {
     var src = _pgFindConfig(bar) || bar;
-    var url = src.getAttribute("hx-get");
+    var url = _pgRequestUrl(src);
     if (!url) return;
+    var method = _pgRequestMethod(src);
     var targetSel = src.getAttribute("hx-target");
     var swapStyle = src.getAttribute("hx-swap") || "innerHTML";
     var paramName = bar.getAttribute("pg-page-param") || "page";
@@ -4483,9 +4521,9 @@
       } catch (_) {
       }
     }
-    var target = targetSel ? document.querySelector(targetSel) : src;
+    var target = _pgResolveTarget(src, targetSel);
     if (targetSel && !target) target = src;
-    htmx.ajax("GET", url, {
+    htmx.ajax(method, url, {
       source: src,
       target,
       swap: swapStyle,
@@ -4727,16 +4765,66 @@
     }
   });
   htmx.defineExtension("bny-alert", {
+    onEvent: function(name, evt) {
+      if (name === "htmx:afterProcessNode") {
+        if (bny.hasExtName(evt.target, "bny-alert")) {
+          const elt = evt.target;
+          const code = elt.getAttribute("alert-fn");
+          if (!code) {
+            elt._bnyAlertFn = null;
+          } else {
+            try {
+              elt._bnyAlertFn = new Function("data", "elt", code);
+            } catch (e) {
+              console.error("[bny-alert] alert-fn 表达式解析失败:", e);
+              elt._bnyAlertFn = null;
+            }
+          }
+        }
+        return true;
+      }
+      return true;
+    },
     // 响应转换
     transformResponse: function(text, xhr, elt) {
-      if (xhr.getResponseHeader("Content-Type").includes("application/json")) {
-        const data = JSON.parse(xhr.responseText);
-        bny.alert(data.msg, data.code || 0, data.anim || "scale", data.time || 3);
-        return elt.innerHTML;
+      var ct = xhr.getResponseHeader("Content-Type") || "";
+      if (!ct.includes("application/json")) {
+        callAlertFn(elt, text);
+        return text;
       }
-      return text;
+      if (elt && (bny.hasExtName(elt, "bny-table") || elt.hasAttribute("table-static"))) return text;
+      var data;
+      try {
+        data = JSON.parse(xhr.responseText);
+      } catch (e) {
+        callAlertFn(elt, xhr.responseText);
+        return text;
+      }
+      bny.alert(data.msg, data.code || 0, data.anim || "scale", data.time || 3, function() {
+        callAlertFn(elt, data);
+      });
+      return elt.innerHTML;
     }
   });
+  function callAlertFn(elt, data) {
+    if (!elt) return;
+    var fn = elt._bnyAlertFn;
+    if (!fn) {
+      var code = elt.getAttribute("alert-fn");
+      if (!code) return;
+      try {
+        fn = new Function("data", "elt", code);
+      } catch (e) {
+        console.error("[bny-alert] alert-fn 表达式解析失败:", e);
+        return;
+      }
+    }
+    try {
+      fn(data, elt);
+    } catch (e) {
+      console.error("[bny-alert] alert-fn 回调执行失败:", e);
+    }
+  }
   function closeDropdown(target) {
     var isShow = target.classList.contains("show");
     var isUp = target.classList.contains("up");
@@ -4759,7 +4847,7 @@
         if (trigger && trigger.contains(e.target)) continue;
         closeDropdown(dropdown);
       }
-    });
+    }, true);
   }
   htmx.defineExtension("bny-dropdown", {
     // 事件
@@ -4876,25 +4964,82 @@
   });
   htmx.defineExtension("bny-confirm", {
     onEvent: function(name, evt) {
+      if (name === "htmx:afterProcessNode") {
+        if (bny.hasExtName(evt.target, "bny-confirm")) {
+          const elt = evt.target;
+          const compile = (attr) => {
+            const code = elt.getAttribute(attr);
+            if (!code) {
+              elt["_bnyConfirm" + (attr === "confirm-yes" ? "Yes" : "No")] = null;
+              return null;
+            }
+            try {
+              const fn = new Function("elt", code);
+              elt["_bnyConfirm" + (attr === "confirm-yes" ? "Yes" : "No")] = fn;
+              return fn;
+            } catch (e) {
+              console.error("[bny-confirm] " + attr + " 表达式解析失败:", e);
+              return null;
+            }
+          };
+          compile("confirm-yes");
+          compile("confirm-no");
+        }
+        return true;
+      }
       if (name === "htmx:confirm") {
         if (bny.hasExtName(evt.target, "bny-confirm")) {
-          const msg = evt.target.getAttribute("hx-confirm");
-          const title = evt.target.getAttribute("title") || "提示";
-          const anim = evt.target.getAttribute("confirm-anim") || "scale";
+          const elt = evt.target;
+          const msg = elt.getAttribute("hx-confirm");
+          const title = elt.getAttribute("title") || "提示";
+          const anim = elt.getAttribute("confirm-anim") || "scale";
+          let yesFn = elt._bnyConfirmYes;
+          if (!yesFn) {
+            const code = elt.getAttribute("confirm-yes");
+            try {
+              if (code) yesFn = new Function("elt", code);
+            } catch (e) {
+              console.error("[bny-confirm] confirm-yes 表达式解析失败:", e);
+            }
+          }
           bny.confirm(msg, {
             title,
             anim,
             yes_cb: () => {
               evt.detail.issueRequest(true);
+            },
+            no_cb: () => {
+              let cb = elt._bnyConfirmNo;
+              if (!cb) {
+                const code = elt.getAttribute("confirm-no");
+                try {
+                  if (code) cb = new Function("elt", code);
+                } catch (e) {
+                  console.error("[bny-confirm] confirm-no 表达式解析失败:", e);
+                }
+              }
+              if (cb) cb(elt);
             }
           });
+          if (yesFn) {
+            elt._bnyConfirmYesPending = yesFn;
+          }
           return false;
         }
       }
       return true;
     },
-    // 响应转换
+    // 响应转换：确认后请求完成（成功响应转换）时触发 confirm-yes 缓存回调
     transformResponse: function(text, xhr, elt) {
+      if (elt && elt._bnyConfirmYesPending) {
+        const cb = elt._bnyConfirmYesPending;
+        elt._bnyConfirmYesPending = null;
+        try {
+          cb(elt);
+        } catch (e) {
+          console.error("[bny-confirm] confirm-yes 回调执行失败:", e);
+        }
+      }
       if (xhr.getResponseHeader("Content-Type").includes("application/json")) {
         const obj = JSON.parse(xhr.responseText);
         bny.alert(
@@ -5026,13 +5171,16 @@
         });
       }
       function initSort(table) {
-        let ths = table.querySelectorAll("thead th[table-sort]");
+        let ths = table.querySelectorAll("thead th[table-sort], thead th[cell-sort]");
         if (!ths.length) return;
         if (table.querySelector("tbody tr[data-tree-level]")) return;
         const tableKey = table.getAttribute("table-key") || "";
         const storeKey = tableKey ? "bny-table-sort:" + tableKey : "";
-        const tbodyCaptured = table.querySelector("tbody");
-        const defaultRows = tbodyCaptured ? Array.from(tbodyCaptured.querySelectorAll("tr")) : [];
+        const isServer = table.getAttribute("table-server") !== null;
+        const sortParam = table.getAttribute("table-sort-param") || "sort";
+        const orderParam = table.getAttribute("table-order-param") || "order";
+        const pageParam = table.getAttribute("table-page-param") || "page";
+        let defaultRows = null;
         function persistSort(colIndex, type, asc) {
           if (!storeKey) return;
           try {
@@ -5072,15 +5220,40 @@
           chip.textContent = state === "asc" ? label + " ↑" : state === "desc" ? label + " ↓" : label;
         }
         function cycleColumn(th) {
+          if (table.querySelector("tbody tr[data-tree-level]")) return;
           const colIndex = th._colIndex;
           const isAsc = th.classList.contains("sort-asc");
           const isDesc = th.classList.contains("sort-desc");
+          if (isServer) {
+            const field = th.getAttribute("cell-field") || th.getAttribute("table-sort-field");
+            if (field) {
+              const order = isDesc ? "" : isAsc ? "desc" : "asc";
+              ths.forEach(function(t) {
+                t.classList.remove("sort-asc", "sort-desc");
+                renderChip(t, null);
+              });
+              if (order) {
+                th.classList.add(order === "asc" ? "sort-asc" : "sort-desc");
+                renderChip(th, order);
+              }
+              table._bnySortState = order ? { field, order } : null;
+              const params2 = {};
+              params2[sortParam] = order ? field : "";
+              params2[orderParam] = order;
+              params2[pageParam] = "1";
+              reloadTableWithParams(table.parentElement, table, params2);
+            }
+            return;
+          }
           ths.forEach(function(t) {
             t.classList.remove("sort-asc", "sort-desc");
             renderChip(t, null);
           });
-          const type = th.getAttribute("table-sort") || "string";
+          const type = th.getAttribute("table-sort") || th.getAttribute("cell-sort") || "string";
           const tbody = table.querySelector("tbody");
+          if (!defaultRows || !defaultRows.length || !tbody || !tbody.contains(defaultRows[0])) {
+            defaultRows = tbody ? Array.from(tbody.querySelectorAll("tr")) : [];
+          }
           if (isDesc) {
             clearPersist();
             if (tbody && defaultRows.length) {
@@ -5121,15 +5294,44 @@
           });
           sortBar.appendChild(chip);
         });
-        const saved = readSort();
-        if (saved) {
-          const targetTh = ths[saved.colIndex];
-          if (targetTh) {
-            targetTh.classList.add(saved.asc ? "sort-asc" : "sort-desc");
-            renderChip(targetTh, saved.asc ? "asc" : "desc");
-            const tbody = table.querySelector("tbody");
-            if (tbody) {
-              sortRows(tbody, saved.colIndex, saved.type, saved.asc);
+        function applySortStateFromUrl() {
+          ths.forEach(function(t) {
+            t.classList.remove("sort-asc", "sort-desc");
+            renderChip(t, null);
+          });
+          let field = "", order = "";
+          const mem = table._bnySortState;
+          if (mem && mem.field) {
+            field = mem.field;
+            order = mem.order === "desc" ? "desc" : "asc";
+          } else {
+            const url = table.getAttribute("table-url") || "";
+            field = queryVal(url, sortParam);
+            order = queryVal(url, orderParam) === "desc" ? "desc" : "asc";
+          }
+          if (!field) return;
+          Array.prototype.forEach.call(ths, function(t) {
+            if ((t.getAttribute("cell-field") || t.getAttribute("table-sort-field")) === field) {
+              const asc = order !== "desc";
+              t.classList.add(asc ? "sort-asc" : "sort-desc");
+              renderChip(t, asc ? "asc" : "desc");
+            }
+          });
+        }
+        if (isServer) {
+          table._bnySyncSortState = applySortStateFromUrl;
+          applySortStateFromUrl();
+        } else {
+          const saved = readSort();
+          if (saved) {
+            const targetTh = ths[saved.colIndex];
+            if (targetTh) {
+              targetTh.classList.add(saved.asc ? "sort-asc" : "sort-desc");
+              renderChip(targetTh, saved.asc ? "asc" : "desc");
+              const tbody = table.querySelector("tbody");
+              if (tbody) {
+                sortRows(tbody, saved.colIndex, saved.type, saved.asc);
+              }
             }
           }
         }
@@ -5149,28 +5351,61 @@
         }
       }
       function initTree(table) {
-        table.querySelectorAll(".bny-table-tree-toggle").forEach(function(btn) {
-          btn.addEventListener("click", function(e) {
-            e.preventDefault();
-            e.stopPropagation();
-            const tr = btn.closest("tr");
-            if (!tr) return;
-            const level = parseInt(tr.getAttribute("data-tree-level") || "0", 10);
-            const willCollapse = !tr.classList.contains("tree-collapsed");
-            tr.classList.toggle("tree-collapsed", willCollapse);
-            let n = tr.nextElementSibling;
-            while (n && n.tagName === "TR" && parseInt(n.getAttribute("data-tree-level") || "-1", 10) > level) {
-              n.style.display = willCollapse ? "none" : "";
-              n = n.nextElementSibling;
+        if (table._bnyTreeBound) return;
+        table._bnyTreeBound = true;
+        table.addEventListener("click", function(e) {
+          const btn = e.target && e.target.closest ? e.target.closest(".bny-table-tree-toggle") : null;
+          if (!btn || !table.contains(btn)) return;
+          e.preventDefault();
+          e.stopPropagation();
+          const tr = btn.closest("tr");
+          if (!tr) return;
+          const level = parseInt(tr.getAttribute("data-tree-level") || "0", 10);
+          const willCollapse = !tr.classList.contains("tree-collapsed");
+          tr.classList.toggle("tree-collapsed", willCollapse);
+          let n = tr.nextElementSibling;
+          let collapsedLevel = -1;
+          while (n && n.tagName === "TR" && parseInt(n.getAttribute("data-tree-level") || "-1", 10) > level) {
+            const lv = parseInt(n.getAttribute("data-tree-level") || "0", 10);
+            if (collapsedLevel >= 0 && lv <= collapsedLevel) collapsedLevel = -1;
+            n.style.display = willCollapse || collapsedLevel >= 0 ? "none" : "";
+            if (collapsedLevel < 0 && n.classList.contains("tree-collapsed")) {
+              collapsedLevel = lv;
             }
-          });
+            n = n.nextElementSibling;
+          }
         });
+      }
+      if (name === "htmx:configRequest") {
+        var src = evt.target;
+        if (src && src.nodeType === 1 && src.hasAttribute("table-static")) {
+          try {
+            var params = evt.detail.parameters;
+            var hasPage = false, hasSize = false;
+            if (params && params.forEach) {
+              params.forEach(function(v, k) {
+                if (k === "page") hasPage = true;
+                if (k === "pageSize") hasSize = true;
+              });
+            }
+            if (!hasPage) params.append("page", "1");
+            if (!hasSize) {
+              var sizeList = bny.parsePageSizes(src.getAttribute("table-list"));
+              params.append("pageSize", String(sizeList && sizeList[0] || 10));
+            }
+          } catch (_) {
+          }
+        }
+        return true;
       }
       if (name === "htmx:beforeRequest") {
         var src = evt.target;
         if (src && src.nodeType === 1 && bny.hasExtName(src, "bny-table") && (src.getAttribute("hx-get") !== null || src.getAttribute("hx-post") !== null) && (!src.getAttribute("hx-swap") || src.getAttribute("hx-swap") === "innerHTML")) {
           var skelTarget = resolveSwapTarget(src);
-          if (skelTarget) scheduleTableSkeleton(skelTarget, src);
+          if (skelTarget) {
+            abortPendingImages(skelTarget);
+            scheduleTableSkeleton(skelTarget, src);
+          }
         }
         return true;
       }
@@ -5183,6 +5418,17 @@
       }
       if (name === "htmx:afterSwap") {
         clearTableSkeleton(evt.target, false);
+        if (evt.target.tagName === "TBODY") {
+          const tbl = evt.target.closest("table");
+          if (tbl && tbl.hasAttribute("table-static")) {
+            fixRowTargets(tbl, true);
+            fitActionsWidths(tbl);
+            appendZoomButtons(tbl);
+            initLabels(tbl);
+            if (tbl._bnySyncSortState) tbl._bnySyncSortState();
+            renderStaticPagination(tbl);
+          }
+        }
         return true;
       }
       if (name === "htmx:responseError" || name === "htmx:sendError") {
@@ -5203,7 +5449,17 @@
           initTree(evt.target);
           fitActionsWidths(evt.target);
           appendZoomButtons(evt.target);
+          fixRowTargets(evt.target);
           return false;
+        } else if (evt.target.tagName === "TBODY") {
+          const tbl = evt.target.closest("table");
+          if (tbl && tbl.hasAttribute("table-static")) {
+            fitActionsWidths(tbl);
+            appendZoomButtons(tbl);
+            initLabels(tbl);
+            if (tbl._bnySyncSortState) tbl._bnySyncSortState();
+            renderStaticPagination(tbl);
+          }
         } else if (evt.target.tagName === "TR") {
           const tds = evt.target.querySelectorAll("td");
           for (let i = 0; i < tds.length; i++) {
@@ -5224,49 +5480,21 @@
       } catch (e) {
         return text;
       }
-      const data = json.data || json;
-      return buildTable(data, xhr, resolveElt(elt));
+      const staticTable = resolveStaticTable(elt);
+      if (!staticTable) return "";
+      let d = json;
+      if (d && typeof d === "object" && !Array.isArray(d) && d.data && !Array.isArray(d.data) && typeof d.data === "object") d = d.data;
+      return buildStaticRows(d, xhr, staticTable);
     }
   });
-  function resolveElt(elt) {
-    if (!elt || elt.getAttribute("table-filter") !== null) return elt;
-    var target = elt.getAttribute("hx-target");
-    if (!target) return elt;
-    try {
-      var alt = document.querySelector('[hx-target="' + target + '"][table-filter]');
-      if (alt) return alt;
-    } catch (_) {
-    }
-    return elt;
-  }
-  function renderCell(cell) {
-    if (cell !== null && typeof cell === "object" && typeof cell.__html !== "undefined") {
-      return String(cell.__html);
-    }
-    return bny.escapeChars(String(cell));
-  }
-  function renderCol(col) {
-    if (col !== null && typeof col === "object") {
-      var name = bny.escapeChars(String(col.title ?? col.name ?? ""));
-      var attrs = "";
-      if (col.sort) {
-        attrs += ' table-sort="' + bny.escapeChars(String(col.sort)) + '"';
-      } else if (col.sortable) {
-        attrs += " table-sort";
-      }
-      return "<th" + attrs + thStyleAttr(col) + ">" + name + "</th>";
-    }
-    return "<th>" + bny.escapeChars(String(col)) + "</th>";
-  }
   function getVal(row, field) {
-    var val = row ? row[field] : "";
+    var val = row;
+    var parts = String(field).split(".");
+    for (var i = 0; i < parts.length; i++) {
+      if (val === null || val === void 0) return "";
+      val = val[parts[i]];
+    }
     return val === null || val === void 0 ? "" : val;
-  }
-  function thStyleAttr(col) {
-    var style = "";
-    if (col.width) style += "width:" + col.width + ";";
-    if (col.align === "center" || col.align === "right") style += "text-align:" + col.align + ";";
-    return style ? ' style="' + bny.escapeChars(style) + '"' : "";
   }
   function tdAlignAttr(col) {
     if (col.align === "center" || col.align === "right") return ' style="text-align:' + col.align + ';"';
@@ -5275,328 +5503,108 @@
   function colEllipsis(col) {
     if (col.ellipsis === true) return true;
     if (col.ellipsis === false) return false;
-    var t = col.type || "text";
-    return t === "text" || t === "link";
+    return !col.template;
   }
-  function tplInterpolate(tpl, row, mode) {
-    return String(tpl === void 0 || tpl === null ? "" : tpl).replace(/\{([a-zA-Z0-9_]+)\}/g, function(m, key) {
-      var val = String(getVal(row, key));
-      return mode === "url" ? encodeURIComponent(val) : bny.escapeChars(val);
-    });
+  var _TPL_ERR = {};
+  var _tplExprCache = {};
+  var _tplDecodeEl = null;
+  function tplExprDecode(s) {
+    if (s.indexOf("&") === -1) return s;
+    if (!_tplDecodeEl) _tplDecodeEl = document.createElement("textarea");
+    _tplDecodeEl.innerHTML = s;
+    return _tplDecodeEl.value;
   }
-  function safeHref(url) {
-    if (typeof url !== "string") return "";
-    var s = url.trim().replace(/^[\u0000-\u001F\u007F]+/, "");
-    if (!s) return "";
-    if (/^(javascript|data|vbscript)\s*:/i.test(s)) return "";
-    return s;
+  function tplEvalExpr(expr, row) {
+    var fn = _tplExprCache[expr];
+    if (fn === void 0) {
+      try {
+        fn = new Function("data", "return (" + expr + ");");
+      } catch (e) {
+        console.warn("[bny.table] cell-template 表达式无效（保留原文）: {{" + expr + "}}");
+        fn = null;
+      }
+      _tplExprCache[expr] = fn;
+    }
+    if (!fn) return _TPL_ERR;
+    try {
+      return fn(row);
+    } catch (e) {
+      console.warn("[bny.table] cell-template 表达式求值失败（保留原文）: {{" + expr + "}}");
+      return _TPL_ERR;
+    }
   }
-  function safeImgSrc(src) {
-    if (typeof src !== "string") return "";
-    var s = src.trim().replace(/^[\u0000-\u001F\u007F]+/, "");
-    if (/^(javascript|vbscript)\s*:/i.test(s)) return "";
-    if (/^data:/i.test(s)) return /^data:image\//i.test(s) ? s : "";
-    return s;
+  function tplInterpolate(tpl, row) {
+    return String(tpl === void 0 || tpl === null ? "" : tpl).replace(
+      /\{\{([\s\S]*?)\}\}/g,
+      function(m, expr) {
+        expr = expr.trim();
+        var fm = expr.match(/^data\.([a-zA-Z0-9_$]+(?:\.[a-zA-Z0-9_$]+)*)$/);
+        if (fm) return bny.escapeChars(String(getVal(row, fm[1])));
+        var v = tplEvalExpr(tplExprDecode(expr), row);
+        if (v === _TPL_ERR) return m;
+        return bny.escapeChars(String(v === void 0 || v === null ? "" : v));
+      }
+    );
   }
   function renderTypedCell(row, col) {
-    if (col.html === true) {
-      return String(getVal(row, col.field));
-    }
-    switch (col.type) {
-      case "tag":
-        return renderTagCell(row, col);
-      case "link":
-        return renderLinkCell(row, col);
-      case "image":
-        return renderImageCell(row, col);
-      case "actions":
-        return renderActionsCell(row, col);
-      case "template":
-        return renderTemplateCell(row, col);
-      default:
-        return bny.escapeChars(String(getVal(row, col.field)));
-    }
+    if (col.template) return renderTemplateCell(row, col);
+    return bny.escapeChars(String(getVal(row, col.field)));
   }
-  function renderTagCell(row, col) {
-    var val = String(getVal(row, col.field));
-    var map = col.map || {};
-    var hit = Object.prototype.hasOwnProperty.call(map, val) ? map[val] : map["default"];
-    var text = val, color = "";
-    if (hit && typeof hit === "object") {
-      if (hit.text !== void 0 && hit.text !== null) text = hit.text;
-      color = hit.color || "";
-    } else if (typeof hit === "string") {
-      color = hit;
-    }
-    var attr = color ? ' tag-color="' + bny.escapeChars(color) + '"' : "";
-    return '<span class="bny-tag"' + attr + ">" + bny.escapeChars(String(text)) + "</span>";
-  }
-  function renderLinkCell(row, col) {
-    var val = String(getVal(row, col.field));
-    var href = safeHref(tplInterpolate(col.href || "", row, "url"));
-    var text = col.text !== void 0 && col.text !== null ? tplInterpolate(col.text, row, "html") : bny.escapeChars(val);
-    if (!href) return text;
-    var attr = ' href="' + bny.escapeChars(href) + '"';
-    if (col.target) attr += ' target="' + bny.escapeChars(String(col.target)) + '"';
-    return "<a" + attr + ">" + text + "</a>";
-  }
-  function renderImageCell(row, col) {
-    var src = safeImgSrc(tplInterpolate(col.src || "{" + col.field + "}", row, "url"));
-    if (!src) return "";
-    var style = "";
-    if (col.width) style += "width:" + col.width + ";";
-    if (col.height) style += "height:" + col.height + ";";
-    if (col.round) style += "border-radius:50%;";
-    var attr = ' class="bny-table-img" src="' + bny.escapeChars(src) + '" alt="' + bny.escapeChars(col.title || col.field) + '" loading="lazy"';
-    return "<img" + attr + (style ? ' style="' + bny.escapeChars(style) + '"' : "") + ">";
-  }
-  function renderActionsCell(row, col) {
-    var actions = Array.isArray(col.actions) ? col.actions : [];
-    var group = col.group === true;
-    var h = '<div class="bny-table-actions">';
-    if (group) h += '<div class="bny-btn-group">';
-    var panels = "";
-    actions.forEach(function(act) {
-      if (!act || typeof act !== "object") return;
-      if (Array.isArray(act.children) && act.children.length) {
-        var dd = renderDropdownAction(act, row);
-        h += dd.trigger;
-        panels += dd.panel;
-        return;
+  var _cellTplCache = {};
+  function cellTemplateSource(col) {
+    var src = col.template || "";
+    var ch = src.charAt(0);
+    if (ch !== "#" && ch !== ".") return src;
+    if (!(src in _cellTplCache)) {
+      var el = document.querySelector(src);
+      if (!el) {
+        console.warn("[bny.table] cell-template 未找到模板元素: " + src + "（回退为内联模板）");
+        return src;
       }
-      var content = actionContent(act, row);
-      if (!content) return;
-      var attrs = ' class="bny-btn"';
-      attrs += ' btn-size="' + bny.escapeChars(String(act.size || "sm")) + '"';
-      attrs += ' btn-model="' + bny.escapeChars(String(act.model || "border")) + '"';
-      if (act.color) attrs += ' btn-color="' + bny.escapeChars(String(act.color)) + '"';
-      h += '<button type="button"' + attrs + buildActionAttrs(act, row) + " data-bny-action>" + content + "</button>";
-    });
-    if (group) h += "</div>";
-    h += panels;
-    h += "</div>";
-    return h;
-  }
-  function actionContent(act, row) {
-    var text = tplInterpolate(act.text || act.name || "", row, "html");
-    var icon = act.icon ? '<i class="bny-icon ' + bny.escapeChars(String(act.icon)) + '"></i>' : "";
-    if (!text && !icon) return null;
-    return icon + text;
-  }
-  function buildActionAttrs(act, row) {
-    var attrs = "";
-    if (act.title) attrs += ' title="' + bny.escapeChars(tplInterpolate(act.title, row, "html")) + '"';
-    if (act.confirm) attrs += ' data-confirm="' + bny.escapeChars(tplInterpolate(act.confirm, row, "html")) + '"';
-    if (act.event) attrs += ' data-event="' + bny.escapeChars(String(act.event)) + '"';
-    var url = act.url || act.href;
-    if (url) {
-      var method = String(act.method || "GET").toUpperCase();
-      if (["GET", "POST", "PUT", "DELETE", "PATCH"].indexOf(method) < 0) method = "GET";
-      attrs += ' data-url="' + bny.escapeChars(tplInterpolate(url, row, "url")) + '"';
-      attrs += ' data-method="' + method + '"';
+      _cellTplCache[src] = el.innerHTML;
     }
-    if (act.target) attrs += ' data-target="' + bny.escapeChars(String(act.target)) + '"';
-    attrs += ' data-row="' + bny.escapeChars(JSON.stringify(row)) + '"';
-    return attrs;
-  }
-  function renderDropdownAction(act, row) {
-    var content = actionContent(act, row) || "";
-    var attrs = ' class="bny-btn"';
-    attrs += ' btn-size="' + bny.escapeChars(String(act.size || "sm")) + '"';
-    attrs += ' btn-model="' + bny.escapeChars(String(act.model || "border")) + '"';
-    if (act.color) attrs += ' btn-color="' + bny.escapeChars(String(act.color)) + '"';
-    attrs += ' title="' + bny.escapeChars(act.title ? tplInterpolate(act.title, row, "html") : "更多") + '"';
-    var items = "";
-    (Array.isArray(act.children) ? act.children : []).forEach(function(child) {
-      if (!child || typeof child !== "object") return;
-      var c = actionContent(child, row);
-      if (!c) return;
-      items += '<div class="item"><div class="trigger"' + buildActionAttrs(child, row) + " data-bny-action>" + c + "</div></div>";
-    });
-    return {
-      trigger: '<button type="button"' + attrs + " data-bny-dropdown>" + content + "</button>",
-      panel: '<div class="bny-dropdown bny-menu" menu-mode="vertical" menu-color="white">' + items + "</div>"
-    };
-  }
-  function dropdownPanelOf(trigger) {
-    var scope = trigger.parentElement && trigger.parentElement.classList.contains("bny-btn-group") ? trigger.parentElement : trigger;
-    var next = scope.nextElementSibling;
-    return next && next.classList.contains("bny-dropdown") ? next : null;
-  }
-  function openDropdown(trigger, panel) {
-    panel.style.visibility = "hidden";
-    panel.style.opacity = 0;
-    panel.classList.add("show");
-    var rect = trigger.getBoundingClientRect();
-    var pRect = panel.getBoundingClientRect();
-    var gap = 8;
-    var top, left;
-    if (window.innerHeight - rect.bottom >= pRect.height + gap || window.innerHeight - rect.bottom >= rect.top) {
-      top = rect.bottom + gap;
-      panel.classList.remove("up");
-    } else {
-      top = rect.top - pRect.height - gap;
-      panel.classList.add("up");
-    }
-    left = rect.left;
-    if (left + pRect.width > window.innerWidth - gap) left = window.innerWidth - gap - pRect.width;
-    if (left < gap) left = gap;
-    panel.style.top = top + "px";
-    panel.style.left = left + "px";
-    panel.style.visibility = "visible";
-    panel.style.opacity = 1;
-  }
-  function closeDropdownPanel(panel) {
-    panel.classList.remove("show", "up");
-    panel.style.visibility = "hidden";
-    panel.style.opacity = 0;
+    return _cellTplCache[src];
   }
   function renderTemplateCell(row, col) {
-    return tplInterpolate(col.template || "", row, "html");
+    return tplInterpolate(cellTemplateSource(col), row);
   }
-  function objectRowHtml(row, cols) {
-    var r = "<tr>";
-    cols.forEach(function(col) {
+  function flattenTreeRows(list, level, out) {
+    (list || []).forEach(function(row) {
+      var children = row && Array.isArray(row.children) ? row.children : null;
+      out.push({ row, level, hasChildren: !!(children && children.length) });
+      if (children && children.length) flattenTreeRows(children, level + 1, out);
+    });
+  }
+  function treeCellPrefixHtml(level, hasChildren) {
+    var s = level > 0 ? '<span class="bny-table-tree-indent" style="width:' + level * 16 + 'px;"></span>' : "";
+    if (hasChildren) {
+      s += '<button type="button" class="bny-table-tree-toggle" aria-label="展开/折叠"><i class="bny-icon icon-right"></i></button>';
+    }
+    return s;
+  }
+  function objectRowHtml(row, cols, level, hasChildren) {
+    var tree = typeof level === "number";
+    var r = "<tr" + (tree ? ' data-tree-level="' + level + '"' : "") + ">";
+    cols.forEach(function(col, i) {
       var attrs = tdAlignAttr(col);
-      if (colEllipsis(col)) attrs += ' class="bny-table-ellipsis" tip="点击展开"';
+      var cls = "";
+      var tip = "";
+      if (tree && i === 0) cls = "bny-table-tree-cell";
+      if (colEllipsis(col)) {
+        cls += (cls ? " " : "") + "bny-table-ellipsis";
+        tip = ' tip="点击展开"';
+      }
+      if (cls) attrs += ' class="' + cls + '"';
+      attrs += tip;
       if (col.sortVal) {
         attrs += ' table-sort-val="' + bny.escapeChars(String(getVal(row, col.sortVal))) + '"';
       }
-      r += "<td" + attrs + ">" + renderTypedCell(row, col) + "</td>";
+      var content = renderTypedCell(row, col);
+      if (tree && i === 0) content = treeCellPrefixHtml(level, hasChildren) + content;
+      r += "<td" + attrs + ">" + content + "</td>";
     });
     r += "</tr>";
     return r;
-  }
-  function buildTable(data, xhr, elt) {
-    const cols = data.columns || data.cols || [];
-    const rows = data.rows || [];
-    let list = Array.isArray(data.list) ? data.list : [];
-    const color = data.color || "";
-    const emptyText = data.empty || "暂无数据";
-    const tableKey = data.key || color || "";
-    const paramName = elt && elt.getAttribute("pg-page-param") || "page";
-    const sizeParam = elt && elt.getAttribute("pg-size-param") || "pageSize";
-    const pageSize = bny.parsePageParam(xhr && xhr.responseURL, sizeParam) || parseInt(data.pageSize, 10) || parseInt(elt && elt.getAttribute("table-page-size"), 10) || 10;
-    const page = bny.parsePageParam(xhr && xhr.responseURL, paramName) || parseInt(data.page, 10) || 1;
-    const filterFields = (elt && elt.getAttribute("table-filter") || "").split(",").map(function(s) {
-      return s.trim();
-    }).filter(Boolean);
-    const conditions = [];
-    if (xhr && xhr.responseURL && filterFields.length) {
-      try {
-        new URL(xhr.responseURL).searchParams.forEach(function(v, k) {
-          if (v !== "" && filterFields.indexOf(k) >= 0) conditions.push([k, v.toLowerCase()]);
-        });
-      } catch (_) {
-      }
-    }
-    let filteredCount = null;
-    if (Array.isArray(data.allList)) {
-      let all = data.allList;
-      if (conditions.length) {
-        all = all.filter(function(row) {
-          return conditions.every(function(c) {
-            return String(getVal(row, c[0])).toLowerCase().indexOf(c[1]) >= 0;
-          });
-        });
-        filteredCount = all.length;
-      }
-      const start = (page - 1) * pageSize;
-      list = all.slice(start, start + pageSize);
-    }
-    if (!cols.length && !rows.length && !list.length) return "";
-    let h = "";
-    h += '<table hx-ext="bny-table" class="bny-table-fade"' + (color ? ' table-color="' + color + '"' : "");
-    if (tableKey) h += ' table-key="' + bny.escapeChars(tableKey) + '"';
-    h += ">";
-    const indentUnit = 20;
-    function treeRowHtml(row, cells, level) {
-      const hasKids = Array.isArray(row.children) && row.children.length > 0;
-      let r = '<tr data-tree-level="' + level + '"' + (hasKids ? ' data-tree-parent="1"' : "") + ">";
-      cells.forEach(function(cell, ci) {
-        let content = renderCell(cell);
-        if (ci === 0) {
-          content = '<span class="bny-table-tree-indent" style="padding-left:' + level * indentUnit + 'px"></span>' + (hasKids ? '<span class="bny-table-tree-toggle"><i class="bny-icon icon-caret-right"></i></span>' : "") + content;
-        }
-        r += "<td" + (ci === 0 ? ' class="bny-table-tree-cell"' : "") + ">" + content + "</td>";
-      });
-      r += "</tr>";
-      return r;
-    }
-    function appendRow(row, level) {
-      if (row && !Array.isArray(row) && typeof row === "object") {
-        if (Array.isArray(row.cells) || Array.isArray(row.children)) {
-          const hasChildren = Array.isArray(row.children) && row.children.length > 0;
-          const cells = Array.isArray(row.cells) ? row.cells : [row.cells];
-          h += treeRowHtml(row, cells, level);
-          if (hasChildren) {
-            (row.children || []).forEach(function(child) {
-              appendRow(child, level + 1);
-            });
-          }
-          return;
-        }
-        if (typeof row.__html !== "undefined" && row.__html) {
-          h += row.__html;
-          return;
-        }
-        h += '<tr data-tree-level="' + level + '">';
-        [row].forEach(function(cell, ci) {
-          let content = renderCell(cell);
-          if (ci === 0 && level > 0) {
-            content = '<span class="bny-table-tree-indent" style="padding-left:' + level * indentUnit + 'px"></span>' + content;
-          }
-          h += "<td>" + content + "</td>";
-        });
-        h += "</tr>";
-        return;
-      }
-      const vals = Array.isArray(row) ? row : [row];
-      h += '<tr data-tree-level="' + level + '">';
-      vals.forEach(function(cell, ci) {
-        let content = renderCell(cell);
-        if (ci === 0 && level > 0) {
-          content = '<span class="bny-table-tree-indent" style="padding-left:' + level * indentUnit + 'px"></span>' + content;
-        }
-        h += "<td>" + content + "</td>";
-      });
-      h += "</tr>";
-    }
-    h += "<thead><tr>";
-    cols.forEach(function(col) {
-      h += renderCol(col);
-    });
-    h += "</tr></thead>";
-    h += "<tbody>";
-    if (rows.length === 0 && list.length === 0) {
-      h += '<tr class="bny-table-empty"><td colspan="' + cols.length + '">' + bny.escapeChars(emptyText) + "</td></tr>";
-    } else {
-      rows.forEach(function(row) {
-        appendRow(row, 0);
-      });
-      list.forEach(function(row) {
-        h += objectRowHtml(row, cols);
-      });
-    }
-    h += "</tbody></table>";
-    const total = filteredCount !== null ? filteredCount : parseInt(data.total, 10);
-    if (!isNaN(total)) {
-      h += bny.paginationBar({
-        total,
-        page,
-        pageSize,
-        paramName,
-        sizeParam,
-        sizes: bny.parsePageSizes(elt && elt.getAttribute("pg-page-sizes")),
-        // 携带当前查询串（剥掉 page/pageSize），翻页/切条数时回带，保持搜索与筛选条件
-        query: bny.carryQuery(xhr && xhr.responseURL, [paramName, sizeParam]),
-        maxButtons: elt && elt.getAttribute("pg-max-buttons"),
-        jumper: elt ? elt.getAttribute("pg-jumper") !== "false" : true,
-        showTotal: elt ? elt.getAttribute("pg-total") !== "false" : true,
-        carryAttrs: carryAttrsFrom$1(elt, ["pg-color", "pg-model", "data-max-buttons", "data-jumper", "data-total", "data-page-size"])
-      });
-    }
-    return h;
   }
   function carryAttrsFrom$1(elt, names) {
     var s = "";
@@ -5768,11 +5776,21 @@
   }
   function resolveSwapTarget(src) {
     var sel = src.getAttribute("hx-target");
-    if (!sel) return src;
+    if (!sel || sel === "this") return src;
+    if (sel.indexOf("find ") === 0) return src.querySelector(sel.slice(5));
+    if (sel.indexOf("closest ") === 0) return src.closest(sel.slice(8));
     try {
       return document.querySelector(sel);
     } catch (_) {
       return null;
+    }
+  }
+  var BLANK_IMG = "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7";
+  function abortPendingImages(container) {
+    if (!container || !container.querySelectorAll) return;
+    const imgs = container.querySelectorAll("img");
+    for (let i = 0; i < imgs.length; i++) {
+      if (!imgs[i].complete) imgs[i].src = BLANK_IMG;
     }
   }
   function scheduleTableSkeleton(target, src) {
@@ -5780,7 +5798,8 @@
     target._bnyTableSkeletonShown = false;
     target._bnyTableSkeletonTimer = setTimeout(function() {
       target._bnyTableSkeletonShown = true;
-      var rows = parseInt(src.getAttribute("table-page-size"), 10) || parseInt(src.getAttribute("pg-page-size"), 10) || 5;
+      var sizes = bny.parsePageSizes(src.getAttribute("table-list"));
+      var rows = sizes && sizes[0] || parseInt(src.getAttribute("table-page-size"), 10) || parseInt(src.getAttribute("pg-page-size"), 10) || 10;
       rows = Math.min(Math.max(rows, 3), 10);
       target.innerHTML = tableSkeletonHtml(rows);
     }, 200);
@@ -5812,33 +5831,238 @@
     if (_bnyTableActionsDelegated) return;
     _bnyTableActionsDelegated = true;
     document.addEventListener("click", function(e) {
-      var trigger = e.target.closest && e.target.closest(".bny-table-actions [data-bny-dropdown]");
-      if (trigger) {
-        e.preventDefault();
-        var panel = dropdownPanelOf(trigger);
-        if (!panel) return;
-        var isOpen = panel.classList.contains("show");
-        closeAllDropdownPanels();
-        if (!isOpen) openDropdown(trigger, panel);
-        return;
-      }
-      if (!e.target.closest || !e.target.closest(".bny-table-actions .bny-dropdown")) {
-        closeAllDropdownPanels();
-      }
-      var btn = e.target.closest && e.target.closest(".bny-table-actions [data-bny-action]");
+      var btn = e.target.closest && e.target.closest("[data-bny-action]");
       if (!btn) return;
       e.preventDefault();
       runAction(btn);
     });
   }
-  function closeAllDropdownPanels() {
-    document.querySelectorAll(".bny-table-actions .bny-dropdown.show").forEach(closeDropdownPanel);
-  }
   function findRequestSource(container) {
     if (container && container.id) {
-      return document.querySelector('[hx-get][hx-target="#' + container.id + '"]');
+      return document.querySelector('[hx-get][hx-target="#' + container.id + '"], [hx-post][hx-target="#' + container.id + '"]');
     }
     return null;
+  }
+  function queryVal(url, name) {
+    if (!url) return "";
+    try {
+      var u = new URL(url, window.location.href);
+      return u.searchParams.get(name) || "";
+    } catch (e) {
+      var re = new RegExp("[?&]" + String(name).replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + "=([^&]*)");
+      var m = String(url).match(re);
+      return m ? decodeURIComponent(m[1]) : "";
+    }
+  }
+  function mergeQuery(url, params) {
+    var s = String(url || "");
+    var hi = s.indexOf("#");
+    var hash = hi >= 0 ? s.slice(hi) : "";
+    if (hi >= 0) s = s.slice(0, hi);
+    var qi = s.indexOf("?");
+    var base = qi >= 0 ? s.slice(0, qi) : s;
+    var map = {};
+    if (qi >= 0) {
+      s.slice(qi + 1).split("&").forEach(function(kv) {
+        if (!kv) return;
+        var i = kv.indexOf("=");
+        var k = i >= 0 ? kv.slice(0, i) : kv;
+        var v = i >= 0 ? kv.slice(i + 1) : "";
+        try {
+          k = decodeURIComponent(k);
+          v = decodeURIComponent(v.replace(/\+/g, " "));
+        } catch (_) {
+        }
+        map[k] = v;
+      });
+    }
+    Object.keys(params || {}).forEach(function(k) {
+      var v = params[k];
+      if (v === null || v === void 0 || v === "") delete map[k];
+      else map[k] = String(v);
+    });
+    var out = Object.keys(map).map(function(k) {
+      return encodeURIComponent(k) + "=" + encodeURIComponent(map[k]);
+    }).join("&");
+    return base + (out ? "?" + out : "") + hash;
+  }
+  function _reqMethod(src) {
+    if (src.getAttribute("hx-post") !== null) return "POST";
+    if (src.getAttribute("hx-put") !== null) return "PUT";
+    if (src.getAttribute("hx-delete") !== null) return "DELETE";
+    return "GET";
+  }
+  function _reqUrl(src) {
+    return src.getAttribute("hx-post") || src.getAttribute("hx-get") || "";
+  }
+  function reloadTableWithParams(container, table, params) {
+    if (!table) return;
+    var isStatic = table.hasAttribute("table-static");
+    var src = isStatic ? table : findRequestSource(container) || table;
+    var method = _reqMethod(src);
+    var base = table.getAttribute("table-url") || _reqUrl(src);
+    if (!base) return;
+    var target = isStatic ? table.querySelector("tbody") || container : container;
+    var url = base;
+    var opts = { source: src, target, swap: "innerHTML" };
+    if (method === "GET") {
+      url = mergeQuery(base, params);
+    } else {
+      var merged = mergeQuery(base, params);
+      var sep = merged.indexOf("?");
+      url = sep >= 0 ? merged.slice(0, sep) : merged;
+      var bodyParams = {};
+      if (sep >= 0) {
+        merged.slice(sep + 1).split("&").forEach(function(kv) {
+          if (!kv) return;
+          var i = kv.indexOf("=");
+          var k = i >= 0 ? kv.slice(0, i) : kv;
+          var v = i >= 0 ? kv.slice(i + 1) : "";
+          try {
+            bodyParams[decodeURIComponent(k)] = decodeURIComponent(v);
+          } catch (_) {
+            bodyParams[k] = v;
+          }
+        });
+      }
+      opts.values = bodyParams;
+    }
+    htmx.ajax(method, url, opts);
+  }
+  function colFromTh(th) {
+    const col = {
+      field: th.getAttribute("cell-field") || th.getAttribute("table-sort-field") || "",
+      title: th.textContent.trim(),
+      align: th.getAttribute("cell-align") || ""
+    };
+    const ell = th.getAttribute("cell-ellipsis");
+    if (ell !== null) col.ellipsis = ell !== "false";
+    const template = th.getAttribute("cell-template");
+    if (template) col.template = template;
+    const sortVal = th.getAttribute("cell-sort-val");
+    if (sortVal) col.sortVal = sortVal;
+    return col;
+  }
+  function colsFromThead(table) {
+    const cols = [];
+    table.querySelectorAll("thead th").forEach(function(th) {
+      cols.push(colFromTh(th));
+    });
+    return cols;
+  }
+  function resolveStaticTable(elt) {
+    if (!elt) return null;
+    if (elt.tagName === "TABLE" && elt.hasAttribute("table-static")) return elt;
+    const sel = elt.getAttribute("hx-target");
+    if (!sel) return null;
+    let target = null;
+    if (sel.indexOf("find ") === 0) target = elt.querySelector(sel.slice(5));
+    else {
+      try {
+        target = document.querySelector(sel);
+      } catch (_) {
+      }
+    }
+    const table = target && target.closest ? target.closest("table") : null;
+    return table && table.hasAttribute("table-static") ? table : null;
+  }
+  function fixRowTargets(table, force) {
+    if (!table || !force && table._bnyFixTargetsDone) return;
+    table._bnyFixTargetsDone = true;
+    const apply = function() {
+      table.querySelectorAll("tbody [hx-get], tbody [hx-post], tbody [hx-put], tbody [hx-delete]").forEach(function(elt) {
+        if (elt.getAttribute("hx-target") === null) {
+          elt.setAttribute("hx-target", "closest tbody");
+        }
+        const inc = elt.getAttribute("hx-include");
+        if (inc) {
+          const m = /\[id=['"]([^'"]+)['"]\]/.exec(inc);
+          if (m && m[1] && !document.querySelector('[id="' + m[1] + '"]')) {
+            const row = elt.closest("tr");
+            if (row && !row.id) row.id = m[1];
+          }
+        }
+      });
+    };
+    apply();
+    let tb = table.querySelector("tbody");
+    if (tb && !table._bnyTargetObserver) {
+      const obs = new MutationObserver(function() {
+        apply();
+      });
+      obs.observe(tb, { childList: true });
+      table._bnyTargetObserver = obs;
+    }
+  }
+  function mergeSortQuery(query, table) {
+    const mem = table && table._bnySortState;
+    if (!mem || !mem.field) return query;
+    const sortParam = table.getAttribute("table-sort-param") || "sort";
+    const orderParam = table.getAttribute("table-order-param") || "order";
+    const parts = [];
+    if (query) parts.push(query);
+    parts.push(encodeURIComponent(sortParam) + "=" + encodeURIComponent(mem.field));
+    parts.push(encodeURIComponent(orderParam) + "=" + (mem.order === "desc" ? "desc" : "asc"));
+    return parts.join("&");
+  }
+  function buildStaticRows(data, xhr, table) {
+    const cols = colsFromThead(table);
+    const list = Array.isArray(data.data) ? data.data : Array.isArray(data.list) ? data.list : Array.isArray(data.rows) ? data.rows : [];
+    if (xhr && xhr.responseURL) table.setAttribute("table-url", xhr.responseURL);
+    const paramName = table.getAttribute("pg-page-param") || "page";
+    const sizeParam = table.getAttribute("pg-size-param") || "pageSize";
+    const url = xhr && xhr.responseURL || _reqUrl(table);
+    const sizeList = bny.parsePageSizes(table.getAttribute("table-list"));
+    table._bnyStaticPage = {
+      total: parseInt(data.total, 10),
+      // 当前页：URL 参数 > 响应 current_page；每页条数：URL 参数 > 响应 per_page > table-list 首项（默认 10）
+      page: bny.parsePageParam(url, paramName) || parseInt(data.current_page, 10) || 1,
+      pageSize: bny.parsePageParam(url, sizeParam) || parseInt(data.per_page, 10) || (sizeList ? sizeList[0] : 10),
+      paramName,
+      sizeParam,
+      // 回带查询条件：URL 查询串（GET）+ 内存排序状态（POST 模式 sort/order 在 body，
+      // URL 读不到，翻页时由 pg-query 回带保持排序）
+      query: mergeSortQuery(bny.carryQuery(url, [paramName, sizeParam]), table),
+      // 条数选择列表：table-list 逗号分隔（如 10,20,50）；首项为默认每页条数，未设置时默认 [10]
+      sizes: sizeList || [10],
+      carryAttrs: carryAttrsFrom$1(table, ["pg-color", "pg-model", "data-max-buttons", "data-jumper", "data-total", "data-page-size"])
+    };
+    renderStaticPagination(table);
+    if (!list.length) {
+      return '<tr class="bny-table-empty"><td colspan="' + Math.max(1, cols.length) + '">' + bny.escapeChars(data.empty || "暂无数据") + "</td></tr>";
+    }
+    const flat = [];
+    flattenTreeRows(list, 0, flat);
+    const isTree = flat.some(function(n) {
+      return n.level > 0 || n.hasChildren;
+    });
+    let h = "";
+    flat.forEach(function(n) {
+      h += objectRowHtml(n.row, cols, isTree ? n.level : void 0, isTree && n.hasChildren);
+    });
+    return h;
+  }
+  function renderStaticPagination(table) {
+    const info = table._bnyStaticPage;
+    if (!info) return;
+    delete table._bnyStaticPage;
+    if (isNaN(info.total)) return;
+    const old = table.nextElementSibling;
+    if (old && old.classList && old.classList.contains("bny-pagination")) old.remove();
+    const wrap = document.createElement("div");
+    wrap.innerHTML = bny.paginationBar({
+      total: info.total,
+      page: info.page,
+      pageSize: info.pageSize,
+      paramName: info.paramName,
+      sizeParam: info.sizeParam,
+      sizes: info.sizes,
+      query: info.query,
+      jumper: table.getAttribute("pg-jumper") !== "false",
+      showTotal: table.getAttribute("pg-total") !== "false",
+      carryAttrs: info.carryAttrs
+    });
+    if (wrap.firstChild) table.parentNode.insertBefore(wrap.firstChild, table.nextSibling);
   }
   function runAction(btn) {
     var table = btn.closest("table");
@@ -5885,6 +6109,13 @@
       run();
     }
   }
+  bny.tableReload = function(target, params) {
+    const el = typeof target === "string" ? document.querySelector(target) : target;
+    if (!el) return;
+    const table = el.tagName === "TABLE" ? el : el.querySelector ? el.querySelector("table") : null;
+    if (!table) return;
+    reloadTableWithParams(el.tagName === "TABLE" ? el.parentElement : el, table, params || {});
+  };
   htmx.defineExtension("bny-tab", {
     onEvent: function(name, evt) {
       function addMoveBtn(target) {
@@ -6089,6 +6320,7 @@
             }
             htmx.process(evt.target);
             if (trigger === "click" && evt.target.getAttribute("this") !== null) {
+              evt.target.removeAttribute("this");
               evt.target.click();
               head.scrollBy({ left: head.scrollWidth, behavior: "smooth" });
             }
@@ -6487,7 +6719,7 @@
             inst.close();
           }
         }
-      });
+      }, true);
       window.addEventListener("resize", function() {
         for (var i = 0; i < instances.length; i++) {
           if (instances[i].panel.classList.contains("show")) {
@@ -7339,11 +7571,11 @@
           field.addEventListener("blur", function() {
             validateField(field);
           });
-          field.addEventListener("input", function() {
-            if (field.getAttribute("aria-invalid") === "true") {
-              clearError(field);
-            }
-          });
+        });
+        form.addEventListener("input", function(e) {
+          var field = e.target;
+          if (!field.getAttribute || field.getAttribute("aria-invalid") !== "true") return;
+          clearError(field);
         });
         return false;
       }
@@ -7643,6 +7875,8 @@
       var src = current.list[current.index];
       if (!src) return;
       imgEl.classList.add("loading");
+      imgEl.removeAttribute("src");
+      imgEl.alt = "";
       var tmp = new Image();
       tmp.onload = function() {
         imgEl.src = src;
@@ -8775,6 +9009,13 @@
   }
   htmx.defineExtension("bny-attr", {
     onEvent: function(name, evt) {
+      if (name === "htmx:afterRequest") {
+        const req = evt.target;
+        if (req && req._bnyAttrInit && evt.detail && evt.detail.elt === req && req._bnyAttrApply) {
+          req._bnyAttrApply(evt.detail.xhr);
+        }
+        return true;
+      }
       if (name !== "htmx:afterProcessNode") return true;
       const el = evt.target;
       if (!bny.hasExtName(el, "bny-attr")) return true;
@@ -8785,36 +9026,74 @@
       });
       const hasJson = el.hasAttribute("attr-json");
       if (!opAttrs.length && !hasJson) return true;
-      const target = resolveTarget(el);
-      const applyAll = function() {
-        opAttrs.forEach(function(opAttr) {
-          applyOp(el, opAttr, target);
+      el._bnyAttrApply = function(xhr) {
+        resolveTargets(el).forEach(function(target) {
+          const jsonPath = el.getAttribute("attr-json");
+          if (jsonPath !== null && xhr) {
+            applyJsonFromResponse(target, jsonPath, xhr, el.getAttribute("attr-value"));
+          }
+          opAttrs.forEach(function(opAttr) {
+            applyOp(el, opAttr, target);
+          });
+          if (target && target.dispatchEvent) {
+            target.dispatchEvent(new CustomEvent("attr-applied", { bubbles: true, detail: { by: el } }));
+          }
         });
-        if (target && document.dispatchEvent) {
-          target.dispatchEvent(new CustomEvent("attr-applied", { bubbles: true, detail: { by: el } }));
-        }
       };
       if (el.hasAttribute("attr-auto")) {
-        applyAll();
+        el._bnyAttrApply();
       }
-      const trigger = el.getAttribute("attr-trigger") || "click";
-      el.addEventListener(trigger, function(e) {
-        const jsonPath = el.getAttribute("attr-json");
-        if (jsonPath !== null && e && e.detail && e.detail.xhr) {
-          applyJsonFromResponse(target, jsonPath, e.detail.xhr, el.getAttribute("attr-value"));
+      const isRequester = ["hx-get", "hx-post", "hx-put", "hx-delete", "hx-patch"].some(function(a) {
+        return el.hasAttribute(a);
+      });
+      if (isRequester) return true;
+      const triggerAttr = el.getAttribute("hx-trigger");
+      const specs = String(triggerAttr || "click").split(",");
+      const bound = {};
+      specs.forEach(function(spec) {
+        const ev = (spec || "").trim().split(/\s+/)[0];
+        if (!ev || bound[ev]) return;
+        bound[ev] = true;
+        if (ev === "load") {
+          el._bnyAttrApply();
+          return;
         }
-        applyAll();
+        el.addEventListener(ev, function(e) {
+          el._bnyAttrApply(e && e.detail ? e.detail.xhr : void 0);
+        });
       });
       return true;
     }
   });
-  function resolveTarget(el) {
-    const sel = el.getAttribute("attr-target");
-    if (typeof sel === "string" && sel.trim()) {
-      const t = el.closest(sel) || document.querySelector(sel.trim());
-      if (t) return t;
-    }
-    return el;
+  function resolveTargets(el) {
+    const raw = el.getAttribute("hx-target");
+    if (raw === null || !String(raw).trim()) return [el];
+    const found = [];
+    String(raw).split(",").forEach(function(spec) {
+      spec = spec.trim();
+      if (!spec) return;
+      let nodes = [];
+      try {
+        if (spec.indexOf("find ") === 0) {
+          const t = el.querySelector(spec.slice(5));
+          if (t) nodes = [t];
+        } else if (spec.indexOf("closest ") === 0) {
+          const t = el.closest(spec.slice(8));
+          if (t) nodes = [t];
+        } else if (spec.indexOf("all ") === 0) {
+          nodes = Array.prototype.slice.call(document.querySelectorAll(spec.slice(4)));
+        } else {
+          const t = el.closest(spec) || document.querySelector(spec);
+          if (t) nodes = [t];
+        }
+      } catch (e) {
+        nodes = [];
+      }
+      nodes.forEach(function(n) {
+        if (n && found.indexOf(n) === -1) found.push(n);
+      });
+    });
+    return found.length ? found : [el];
   }
   function applyOp(el, opAttr, target) {
     const raw = el.getAttribute(opAttr);
@@ -8863,7 +9142,7 @@
         return;
       }
       try {
-        target.setAttribute(valueAttr, val);
+        attrSet(target, valueAttr, val);
       } catch (_) {
       }
       return;
@@ -8883,7 +9162,7 @@
         return;
       }
       try {
-        target.setAttribute(k, v);
+        attrSet(target, k, v);
       } catch (_) {
       }
     });
@@ -8899,6 +9178,25 @@
       return o == null ? o : o[k];
     }, obj);
   }
+  function syncFormProp(target, key) {
+    if (!target || !target.tagName) return;
+    const tag = target.tagName;
+    if (key === "checked" && tag === "INPUT" && (target.type === "checkbox" || target.type === "radio")) {
+      target.checked = target.hasAttribute("checked");
+    } else if (key === "value" && (tag === "INPUT" || tag === "TEXTAREA")) {
+      target.value = target.hasAttribute("value") ? target.getAttribute("value") : target.defaultValue;
+    } else if (key === "selected" && tag === "OPTION") {
+      target.selected = target.hasAttribute("selected");
+    }
+  }
+  function attrSet(target, key, value) {
+    target.setAttribute(key, value);
+    syncFormProp(target, key);
+  }
+  function attrRemove(target, key) {
+    target.removeAttribute(key);
+    syncFormProp(target, key);
+  }
   function applyOne(target, op, key, value) {
     const dangerousName = /^on/i.test(key) || op === "rename" && /^on/i.test(String(value || ""));
     if (dangerousName) {
@@ -8911,7 +9209,7 @@
     }
     switch (op) {
       case "set":
-        target.setAttribute(key, value);
+        attrSet(target, key, value);
         break;
       case "add": {
         if (!value) break;
@@ -8920,12 +9218,12 @@
         addTokens.forEach(function(t) {
           if (t && addArr.indexOf(t) === -1) addArr.push(t);
         });
-        target.setAttribute(key, addArr.join(" "));
+        attrSet(target, key, addArr.join(" "));
         break;
       }
       case "remove": {
         if (!value) {
-          target.removeAttribute(key);
+          attrRemove(target, key);
           break;
         }
         if (!target.hasAttribute(key)) break;
@@ -8933,15 +9231,15 @@
         const remain = target.getAttribute(key).split(/\s+/).filter(function(t) {
           return rmTokens.indexOf(t) === -1;
         });
-        if (remain.length) target.setAttribute(key, remain.join(" "));
-        else target.removeAttribute(key);
+        if (remain.length) attrSet(target, key, remain.join(" "));
+        else attrRemove(target, key);
         break;
       }
       case "rename": {
         if (key && value && target.hasAttribute(key)) {
           const saved = target.getAttribute(key);
-          target.removeAttribute(key);
-          target.setAttribute(value, saved);
+          attrRemove(target, key);
+          attrSet(target, value, saved);
         }
         break;
       }
@@ -8957,29 +9255,1125 @@
             if (i > -1) repArr[i] = n;
           }
         });
-        target.setAttribute(key, repArr.join(" "));
+        attrSet(target, key, repArr.join(" "));
         break;
       }
       case "toggle": {
         if (!target.hasAttribute(key)) {
-          target.setAttribute(key, value);
+          attrSet(target, key, value);
         } else if (value) {
           const cur = target.getAttribute(key);
           if (cur.split(/\s+/).indexOf(value) > -1) {
             const arr = cur.split(/\s+/).filter(function(t) {
               return t !== value;
             });
-            if (arr.length) target.setAttribute(key, arr.join(" "));
-            else target.removeAttribute(key);
+            if (arr.length) attrSet(target, key, arr.join(" "));
+            else attrRemove(target, key);
           } else {
-            target.setAttribute(key, (cur ? cur + " " : "") + value);
+            attrSet(target, key, (cur ? cur + " " : "") + value);
           }
         } else {
-          target.removeAttribute(key);
+          attrRemove(target, key);
         }
         break;
       }
     }
   }
+  htmx.defineExtension("bny-upload", {
+    // 节点初始化（页面加载 / 节点交换后）
+    onEvent: function(name, evt) {
+      function formatSize(bytes) {
+        if (!bytes && bytes !== 0) return "";
+        if (bytes < 1024) return bytes + " B";
+        var units = ["KB", "MB", "GB", "TB"];
+        var size = bytes;
+        var i = -1;
+        do {
+          size = size / 1024;
+          i++;
+        } while (size >= 1024 && i < units.length - 1);
+        return size.toFixed(size >= 100 ? 0 : 1) + " " + units[i];
+      }
+      function setInputFiles(input, files2) {
+        try {
+          var dt = new DataTransfer();
+          files2.forEach(function(f) {
+            dt.items.add(f);
+          });
+          input.files = dt.files;
+        } catch (e) {
+          try {
+            input.files = files2;
+          } catch (e2) {
+          }
+        }
+      }
+      function fileExt(file) {
+        var name2 = file.name || "";
+        var i = name2.lastIndexOf(".");
+        if (i < 0 || i === name2.length - 1) return "";
+        return name2.slice(i + 1).toLowerCase();
+      }
+      function matchesAccept(file, accept) {
+        if (!accept || accept === "*" || accept === "") return true;
+        var type = (file.type || "").toLowerCase();
+        var parts = accept.split(",");
+        for (var i = 0; i < parts.length; i++) {
+          var p = (parts[i] || "").trim().toLowerCase();
+          if (!p) continue;
+          if (p === type) return true;
+          if (p.endsWith("/*") && type.indexOf(p.slice(0, p.length - 1)) === 0) return true;
+          if (p === "*/*") return true;
+        }
+        return false;
+      }
+      function validate(elt, cfg2, files2) {
+        if (cfg2.limit > 0 && (elt._bnyUploadItems || []).length + files2.length > cfg2.limit) {
+          bny.alert("最多只能上传 " + cfg2.limit + " 个文件", 2);
+          return false;
+        }
+        for (var i = 0; i < files2.length; i++) {
+          var file = files2[i];
+          if (cfg2.extList.length) {
+            var ext = fileExt(file);
+            if (cfg2.extList.indexOf(ext) === -1) {
+              bny.alert("仅支持 " + cfg2.extList.join(",") + " 格式", 2);
+              return false;
+            }
+          }
+          if (cfg2.size > 0 && file.size / 1024 > cfg2.size) {
+            bny.alert("文件大小不能超过 " + cfg2.size + " KB", 2);
+            return false;
+          }
+          if (!matchesAccept(file, cfg2.accept)) {
+            bny.alert("文件类型不支持", 2);
+            return false;
+          }
+        }
+        return true;
+      }
+      function resolveListTarget(elt, listAttr) {
+        var t = (listAttr || "").trim();
+        if (!t) return null;
+        if (t === "this") return elt;
+        try {
+          if (t.indexOf("find ") === 0) return elt.querySelector(t.slice(5));
+          if (t.indexOf("closest ") === 0) return elt.closest(t.slice(7));
+          return document.querySelector(t);
+        } catch (e) {
+          return null;
+        }
+      }
+      function getRequestInfo(elt) {
+        var verbs = ["hx-post", "hx-put", "hx-delete", "hx-patch", "hx-get"];
+        for (var i = 0; i < verbs.length; i++) {
+          var path = elt.getAttribute(verbs[i]);
+          if (path) return { verb: verbs[i].slice(3).toUpperCase(), path };
+        }
+        return null;
+      }
+      function renderItems(elt, cfg2, files2, status, msg2) {
+        var target2 = resolveListTarget(elt, cfg2.list);
+        if (!target2) return;
+        if (!target2.querySelector(".bny-upload-list")) {
+          var ul = document.createElement("ul");
+          ul.className = "bny-upload-list";
+          target2.appendChild(ul);
+          var hint = elt.getAttribute("upload-hint");
+          if (hint && !target2.textContent.trim()) {
+            var tip = document.createElement("span");
+            tip.className = "bny-upload-hint";
+            tip.textContent = hint;
+            target2.appendChild(tip);
+          }
+        }
+        var list2 = target2.querySelector(".bny-upload-list");
+        files2.forEach(function(file) {
+          var li = document.createElement("li");
+          li.className = "bny-upload-item";
+          li._bnyUploadFile = file;
+          li.innerHTML = '<span class="bny-upload-thumb"></span><span class="bny-upload-info"><span class="bny-upload-name"></span><span class="bny-upload-size"></span></span><span class="bny-upload-progress"><i></i></span><span class="bny-upload-status"></span><span class="bny-upload-retry">重新上传</span><span class="bny-upload-remove">&times;</span>';
+          li.querySelector(".bny-upload-name").textContent = file.name;
+          li.querySelector(".bny-upload-size").textContent = formatSize(file.size);
+          {
+            li.querySelector(".bny-upload-status").textContent = "上传中";
+            li.querySelector(".bny-upload-remove").style.display = "none";
+            li.querySelector(".bny-upload-retry").style.display = "none";
+          }
+          list2.appendChild(li);
+        });
+      }
+      function init(elt) {
+        if (elt._bnyUploadInit) return;
+        elt._bnyUploadInit = true;
+        var cfg2 = {
+          name: elt.getAttribute("upload-name") || "file",
+          accept: elt.getAttribute("upload-accept") || "*",
+          extStr: elt.getAttribute("upload-ext") || "",
+          limit: parseInt(elt.getAttribute("upload-limit") || "0", 10) || 0,
+          size: parseInt(elt.getAttribute("upload-size") || "0", 10) || 0,
+          multi: elt.hasAttribute("upload-multi"),
+          preview: elt.hasAttribute("upload-preview"),
+          drag: elt.hasAttribute("upload-drag"),
+          list: elt.getAttribute("upload-list") || ""
+        };
+        cfg2.extList = (cfg2.extStr || "").split(",").map(function(s) {
+          return s.trim().toLowerCase();
+        }).filter(Boolean);
+        if (!getRequestInfo(elt)) {
+          console.error("[bny-upload] 缺少 hx-post / hx-get 等请求属性");
+          return;
+        }
+        if (!elt.getAttribute("hx-swap")) elt.setAttribute("hx-swap", "none");
+        if (!elt.getAttribute("hx-encoding")) elt.setAttribute("hx-encoding", "multipart/form-data");
+        elt._bnyUploadItems = [];
+        elt._bnyUploadPending = [];
+        if (!cfg2.list && !elt.textContent.trim()) {
+          var hint = document.createElement("span");
+          hint.className = "bny-upload-hint";
+          hint.textContent = elt.getAttribute("upload-hint") || "点击选择文件后上传";
+          elt.appendChild(hint);
+        }
+        var input = document.createElement("input");
+        input.type = "file";
+        input.name = cfg2.name;
+        input.hidden = true;
+        input.accept = cfg2.accept;
+        if (cfg2.multi) input.multiple = true;
+        input.setAttribute("bny-upload-input", "");
+        elt.appendChild(input);
+        var hxInclude = elt.getAttribute("hx-include") || "";
+        if (hxInclude.indexOf("bny-upload-input") === -1) {
+          elt.setAttribute("hx-include", hxInclude ? hxInclude + ", find input[bny-upload-input]" : "find input[bny-upload-input]");
+        }
+        elt.addEventListener("click", function(e) {
+          e.preventDefault();
+          e.stopPropagation();
+          var rm = e.target.closest && e.target.closest(".bny-upload-remove");
+          var retry = e.target.closest && e.target.closest(".bny-upload-retry");
+          if (rm) {
+            var li = rm.closest(".bny-upload-item");
+            if (li && li._bnyUploadFile && elt._bnyUploadItems) {
+              var i = elt._bnyUploadItems.indexOf(li._bnyUploadFile);
+              if (i > -1) elt._bnyUploadItems.splice(i, 1);
+            }
+            if (li) li.remove();
+            return;
+          }
+          if (retry) {
+            var li2 = retry.closest(".bny-upload-item");
+            var file = li2 && li2._bnyUploadFile;
+            if (li2) li2.remove();
+            if (file) {
+              setInputFiles(input, [file]);
+              input.dispatchEvent(new Event("change", { bubbles: true }));
+            }
+            return;
+          }
+          try {
+            if (input.showPicker) {
+              input.showPicker();
+              return;
+            }
+          } catch (err) {
+          }
+          input.click();
+        }, true);
+        if (cfg2.drag) {
+          elt.addEventListener("dragover", function(e) {
+            e.preventDefault();
+            if (!bny.hasClass(elt, "bny-upload-dragover")) elt.classList.add("bny-upload-dragover");
+          });
+          elt.addEventListener("dragleave", function(e) {
+            if (e.target === elt) elt.classList.remove("bny-upload-dragover");
+          });
+          elt.addEventListener("drop", function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            elt.classList.remove("bny-upload-dragover");
+            var files2 = e.dataTransfer && e.dataTransfer.files;
+            if (files2 && files2.length) {
+              setInputFiles(input, Array.prototype.slice.call(files2));
+              input.dispatchEvent(new Event("change", { bubbles: true }));
+            }
+          });
+        }
+        input.addEventListener("change", function() {
+          var files2 = input.files ? Array.prototype.slice.call(input.files) : [];
+          if (!files2.length) return;
+          var picked = files2;
+          if (!cfg2.multi && picked.length > 1) picked = picked.slice(0, 1);
+          if (!validate(elt, cfg2, picked)) {
+            input.value = "";
+            return;
+          }
+          if (cfg2.list) renderItems(elt, cfg2, picked);
+          elt._bnyUploadQueue = picked.slice();
+          elt._bnyUploadNext();
+        });
+        elt._bnyUploadNext = function() {
+          var queue = elt._bnyUploadQueue || [];
+          if (!queue.length) {
+            elt._bnyUploadQueue = null;
+            return;
+          }
+          var req = getRequestInfo(elt);
+          if (!req || !window.htmx || !htmx.ajax) {
+            elt._bnyUploadQueue = null;
+            return;
+          }
+          var file = queue.shift();
+          setInputFiles(input, [file]);
+          elt._bnyUploadPending = [file];
+          htmx.ajax(req.verb, req.path, { source: elt });
+        };
+      }
+      if (name === "htmx:afterProcessNode") {
+        if (bny.hasExtName(evt.target, "bny-upload")) {
+          init(evt.target);
+          return false;
+        }
+        return true;
+      }
+      if (name === "htmx:xhr:progress") {
+        var sender = evt.target;
+        if (sender && sender._bnyUploadInit && evt.detail && evt.detail.lengthComputable) {
+          var cur = (sender._bnyUploadPending || [])[0];
+          if (cur && evt.detail.total === cur.size) {
+            var pct = Math.round(evt.detail.loaded * 100 / evt.detail.total);
+            var tgt = resolveListTarget(sender, sender.getAttribute("upload-list") || "");
+            if (tgt) {
+              var lst = tgt.querySelector(".bny-upload-list");
+              if (lst) {
+                var item = null;
+                lst.querySelectorAll(".bny-upload-item").forEach(function(it) {
+                  if (it._bnyUploadFile === cur) item = it;
+                });
+                if (item) {
+                  var bar = item.querySelector(".bny-upload-progress i");
+                  if (bar) bar.style.width = pct + "%";
+                  var st = item.querySelector(".bny-upload-status");
+                  if (st) st.textContent = "上传中 " + pct + "%";
+                }
+              }
+            }
+          }
+        }
+        return true;
+      }
+      if (name === "htmx:afterRequest") {
+        var up = evt.target;
+        if (up && up._bnyUploadInit && up._bnyUploadPending && up._bnyUploadPending.length) {
+          var xhr = evt.detail.xhr;
+          var statusOk = !!(xhr && xhr.status >= 200 && xhr.status < 300);
+          var ok = statusOk;
+          var msg = "";
+          var urlMap = {};
+          try {
+            if (xhr && xhr.responseText) {
+              var data = JSON.parse(xhr.responseText);
+              if (data && typeof data === "object") {
+                if ("code" in data) ok = data.code === 0;
+                if (data.msg) msg = data.msg;
+                if (data.url) urlMap["0"] = data.url;
+              }
+            }
+          } catch (e) {
+          }
+          var files = up._bnyUploadPending;
+          if (ok) {
+            if (!up._bnyUploadItems) up._bnyUploadItems = [];
+            Array.prototype.push.apply(up._bnyUploadItems, files);
+          }
+          if (!msg && ok) msg = "上传成功";
+          if (!msg && !ok) msg = "上传失败";
+          if (msg) bny.alert(msg, ok ? 1 : 3, data && data.anim ? data.anim : "scale", data && data.time ? data.time : 3);
+          var cfg = {
+            list: up.getAttribute("upload-list") || "",
+            preview: up.hasAttribute("upload-preview"),
+            name: up.getAttribute("upload-name") || "file"
+          };
+          files.forEach(function(file, idx) {
+            if (urlMap["0"]) file.url = urlMap["0"];
+          });
+          var target = resolveListTarget(up, cfg.list);
+          if (target) {
+            var list = target.querySelector(".bny-upload-list");
+            if (list) {
+              list.querySelectorAll(".bny-upload-item").forEach(function(item2) {
+                if (files.indexOf(item2._bnyUploadFile) === -1) return;
+                var statusEl = item2.querySelector(".bny-upload-status");
+                if (ok) {
+                  item2.classList.add("is-success");
+                  if (statusEl) statusEl.textContent = "上传成功";
+                  var prog = item2.querySelector(".bny-upload-progress");
+                  if (prog) prog.style.display = "none";
+                } else {
+                  item2.classList.add("is-error");
+                  if (statusEl) statusEl.textContent = "上传失败";
+                  var proge = item2.querySelector(".bny-upload-progress");
+                  if (proge) proge.style.display = "none";
+                }
+              });
+            }
+          }
+          var inp = up.querySelector("input[bny-upload-input]");
+          if (inp) inp.value = "";
+          up._bnyUploadPending = [];
+          up._bnyUploadLastOk = void 0;
+          if (typeof up._bnyUploadNext === "function") up._bnyUploadNext();
+          return true;
+        }
+        return true;
+      }
+      return true;
+    }
+  });
+  (function() {
+    var current = null;
+    var delegated = false;
+    function closePanel(inst) {
+      if (!current) return;
+      if (inst && current !== inst) return;
+      var panel = current.panel;
+      if (panel && panel.parentNode) panel.parentNode.removeChild(panel);
+      current.box.classList.remove("open");
+      current.trigger.setAttribute("aria-expanded", "false");
+      current = null;
+    }
+    function ensureDelegation() {
+      if (delegated) return;
+      delegated = true;
+      document.addEventListener("click", function(e) {
+        if (!current) return;
+        if (current.panel.contains(e.target)) return;
+        if (current.box.contains(e.target)) return;
+        closePanel();
+      }, true);
+      document.addEventListener("keydown", function(e) {
+        if (!current) return;
+        if (e.key === "Escape") {
+          var inst = current;
+          closePanel();
+          if (inst) {
+            try {
+              inst.trigger.focus();
+            } catch (err) {
+            }
+          }
+          return;
+        }
+        if (e.key === "ArrowDown" || e.key === "ArrowUp") {
+          e.preventDefault();
+          moveFocus(e.key === "ArrowDown" ? 1 : -1);
+          return;
+        }
+        if (e.key === "Enter") {
+          var li = current.panel.querySelector(".option.focus");
+          if (li) {
+            e.preventDefault();
+            e.stopPropagation();
+            toggleOption(current, li);
+          }
+        }
+      }, true);
+      var reposition = function(e) {
+        if (!current) return;
+        if (e && e.target && current.panel.contains(e.target)) return;
+        var r = current.trigger.getBoundingClientRect();
+        if (r.bottom < 0 || r.top > window.innerHeight) {
+          closePanel();
+          return;
+        }
+        positionPanel(current);
+      };
+      window.addEventListener("scroll", reposition, true);
+      window.addEventListener("resize", reposition);
+    }
+    function moveFocus(dir) {
+      var list = Array.prototype.slice.call(
+        current.panel.querySelectorAll(".option")
+      ).filter(function(li) {
+        return li.style.display !== "none" && !li.hasAttribute("data-disabled");
+      });
+      if (!list.length) return;
+      var idx = -1;
+      for (var i = 0; i < list.length; i++) {
+        if (list[i].classList.contains("focus")) {
+          idx = i;
+          break;
+        }
+      }
+      list.forEach(function(li) {
+        li.classList.remove("focus");
+      });
+      var next = idx === -1 ? dir > 0 ? 0 : list.length - 1 : (idx + dir + list.length) % list.length;
+      list[next].classList.add("focus");
+      scrollOptionIntoPanel(list[next]);
+    }
+    function scrollOptionIntoPanel(li) {
+      var scroller = li.parentNode;
+      if (!scroller || !scroller.getBoundingClientRect) return;
+      var sTop = scroller.getBoundingClientRect().top;
+      var lTop = li.getBoundingClientRect().top;
+      if (lTop < sTop) {
+        scroller.scrollTop += lTop - sTop;
+        return;
+      }
+      var lBottom = lTop + li.offsetHeight;
+      var sBottom = sTop + scroller.clientHeight;
+      if (lBottom > sBottom) scroller.scrollTop += lBottom - sBottom;
+    }
+    function positionPanel(inst) {
+      var rect = inst.trigger.getBoundingClientRect();
+      var panel = inst.panel;
+      var gap = 4;
+      var vh = window.innerHeight;
+      var vw = window.innerWidth;
+      panel.style.visibility = "hidden";
+      panel.style.display = "block";
+      var ph = panel.offsetHeight;
+      var spaceBelow = vh - rect.bottom;
+      var spaceAbove = rect.top;
+      panel.style.top = "";
+      panel.style.bottom = "";
+      if (spaceBelow >= ph + gap || spaceBelow >= spaceAbove) {
+        panel.style.top = rect.bottom + gap + "px";
+        panel.classList.remove("up");
+      } else {
+        panel.style.bottom = vh - rect.top + gap + "px";
+        panel.classList.add("up");
+      }
+      var w = Math.max(rect.width, 160);
+      panel.style.width = w + "px";
+      var left = rect.left;
+      if (left + w > vw - gap) left = Math.max(gap, vw - w - gap);
+      panel.style.left = left + "px";
+      var maxH = Math.max(120, (spaceBelow >= ph + gap ? spaceBelow : spaceAbove) - gap * 2);
+      if (panel.offsetHeight > maxH) {
+        panel.querySelector(".options").style.maxHeight = maxH + "px";
+      }
+      panel.style.visibility = "visible";
+    }
+    function buildTree(items) {
+      var stack = [];
+      items.forEach(function(it) {
+        it.children = [];
+        it.parent = null;
+        while (stack.length && stack[stack.length - 1].level >= it.level) stack.pop();
+        if (stack.length) {
+          it.parent = stack[stack.length - 1];
+          it.parent.children.push(it);
+          it.parent.hasChildren = true;
+        }
+        stack.push(it);
+      });
+    }
+    function parseFragment(src) {
+      var items = [];
+      var nodes = src.children ? Array.prototype.slice.call(src.children) : [];
+      if (nodes.length === 1 && nodes[0].tagName === "UL") {
+        nodes = Array.prototype.slice.call(nodes[0].children);
+      }
+      nodes.forEach(function(li) {
+        if (!li.tagName || li.tagName !== "LI") return;
+        if (li.hasAttribute("option-group")) {
+          items.push({
+            isGroup: true,
+            text: li.textContent.trim(),
+            level: 0
+          });
+          return;
+        }
+        var ref = li.getAttribute("option-parent");
+        items.push({
+          value: li.getAttribute("option-value") || li.textContent.trim(),
+          text: li.textContent.trim(),
+          disabled: li.hasAttribute("option-disabled"),
+          selected: li.hasAttribute("option-selected"),
+          parentRef: ref === null || ref === "" ? null : ref,
+          level: 0,
+          children: []
+        });
+      });
+      return resolveByParent(items);
+    }
+    function resolveByParent(items) {
+      var map = {};
+      items.forEach(function(it) {
+        if (!it.isGroup && it.value !== void 0 && !(it.value in map)) map[it.value] = it;
+      });
+      var hasRef = false;
+      function createsCycle(p, node) {
+        while (p) {
+          if (p === node) return true;
+          p = p.parent;
+        }
+        return false;
+      }
+      items.forEach(function(it) {
+        if (it.isGroup) return;
+        var p = it.parentRef !== null ? map[it.parentRef] : null;
+        if (p && p !== it && !createsCycle(p, it)) {
+          it.parent = p;
+          p.children.push(it);
+          hasRef = true;
+        } else {
+          it.parent = null;
+        }
+      });
+      if (!hasRef) return items;
+      items.forEach(function(it) {
+        if (it.isGroup) {
+          it.level = 0;
+          return;
+        }
+        var lv = 0, p = it.parent, guard = items.length;
+        while (p && guard-- > 0) {
+          lv++;
+          p = p.parent;
+        }
+        it.level = lv;
+      });
+      var out = [];
+      function dfs(node) {
+        node.children.forEach(function(c) {
+          out.push(c);
+          dfs(c);
+        });
+      }
+      items.forEach(function(it) {
+        if (it.isGroup) {
+          out.push(it);
+          return;
+        }
+        if (it.parent) return;
+        out.push(it);
+        dfs(it);
+      });
+      return out;
+    }
+    function parseNative(sel) {
+      var items = [];
+      Array.prototype.slice.call(sel.children).forEach(function(node) {
+        if (node.tagName === "OPTGROUP") {
+          items.push({ isGroup: true, text: node.label, level: 0 });
+          Array.prototype.slice.call(node.children).forEach(function(o) {
+            items.push(nativeOption(o, 0));
+          });
+          return;
+        }
+        if (node.tagName === "OPTION") items.push(nativeOption(node, 0));
+      });
+      return items;
+    }
+    function nativeOption(o, level) {
+      return {
+        value: o.value,
+        text: o.textContent.trim(),
+        disabled: o.disabled,
+        selected: o.selected,
+        level,
+        children: []
+      };
+    }
+    function parseJson(data) {
+      var arr = data;
+      if (!Array.isArray(arr) && arr && typeof arr === "object") {
+        arr = arr.data || arr.list || arr.options || [];
+      }
+      if (!Array.isArray(arr)) return [];
+      var items = [];
+      (function walk(list, level) {
+        list.forEach(function(o) {
+          if (o === null || o === void 0) return;
+          if (typeof o !== "object") {
+            items.push({ value: String(o), text: String(o), level, children: [] });
+            return;
+          }
+          var hasValue = o.value !== void 0 && o.value !== null;
+          var kids = Array.isArray(o.children) ? o.children : null;
+          if (!hasValue && kids) {
+            items.push({ isGroup: true, text: String(o.label || o.text || ""), level });
+            walk(kids, level);
+            return;
+          }
+          var lv = o.level === void 0 ? level : parseInt(o.level, 10) || 0;
+          items.push({
+            value: hasValue ? String(o.value) : "",
+            text: String(o.label || o.text || (hasValue ? o.value : "")),
+            disabled: !!o.disabled,
+            selected: !!o.selected,
+            level: lv,
+            children: []
+          });
+          if (hasValue && kids) walk(kids, lv + 1);
+        });
+      })(arr, 0);
+      return items;
+    }
+    function parseResponse(text) {
+      var s = String(text || "").trim();
+      if (!s) return [];
+      if (s.charAt(0) === "<") {
+        var box = document.createElement("div");
+        box.innerHTML = s;
+        return parseFragment(box);
+      }
+      try {
+        return parseJson(JSON.parse(s));
+      } catch (e) {
+        console.warn("[bny-select] 选项响应解析失败，既非 HTML 片段也非合法 JSON");
+        return [];
+      }
+    }
+    function renderOptions(inst) {
+      var html = "";
+      var visible = 0;
+      inst.items.forEach(function(it) {
+        if (isHiddenByCollapse(it)) return;
+        visible++;
+        if (it.isGroup) {
+          html += '<li class="group">' + bny.escapeChars(it.text) + "</li>";
+          return;
+        }
+        var cls = "option";
+        if (it.disabled) cls += " disabled";
+        if (it.selected && !inst.multiple) cls += " selected";
+        var pad = inst.tree ? ' style="padding-left:' + (12 + it.level * 18) + 'px"' : "";
+        html += '<li class="' + cls + '" data-value="' + bny.escapeChars(String(it.value)) + '"' + (it.disabled ? " data-disabled" : "") + pad + ' role="option">';
+        if (inst.tree) {
+          if (it.hasChildren) {
+            html += '<i class="bny-icon ' + (it.collapsed ? "icon-right" : "icon-down") + ' toggle" data-toggle="1"></i>';
+          } else {
+            html += '<i class="toggle empty"></i>';
+          }
+        }
+        if (inst.multiple) {
+          html += '<i class="check' + (it.selected ? " checked" : "") + (it.half ? " half" : "") + '"></i>';
+        }
+        html += '<span class="text">' + bny.escapeChars(it.text) + "</span>";
+        html += "</li>";
+      });
+      if (!visible) {
+        html = '<li class="empty">' + bny.escapeChars(inst.empty) + "</li>";
+      }
+      inst.panel.querySelector(".options").innerHTML = html;
+    }
+    function itemByValue(inst, value) {
+      var found = null;
+      inst.items.forEach(function(x) {
+        if (!x.isGroup && String(x.value) === String(value)) found = x;
+      });
+      return found;
+    }
+    function syncOptionStates(inst) {
+      var lis = inst.panel.querySelectorAll(".option");
+      Array.prototype.forEach.call(lis, function(li) {
+        var it = itemByValue(inst, li.getAttribute("data-value"));
+        if (!it) return;
+        li.classList.toggle("selected", !!it.selected);
+        var check = li.querySelector(".check");
+        if (check) {
+          check.classList.toggle("checked", !!it.selected);
+          check.classList.toggle("half", !!it.half);
+        }
+      });
+    }
+    function isHiddenByCollapse(it) {
+      var p = it.parent;
+      while (p) {
+        if (p.collapsed) return true;
+        p = p.parent;
+      }
+      return false;
+    }
+    function renderTrigger(inst) {
+      var picked = selectedItems(inst);
+      var textEl = inst.trigger.querySelector(".text");
+      var chipsEl = inst.trigger.querySelector(".chips");
+      var clearBtn = inst.trigger.querySelector(".clear");
+      if (clearBtn) clearBtn.style.display = inst.clearable && picked.length && !inst.disabled ? "" : "none";
+      if (inst.multiple) {
+        textEl.style.display = "none";
+        chipsEl.style.display = "";
+        chipsEl.innerHTML = picked.map(function(it) {
+          return '<span class="chip" data-value="' + bny.escapeChars(String(it.value)) + '"><span>' + bny.escapeChars(it.text) + "</span>" + (inst.disabled ? "" : '<i class="bny-icon icon-close close" data-remove="1"></i>') + "</span>";
+        }).join("");
+        if (!picked.length) {
+          chipsEl.innerHTML = '<span class="placeholder">' + bny.escapeChars(inst.placeholder) + "</span>";
+        }
+      } else {
+        chipsEl.style.display = "none";
+        textEl.style.display = "";
+        if (picked.length) {
+          textEl.textContent = picked[0].text;
+          textEl.classList.remove("placeholder");
+        } else {
+          textEl.textContent = inst.placeholder;
+          textEl.classList.add("placeholder");
+        }
+      }
+    }
+    function selectedItems(inst) {
+      return inst.items.filter(function(it) {
+        return !it.isGroup && it.selected;
+      });
+    }
+    function syncValue(inst) {
+      var host = inst.valueHost;
+      var values = selectedItems(inst).map(function(it) {
+        return it.value;
+      });
+      if (host.tagName === "SELECT") {
+        Array.prototype.slice.call(host.options).forEach(function(o) {
+          o.selected = values.indexOf(o.value) > -1;
+        });
+      } else {
+        host.value = values.join(",");
+      }
+      try {
+        host.dispatchEvent(new Event("input", { bubbles: true }));
+        host.dispatchEvent(new Event("change", { bubbles: true }));
+      } catch (e) {
+      }
+      inst.elt.dispatchEvent(new CustomEvent("bny:select:change", {
+        bubbles: true,
+        detail: { values, items: selectedItems(inst), elt: inst.elt }
+      }));
+    }
+    function updateAncestors(it) {
+      var p = it.parent;
+      while (p) {
+        var kids = p.children.filter(function(c) {
+          return !c.isGroup && !c.disabled;
+        });
+        var on = kids.filter(function(c) {
+          return c.selected;
+        }).length;
+        var half = kids.filter(function(c) {
+          return c.half;
+        }).length;
+        if (on === kids.length && kids.length) {
+          p.selected = true;
+          p.half = false;
+        } else if (on > 0 || half > 0) {
+          p.selected = false;
+          p.half = true;
+        } else {
+          p.selected = false;
+          p.half = false;
+        }
+        p = p.parent;
+      }
+    }
+    function setDeep(it, on) {
+      if (it.disabled) return;
+      it.selected = on;
+      it.half = false;
+      it.children.forEach(function(c) {
+        setDeep(c, on);
+      });
+    }
+    function toggleOption(inst, li) {
+      if (li.hasAttribute("data-disabled")) return;
+      var value = li.getAttribute("data-value");
+      var it = inst.items.filter(function(x) {
+        return !x.isGroup && x.value === value;
+      })[0];
+      if (!it) return;
+      if (!inst.multiple) {
+        inst.items.forEach(function(x) {
+          x.selected = false;
+        });
+        it.selected = true;
+        closePanel(inst);
+      } else {
+        var on = !it.selected;
+        if (on && inst.max > 0 && selectedItems(inst).length >= inst.max) return;
+        if (inst.tree && !inst.strict) {
+          setDeep(it, on);
+        } else {
+          it.selected = on;
+          it.half = false;
+        }
+        if (inst.tree && !inst.strict) updateAncestors(it);
+      }
+      syncOptionStates(inst);
+      renderTrigger(inst);
+      syncValue(inst);
+    }
+    function init(elt) {
+      if (elt._bnySelectInit) return;
+      elt._bnySelectInit = true;
+      var isNative = elt.tagName === "SELECT";
+      var name = isNative ? elt.getAttribute("name") : elt.getAttribute("select-name");
+      var multiple = elt.hasAttribute("select-multiple") || isNative && elt.multiple;
+      var tree = elt.hasAttribute("select-tree");
+      var disabled = elt.hasAttribute("select-disabled") || elt.disabled;
+      var placeholder = elt.getAttribute("select-placeholder") || "请选择";
+      var empty = elt.getAttribute("select-empty") || "无匹配数据";
+      var clearable = elt.hasAttribute("select-clearable");
+      var strict = elt.hasAttribute("select-tree-strict");
+      var max = parseInt(elt.getAttribute("select-max"), 10) || 0;
+      var sizeAttr = elt.getAttribute("form-size");
+      var valueHost;
+      if (isNative) {
+        valueHost = elt;
+        var wasMultiple = elt.multiple;
+        elt.multiple = multiple;
+        if (!wasMultiple && multiple) elt.selectedIndex = -1;
+      } else {
+        valueHost = document.createElement("input");
+        valueHost.type = "text";
+        valueHost.className = "value";
+        if (name) valueHost.name = name;
+        if (elt.hasAttribute("select-required")) valueHost.required = true;
+        ["valid-msg", "valid-msg-required", "valid-rules"].forEach(function(a) {
+          var v = elt.getAttribute(a);
+          if (v !== null) valueHost.setAttribute(a, v);
+        });
+      }
+      var isUl = !isNative && elt.tagName === "UL";
+      var box;
+      var inlineItems = null;
+      if (isUl) {
+        inlineItems = parseFragment(elt);
+        elt.innerHTML = "";
+        box = elt;
+        box.classList.add("bny-select-box");
+      } else {
+        box = document.createElement("div");
+        box.className = "bny-select-box";
+      }
+      if (sizeAttr) box.setAttribute("form-size", sizeAttr);
+      if (disabled) box.classList.add("disabled");
+      var trigger = document.createElement("div");
+      trigger.className = "trigger";
+      trigger.setAttribute("tabindex", disabled ? "-1" : "0");
+      trigger.setAttribute("role", "combobox");
+      trigger.setAttribute("aria-expanded", "false");
+      trigger.innerHTML = '<span class="text placeholder"></span><span class="chips" style="display:none"></span><i class="bny-icon icon-close clear" style="display:none" title="清空"></i><i class="bny-icon icon-down arrow"></i>';
+      if (isNative) {
+        elt.parentNode.insertBefore(box, elt);
+        box.appendChild(valueHost);
+        box.appendChild(trigger);
+      } else {
+        box.appendChild(valueHost);
+        box.appendChild(trigger);
+        if (!isUl) elt.appendChild(box);
+      }
+      var panel = document.createElement("div");
+      panel.className = "bny-select-panel";
+      panel.innerHTML = '<ul class="options" role="listbox"></ul>';
+      var panelMax = elt.getAttribute("select-panel-max");
+      if (panelMax) panel.querySelector(".options").style.maxHeight = panelMax;
+      var inst = {
+        elt,
+        box,
+        trigger,
+        panel,
+        valueHost,
+        items: [],
+        multiple,
+        tree,
+        disabled,
+        placeholder,
+        empty,
+        clearable,
+        strict,
+        max,
+        loaded: false
+      };
+      elt._bnySelect = inst;
+      if (disabled) valueHost.disabled = true;
+      var items = [];
+      if (isNative) {
+        items = parseNative(valueHost);
+      } else if (isUl) {
+        items = inlineItems;
+      } else {
+        var src = bny.queryChild(elt, "ul");
+        if (src) {
+          items = parseFragment(src);
+          src.style.display = "none";
+        }
+      }
+      if (items.length) setItems(inst, items);
+      var initVal = elt.getAttribute("select-value");
+      if (initVal !== null) {
+        var arr = String(initVal).split(",").map(function(s) {
+          return s.trim();
+        }).filter(Boolean);
+        if (!multiple) arr = arr.slice(0, 1);
+        inst.items.forEach(function(it) {
+          if (!it.isGroup) it.selected = arr.indexOf(String(it.value)) > -1;
+        });
+        if (inst.tree && !inst.strict && inst.multiple) {
+          inst.items.forEach(function(it) {
+            if (!it.isGroup && it.selected) setDeep(it, true);
+          });
+          inst.items.forEach(function(it) {
+            if (!it.isGroup) updateAncestors(it);
+          });
+        }
+        renderTrigger(inst);
+        syncValue(inst);
+      }
+      trigger.addEventListener("click", function(e) {
+        if (disabled) return;
+        var t = e.target;
+        var rm = t.closest ? t.closest("[data-remove]") : null;
+        if (rm) {
+          e.stopPropagation();
+          removeChip(inst, rm.parentNode.getAttribute("data-value"));
+          return;
+        }
+        if (t.closest && t.closest(".clear")) {
+          e.stopPropagation();
+          clearAll(inst);
+          return;
+        }
+        if (!elt.hasAttribute("hx-trigger")) e.stopPropagation();
+        if (current === inst) {
+          closePanel(inst);
+          return;
+        }
+        openSelect(inst);
+      });
+      trigger.addEventListener("keydown", function(e) {
+        if (disabled) return;
+        if (e.key === "Enter" || e.key === " ") {
+          if (current === inst) return;
+          e.preventDefault();
+          openSelect(inst);
+        }
+      });
+      panel.addEventListener("click", function(e) {
+        var t = e.target;
+        var toggle = t.closest ? t.closest("[data-toggle]") : null;
+        if (toggle) {
+          e.stopPropagation();
+          var v = toggle.parentNode.getAttribute("data-value");
+          var it = inst.items.filter(function(x) {
+            return !x.isGroup && x.value === v;
+          })[0];
+          if (it) {
+            it.collapsed = !it.collapsed;
+            renderOptions(inst);
+          }
+          return;
+        }
+        var li = t.closest ? t.closest(".option") : null;
+        if (li) toggleOption(inst, li);
+      });
+      ensureDelegation();
+      if (initVal === null) renderTrigger(inst);
+    }
+    function setItems(inst, items) {
+      inst.items = items;
+      if (inst.tree) buildTree(inst.items);
+      inst.loaded = true;
+      renderOptions(inst);
+      renderTrigger(inst);
+      syncValue(inst);
+    }
+    function removeChip(inst, value) {
+      var it = inst.items.filter(function(x) {
+        return !x.isGroup && x.value === value;
+      })[0];
+      if (!it) return;
+      if (inst.tree && !inst.strict) {
+        setDeep(it, false);
+        updateAncestors(it);
+      } else {
+        it.selected = false;
+        it.half = false;
+      }
+      syncOptionStates(inst);
+      renderTrigger(inst);
+      syncValue(inst);
+    }
+    function clearAll(inst) {
+      inst.items.forEach(function(it) {
+        if (it.isGroup) return;
+        it.selected = false;
+        it.half = false;
+      });
+      syncOptionStates(inst);
+      renderTrigger(inst);
+      syncValue(inst);
+    }
+    function openSelect(inst) {
+      closePanel();
+      var url = inst.elt.getAttribute("hx-get") || inst.elt.getAttribute("hx-post");
+      if (!inst.loaded && url) {
+        loadRemote(inst, function() {
+          doOpen(inst);
+        });
+        return;
+      }
+      doOpen(inst);
+    }
+    function doOpen(inst) {
+      document.body.appendChild(inst.panel);
+      syncOptionStates(inst);
+      inst.box.classList.add("open");
+      inst.trigger.setAttribute("aria-expanded", "true");
+      current = inst;
+      positionPanel(inst);
+      var sel = inst.panel.querySelector(".selected");
+      if (sel) scrollOptionIntoPanel(sel);
+    }
+    function loadRemote(inst, done) {
+      var elt = inst.elt;
+      if (elt.hasAttribute("hx-trigger")) {
+        inst._pendingOpen = done;
+        return;
+      }
+      var method = elt.getAttribute("hx-post") ? "POST" : "GET";
+      var url = elt.getAttribute("hx-post") || elt.getAttribute("hx-get");
+      htmx.ajax(method, url, {
+        source: elt,
+        // beforeSwap 触发在交换目标上，而实例引用（_bnySelect）挂在承载元素上，
+        // target 必须指向承载元素，响应接管逻辑才能找到实例
+        target: elt,
+        swap: "none"
+      });
+      inst._pendingOpen = done;
+    }
+    htmx.defineExtension("bny-select", {
+      onEvent: function(name, evt) {
+        if (name === "htmx:afterProcessNode") {
+          if (!bny.hasExtName(evt.target, "bny-select")) return true;
+          init(evt.target);
+          return true;
+        }
+        if (name === "htmx:beforeSwap") {
+          var src = evt.target;
+          var inst = src && src._bnySelect;
+          if (!inst || !evt.detail || !evt.detail.xhr) return true;
+          var items = parseResponse(evt.detail.xhr.responseText);
+          setItems(inst, items);
+          if (inst._pendingOpen) {
+            var done = inst._pendingOpen;
+            inst._pendingOpen = null;
+            done();
+          }
+          return false;
+        }
+        if (name === "htmx:beforeOnNodeDisposal") {
+          var t = evt.target;
+          if (t && t._bnySelect) {
+            if (current === t._bnySelect) closePanel();
+            var p = t._bnySelect.panel;
+            if (p && p.parentNode) p.parentNode.removeChild(p);
+            delete t._bnySelect;
+          }
+        }
+        return true;
+      }
+    });
+  })();
 })();
 //# sourceMappingURL=bunny.js.map

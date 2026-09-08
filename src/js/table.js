@@ -51,19 +51,27 @@ htmx.defineExtension('bny-table', {
          * @param {HTMLElement} table
          */
         function initSort(table) {
-            let ths = table.querySelectorAll('thead th[table-sort]');
+            let ths = table.querySelectorAll('thead th[table-sort], thead th[cell-sort]');
             if (!ths.length) return;
 
-            // 树形表格不启用排序：行序即层级从属，重排行会打乱父子结构
+            // 树形表格不启用排序：行序即层级从属，重排行会打乱父子结构。
+            // 这里拦静态标记的树形行；数据模式的树形行是后渲染的，由 cycleColumn 点击时兜底
             if (table.querySelector('tbody tr[data-tree-level]')) return;
 
             // 表格唯一标识（用于持久化排序状态到 sessionStorage）
             const tableKey = table.getAttribute('table-key') || '';
             const storeKey = tableKey ? 'bny-table-sort:' + tableKey : '';
 
-            // 记录当前（未排序）的初始行顺序，作为“默认/取消排序”的还原快照
-            const tbodyCaptured = table.querySelector('tbody');
-            const defaultRows = tbodyCaptured ? Array.from(tbodyCaptured.querySelectorAll('tr')) : [];
+            // 服务端模式（table-server）：排序发给后台（sort/order 参数 + 重载），本地不重排 DOM。
+            // 属性直接写在 <table> 上（table-sort-param/order-param/page-param，有默认值）
+            const isServer = table.getAttribute('table-server') !== null;
+            const sortParam = table.getAttribute('table-sort-param') || 'sort';
+            const orderParam = table.getAttribute('table-order-param') || 'order';
+            const pageParam = table.getAttribute('table-page-param') || 'page';
+
+            // “默认/取消排序”的还原快照：首次进入本地排序分支时拍。
+            // 数据模式下 tbody 行由服务端动态渲染，初始化时拍会得到空快照
+            let defaultRows = null;
 
             /**
              * 持久化排序状态到 sessionStorage
@@ -127,9 +135,38 @@ htmx.defineExtension('bny-table', {
              * @param {HTMLElement} th
              */
             function cycleColumn(th) {
+                // 数据模式的树形行点击时兜底拦截：行序即层级从属，本地重排/带排序重载都会打乱父子结构
+                if (table.querySelector('tbody tr[data-tree-level]')) return;
                 const colIndex = th._colIndex;
                 const isAsc = th.classList.contains('sort-asc');
                 const isDesc = th.classList.contains('sort-desc');
+
+                // 服务端模式：不碰 DOM 行序（重排当前页毫无意义），按 无→升序→降序→无
+                // 周期发 sort/order 参数重新请求；排序后回到第 1 页（后台按新排序重排全量）
+                if (isServer) {
+                    const field = th.getAttribute('cell-field') || th.getAttribute('table-sort-field');
+                    if (field) {
+                        const order = isDesc ? '' : (isAsc ? 'desc' : 'asc');
+                        // 先本地轮转状态（图标即时反馈；POST 模式下响应 URL 读不到
+                        // sort/order 参数，回显只能依赖内存状态，不能等服务端回读）
+                        ths.forEach(function (t) {
+                            t.classList.remove('sort-asc', 'sort-desc');
+                            renderChip(t, null);
+                        });
+                        if (order) {
+                            th.classList.add(order === 'asc' ? 'sort-asc' : 'sort-desc');
+                            renderChip(th, order);
+                        }
+                        // 记录当前排序：applySortStateFromUrl 优先读它（覆盖 GET/POST 两种模式）
+                        table._bnySortState = order ? { field: field, order: order } : null;
+                        const params = {};
+                        params[sortParam] = order ? field : '';
+                        params[orderParam] = order;
+                        params[pageParam] = '1';
+                        reloadTableWithParams(table.parentElement, table, params);
+                    }
+                    return;
+                }
 
                 // 清除所有可排序列的排序标志（含表头与移动端 chip）
                 ths.forEach(function (t) {
@@ -137,8 +174,16 @@ htmx.defineExtension('bny-table', {
                     renderChip(t, null);
                 });
 
-                const type = th.getAttribute('table-sort') || 'string';
+                const type = th.getAttribute('table-sort') || th.getAttribute('cell-sort') || 'string';
                 const tbody = table.querySelector('tbody');
+
+                // 首次进入本地排序分支时拍“默认行序”快照；tbody 行被整体换新后
+                // （本地数据模式重查/翻页）快照元素已脱离文档，按当前行序重拍，
+                // 避免第三态还原时把旧行塞回、丢掉换新后的行
+                if (!defaultRows || !defaultRows.length || !tbody ||
+                    !tbody.contains(defaultRows[0])) {
+                    defaultRows = tbody ? Array.from(tbody.querySelectorAll('tr')) : [];
+                }
 
                 // 第三态：降序再点 → 回到默认（取消排序），恢复初始顺序、图标/文本回归
                 if (isDesc) {
@@ -181,16 +226,54 @@ htmx.defineExtension('bny-table', {
                 sortBar.appendChild(chip);
             });
 
-            // 恢复持久化的排序状态（HTMX 重新请求后自动应用）
-            const saved = readSort();
-            if (saved) {
-                const targetTh = ths[saved.colIndex];
-                if (targetTh) {
-                    targetTh.classList.add(saved.asc ? 'sort-asc' : 'sort-desc');
-                    renderChip(targetTh, saved.asc ? 'asc' : 'desc');
-                    const tbody = table.querySelector('tbody');
-                    if (tbody) {
-                        sortRows(tbody, saved.colIndex, saved.type, saved.asc);
+            /**
+             * 从响应 URL（table-url）读取服务端实际生效的排序，同步表头箭头与移动端 chip。
+             * 服务端模式排序由后台完成，前端箭头只做回显；静态模式 tbody 换新后由
+             * afterProcessNode 调用（表头是静态的，不会随响应重建）
+             */
+            function applySortStateFromUrl() {
+                ths.forEach(function (t) {
+                    t.classList.remove('sort-asc', 'sort-desc');
+                    renderChip(t, null);
+                });
+                // 优先读内存状态（POST 模式响应 URL 不含 sort/order 参数，内存是排序的
+                // 唯一可靠来源）；GET 模式回退 URL 查询串（整页刷新/外部链接直达时恢复）
+                let field = '', order = '';
+                const mem = table._bnySortState;
+                if (mem && mem.field) {
+                    field = mem.field;
+                    order = mem.order === 'desc' ? 'desc' : 'asc';
+                } else {
+                    const url = table.getAttribute('table-url') || '';
+                    field = queryVal(url, sortParam);
+                    order = queryVal(url, orderParam) === 'desc' ? 'desc' : 'asc';
+                }
+                if (!field) return;
+                Array.prototype.forEach.call(ths, function (t) {
+                    if ((t.getAttribute('cell-field') || t.getAttribute('table-sort-field')) === field) {
+                        const asc = order !== 'desc';
+                        t.classList.add(asc ? 'sort-asc' : 'sort-desc');
+                        renderChip(t, asc ? 'asc' : 'desc');
+                    }
+                });
+            }
+
+            if (isServer) {
+                // 服务端模式：箭头回显 URL 状态，不用 localStorage（服务端已排序，再 DOM 排是双重排序）
+                table._bnySyncSortState = applySortStateFromUrl;
+                applySortStateFromUrl();
+            } else {
+                // 恢复持久化的排序状态（HTMX 重新请求后自动应用）
+                const saved = readSort();
+                if (saved) {
+                    const targetTh = ths[saved.colIndex];
+                    if (targetTh) {
+                        targetTh.classList.add(saved.asc ? 'sort-asc' : 'sort-desc');
+                        renderChip(targetTh, saved.asc ? 'asc' : 'desc');
+                        const tbody = table.querySelector('tbody');
+                        if (tbody) {
+                            sortRows(tbody, saved.colIndex, saved.type, saved.asc);
+                        }
                     }
                 }
             }
@@ -216,32 +299,67 @@ htmx.defineExtension('bny-table', {
         }
 
         /**
-         * 树形展开/折叠：点击首列箭头，折叠/展开该节点整棵子树
+         * 树形展开/折叠：点击首列箭头，折叠/展开该节点整棵子树。
+         * 表格级事件委托只绑定一次：tbody 行由服务端数据动态渲染，
+         * swap 换新后旧按钮随节点销毁，逐按钮绑监听会失效，委托到表格元素始终有效
          * @param {HTMLElement} table
          */
         function initTree(table) {
-            table.querySelectorAll('.bny-table-tree-toggle').forEach(function (btn) {
-                btn.addEventListener('click', function (e) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    const tr = btn.closest('tr');
-                    if (!tr) return;
-                    const level = parseInt(tr.getAttribute('data-tree-level') || '0', 10);
-                    const willCollapse = !tr.classList.contains('tree-collapsed');
-                    tr.classList.toggle('tree-collapsed', willCollapse);
-                    // 箭头方向由 CSS 依据 tree-collapsed 旋转（展开朝下、收起朝右）
-                    // 从下一行起，折叠/展开所有层级比当前深的行（即其后代），直到遇到同级或更浅
-                    let n = tr.nextElementSibling;
-                    while (n && n.tagName === 'TR' &&
-                        parseInt(n.getAttribute('data-tree-level') || '-1', 10) > level) {
-                        n.style.display = willCollapse ? 'none' : '';
-                        n = n.nextElementSibling;
+            if (table._bnyTreeBound) return;
+            table._bnyTreeBound = true;
+            table.addEventListener('click', function (e) {
+                const btn = e.target && e.target.closest
+                    ? e.target.closest('.bny-table-tree-toggle') : null;
+                if (!btn || !table.contains(btn)) return;
+                e.preventDefault();
+                e.stopPropagation();
+                const tr = btn.closest('tr');
+                if (!tr) return;
+                const level = parseInt(tr.getAttribute('data-tree-level') || '0', 10);
+                const willCollapse = !tr.classList.contains('tree-collapsed');
+                tr.classList.toggle('tree-collapsed', willCollapse);
+                // 箭头方向由 CSS 依据 tree-collapsed 旋转（展开朝下、收起朝右）
+                // 从下一行起遍历所有更深层级的后代行；展开父级时，沿途已处于
+                // 收起状态的子级，其后人保持隐藏（不凭空展开内部折叠的子树）
+                let n = tr.nextElementSibling;
+                let collapsedLevel = -1;
+                while (n && n.tagName === 'TR' &&
+                    parseInt(n.getAttribute('data-tree-level') || '-1', 10) > level) {
+                    const lv = parseInt(n.getAttribute('data-tree-level') || '0', 10);
+                    if (collapsedLevel >= 0 && lv <= collapsedLevel) collapsedLevel = -1;
+                    n.style.display = willCollapse || collapsedLevel >= 0 ? 'none' : '';
+                    if (collapsedLevel < 0 && n.classList.contains('tree-collapsed')) {
+                        collapsedLevel = lv;
                     }
-                });
+                    n = n.nextElementSibling;
+                }
             });
         }
 
         // 在htmx初始化节点后触发
+        if (name === 'htmx:configRequest') {
+            var src = evt.target;
+            // 静态表头表格：若请求未携带 page/pageSize 参数，注入默认值
+            // （翻页/排序/切条数已带参数时不覆盖）
+            if (src && src.nodeType === 1 && src.hasAttribute('table-static')) {
+                try {
+                    var params = evt.detail.parameters;
+                    var hasPage = false, hasSize = false;
+                    if (params && params.forEach) {
+                        params.forEach(function (v, k) {
+                            if (k === 'page') hasPage = true;
+                            if (k === 'pageSize') hasSize = true;
+                        });
+                    }
+                    if (!hasPage) params.append('page', '1');
+                    if (!hasSize) {
+                        var sizeList = bny.parsePageSizes(src.getAttribute('table-list'));
+                        params.append('pageSize', String((sizeList && sizeList[0]) || 10));
+                    }
+                } catch (_) {}
+            }
+            return true;
+        }
         if (name === 'htmx:beforeRequest') {
             // 数据表格加载/重载：目标容器排定骨架屏（响应超过 200ms 才显示，避免闪烁）
             var src = evt.target;
@@ -249,7 +367,11 @@ htmx.defineExtension('bny-table', {
                 (src.getAttribute('hx-get') !== null || src.getAttribute('hx-post') !== null) &&
                 (!src.getAttribute('hx-swap') || src.getAttribute('hx-swap') === 'innerHTML')) {
                 var skelTarget = resolveSwapTarget(src);
-                if (skelTarget) scheduleTableSkeleton(skelTarget, src);
+                if (skelTarget) {
+                    // 先中断旧内容在途图片释放连接，新请求不被旧图下载拖住
+                    abortPendingImages(skelTarget);
+                    scheduleTableSkeleton(skelTarget, src);
+                }
             }
             return true;
         }
@@ -266,6 +388,20 @@ htmx.defineExtension('bny-table', {
         if (name === 'htmx:afterSwap') {
             // 容器自身带 hx-ext 时 afterSwap 才会到达这里，同样做收尾兜底
             clearTableSkeleton(evt.target, false);
+            // 静态 thead 模式：tbody 整块交换后统一做后处理（渲染分页条/操作列宽/放大镜/标签/排序箭头）。
+            // 注意：htmx 的 afterProcessNode 只对交换进来的 TR 触发（TBODY 不触发），
+            // 所以分页条渲染不能挂在 afterProcessNode(TBODY) 分支，必须用这里（在 tbody 上触发）
+            if (evt.target.tagName === 'TBODY') {
+                const tbl = evt.target.closest('table');
+                if (tbl && tbl.hasAttribute('table-static')) {
+                    fixRowTargets(tbl, true);
+                    fitActionsWidths(tbl);
+                    appendZoomButtons(tbl);
+                    initLabels(tbl);
+                    if (tbl._bnySyncSortState) tbl._bnySyncSortState();
+                    renderStaticPagination(tbl);
+                }
+            }
             return true;
         }
         if (name === 'htmx:responseError' || name === 'htmx:sendError') {
@@ -289,7 +425,18 @@ htmx.defineExtension('bny-table', {
                 initTree(evt.target);
                 fitActionsWidths(evt.target);
                 appendZoomButtons(evt.target);
+                fixRowTargets(evt.target);
                 return false;
+            } else if (evt.target.tagName === 'TBODY') {
+                // 静态 thead 模式：tbody 是交换目标，行渲染完后同步操作列宽/放大镜/标签/排序箭头/分页条
+                const tbl = evt.target.closest('table');
+                if (tbl && tbl.hasAttribute('table-static')) {
+                    fitActionsWidths(tbl);
+                    appendZoomButtons(tbl);
+                    initLabels(tbl);
+                    if (tbl._bnySyncSortState) tbl._bnySyncSortState();
+                    renderStaticPagination(tbl);
+                }
             } else if (evt.target.tagName === 'TR') {
                 const tds = evt.target.querySelectorAll('td');
                 for (let i = 0; i < tds.length; i++) {
@@ -316,114 +463,47 @@ htmx.defineExtension('bny-table', {
         } catch (e) {
             return text;
         }
-        const data = json.data || json;
-        return buildTable(data, xhr, resolveElt(elt));
+        // 静态 thead 模式：列模型来自页面静态表头，只把行渲染进 tbody；
+        // 非 table-static 上下文的 JSON 一律返回空串（内容渲染交给业务或链上下一个扩展）
+        const staticTable = resolveStaticTable(elt);
+        if (!staticTable) return '';
+        // 分页包裹兼容：{ data: { total, per_page, ..., data: [...] } } 或分页对象本身
+        let d = json;
+        if (d && typeof d === 'object' && !Array.isArray(d) &&
+            d.data && !Array.isArray(d.data) && typeof d.data === 'object') d = d.data;
+        return buildStaticRows(d, xhr, staticTable);
     }
 });
 
-/**
- * 解析请求源对应的主配置元素
- * 请求源可能不是主配置元素（如搜索输入框、菜单项触发的请求），table-filter 等
- * 配置属性声明在主配置元素上——此时按相同 hx-target 回退查找
- * @param {HTMLElement} elt 请求源元素
- * @returns {HTMLElement}
- */
-function resolveElt(elt) {
-    if (!elt || elt.getAttribute('table-filter') !== null) return elt;
-    var target = elt.getAttribute('hx-target');
-    if (!target) return elt;
-    try {
-        var alt = document.querySelector('[hx-target="' + target + '"][table-filter]');
-        if (alt) return alt;
-    } catch (_) { }
-    return elt;
-}
-
 /* ============================================================
- * JSON 渲染（模块级共享工具）
+ * 表格数据渲染（静态 thead 模式共享工具）
  *
- * 行模型（两种，可并存）：
- * - rows：位置数组 [[v1,v2],...]，支持树形行 {cells, children} 与 {__html} 原始行
- * - list / allList：对象行 [{field: val},...]，配合列模型使用；allList 前端分页切片
+ * 行模型：对象行 [{field: val},...]，来自响应 data 数组（Laravel/ThinkPHP paginate 格式：
+ * { total, per_page, current_page, last_page, data, has_more }）。
+ * 单元格渲染由静态表头 th 上的 cell-* 声明驱动（colFromTh 合成列模型），
+ * data 里超出表头声明的字段直接忽略。
  *
- * 内置分页：JSON 带 total 时表格后自动追加分页条（bny.paginationBar 内置函数，
- * 与 bny-pagination 组件共用渲染与事件委托），元素属性 pg-* 控制样式与行为。
+ * 内置分页：响应带 total 时表格后自动追加分页条（bny.paginationBar），
+ * 元素属性 pg-* / table-list* 控制样式与行为。
  *
- * 列模型（cols 兼容旧格式，columns 为完整模型）：
- * - 字符串："表头"
- * - 对象：{
- *     field, title|name,        // field 数据取值字段；title/name 表头文本
- *     type,                     // 单元格类型：text(默认)/tag/link/image/actions/template
- *     align, width,             // 对齐（left/center/right）与列宽
- *     sortable, sort,           // 列级排序声明（sort 指定 number|string）
- *     html: true,               // 列级原样 HTML（逃生门，信任服务端）
- *     // 类型专属：map(tag) / href,text,target(link) / src,width,height,round(image)
- *     //           template(template) / actions[](actions)
- *   }
- *
- * 单元格逃生门：cell 值为 { __html: '...' } 时原样输出（信任服务端）。
- *
- * 安全模型：数据（cell/行值）一律转义或 URL 编码；配置（列定义来自服务端）中的模板可含 HTML，
- * 与 htmx 直接 swap 服务端 HTML 同级信任；actions 仅输出固定白名单属性，拒绝 on* 注入。
+ * 安全模型：数据（cell/行值）一律转义或 URL 编码；配置（表头声明来自开发者）中的模板可含 HTML，
+ * 与 htmx 直接 swap 服务端 HTML 同级信任；模板占位符 {{表达式}} 的求值结果始终转义，不构成注入面。
  * ============================================================ */
 
 /**
- * 渲染单个单元格内容（rows 位置行用）
- * - 字符串/数字：默认 escapeChars 转义，防 XSS
- * - 对象 { __html: '...' }：原始 HTML（用于嵌入链接、按钮等富内容，由调用方保证安全）
- * @param {*} cell
- * @returns {string}
- */
-function renderCell(cell) {
-    if (cell !== null && typeof cell === 'object' && typeof cell.__html !== 'undefined') {
-        return String(cell.__html)
-    }
-    return bny.escapeChars(String(cell))
-}
-
-/**
- * 渲染表头单元格（cols/columns 通用）
- * - 字符串：escapeChars
- * - 对象：{ name|title, sortable, sort } 排序声明 + { align, width } 列样式
- * @param {*} col
- * @returns {string}
- */
-function renderCol(col) {
-    if (col !== null && typeof col === 'object') {
-        var name = bny.escapeChars(String(col.title ?? col.name ?? ''))
-        var attrs = ''
-        // 列级排序：sort 指定类型；仅 sortable 时按字符串排序
-        if (col.sort) {
-            attrs += ' table-sort="' + bny.escapeChars(String(col.sort)) + '"'
-        } else if (col.sortable) {
-            attrs += ' table-sort'
-        }
-        return '<th' + attrs + thStyleAttr(col) + '>' + name + '</th>'
-    }
-    return '<th>' + bny.escapeChars(String(col)) + '</th>'
-}
-
-/**
- * 取行字段值（null/undefined 归一为空串）
+ * 取行字段值（支持点路径取嵌套字段，如 "user.name"；null/undefined 归一为空串）
  * @param {Object} row 行数据
  * @param {String} field 字段名
  * @returns {*}
  */
 function getVal(row, field) {
-    var val = row ? row[field] : '';
+    var val = row;
+    var parts = String(field).split('.');
+    for (var i = 0; i < parts.length; i++) {
+        if (val === null || val === undefined) return '';
+        val = val[parts[i]];
+    }
     return val === null || val === undefined ? '' : val;
-}
-
-/**
- * th 样式：列宽 + 对齐
- * @param {Object} col 列定义
- * @returns {String} 属性串
- */
-function thStyleAttr(col) {
-    var style = '';
-    if (col.width) style += 'width:' + col.width + ';';
-    if (col.align === 'center' || col.align === 'right') style += 'text-align:' + col.align + ';';
-    return style ? ' style="' + bny.escapeChars(style) + '"' : '';
 }
 
 /**
@@ -446,510 +526,203 @@ function tdAlignAttr(col) {
 function colEllipsis(col) {
     if (col.ellipsis === true) return true;
     if (col.ellipsis === false) return false;
-    var t = col.type || 'text';
-    return t === 'text' || t === 'link';
+    // 未显式声明时：非模板列默认单行省略（模板列内容交给模板决定）
+    return !col.template;
+}
+
+/** 表达式求值失败哨兵：占位符保留原文输出 */
+var _TPL_ERR = {};
+
+/** 表达式编译缓存：表达式文本 → Function（或 null = 语法错误） */
+var _tplExprCache = {};
+
+var _tplDecodeEl = null;
+
+/**
+ * HTML 实体还原（仅用于 {{表达式}} 求值前的表达式文本）：
+ * template.innerHTML 读出时 &gt; / &lt; / &amp; 是序列化产物（作者写 >= / && 亦是），
+ * 求值前须还原，否则比较/逻辑运算符失效。模板其余部分不经过此处理
+ * @param {String} s 表达式文本
+ * @returns {String}
+ */
+function tplExprDecode(s) {
+    if (s.indexOf('&') === -1) return s;
+    if (!_tplDecodeEl) _tplDecodeEl = document.createElement('textarea');
+    _tplDecodeEl.innerHTML = s;
+    return _tplDecodeEl.value;
 }
 
 /**
- * 模板插值：把 {field} 占位符替换为行数据
+ * 求值 {{表达式}}：三元/比较/逻辑/拼接等任意 JS 表达式，data 为行对象上下文。
+ * 模板来自页面作者（与页面脚本同信任级别）；结果经 escapeChars 转义输出，
+ * 行数据携带的 HTML 不会注入。编译结果按表达式文本缓存；
+ * 语法错误只告警一次（缓存 null），运行期错误逐行告警并保留原文
+ * @param {String} expr 表达式文本（已 trim、已实体还原）
+ * @param {Object} row 行数据
+ * @returns {*} 正常返回求值结果；失败返回哨兵 _TPL_ERR
+ */
+function tplEvalExpr(expr, row) {
+    var fn = _tplExprCache[expr];
+    if (fn === undefined) {
+        try {
+            fn = new Function('data', 'return (' + expr + ');');
+        } catch (e) {
+            console.warn('[bny.table] cell-template 表达式无效（保留原文）: {{' + expr + '}}');
+            fn = null;
+        }
+        _tplExprCache[expr] = fn;
+    }
+    if (!fn) return _TPL_ERR;
+    try {
+        return fn(row);
+    } catch (e) {
+        console.warn('[bny.table] cell-template 表达式求值失败（保留原文）: {{' + expr + '}}');
+        return _TPL_ERR;
+    }
+}
+
+/**
+ * 模板插值：{{表达式}} 求值替换为行数据，结果一律 HTML 转义后嵌入
+ * - 快路径：{{data.path}} 纯字段直取（点路径，绝大多数场景零求值开销）
+ * - 表达式：如 {{data.status == 1 ? '正常' : '禁用'}}、{{data.age >= 18 && data.vip ? '会员' : ''}}，
+ *   data 即行对象；求值失败保留原文并告警（编译错误只告警一次）
  * @param {String} tpl 模板
  * @param {Object} row 行数据
- * @param {String} mode 'html'：值 HTML 转义（模板可含 HTML）；'url'：值 URL 编码
  * @returns {string}
  */
-function tplInterpolate(tpl, row, mode) {
-    return String(tpl === undefined || tpl === null ? '' : tpl).replace(/\{([a-zA-Z0-9_]+)\}/g, function (m, key) {
-        var val = String(getVal(row, key));
-        return mode === 'url' ? encodeURIComponent(val) : bny.escapeChars(val);
-    });
+function tplInterpolate(tpl, row) {
+    return String(tpl === undefined || tpl === null ? '' : tpl).replace(
+        /\{\{([\s\S]*?)\}\}/g,
+        function (m, expr) {
+            expr = expr.trim();
+            var fm = expr.match(/^data\.([a-zA-Z0-9_$]+(?:\.[a-zA-Z0-9_$]+)*)$/);
+            if (fm) return bny.escapeChars(String(getVal(row, fm[1])));
+            var v = tplEvalExpr(tplExprDecode(expr), row);
+            if (v === _TPL_ERR) return m;
+            return bny.escapeChars(String(v === undefined || v === null ? '' : v));
+        }
+    );
 }
 
 /**
- * 链接地址安全过滤：拒绝 javascript:/data:/vbscript: 等危险协议，允许 http(s)/mailto:/tel:/相对路径
- * @param {String} url
- * @returns {String} 安全的地址，不安全返回空串
- */
-function safeHref(url) {
-    if (typeof url !== 'string') return '';
-    var s = url.trim().replace(/^[\u0000-\u001F\u007F]+/, '');
-    if (!s) return '';
-    if (/^(javascript|data|vbscript)\s*:/i.test(s)) return '';
-    return s;
-}
-
-/**
- * 图片地址安全过滤：拒绝危险协议，data: 仅放行 data:image/
- * @param {String} src
- * @returns {String} 安全的地址，不安全返回空串
- */
-function safeImgSrc(src) {
-    if (typeof src !== 'string') return '';
-    var s = src.trim().replace(/^[\u0000-\u001F\u007F]+/, '');
-    if (/^(javascript|vbscript)\s*:/i.test(s)) return '';
-    if (/^data:/i.test(s)) return /^data:image\//i.test(s) ? s : '';
-    return s;
-}
-
-/**
- * 渲染对象行单元格（list 对象行 + 列模型，按列类型分发，值一律转义/编码）
+ * 渲染对象行单元格（list 对象行 + 列模型）
+ * 富内容统一走 cell-template 表达（模板本身可含 HTML，{{表达式}} 求值结果转义）；
+ * 无模板的列按纯文本渲染（值转义）。
  * @param {Object} row 行数据
  * @param {Object} col 列定义
  * @returns {string} td 内容 HTML
  */
 function renderTypedCell(row, col) {
-    // 整格原样 HTML（逃生门：仅限受信任的服务端内容，与 htmx 直接 swap 服务端 HTML 同级信任）
-    if (col.html === true) {
-        return String(getVal(row, col.field));
-    }
-
-    switch (col.type) {
-        case 'tag':      return renderTagCell(row, col);
-        case 'link':     return renderLinkCell(row, col);
-        case 'image':    return renderImageCell(row, col);
-        case 'actions':  return renderActionsCell(row, col);
-        case 'template': return renderTemplateCell(row, col);
-        default:         return bny.escapeChars(String(getVal(row, col.field)));
-    }
+    if (col.template) return renderTemplateCell(row, col);
+    return bny.escapeChars(String(getVal(row, col.field)));
 }
 
-/**
- * tag 单元格：值经 map 映射为 bny-tag
- * map 值支持 "颜色" 简写或 {text, color} 对象；"default" 键兜底
- * @param {Object} row 行数据
- * @param {Object} col 列定义
- * @returns {string}
- */
-function renderTagCell(row, col) {
-    var val = String(getVal(row, col.field));
-    var map = col.map || {};
-    var hit = Object.prototype.hasOwnProperty.call(map, val) ? map[val] : map['default'];
-    var text = val, color = '';
-    if (hit && typeof hit === 'object') {
-        if (hit.text !== undefined && hit.text !== null) text = hit.text;
-        color = hit.color || '';
-    } else if (typeof hit === 'string') {
-        color = hit;
-    }
-    var attr = color ? ' tag-color="' + bny.escapeChars(color) + '"' : '';
-    return '<span class="bny-tag"' + attr + '>' + bny.escapeChars(String(text)) + '</span>';
-}
+var _cellTplCache = {};
 
 /**
- * link 单元格：href 支持 {field} 占位符（值 URL 编码）+ 协议防护
- * @param {Object} row 行数据
+ * 解析 cell-template 模板源："#id" / ".class" 等选择器引用页面 <template> 元素
+ * （推荐写法，模板是独立 HTML 块，免属性转义、同页可复用）；其余值按内联模板串兜底。
+ * 引用元素只在首次渲染时取 innerHTML 并缓存；未命中不缓存（元素后到仍可拾取），
+ * 回退为内联模板串渲染并告警。
  * @param {Object} col 列定义
- * @returns {string}
+ * @returns {String} 模板 HTML
  */
-function renderLinkCell(row, col) {
-    var val = String(getVal(row, col.field));
-    var href = safeHref(tplInterpolate(col.href || '', row, 'url'));
-    var text = (col.text !== undefined && col.text !== null)
-        ? tplInterpolate(col.text, row, 'html')
-        : bny.escapeChars(val);
-    if (!href) return text;
-    var attr = ' href="' + bny.escapeChars(href) + '"';
-    if (col.target) attr += ' target="' + bny.escapeChars(String(col.target)) + '"';
-    return '<a' + attr + '>' + text + '</a>';
-}
-
-/**
- * image 单元格：src 支持 {field} 占位符，width/height/round 控制样式
- * @param {Object} row 行数据
- * @param {Object} col 列定义
- * @returns {string}
- */
-function renderImageCell(row, col) {
-    var src = safeImgSrc(tplInterpolate(col.src || ('{' + col.field + '}'), row, 'url'));
-    if (!src) return '';
-    var style = '';
-    if (col.width) style += 'width:' + col.width + ';';
-    if (col.height) style += 'height:' + col.height + ';';
-    if (col.round) style += 'border-radius:50%;';
-    var attr = ' class="bny-table-img" src="' + bny.escapeChars(src) + '"' +
-        ' alt="' + bny.escapeChars(col.title || col.field) + '" loading="lazy"';
-    return '<img' + attr + (style ? ' style="' + bny.escapeChars(style) + '"' : '') + '>';
-}
-
-/**
- * actions 单元格：操作按钮组（bny-btn）
- * - 普通项：data-bny-action 按钮，点击由事件委托统一处理（runAction）
- * - 带 children 的项：渲染为"更多"下拉触发器（bny-dropdown 面板预渲染，
- *   dropdown.js 在 afterProcessNode 时绑定开关）；下拉项与主按钮走同一 confirm/url/event 协议
- * - 列级 group: true：按钮包进 bny-btn-group（主按钮 + 下拉触发器同组）
- * 按钮配置仅输出固定白名单属性（data-*），天然拒绝 on* 事件属性与任意属性注入
- * @param {Object} row 行数据
- * @param {Object} col 列定义
- * @returns {string}
- */
-function renderActionsCell(row, col) {
-    var actions = Array.isArray(col.actions) ? col.actions : [];
-    var group = col.group === true;
-    var h = '<div class="bny-table-actions">';
-    if (group) h += '<div class="bny-btn-group">';
-    // 弹出面板放组外（组内 :last-child 分隔线规则会顶掉触发器右边框），渲染后统一追加
-    var panels = '';
-    actions.forEach(function (act) {
-        if (!act || typeof act !== 'object') return;
-        // "更多"弹出菜单：触发器进组（保持 :last-child），面板收集到组外
-        if (Array.isArray(act.children) && act.children.length) {
-            var dd = renderDropdownAction(act, row);
-            h += dd.trigger;
-            panels += dd.panel;
-            return;
+function cellTemplateSource(col) {
+    var src = col.template || '';
+    var ch = src.charAt(0);
+    if (ch !== '#' && ch !== '.') return src;
+    if (!(src in _cellTplCache)) {
+        var el = document.querySelector(src);
+        if (!el) {
+            console.warn('[bny.table] cell-template 未找到模板元素: ' + src + '（回退为内联模板）');
+            return src;
         }
-        var content = actionContent(act, row);
-        if (!content) return;
-        var attrs = ' class="bny-btn"';
-        attrs += ' btn-size="' + bny.escapeChars(String(act.size || 'sm')) + '"';
-        attrs += ' btn-model="' + bny.escapeChars(String(act.model || 'border')) + '"';
-        if (act.color) attrs += ' btn-color="' + bny.escapeChars(String(act.color)) + '"';
-        h += '<button type="button"' + attrs + buildActionAttrs(act, row) + ' data-bny-action>' + content + '</button>';
-    });
-    if (group) h += '</div>';
-    h += panels;
-    h += '</div>';
-    return h;
-}
-
-/**
- * 动作内容片段（图标 + 文本），空则返回 null（跳过该项）
- * @param {Object} act 动作配置
- * @param {Object} row 行数据
- * @returns {string|null}
- */
-function actionContent(act, row) {
-    var text = tplInterpolate(act.text || act.name || '', row, 'html');
-    var icon = act.icon ? '<i class="bny-icon ' + bny.escapeChars(String(act.icon)) + '"></i>' : '';
-    if (!text && !icon) return null;
-    return icon + text;
-}
-
-/**
- * 动作白名单属性（confirm/url/method/target/event/row），主按钮与下拉菜单项共用
- * @param {Object} act 动作配置
- * @param {Object} row 行数据
- * @returns {string} 属性串（值已转义）
- */
-function buildActionAttrs(act, row) {
-    var attrs = '';
-    if (act.title) attrs += ' title="' + bny.escapeChars(tplInterpolate(act.title, row, 'html')) + '"';
-    if (act.confirm) attrs += ' data-confirm="' + bny.escapeChars(tplInterpolate(act.confirm, row, 'html')) + '"';
-    if (act.event) attrs += ' data-event="' + bny.escapeChars(String(act.event)) + '"';
-
-    var url = act.url || act.href;
-    if (url) {
-        var method = String(act.method || 'GET').toUpperCase();
-        if (['GET', 'POST', 'PUT', 'DELETE', 'PATCH'].indexOf(method) < 0) method = 'GET';
-        attrs += ' data-url="' + bny.escapeChars(tplInterpolate(url, row, 'url')) + '"';
-        attrs += ' data-method="' + method + '"';
+        _cellTplCache[src] = el.innerHTML;
     }
-    if (act.target) attrs += ' data-target="' + bny.escapeChars(String(act.target)) + '"';
-
-    // 行数据存档：event 模式派发自定义事件时回传业务（JSON 序列化 + 转义，不构成注入）
-    attrs += ' data-row="' + bny.escapeChars(JSON.stringify(row)) + '"';
-    return attrs;
+    return _cellTplCache[src];
 }
 
 /**
- * 渲染"更多"弹出菜单：返回 { trigger, panel } 两段 HTML
- * - 面板复用菜单组件垂直菜单观感（.bny-menu 白主题，item/trigger 结构），
- *   外层保留 .bny-dropdown 承担 fixed 定位与显隐；不带 hx-ext，不初始化菜单扩展行为
- * - 触发器留在按钮组内（保持 :last-child，右边框正常）；面板放组外作为组的兄弟节点
- *   （组内溢出隐藏 + :last-child 分隔线规则，面板放组内会顶掉触发器的右边框）
- * - 菜单项走 actions 委托（data-bny-action），confirm/url/event 协议同主按钮
- * @param {Object} act 动作配置（children 为二级动作列表）
- * @param {Object} row 行数据
- * @returns {{trigger: string, panel: string}}
- */
-function renderDropdownAction(act, row) {
-    var content = actionContent(act, row) || '';
-    var attrs = ' class="bny-btn"';
-    attrs += ' btn-size="' + bny.escapeChars(String(act.size || 'sm')) + '"';
-    attrs += ' btn-model="' + bny.escapeChars(String(act.model || 'border')) + '"';
-    if (act.color) attrs += ' btn-color="' + bny.escapeChars(String(act.color)) + '"';
-    attrs += ' title="' + bny.escapeChars(act.title ? tplInterpolate(act.title, row, 'html') : '更多') + '"';
-
-    var items = '';
-    (Array.isArray(act.children) ? act.children : []).forEach(function (child) {
-        if (!child || typeof child !== 'object') return;
-        var c = actionContent(child, row);
-        if (!c) return;
-        items += '<div class="item"><div class="trigger"' + buildActionAttrs(child, row) + ' data-bny-action>' + c + '</div></div>';
-    });
-
-    return {
-        trigger: '<button type="button"' + attrs + ' data-bny-dropdown>' + content + '</button>',
-        panel: '<div class="bny-dropdown bny-menu" menu-mode="vertical" menu-color="white">' + items + '</div>'
-    };
-}
-
-/**
- * 找到弹出菜单触发器对应的面板
- * 触发器在按钮组内时面板是组的下一个兄弟节点，否则是触发器的下一个兄弟节点
- * @param {HTMLElement} trigger 触发器
- * @returns {HTMLElement|null}
- */
-function dropdownPanelOf(trigger) {
-    var scope = trigger.parentElement && trigger.parentElement.classList.contains('bny-btn-group')
-        ? trigger.parentElement
-        : trigger;
-    var next = scope.nextElementSibling;
-    return (next && next.classList.contains('bny-dropdown')) ? next : null;
-}
-
-/**
- * 定位并打开弹出菜单（视口固定定位：优先下方，空间不足上翻；右侧溢出右对齐）
- * @param {HTMLElement} trigger 触发器
- * @param {HTMLElement} panel 面板
- */
-function openDropdown(trigger, panel) {
-    // 先显示（透明）拿到面板尺寸
-    panel.style.visibility = 'hidden';
-    panel.style.opacity = 0;
-    panel.classList.add('show');
-
-    var rect = trigger.getBoundingClientRect();
-    var pRect = panel.getBoundingClientRect();
-    var gap = 8;
-    var top, left;
-    if (window.innerHeight - rect.bottom >= pRect.height + gap || window.innerHeight - rect.bottom >= rect.top) {
-        top = rect.bottom + gap;
-        panel.classList.remove('up');
-    } else {
-        top = rect.top - pRect.height - gap;
-        panel.classList.add('up');
-    }
-    left = rect.left;
-    if (left + pRect.width > window.innerWidth - gap) left = window.innerWidth - gap - pRect.width;
-    if (left < gap) left = gap;
-
-    panel.style.top = top + 'px';
-    panel.style.left = left + 'px';
-    panel.style.visibility = 'visible';
-    panel.style.opacity = 1;
-}
-
-/**
- * 关闭弹出菜单
- * @param {HTMLElement} panel 面板
- */
-function closeDropdownPanel(panel) {
-    panel.classList.remove('show', 'up');
-    panel.style.visibility = 'hidden';
-    panel.style.opacity = 0;
-}
-
-/**
- * template 单元格：自定义模板，{field} 占位符替换为转义后的行数据
+ * template 单元格：cell-template 声明模板（"#id"/".class" 选择器引用 <template> 元素或内联串），
+ * {{表达式}} 求值替换（data 即行对象），结果转义后嵌入
  * @param {Object} row 行数据
  * @param {Object} col 列定义
  * @returns {string}
  */
 function renderTemplateCell(row, col) {
-    return tplInterpolate(col.template || '', row, 'html');
+    return tplInterpolate(cellTemplateSource(col), row);
+}
+
+/**
+ * 深度优先拍平服务端返回的 children 嵌套行为顺序节点。
+ * 行序即树的先序遍历序：父行在前、子行紧随（initTree 据此折叠后代）
+ * @param {Array} list 行数据（行可带 children 数组，任意层级嵌套）
+ * @param {number} level 当前层级（0 起）
+ * @param {Array<{row:Object, level:number, hasChildren:boolean}>} out 输出数组
+ */
+function flattenTreeRows(list, level, out) {
+    (list || []).forEach(function (row) {
+        var children = row && Array.isArray(row.children) ? row.children : null;
+        out.push({ row: row, level: level, hasChildren: !!(children && children.length) });
+        if (children && children.length) flattenTreeRows(children, level + 1, out);
+    });
+}
+
+/**
+ * 树形首列前缀：层级缩进占位（每级 16px）+ 有子节点的行输出展开/折叠箭头。
+ * 箭头旋转由 CSS 依据行的 tree-collapsed 类控制（展开朝下、收起朝右），
+ * 点击行为由 initTree 的事件委托处理；叶子节点只有缩进、无箭头
+ * @param {number} level 层级
+ * @param {boolean} hasChildren 是否有子节点
+ * @returns {string} HTML
+ */
+function treeCellPrefixHtml(level, hasChildren) {
+    var s = level > 0
+        ? '<span class="bny-table-tree-indent" style="width:' + (level * 16) + 'px;"></span>'
+        : '';
+    if (hasChildren) {
+        s += '<button type="button" class="bny-table-tree-toggle" aria-label="展开/折叠">' +
+            '<i class="bny-icon icon-right"></i></button>';
+    }
+    return s;
 }
 
 /**
  * 对象行渲染（list 对象行 + 列模型）
  * @param {Object} row 行数据
  * @param {Array} cols 列定义
+ * @param {number} [level] 树形层级；不传按平铺行渲染（无 data-tree-level/缩进）
+ * @param {boolean} [hasChildren] 是否有子节点（树形行输出展开箭头）
  * @returns {string}
  */
-function objectRowHtml(row, cols) {
-    var r = '<tr>';
-    cols.forEach(function (col) {
+function objectRowHtml(row, cols, level, hasChildren) {
+    var tree = typeof level === 'number';
+    var r = '<tr' + (tree ? ' data-tree-level="' + level + '"' : '') + '>';
+    cols.forEach(function (col, i) {
         var attrs = tdAlignAttr(col);
+        var cls = '';
+        var tip = '';
+        // 树形首列承载缩进与箭头（移动端卡片布局按此对齐层级）
+        if (tree && i === 0) cls = 'bny-table-tree-cell';
         // 单行省略列：悬停经 tip 组件提示"点击展开"（未溢出的单元格由 appendZoomButtons 摘除 tip）
-        if (colEllipsis(col)) attrs += ' class="bny-table-ellipsis" tip="点击展开"';
+        if (colEllipsis(col)) {
+            cls += (cls ? ' ' : '') + 'bny-table-ellipsis';
+            tip = ' tip="点击展开"';
+        }
+        if (cls) attrs += ' class="' + cls + '"';
+        attrs += tip;
         // 自定义排序值：sortVal 指定取值字段（显示文案与排序值不同时使用，如 tag 映射列）
         if (col.sortVal) {
             attrs += ' table-sort-val="' + bny.escapeChars(String(getVal(row, col.sortVal))) + '"';
         }
-        r += '<td' + attrs + '>' + renderTypedCell(row, col) + '</td>';
+        var content = renderTypedCell(row, col);
+        if (tree && i === 0) content = treeCellPrefixHtml(level, hasChildren) + content;
+        r += '<td' + attrs + '>' + content + '</td>';
     });
     r += '</tr>';
     return r;
 }
 
-/**
- * JSON数据转表格HTML
- * - JSON 带 total 时在表格后追加分页条（内置分页，配置元素读 pg-* 属性，与 bny-pagination 组件共用内置函数）
- * @param {object} data { cols|columns, rows, list, allList, color, empty, key, total, pageSize, page }
- * @param {XMLHttpRequest} xhr 响应对象（allList 切片解析页码用）
- * @param {HTMLElement} elt 配置元素（table-page-size / table-page-param / pg-* 属性）
- * @returns {string} html（无表格数据时返回空串）
- */
-function buildTable(data, xhr, elt) {
-    const cols = data.columns || data.cols || [];
-    const rows = data.rows || [];
-    let list = Array.isArray(data.list) ? data.list : [];
-    const color = data.color || '';
-    // 空数据时的占位文案，默认 '暂无数据'
-    const emptyText = data.empty || '暂无数据';
-    // 表格唯一标识（用于排序状态持久化），优先使用 data.key，其次 color
-    const tableKey = data.key || color || '';
-
-    // 分页参数：page/pageSize 优先取请求 URL 参数（静态 JSON 也能反映点击的页码/条数）
-    const paramName = (elt && elt.getAttribute('pg-page-param')) || 'page';
-    const sizeParam = (elt && elt.getAttribute('pg-size-param')) || 'pageSize';
-    const pageSize = bny.parsePageParam(xhr && xhr.responseURL, sizeParam)
-        || parseInt(data.pageSize, 10)
-        || parseInt(elt && elt.getAttribute('table-page-size'), 10)
-        || 10;
-    const page = bny.parsePageParam(xhr && xhr.responseURL, paramName)
-        || parseInt(data.page, 10) || 1;
-
-    // 本地过滤：table-filter 声明可过滤字段（逗号分隔），请求 URL 里同名非空参数作为条件
-    // （多条件搜索/菜单联动的静态数据方案，条件 AND 组合、不区分大小写包含匹配；
-    //   仅 allList 模式生效，list 模式的过滤由服务端负责）
-    const filterFields = (elt && elt.getAttribute('table-filter') || '')
-        .split(',').map(function (s) { return s.trim() }).filter(Boolean);
-    const conditions = [];
-    if (xhr && xhr.responseURL && filterFields.length) {
-        try {
-            new URL(xhr.responseURL).searchParams.forEach(function (v, k) {
-                if (v !== '' && filterFields.indexOf(k) >= 0) conditions.push([k, v.toLowerCase()]);
-            });
-        } catch (_) { }
-    }
-
-    // allList：全量数据先本地过滤再前端分页切片
-    let filteredCount = null;
-    if (Array.isArray(data.allList)) {
-        let all = data.allList;
-        if (conditions.length) {
-            all = all.filter(function (row) {
-                return conditions.every(function (c) {
-                    return String(getVal(row, c[0])).toLowerCase().indexOf(c[1]) >= 0;
-                });
-            });
-            filteredCount = all.length;
-        }
-        const start = (page - 1) * pageSize;
-        list = all.slice(start, start + pageSize);
-    }
-
-    // 无列且无行：非表格数据（如纯分页响应），返回空串（内容渲染交给业务或其他扩展）
-    if (!cols.length && !rows.length && !list.length) return '';
-
-    let h = '';
-    // 先拼完所有属性，最后再加 '>' 闭合 <table> 标签
-    // 否则 data-table-key 会跑到 table 标签后面变成文本节点（页面多出 '>' 符号）
-    // bny-table-fade：表格与紧邻的分页条渐显（加载/重载动画）
-    h += '<table hx-ext="bny-table" class="bny-table-fade"' + (color ? ' table-color="' + color + '"' : '');
-    if (tableKey) h += ' table-key="' + bny.escapeChars(tableKey) + '"';
-    h += '>';
-
-    // 树形缩进单位（px）：层级 × 该值
-    const indentUnit = 20;
-
-    /**
-     * 渲染一棵父行（首列插展开箭头 + 层级缩进）
-     * @param {object} row 父行 { cells:[], children:[] }
-     * @param {Array} cells 当前行各列
-     * @param {number} level 层级（0 为顶层）
-     */
-    function treeRowHtml(row, cells, level) {
-        const hasKids = Array.isArray(row.children) && row.children.length > 0;
-        let r = '<tr data-tree-level="' + level + '"' + (hasKids ? ' data-tree-parent="1"' : '') + '>';
-        cells.forEach(function (cell, ci) {
-            let content = renderCell(cell);
-            if (ci === 0) {
-                content = '<span class="bny-table-tree-indent" style="padding-left:' + (level * indentUnit) + 'px"></span>' +
-                    (hasKids ? '<span class="bny-table-tree-toggle"><i class="bny-icon icon-caret-right"></i></span>' : '') +
-                    content;
-            }
-            r += '<td' + (ci === 0 ? ' class="bny-table-tree-cell"' : '') + '>' + content + '</td>';
-        });
-        r += '</tr>';
-        return r;
-    }
-
-    /**
-     * 递归追加一行（含其子树）。父行：{ cells, children: [...] }；子级同构，可任意嵌套。
-     * @param {*} row
-     * @param {number} level
-     */
-    function appendRow(row, level) {
-        // 树形行：整行对象（含 cells，可选 children）
-        if (row && !Array.isArray(row) && typeof row === 'object') {
-            if (Array.isArray(row.cells) || Array.isArray(row.children)) {
-                const hasChildren = Array.isArray(row.children) && row.children.length > 0;
-                const cells = Array.isArray(row.cells) ? row.cells : [row.cells];
-                h += treeRowHtml(row, cells, level);
-                if (hasChildren) {
-                    (row.children || []).forEach(function (child) { appendRow(child, level + 1); });
-                }
-                return;
-            }
-            // 整行原始 HTML（自定义行结构）
-            if (typeof row.__html !== 'undefined' && row.__html) {
-                h += row.__html;
-                return;
-            }
-            // 对象单格行
-            h += '<tr data-tree-level="' + level + '">';
-            [row].forEach(function (cell, ci) {
-                let content = renderCell(cell);
-                if (ci === 0 && level > 0) {
-                    content = '<span class="bny-table-tree-indent" style="padding-left:' + (level * indentUnit) + 'px"></span>' + content;
-                }
-                h += '<td>' + content + '</td>';
-            });
-            h += '</tr>';
-            return;
-        }
-        // 平铺数组 / 单值 行
-        const vals = Array.isArray(row) ? row : [row];
-        h += '<tr data-tree-level="' + level + '">';
-        vals.forEach(function (cell, ci) {
-            let content = renderCell(cell);
-            if (ci === 0 && level > 0) {
-                content = '<span class="bny-table-tree-indent" style="padding-left:' + (level * indentUnit) + 'px"></span>' + content;
-            }
-            h += '<td>' + content + '</td>';
-        });
-        h += '</tr>';
-    }
-
-    h += '<thead><tr>';
-    cols.forEach(function (col) {
-        h += renderCol(col);
-    });
-    h += '</tr></thead>';
-    h += '<tbody>';
-    if (rows.length === 0 && list.length === 0) {
-        // 空状态：合并所有列显示占位文案
-        h += '<tr class="bny-table-empty"><td colspan="' + cols.length + '">' + bny.escapeChars(emptyText) + '</td></tr>';
-    } else {
-        // 位置行（rows）：树形/原始行/位置数组
-        rows.forEach(function (row) { appendRow(row, 0); });
-        // 对象行（list）：配合列模型渲染富内容单元格
-        list.forEach(function (row) { h += objectRowHtml(row, cols); });
-    }
-    h += '</tbody></table>';
-
-    // 内置分页：JSON 带 total 时追加分页条（与 bny-pagination 组件共用内置函数）
-    // 本地过滤生效时 total 取过滤后条数
-    const total = filteredCount !== null ? filteredCount : parseInt(data.total, 10);
-    if (!isNaN(total)) {
-        h += bny.paginationBar({
-            total: total,
-            page: page,
-            pageSize: pageSize,
-            paramName: paramName,
-            sizeParam: sizeParam,
-            sizes: bny.parsePageSizes(elt && elt.getAttribute('pg-page-sizes')),
-            // 携带当前查询串（剥掉 page/pageSize），翻页/切条数时回带，保持搜索与筛选条件
-            query: bny.carryQuery(xhr && xhr.responseURL, [paramName, sizeParam]),
-            maxButtons: elt && elt.getAttribute('pg-max-buttons'),
-            jumper: elt ? elt.getAttribute('pg-jumper') !== 'false' : true,
-            showTotal: elt ? elt.getAttribute('pg-total') !== 'false' : true,
-            carryAttrs: carryAttrsFrom(elt, ['pg-color', 'pg-model', 'data-max-buttons', 'data-jumper', 'data-total', 'data-page-size'])
-        });
-    }
-    return h;
-}
 
 /**
  * 把 elt 上的指定属性原样拼成 HTML 属性串（用于回写到渲染的分页条上，值转义）
@@ -970,8 +743,8 @@ function carryAttrsFrom(elt, names) {
 }
 
 /**
- * actions 列宽自适应
- * 全局 table 样式为 table-layout: fixed，列宽与内容无关——操作按钮组较宽时会被压缩
+ * 操作按钮组列宽自适应（bny-table-actions 容器）
+ * 全局 table 样式为 table-layout: fixed，列宽与内容无关——按钮组较宽时会被压缩
  * （按钮文字竖排、组溢出单元格）。渲染后按各行操作组的实际宽度回写对应 th 的 width；
  * 列定义已显式声明 width 的列不覆盖。
  * @param {HTMLElement} table
@@ -1197,7 +970,10 @@ function setupEllipsisTipsDelegation() {
  */
 function resolveSwapTarget(src) {
     var sel = src.getAttribute('hx-target');
-    if (!sel) return src;
+    if (!sel || sel === 'this') return src;
+    // 兼容 htmx 风格关键字（find/closest），裸 querySelector 解析不了
+    if (sel.indexOf('find ') === 0) return src.querySelector(sel.slice(5));
+    if (sel.indexOf('closest ') === 0) return src.closest(sel.slice(8));
     try {
         return document.querySelector(sel);
     } catch (_) {
@@ -1210,13 +986,34 @@ function resolveSwapTarget(src) {
  * @param {HTMLElement} target 交换目标容器
  * @param {HTMLElement} src 请求源元素（读取行数配置）
  */
+/** 1×1 透明占位图：中断图片下载用（换 src 按规范立即中止旧请求） */
+var BLANK_IMG = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
+
+/**
+ * 中断交换目标内容里仍在下载的图片：行内大图（如原图缩略）下载中用户翻页/搜索/重载时，
+ * 旧图会继续占着浏览器连接（Chromium 对已移出 DOM 的图片也要等 GC 才释放），
+ * 新列表请求被拖到旧图下完才发出——列表"等一下才展示"。把未完成图片的 src
+ * 换成内联占位图可立即中止下载释放连接；已加载完成的不动。
+ * @param {HTMLElement} container 交换目标容器
+ */
+function abortPendingImages(container) {
+    if (!container || !container.querySelectorAll) return;
+    const imgs = container.querySelectorAll('img');
+    for (let i = 0; i < imgs.length; i++) {
+        if (!imgs[i].complete) imgs[i].src = BLANK_IMG;
+    }
+}
+
 function scheduleTableSkeleton(target, src) {
     clearTimeout(target._bnyTableSkeletonTimer);
     target._bnyTableSkeletonShown = false;
     target._bnyTableSkeletonTimer = setTimeout(function () {
         target._bnyTableSkeletonShown = true;
-        var rows = parseInt(src.getAttribute('table-page-size'), 10) ||
-            parseInt(src.getAttribute('pg-page-size'), 10) || 5;
+        // 骨架行数取默认每页条数（table-list 首项，缺省 10），介于 3~10
+        var sizes = bny.parsePageSizes(src.getAttribute('table-list'));
+        var rows = (sizes && sizes[0]) ||
+            parseInt(src.getAttribute('table-page-size'), 10) ||
+            parseInt(src.getAttribute('pg-page-size'), 10) || 10;
         rows = Math.min(Math.max(rows, 3), 10);
         target.innerHTML = tableSkeletonHtml(rows);
     }, 200);
@@ -1257,35 +1054,21 @@ function tableSkeletonHtml(rows) {
 }
 
 /* ============================================================
- * actions 列交互（document 级事件委托）
+ * 表格内操作按钮交互（document 级事件委托）
+ * cell-template 输出的按钮带 data-bny-action 即走 runAction 的
+ * confirm/url/event 协议，与 htmx 组合链上的 link/url 扩展同族。
  * ============================================================ */
 
 var _bnyTableActionsDelegated = false;
 
 /**
- * 注册操作按钮/弹出菜单点击委托（只注册一次，渲染后无需重新绑定）
+ * 注册操作按钮点击委托（只注册一次，渲染后无需重新绑定）
  */
 function setupActionsDelegation() {
     if (_bnyTableActionsDelegated) return;
     _bnyTableActionsDelegated = true;
     document.addEventListener('click', function (e) {
-        // "更多"弹出菜单触发器：开关面板
-        var trigger = e.target.closest && e.target.closest('.bny-table-actions [data-bny-dropdown]');
-        if (trigger) {
-            e.preventDefault();
-            var panel = dropdownPanelOf(trigger);
-            if (!panel) return;
-            var isOpen = panel.classList.contains('show');
-            closeAllDropdownPanels();
-            if (!isOpen) openDropdown(trigger, panel);
-            return;
-        }
-        // 点击面板与触发器之外：关闭所有打开的表格弹出面板
-        if (!e.target.closest || !e.target.closest('.bny-table-actions .bny-dropdown')) {
-            closeAllDropdownPanels();
-        }
-        // 动作按钮（含面板内菜单项）
-        var btn = e.target.closest && e.target.closest('.bny-table-actions [data-bny-action]');
+        var btn = e.target.closest && e.target.closest('[data-bny-action]');
         if (!btn) return;
         e.preventDefault();
         runAction(btn);
@@ -1293,26 +1076,367 @@ function setupActionsDelegation() {
 }
 
 /**
- * 关闭所有打开的表格弹出菜单面板
- */
-function closeAllDropdownPanels() {
-    document.querySelectorAll('.bny-table-actions .bny-dropdown.show').forEach(closeDropdownPanel);
-}
-
-/**
- * 通过表格所在容器反查请求源配置元素（携带 hx-get/hx-target，作为 htmx.ajax 的 source）
+ * 通过表格所在容器反查请求源配置元素（携带 hx-get/hx-post 与 hx-target，作为 htmx.ajax 的 source）
  * @param {HTMLElement} container 表格容器
  * @returns {HTMLElement|null}
  */
 function findRequestSource(container) {
     if (container && container.id) {
-        return document.querySelector('[hx-get][hx-target="#' + container.id + '"]');
+        return document.querySelector('[hx-get][hx-target="#' + container.id + '"], [hx-post][hx-target="#' + container.id + '"]');
     }
     return null;
 }
 
 /**
- * 执行操作按钮动作（actions 列，由事件委托调用）
+ * 读取 URL 查询参数（字符串安全；bny.parsePageParam 内部 parseInt，只适用于数值参数）
+ * @param {string} url
+ * @param {string} name
+ * @returns {string} 无值返回空串
+ */
+function queryVal(url, name) {
+    if (!url) return '';
+    try {
+        var u = new URL(url, window.location.href);
+        return u.searchParams.get(name) || '';
+    } catch (e) {
+        var re = new RegExp('[?&]' + String(name).replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '=([^&]*)');
+        var m = String(url).match(re);
+        return m ? decodeURIComponent(m[1]) : '';
+    }
+}
+
+/**
+ * 合并查询参数：保留 url 上已有参数（搜索/筛选条件自动延续），覆盖或删除指定键
+ * @param {string} url 基准 URL（可含查询串与 hash）
+ * @param {Object} params 要写入的参数；值为空串/null/undefined 表示删除该参数
+ * @returns {string}
+ */
+function mergeQuery(url, params) {
+    var s = String(url || '');
+    var hi = s.indexOf('#');
+    var hash = hi >= 0 ? s.slice(hi) : '';
+    if (hi >= 0) s = s.slice(0, hi);
+    var qi = s.indexOf('?');
+    var base = qi >= 0 ? s.slice(0, qi) : s;
+    var map = {};
+    if (qi >= 0) {
+        s.slice(qi + 1).split('&').forEach(function (kv) {
+            if (!kv) return;
+            var i = kv.indexOf('=');
+            var k = i >= 0 ? kv.slice(0, i) : kv;
+            var v = i >= 0 ? kv.slice(i + 1) : '';
+            try { k = decodeURIComponent(k); v = decodeURIComponent(v.replace(/\+/g, ' ')); } catch (_) { }
+            map[k] = v;
+        });
+    }
+    Object.keys(params || {}).forEach(function (k) {
+        var v = params[k];
+        if (v === null || v === undefined || v === '') delete map[k];
+        else map[k] = String(v);
+    });
+    var out = Object.keys(map).map(function (k) {
+        return encodeURIComponent(k) + '=' + encodeURIComponent(map[k]);
+    }).join('&');
+    return base + (out ? '?' + out : '') + hash;
+}
+
+/**
+ * 读取配置元素声明的请求方法（hx-post 优先，hx-get 兜底）
+ * @param {HTMLElement} src 配置元素
+ * @returns {string}
+ */
+function _reqMethod(src) {
+    if (src.getAttribute('hx-post') !== null) return 'POST';
+    if (src.getAttribute('hx-put') !== null) return 'PUT';
+    if (src.getAttribute('hx-delete') !== null) return 'DELETE';
+    return 'GET';
+}
+
+/**
+ * 读取配置元素声明的请求地址（hx-post / hx-get 任一）
+ * @param {HTMLElement} src 配置元素
+ * @returns {string}
+ */
+function _reqUrl(src) {
+    return src.getAttribute('hx-post') || src.getAttribute('hx-get') || '';
+}
+
+/**
+ * 表格按参数重新请求（排序/外部筛选触发）
+ * - JSON 整表模式：source 为容器反查到的配置元素，target 为容器（整表重建）
+ * - 静态 thead 模式（table-static）：source/target 都是表格自身语义，target 为 tbody（只换行）
+ * 请求方法与地址跟随配置元素的 hx-* 声明（GET 参数拼 URL，POST 等参数进 body）
+ * @param {HTMLElement} container 表格容器
+ * @param {HTMLElement} table 表格元素（读 table-url 基准 URL）
+ * @param {Object} params 要合并的参数
+ */
+function reloadTableWithParams(container, table, params) {
+    if (!table) return;
+    var isStatic = table.hasAttribute('table-static');
+    var src = isStatic ? table : (findRequestSource(container) || table);
+    var method = _reqMethod(src);
+    var base = table.getAttribute('table-url') || _reqUrl(src);
+    if (!base) return;
+    var target = isStatic ? (table.querySelector('tbody') || container) : container;
+    // GET：参数合并进 URL 查询串；POST 等：全部参数进请求体，URL 只留纯地址
+    var url = base;
+    var opts = { source: src, target: target, swap: 'innerHTML' };
+    if (method === 'GET') {
+        url = mergeQuery(base, params);
+    } else {
+        var merged = mergeQuery(base, params);
+        var sep = merged.indexOf('?');
+        url = sep >= 0 ? merged.slice(0, sep) : merged;
+        var bodyParams = {};
+        if (sep >= 0) {
+            merged.slice(sep + 1).split('&').forEach(function (kv) {
+                if (!kv) return;
+                var i = kv.indexOf('=');
+                var k = i >= 0 ? kv.slice(0, i) : kv;
+                var v = i >= 0 ? kv.slice(i + 1) : '';
+                try { bodyParams[decodeURIComponent(k)] = decodeURIComponent(v); } catch (_) { bodyParams[k] = v; }
+            });
+        }
+        opts.values = bodyParams;
+    }
+    htmx.ajax(method, url, opts);
+}
+
+/* ============================================================
+ * 静态 thead 模式（table-static）：列模型写在页面 HTML 里，服务端只回数据
+ *
+ * 用法：
+ *   <table hx-ext="bny-table" table-static table-server table-key="users"
+ *          hx-get="/api/users" hx-trigger="load" hx-target="find tbody" hx-swap="innerHTML">
+ *     <thead><tr>
+ *       <th cell-field="name" cell-sort>姓名</th>
+ *       <th cell-field="role" cell-template="#tpl-role">角色</th>
+ *     </tr></thead>
+ *     <tbody></tbody>
+ *   </table>
+ *
+ *   <template id="tpl-role"><span class="bny-tag" tag-color="blue">{{data.role}}</span></template>
+ *
+ * 响应契约：{ "data": [当前页行对象], "total": 总条数 }
+ * 配合 table-server 时请求自动携带 page/pageSize/sort/order（参数名可用
+ * pg-page-param / pg-size-param / table-sort-param / table-order-param 定制）。
+ *
+ * 树形数据：行对象可带 children 数组嵌套子行（任意层级），首列自动渲染层级缩进
+ * 与展开/折叠箭头（点击折叠整棵子树）；树形行不参与排序（行序即层级从属），
+ * 平铺数据不受影响。
+ * ============================================================ */
+
+/**
+ * 静态表头 th 声明 → 列模型
+ *
+ * 边界说明：静态表头只支持三个核心富内容声明，其余一律由 cell-template 拖底：
+ *   - cell-field：行对象取值字段（缺省空串，模板列可仅声明 cell-template 不取值）
+ *   - cell-sort：列排序（服务端模式发 sort/order）
+ *   - cell-template：富内容模板，值为 "#id" / ".class" 等选择器（引用页面 <template> 元素，推荐）或内联模板串，
+ *     {{表达式}} 求值替换行数据（data 即行对象：字段直取 data.field、三元/比较等表达式，值转义），模板本身可含 HTML（按钮/标签/链接等）
+ * 已废弃不再解析：cell-type / cell-map / cell-actions / cell-href / cell-text / cell-src /
+ * cell-round / cell-group —— 富内容统一走 cell-template，无其他入口。
+ * @param {HTMLElement} th
+ * @returns {object} col
+ */
+function colFromTh(th) {
+    const col = {
+        field: th.getAttribute('cell-field') || th.getAttribute('table-sort-field') || '',
+        title: th.textContent.trim(),
+        align: th.getAttribute('cell-align') || ''
+    };
+    const ell = th.getAttribute('cell-ellipsis');
+    if (ell !== null) col.ellipsis = ell !== 'false';
+    const template = th.getAttribute('cell-template');
+    if (template) col.template = template;
+    const sortVal = th.getAttribute('cell-sort-val');
+    if (sortVal) col.sortVal = sortVal;
+    return col;
+}
+
+/**
+ * 收集静态表头全部列模型
+ * @param {HTMLElement} table
+ * @returns {Array<object>}
+ */
+function colsFromThead(table) {
+    const cols = [];
+    table.querySelectorAll('thead th').forEach(function (th) {
+        cols.push(colFromTh(th));
+    });
+    return cols;
+}
+
+/**
+ * 解析请求对应的静态表格（table-static）：
+ * - 请求源是表格自身（hx-target="find tbody"）→ 表格即配置元素
+ * - 请求源是搜索按钮等外部元素（hx-target="#xx-tbody"）→ 按 target 反查所属静态表格
+ * @param {HTMLElement} elt 请求源元素
+ * @returns {HTMLElement|null}
+ */
+function resolveStaticTable(elt) {
+    if (!elt) return null;
+    if (elt.tagName === 'TABLE' && elt.hasAttribute('table-static')) return elt;
+    const sel = elt.getAttribute('hx-target');
+    if (!sel) return null;
+    let target = null;
+    if (sel.indexOf('find ') === 0) target = elt.querySelector(sel.slice(5));
+    else { try { target = document.querySelector(sel); } catch (_) { } }
+    const table = target && target.closest ? target.closest('table') : null;
+    return (table && table.hasAttribute('table-static')) ? table : null;
+}
+
+/**
+ * 修正表格行内请求元素（hx-get/post/put/delete）的 hx-target 继承问题：
+ * htmx 的 getClosestAttributeValue 会让行内元素继承表格自身的 hx-target="find tbody"，
+ * 而 find 语义是"从该元素自身查后代"，trigger 内没有 tbody → 解析失败触发
+ * htmx:targetError，请求（含 hx-confirm 确认）被拦在发出之前。
+ * 这里给未显式声明 hx-target 的行内请求元素补 hx-target="closest tbody"，
+ * 使其响应目标为所在表格的 tbody（操作按钮的典型语义：确认后刷新列表）。
+ * @param {HTMLElement} table 静态表格元素
+ */
+function fixRowTargets(table, force) {
+    if (!table || (!force && table._bnyFixTargetsDone)) return;
+    table._bnyFixTargetsDone = true;
+    const apply = function () {
+        table.querySelectorAll('tbody [hx-get], tbody [hx-post], tbody [hx-put], tbody [hx-delete]').forEach(function (elt) {
+            if (elt.getAttribute('hx-target') === null) {
+                elt.setAttribute('hx-target', 'closest tbody');
+            }
+            // hx-include="[id='N']"：行内一般没有 id 属性元素，补到该元素所在行，
+            // 保证包含参数能取到（如模板 {{data.id}} 渲染为 [id='5']）
+            const inc = elt.getAttribute('hx-include');
+            if (inc) {
+                const m = /\[id=['"]([^'"]+)['"]\]/.exec(inc);
+                if (m && m[1] && !document.querySelector('[id="' + m[1] + '"]')) {
+                    const row = elt.closest('tr');
+                    if (row && !row.id) row.id = m[1];
+                }
+            }
+        });
+    };
+    apply();
+    // tbody 每次整块换新都会替换 DOM，新行里的 trigger 需重新修正（MutationObserver 兜底）
+    let tb = table.querySelector('tbody');
+    if (tb && !table._bnyTargetObserver) {
+        const obs = new MutationObserver(function () { apply(); });
+        obs.observe(tb, { childList: true });
+        table._bnyTargetObserver = obs;
+    }
+}
+
+/**
+ * 把表格的内存排序状态（table._bnySortState）并入翻页回带查询串。
+ * POST 模式下 sort/order 参数在请求 body，响应 URL 拿不到，翻页必须从
+ * 内存状态回带，否则点击下一页后排序条件丢失。
+ * @param {string} query 现有查询串（URL 来源，可为空）
+ * @param {HTMLElement} table 静态表格元素
+ * @returns {string} 合并后的查询串
+ */
+function mergeSortQuery(query, table) {
+    const mem = table && table._bnySortState;
+    if (!mem || !mem.field) return query;
+    const sortParam = table.getAttribute('table-sort-param') || 'sort';
+    const orderParam = table.getAttribute('table-order-param') || 'order';
+    const parts = [];
+    if (query) parts.push(query);
+    parts.push(encodeURIComponent(sortParam) + '=' + encodeURIComponent(mem.field));
+    parts.push(encodeURIComponent(orderParam) + '=' + (mem.order === 'desc' ? 'desc' : 'asc'));
+    return parts.join('&');
+}
+
+/**
+ * 静态模式：响应 JSON → tbody 行 HTML（列模型来自静态 thead，服务端只回数据）
+ * 分页信息暂存到表格元素上，afterProcessNode 里渲染分页条（分页条须挂 table 后面，不能进 tbody）
+ * @param {object} data { list|rows, total, page, pageSize, empty }；
+ *   行可带 children 数组嵌套子行（树形表格），任意层级，按先序拍平渲染
+ * @param {XMLHttpRequest} xhr
+ * @param {HTMLElement} table 静态表格元素
+ * @returns {string} 行 HTML
+ */
+function buildStaticRows(data, xhr, table) {
+    const cols = colsFromThead(table);
+    // 行数据：paginate 契约的 data 数组（兼容 list/rows 键名）；超出表头声明的字段自然忽略
+    const list = Array.isArray(data.data) ? data.data
+        : (Array.isArray(data.list) ? data.list
+        : (Array.isArray(data.rows) ? data.rows : []));
+
+    // 记录本次响应 URL：排序/外部 reload 以它为基准合并参数；排序箭头也从它回显
+    if (xhr && xhr.responseURL) table.setAttribute('table-url', xhr.responseURL);
+
+    // 分页信息暂存（分页条在 afterProcessNode 里渲染到表格后面）
+    const paramName = table.getAttribute('pg-page-param') || 'page';
+    const sizeParam = table.getAttribute('pg-size-param') || 'pageSize';
+    const url = (xhr && xhr.responseURL) || _reqUrl(table);
+    // 条数选项：table-list 逗号分隔（如 10,20,50）；首项即默认每页条数，缺省 [10] / 10
+    const sizeList = bny.parsePageSizes(table.getAttribute('table-list'));
+    table._bnyStaticPage = {
+        total: parseInt(data.total, 10),
+        // 当前页：URL 参数 > 响应 current_page；每页条数：URL 参数 > 响应 per_page > table-list 首项（默认 10）
+        page: bny.parsePageParam(url, paramName) || parseInt(data.current_page, 10) || 1,
+        pageSize: bny.parsePageParam(url, sizeParam)
+            || parseInt(data.per_page, 10)
+            || (sizeList ? sizeList[0] : 10),
+        paramName: paramName,
+        sizeParam: sizeParam,
+        // 回带查询条件：URL 查询串（GET）+ 内存排序状态（POST 模式 sort/order 在 body，
+        // URL 读不到，翻页时由 pg-query 回带保持排序）
+        query: mergeSortQuery(bny.carryQuery(url, [paramName, sizeParam]), table),
+        // 条数选择列表：table-list 逗号分隔（如 10,20,50）；首项为默认每页条数，未设置时默认 [10]
+        sizes: sizeList || [10],
+        carryAttrs: carryAttrsFrom(table, ['pg-color', 'pg-model', 'data-max-buttons', 'data-jumper', 'data-total', 'data-page-size'])
+    };
+
+    // 分页条渲染放在这里（可靠主路径）：静态表格元素始终在文档中，
+    // 无需等待任何 htmx 生命周期事件；afterProcessNode 只对 TR 触发、
+    // afterSwap 在部分交换场景不可达，都不可依赖。重复调用由 _bnyStaticPage 幂等保护。
+    renderStaticPagination(table);
+
+    if (!list.length) {
+        return '<tr class="bny-table-empty"><td colspan="' + Math.max(1, cols.length) + '">' +
+            bny.escapeChars(data.empty || '暂无数据') + '</td></tr>';
+    }
+    // children 嵌套 → 先序拍平；任一节点有子级才按树形渲染
+    // （平铺数据不产生缩进/箭头/data-tree-level，排序等行为不受影响）
+    const flat = [];
+    flattenTreeRows(list, 0, flat);
+    const isTree = flat.some(function (n) { return n.level > 0 || n.hasChildren; });
+    let h = '';
+    flat.forEach(function (n) {
+        h += objectRowHtml(n.row, cols, isTree ? n.level : undefined, isTree && n.hasChildren);
+    });
+    return h;
+}
+
+/**
+ * 静态模式：把暂存的分页信息渲染成分页条，插到表格后面（重复请求时先移除旧条）
+ * @param {HTMLElement} table
+ */
+function renderStaticPagination(table) {
+    const info = table._bnyStaticPage;
+    if (!info) return;
+    delete table._bnyStaticPage;
+    if (isNaN(info.total)) return;
+    const old = table.nextElementSibling;
+    if (old && old.classList && old.classList.contains('bny-pagination')) old.remove();
+    const wrap = document.createElement('div');
+    wrap.innerHTML = bny.paginationBar({
+        total: info.total,
+        page: info.page,
+        pageSize: info.pageSize,
+        paramName: info.paramName,
+        sizeParam: info.sizeParam,
+        sizes: info.sizes,
+        query: info.query,
+        jumper: table.getAttribute('pg-jumper') !== 'false',
+        showTotal: table.getAttribute('pg-total') !== 'false',
+        carryAttrs: info.carryAttrs
+    });
+    if (wrap.firstChild) table.parentNode.insertBefore(wrap.firstChild, table.nextSibling);
+}
+
+/**
+ * 执行表格内操作按钮动作（cell-template 手写的 data-bny-action 按钮，由事件委托调用）
  * 流程：有 confirm 先弹 bny.confirm →
  *   1. 有 event：派发自定义事件（detail: {row, page}）交由业务处理，不发请求
  *   2. 有 url：htmx.ajax 按声明的 method 发请求；
@@ -1322,12 +1446,12 @@ function findRequestSource(container) {
  */
 function runAction(btn) {
     // 操作按钮在表格内，容器是 table 的父级（分页条若存在则是其兄弟节点）
-    // 注意：不能用 btn.closest('.bny-pagination')——actions 在表格内而非分页条内
+    // 注意：不能用 btn.closest('.bny-pagination')——按钮在表格内而非分页条内
     var table = btn.closest('table');
     var container = table ? table.parentElement : null;
     var bar = container ? container.querySelector(':scope > .bny-pagination') : null;
 
-    // 动作来自"更多"下拉面板：立即关闭面板（与 dropdown.js closeDropdown 行为一致）
+    // 按钮在弹出菜单面板内：立即关闭面板（与 dropdown.js closeDropdown 行为一致）
     var dd = btn.closest('.bny-dropdown');
     if (dd) {
         dd.classList.remove('show', 'up');
@@ -1368,3 +1492,17 @@ function runAction(btn) {
         run();
     }
 }
+
+/**
+ * 公开 API：按参数重新请求表格（外部搜索表单/筛选按钮触发）
+ * 保留 URL 上其他查询条件，只覆盖/删除给定的键；静态模式 target 为 tbody，JSON 模式整表重建
+ * @param {string|HTMLElement} target 表格元素、其容器或任意选择器
+ * @param {Object} params 查询参数，如 { kw: '张' }；值为空串表示删除该条件
+ */
+bny.tableReload = function (target, params) {
+    const el = typeof target === 'string' ? document.querySelector(target) : target;
+    if (!el) return;
+    const table = el.tagName === 'TABLE' ? el : (el.querySelector ? el.querySelector('table') : null);
+    if (!table) return;
+    reloadTableWithParams(el.tagName === 'TABLE' ? el.parentElement : el, table, params || {});
+};

@@ -584,7 +584,7 @@ p {
 
 .bny-icon {
   font-family: "bny-icon" !important;
-  font-size: 16px;
+  font-size: 14px;
   font-style: normal;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -3762,7 +3762,7 @@ p {
     left: 0;
     width: 100%;
     height: 100%;
-    z-index: 9999;
+    z-index: 999;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -3809,7 +3809,7 @@ p {
     left: 0;
     width: 100%;
     height: 100%;
-    z-index: 9999;
+    z-index: 999;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -3823,7 +3823,7 @@ p {
     background-color: var(--white);
     max-width: 100%;
     max-height: 100%;
-    z-index: 9999;
+    z-index: 999;
     position: fixed;
     box-shadow: var(--box-shadow-055);
     box-sizing: border-box;
@@ -4622,8 +4622,15 @@ table.bny-table-fade + .bny-pagination {
 
 /* ========== 树形表格 ========== */
 
-/* 展开箭头（图标版，可点击）与层级缩进占位 */
+/* 展开箭头（图标版，可点击）与层级缩进占位。
+   视觉对齐既有组件的展开箭头（collapse 的 ::before、分页条的 prev/next）：
+   icon-right 裸图标，静息 --black-shallow、悬停转主题色 --default；
+   button 仅作点击热区，不带底色方框 */
 .bny-table-tree-toggle {
+    /* 重置 UA button 默认样式（buttonface 底色/边框/内边距），仅保留点击热区 */
+    background: none;
+    border: none;
+    padding: 0;
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -4632,24 +4639,22 @@ table.bny-table-fade + .bny-pagination {
     margin: -3px 2px -3px -4px;
     cursor: pointer;
     user-select: none;
-    color: var(--default-middle);
+    color: var(--black-shallow);
     vertical-align: middle;
-    border-radius: var(--border-radius-sm);
 
     &:hover {
-        background-color: var(--default-alpha-10);
         color: var(--default);
     }
 
     & i {
-        font-size: 12px;
-        transition: transform var(--transition-fast);
+        font-size: var(--font-size-16);
+        transition: var(--transition);
         /* 默认展开态：朝下 */
         transform: rotate(90deg);
     }
 }
 
-/* 折叠态：箭头朝右（icon-caret-right 原位） */
+/* 折叠态：箭头朝右（icon-right 原位） */
 tr.tree-collapsed .bny-table-tree-toggle i {
     transform: rotate(0deg);
 }
@@ -4981,7 +4986,7 @@ tr.tree-collapsed .bny-table-tree-toggle i {
     width: 100%;
     display: block;
     padding: 0 12px;
-    height: 38px;
+    height: 35px;
     line-height: 1.5;
     font-size: var(--font-size);
     background-color: var(--white);
@@ -5053,12 +5058,12 @@ tr.tree-collapsed .bny-table-tree-toggle i {
 }
 
 /* ========== 选择框 ========== */
-[hx-ext="bny-select"],
+select[hx-ext="bny-select"],
 .bny-select {
     max-width: 100%;
     width: 100%;
     display: block;
-    height: 38px;
+    height: 35px;
     line-height: 1.5;
     padding: 0 12px;
     font-size: var(--font-size);
@@ -5319,7 +5324,7 @@ tr.tree-collapsed .bny-table-tree-toggle i {
 .bny-select[form-size="sm"],
 [hx-ext="bny-input"][form-size="sm"],
 [hx-ext="bny-textarea"][form-size="sm"],
-[hx-ext="bny-select"][form-size="sm"] {
+select[hx-ext="bny-select"][form-size="sm"] {
     height: 30px;
     font-size: var(--font-size-sm);
     padding: 0 8px;
@@ -5331,7 +5336,7 @@ tr.tree-collapsed .bny-table-tree-toggle i {
 .bny-select[form-size="lg"],
 [hx-ext="bny-input"][form-size="lg"],
 [hx-ext="bny-textarea"][form-size="lg"],
-[hx-ext="bny-select"][form-size="lg"] {
+select[hx-ext="bny-select"][form-size="lg"] {
     height: 46px;
     font-size: var(--font-size-16);
     padding: 0 16px;
@@ -5349,19 +5354,19 @@ tr.tree-collapsed .bny-table-tree-toggle i {
 
 /* ========== select 增强：自定义箭头视觉 + 焦点态 ========== */
 .bny-select:hover,
-[hx-ext="bny-select"]:hover {
+select[hx-ext="bny-select"]:hover {
     border-color: var(--default-middle);
 }
 
 .bny-select:focus,
-[hx-ext="bny-select"]:focus {
+select[hx-ext="bny-select"]:focus {
     border-color: var(--default);
     box-shadow: var(--focus-ring);
 }
 
 /* select 选项组样式（部分浏览器支持） */
 .bny-select option,
-[hx-ext="bny-select"] option {
+select[hx-ext="bny-select"] option {
     padding: 8px 12px;
     background-color: var(--white);
     color: var(--black);
@@ -5369,7 +5374,7 @@ tr.tree-collapsed .bny-table-tree-toggle i {
 
 /* select disabled 视觉 */
 .bny-select:disabled,
-[hx-ext="bny-select"]:disabled {
+select[hx-ext="bny-select"]:disabled {
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23B0B7C0' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
 }
 
@@ -5380,7 +5385,7 @@ tr.tree-collapsed .bny-table-tree-toggle i {
 .bny-select.bny-input-error,
 [hx-ext="bny-input"].bny-input-error,
 [hx-ext="bny-textarea"].bny-input-error,
-[hx-ext="bny-select"].bny-input-error {
+select[hx-ext="bny-select"].bny-input-error {
     border-color: var(--red);
 
     &:focus {
@@ -6495,7 +6500,7 @@ tr.tree-collapsed .bny-table-tree-toggle i {
         top: calc(100% + 8px);
         left: 0;
         background: var(--default);
-        z-index: 9999;
+        z-index: 999;
         box-shadow: var(--box-shadow-055);
         border-radius: var(--border-radius);
         transform: translateY(8px);
@@ -6781,7 +6786,7 @@ tr.tree-collapsed .bny-table-tree-toggle i {
             border-radius: var(--border-radius-sm);
             background: var(--default);
             box-shadow: var(--box-shadow-005);
-            z-index: 9999;
+            z-index: 999;
 
             & i {
                 color: var(--white-common);
@@ -8460,6 +8465,8 @@ html.dark .bny-backtop {
             /* src 未就绪时给一组较小占位，尽量与随机尺寸大图落差小、少跳变 */
             min-width: min(46vw, 420px);
             min-height: min(32vh, 300px);
+            /* 旧 src 已清空，兜底隐藏可能的 alt 文本/碎图标 */
+            color: transparent;
         }
     }
 
@@ -9610,6 +9617,504 @@ html.dark .bny-image-viewer .bny-image-counter {
         &:nth-child(odd) {
             left: calc(50% - 14px);
         }
+    }
+}
+/* ========== 文件上传组件 ========== */
+.bny-upload {
+    border: 2px dashed var(--gray-middle);
+    border-radius: var(--border-radius);
+    background-color: var(--white-shallow);
+    padding: 14px;
+    min-height: 90px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    cursor: pointer;
+    transition: border-color var(--transition), background-color var(--transition);
+
+    &:hover {
+        border-color: var(--gray);
+        background-color: var(--white-middle);
+    }
+
+    /* 拖拽悬停态：边框变绿、背景浅绿 */
+    &.bny-upload-dragover {
+        border-color: var(--green);
+        background-color: var(--green-alpha-10);
+    }
+}
+
+/* 提示文案 */
+.bny-upload-hint {
+    color: var(--gray);
+    font-size: var(--font-size);
+    user-select: none;
+}
+
+/* ========== 文件列表 ========== */
+.bny-upload-list {
+    list-style: none;
+    margin: 12px 0 0;
+    padding: 0;
+    max-height: 240px;
+    overflow-y: auto;
+}
+
+/* ========== 列表项 ========== */
+.bny-upload-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--gray-shallow);
+    margin: 0;
+
+    &:last-child {
+        border-bottom: none;
+    }
+
+    /* 成功项：整体文字绿色 */
+    &.is-success .bny-upload-name,
+    &.is-success .bny-upload-size,
+    &.is-success .bny-upload-status {
+        color: var(--green);
+    }
+
+    /* 失败项：整体文字红色 + 边框 */
+    &.is-error .bny-upload-name,
+    &.is-error .bny-upload-size,
+    &.is-error .bny-upload-status {
+        color: var(--red);
+    }
+
+    &.is-error {
+        border-bottom-color: var(--red-shallow);
+    }
+}
+
+/* ========== 缩略图 ========== */
+.bny-upload-thumb {
+    flex-shrink: 0;
+    width: 64px;
+    height: 52px;
+    border-radius: var(--border-radius-sm);
+    background-color: var(--gray-shallow);
+    overflow: hidden;
+
+    & img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+    }
+}
+
+/* ========== 文件信息 ========== */
+.bny-upload-info {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.bny-upload-name {
+    font-size: var(--font-size);
+    color: var(--black);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.bny-upload-size {
+    font-size: var(--font-size-sm);
+    color: var(--gray);
+}
+
+/* ========== 进度条 ========== */
+.bny-upload-progress {
+    flex-shrink: 0;
+    width: 120px;
+    height: 6px;
+    background-color: var(--gray-shallow);
+    border-radius: var(--border-radius-full);
+    overflow: hidden;
+
+    & i {
+        display: block;
+        width: 0;
+        height: 100%;
+        background-color: var(--green);
+        border-radius: var(--border-radius-full);
+        transition: width var(--transition);
+    }
+}
+
+/* 上传完成/失败后隐藏进度条 */
+.bny-upload-item.is-success .bny-upload-progress,
+.bny-upload-item.is-error .bny-upload-progress {
+    display: none;
+}
+
+/* ========== 状态文本 ========== */
+.bny-upload-status {
+    flex-shrink: 0;
+    font-size: var(--font-size-sm);
+    color: var(--gray);
+}
+
+/* ========== 重新上传按钮 ========== */
+.bny-upload-retry {
+    flex-shrink: 0;
+    font-size: var(--font-size-sm);
+    color: var(--blue);
+    cursor: pointer;
+    padding: 2px 6px;
+    user-select: none;
+    transition: color var(--transition-fast);
+
+    &:hover {
+        color: var(--blue-middle);
+    }
+}
+
+/* ========== 删除按钮 ========== */
+.bny-upload-remove {
+    flex-shrink: 0;
+    font-size: var(--font-size-18);
+    line-height: 1;
+    color: var(--gray);
+    cursor: pointer;
+    padding: 2px 4px;
+    user-select: none;
+    transition: color var(--transition-fast);
+
+    &:hover {
+        color: var(--red);
+    }
+}/**
+ * bny-select — 多功能选择框
+ *
+ * 说明：
+ * - 生成元素锚点 .bny-select-box / .bny-select-panel（与 datepicker 的
+ *   .bny-datepicker-* 同风格），与 form.css 中原生 select 增强所用的
+ *   .bny-select / select[hx-ext="bny-select"] 互不干扰，二者可以同时存在
+ * - 内部子元素统一短类名（.trigger / .option / .check …），靠嵌套作用域隔离；
+ *   值域元素（生成的 input.value 或渐进增强复用的原生 select）视觉隐藏但保留
+ *   可聚焦能力，bny-form 的 firstInvalid.focus() 与 required 校验可正常作用其上，
+ *   校验红框通过兄弟选择器投射到触发框
+ */
+
+.bny-select-box {
+    position: relative;
+    display: block;
+    width: 100%;
+
+    /* ul 直接承载时 box 即 ul 本身：重置列表默认样式（div 场景无影响） */
+    margin: 0;
+    padding: 0;
+    list-style: none;
+
+    /* 值域：视觉隐藏但可聚焦（display:none 会让 focus 与校验失效） */
+    & > .value,
+    & > select {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: 0;
+        border: 0;
+        opacity: 0;
+        pointer-events: none;
+    }
+
+    /* ====== 触发框（与 form.css 输入框基线对齐：默认 35px，chips 换行可长高） ====== */
+    & .trigger {
+        position: relative;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        min-height: 35px;
+        padding: 0 30px 0 12px;
+        border: 1.5px solid var(--gray-middle);
+        border-radius: var(--border-radius);
+        background: var(--white-common);
+        color: var(--black);
+        font-size: var(--font-size);
+        cursor: pointer;
+        transition: border-color .15s;
+        box-sizing: border-box;
+
+        &:hover {
+            border-color: var(--default-shallow);
+        }
+
+        /* 单选回显文本 */
+        & .text {
+            flex: 1;
+            min-width: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+
+            &.placeholder {
+                color: var(--gray);
+            }
+        }
+
+        /* 下拉箭头 */
+        & .arrow {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 12px;
+            color: var(--gray);
+            transition: transform .2s;
+            pointer-events: none;
+        }
+
+        /* 清空按钮 */
+        & .clear {
+            position: absolute;
+            right: 26px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 11px;
+            color: var(--gray);
+            line-height: 1;
+
+            &:hover {
+                color: var(--red);
+            }
+        }
+
+        /* ====== 多选 chips ====== */
+        & .chips {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 4px;
+            flex: 1;
+            min-width: 0;
+            padding: 4px 0;
+
+            & .chip {
+                display: inline-flex;
+                align-items: center;
+                gap: 4px;
+                max-width: 100%;
+                padding: 1px 6px;
+                border: 1px solid var(--default-alpha-20);
+                border-radius: var(--border-radius-sm);
+                background: var(--default-alpha-10);
+                color: var(--default);
+                font-size: var(--font-size-xs);
+                line-height: 18px;
+
+                & > span {
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    white-space: nowrap;
+                }
+
+                & .close {
+                    font-size: 10px;
+                    opacity: .6;
+                    cursor: pointer;
+
+                    &:hover {
+                        opacity: 1;
+                    }
+                }
+            }
+        }
+    }
+
+    /* 展开态：边框高亮 + 箭头翻转 */
+    &.open .trigger {
+        border-color: var(--default);
+
+        & .arrow {
+            transform: translateY(-50%) rotate(180deg);
+        }
+    }
+
+    /* 禁用态 */
+    &.disabled .trigger {
+        border-color: var(--gray-middle);
+        background: var(--white-shallow);
+        color: var(--gray);
+        cursor: not-allowed;
+
+        &:hover {
+            border-color: var(--gray-middle);
+        }
+    }
+
+    /* 校验错误：红框投射到触发框（红框由 bny-form 打在值域上） */
+    & > .bny-input-error + .trigger {
+        border-color: var(--red);
+    }
+
+    /* ====== 尺寸变体（与 form.css 的 form-size 对齐） ====== */
+    &[form-size="sm"] .trigger {
+        min-height: 30px;
+        padding: 0 28px 0 8px;
+        font-size: var(--font-size-sm);
+        border-radius: var(--border-radius-sm);
+    }
+
+    &[form-size="lg"] .trigger {
+        min-height: 46px;
+        padding: 0 32px 0 16px;
+        font-size: var(--font-size-16);
+        border-radius: var(--border-radius-8);
+    }
+}
+
+/* ====== 浮层面板（挂 body，避免被祖先 overflow 裁剪） ====== */
+.bny-select-panel {
+    position: fixed;
+    z-index: 1000;
+    display: none;
+    overflow: hidden;
+    border: 1px solid var(--gray-middle);
+    border-radius: var(--border-radius);
+    background: var(--white-common);
+    box-shadow: var(--box-shadow-055);
+    box-sizing: border-box;
+
+    & .options {
+        max-height: 260px;
+        margin: 0;
+        padding: 4px;
+        overflow-y: auto;
+        list-style: none;
+    }
+
+    /* ====== 选项行 ====== */
+    & .option {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        padding: 7px 12px;
+        border-radius: var(--border-radius-sm);
+        color: var(--black);
+        font-size: var(--font-size);
+        line-height: 1.4;
+        cursor: pointer;
+
+        &:hover,
+        &.focus {
+            background: var(--black-alpha-05);
+        }
+
+        &.selected {
+            background: var(--default-alpha-10);
+            color: var(--default);
+            font-weight: var(--font-weight-medium);
+        }
+
+        &.disabled {
+            color: var(--gray);
+            cursor: not-allowed;
+
+            &:hover {
+                background: transparent;
+            }
+        }
+
+        & .text {
+            flex: 1;
+            min-width: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        /* ====== 多选框（含半选） ====== */
+        & .check {
+            position: relative;
+            flex: none;
+            width: 14px;
+            height: 14px;
+            border: 1px solid var(--gray-middle);
+            border-radius: 3px;
+            box-sizing: border-box;
+
+            &.checked {
+                border-color: var(--default);
+                background: var(--default);
+
+                &::after {
+                    content: '';
+                    position: absolute;
+                    left: 3px;
+                    top: 1px;
+                    width: 5px;
+                    height: 8px;
+                    border: solid var(--white-common);
+                    border-width: 0 2px 2px 0;
+                    transform: rotate(45deg);
+                }
+            }
+
+            /* 半选：写在 .checked 之后，同为选中态时以半选视觉为准 */
+            &.half {
+                border-color: var(--default);
+                background: var(--default);
+
+                &::after {
+                    content: '';
+                    position: absolute;
+                    left: 2px;
+                    top: 5px;
+                    width: 8px;
+                    height: 2px;
+                    border: 0;
+                    background: var(--white-common);
+                    transform: none;
+                }
+            }
+        }
+
+        /* ====== 树形折叠箭头 ====== */
+        & .toggle {
+            flex: none;
+            width: 14px;
+            font-size: 12px;
+            color: var(--black-shallow);
+            text-align: center;
+            cursor: pointer;
+
+            &:hover {
+                color: var(--default);
+            }
+
+            /* 无子节点的占位，保持与有箭头项缩进对齐 */
+            &.empty {
+                display: inline-block;
+                cursor: default;
+            }
+        }
+    }
+
+    /* 分组标题（不可选） */
+    & .group {
+        padding: 6px 12px;
+        color: var(--gray);
+        font-size: var(--font-size-xs);
+        cursor: default;
+    }
+
+    /* 空态（列表的直接子行，区别于 .toggle.empty 占位） */
+    & .options > .empty {
+        padding: 16px;
+        color: var(--gray);
+        font-size: var(--font-size-sm);
+        text-align: center;
     }
 }
 /* ========== 公共样式 ========== */

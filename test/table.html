@@ -4,9 +4,9 @@
             <h1>表格</h1>
             <hr>
             <blockquote class="bny-blockquote">
-                表格是一种用于展示数据的结构化布局，两种用法开箱即用：<code>&lt;table hx-ext="bny-table"&gt;</code> 静态表格（表头排序、移动端响应式卡片）；
-                数据表格（hx-get 请求 JSON）自动渲染，支持列模型富内容（标签/链接/头像/操作按钮组）、内置分页与搜索过滤、
-                长文本省略与放大镜查看、加载骨架屏与渐显动画。
+                表格是一种用于展示数据的结构化布局，两种用法开箱即用：<code>&lt;table hx-ext="bny-table"&gt;</code> 静态表格（手写 HTML，表头排序、移动端响应式卡片）；
+                加 <code>table-static</code> 即为数据表格——静态表头声明列模型（<code>cell-*</code> + <code>cell-template</code> 模板），
+                hx-get 请求服务端分页 JSON 自动渲染行，内置分页条、服务端排序、树形嵌套、长文本省略与放大镜、加载骨架屏与渐显动画。
             </blockquote>
 
             <h2 id="n01">基础表格</h2>
@@ -83,7 +83,7 @@
 
             <blockquote class="bny-blockquote">
                 静态表格（<code>&lt;table hx-ext="bny-table"&gt;</code> 手写 HTML）开箱获得表头排序与移动端响应式能力；
-                数据表格（hx-get 请求 JSON 自动渲染）在此基础上增加列模型富内容、内置分页、搜索过滤、长文本省略与加载骨架屏，见下文各章节。<br>
+                加 <code>table-static</code> 成为数据表格——静态表头 + 服务端分页 JSON 自动渲染行，在此基础上增加列模型模板、内置分页条、服务端排序、搜索联动、长文本省略与加载骨架屏，见下文各章节。<br>
                 移动端（&lt; 768px）自动切换卡片式布局：隐藏表头，每行渲染为"字段名 + 值"卡片（字段名取自表头 th），内容不再受列宽限制，可完整换行展示。
             </blockquote>
 
@@ -143,7 +143,7 @@
                     <div class="body">
                         <div>
                             <div class="p-12">
-                                <table hx-ext="bny-table">
+                                <table hx-ext="bny-table" table-key="sort-demo">
                                     <thead>
                                         <tr>
                                             <th table-sort>姓名</th>
@@ -178,7 +178,7 @@
                         </div>
                         <div>
                             <pre hx-ext="bny-code">
-&lt;table hx-ext=&quot;bny-table&quot;&gt;
+&lt;table hx-ext=&quot;bny-table&quot; table-key=&quot;sort-demo&quot;&gt;
     &lt;thead&gt;
         &lt;tr&gt;
             &lt;th table-sort&gt;姓名&lt;/th&gt;
@@ -193,6 +193,8 @@
         &lt;tr&gt;&lt;td&gt;赵六&lt;/td&gt;&lt;td&gt;25&lt;/td&gt;&lt;td&gt;1340&lt;/td&gt;&lt;/tr&gt;
     &lt;/tbody&gt;
 &lt;/table&gt;
+
+// table-key：排序状态持久化键——刷新页面自动回显箭头并恢复排序
                 </pre>
                         </div>
                     </div>
@@ -210,7 +212,7 @@
                         <div>
                             <div class="p-12">
                                 <p>当单元格显示内容与排序值不一致时，使用 <code>table-sort-val</code> 指定参与排序的值</p>
-                                <table hx-ext="bny-table" table-color="blue">
+                                <table hx-ext="bny-table" table-color="blue" table-key="rank-demo">
                                     <thead>
                                         <tr>
                                             <th table-sort="number">排名</th>
@@ -236,7 +238,7 @@
                         </div>
                         <div>
                             <pre hx-ext="bny-code">
-&lt;table hx-ext=&quot;bny-table&quot;&gt;
+&lt;table hx-ext=&quot;bny-table&quot; table-key=&quot;rank-demo&quot;&gt;
     &lt;thead&gt;
         &lt;tr&gt;
             &lt;th table-sort=&quot;number&quot;&gt;排名&lt;/th&gt;
@@ -264,7 +266,7 @@
                 </div>
             </div>
 
-            <h2 id="n05">Htmx用法</h2>
+            <h2 id="n05">数据表格（table-static 基础）</h2>
             <div class="bny-card">
                 <div hx-ext="bny-tab">
                     <ul class="head">
@@ -275,50 +277,67 @@
                     <div class="body">
                         <div>
                             <div class="p-12">
-                                <button class="bny-btn" hx-ext="bny-table" hx-get="/test/data/table01.json"
-                                    hx-target="#table-demo" hx-swap="innerHTML" hx-trigger="click">加载表格</button>
-                                <button class="bny-btn" hx-ext="bny-table" hx-get="/test/data/table02.json"
-                                    hx-target="#table-demo" hx-swap="innerHTML" hx-trigger="click"
-                                    style="margin-left: 8px;">加载蓝色表格</button>
-                                <div id="table-demo" class="mt-16"></div>
+                                <p style="margin-bottom:12px; font-size:13px; color:var(--black-shallow);">
+                                    表头写好即列模型，<code>hx-get</code> 请求服务端分页 JSON 自动渲染 <code>tbody</code>；
+                                    带 <code>cell-sort</code> 的列点击表头排序（发 <code>sort</code>/<code>order</code> 参数），
+                                    响应含 <code>total</code> 时表格下方自动渲染内置分页条。
+                                </p>
+                                <table hx-ext="bny-table" table-static table-server table-key="basic-users"
+                                       hx-get="/test/data/table-static.json" hx-trigger="load"
+                                       hx-target="find tbody" hx-swap="innerHTML">
+                                    <thead>
+                                        <tr>
+                                            <th cell-field="id" cell-align="center">ID</th>
+                                            <th cell-field="name" cell-sort>姓名</th>
+                                            <th cell-field="role">角色</th>
+                                            <th cell-field="email">邮箱</th>
+                                            <th cell-field="reg_time" cell-sort>注册时间</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                </table>
                             </div>
                         </div>
                         <div>
                             <pre hx-ext="bny-code">
-&lt;button class=&quot;bny-btn&quot; hx-ext=&quot;bny-table&quot;
-    hx-get=&quot;/test/data/table01.json&quot; hx-target=&quot;#table-demo&quot;
-    hx-swap=&quot;innerHTML&quot; hx-trigger=&quot;click&quot;&gt;加载表格&lt;/button&gt;
+&lt;table hx-ext=&quot;bny-table&quot; table-static table-server table-key=&quot;basic-users&quot;
+       hx-get=&quot;/test/data/table-static.json&quot; hx-trigger=&quot;load&quot;
+       hx-target=&quot;find tbody&quot; hx-swap=&quot;innerHTML&quot;&gt;
+    &lt;thead&gt;&lt;tr&gt;
+        &lt;th cell-field=&quot;id&quot; cell-align=&quot;center&quot;&gt;ID&lt;/th&gt;
+        &lt;th cell-field=&quot;name&quot; cell-sort&gt;姓名&lt;/th&gt;
+        &lt;th cell-field=&quot;role&quot;&gt;角色&lt;/th&gt;
+        &lt;th cell-field=&quot;email&quot;&gt;邮箱&lt;/th&gt;
+        &lt;th cell-field=&quot;reg_time&quot; cell-sort&gt;注册时间&lt;/th&gt;
+    &lt;/tr&gt;&lt;/thead&gt;
+    &lt;tbody&gt;&lt;/tbody&gt;
+&lt;/table&gt;
 
-&lt;button class=&quot;bny-btn&quot; hx-ext=&quot;bny-table&quot;
-    hx-get=&quot;/test/data/table02.json&quot; hx-target=&quot;#table-demo&quot;
-    hx-swap=&quot;innerHTML&quot; hx-trigger=&quot;click&quot;&gt;加载蓝色表格&lt;/button&gt;
-
-&lt;div id=&quot;table-demo&quot;&gt;&lt;/div&gt;
+// table-static：启用"静态表头 + 服务端数据"模式，tbody 由响应数据渲染
+// hx-trigger="load"：页面加载即请求；也可改为按需触发（按钮/搜索输入等）
+// hx-target="find tbody"：JSON 渲染出的行填入表内 tbody
+// table-server：翻页/排序由服务端完成，组件只发参数（默认 page/pageSize/sort/order）
+// table-key：同页多个数据表格各配唯一 key（排序状态存 sessionStorage，互不干扰）
+// table-list：内置分页条的条数选项（逗号分隔，如 "10,20,50"），首项为默认每页条数
                 </pre>
                         </div>
                         <div>
                             <pre hx-ext="bny-code">
-// table01.json
+// /test/data/table-static.json — 服务端分页契约（ThinkPHP / Laravel paginate() 原生格式）
 {
-    "cols": ["姓名", "年龄", "积分"],
-    "rows": [
-        ["张三", "28", "920"],
-        ["李四", "22", "1050"],
-        ["王五", "31", "780"],
-        ["赵六", "25", "1340"]
-    ]
-}
-
-// table02.json — 带颜色
-{
-    "color": "blue",
-    "cols": ["排名", "选手", "得分"],
-    "rows": [
-        ["1", "选手A", "98.5"],
-        ["2", "选手B", "95.0"],
+    "total": 14,              // 总记录数（存在时自动渲染分页条）
+    "per_page": 5,            // 每页记录数
+    "current_page": 1,        // 当前页码
+    "last_page": 3,           // 总页数
+    "has_more": true,
+    "data": [                 // 当前页行对象（兼容 data / list / rows 键名）
+        {"id": "1", "name": "张伟", "role": "管理员", "status": "1",
+         "email": "zhangwei@test.com", "reg_time": "2024-03-12"},
         ...
     ]
 }
+
+// data 为空数组时渲染占位行（文案取 empty 字段，缺省"暂无数据"）
                 </pre>
                         </div>
                     </div>
@@ -381,7 +400,7 @@
                 </div>
             </div>
 
-            <h2 id="n06b">富内容单元格 + 持久化排序</h2>
+            <h2 id="n06b">富内容单元格 + 服务端排序</h2>
             <div class="bny-card">
                 <div hx-ext="bny-tab">
                     <ul class="head">
@@ -392,37 +411,64 @@
                     <div class="body">
                         <div>
                             <div class="p-12">
-                                <button class="bny-btn" hx-ext="bny-table" hx-get="/test/data/table03.json"
-                                    hx-target="#table-raw-demo" hx-swap="innerHTML" hx-trigger="click">加载表格</button>
-                                <div id="table-raw-demo" class="mt-12"></div>
-                                <blockquote class="bny-blockquote">
-                                    单元格支持 { "__html": "..." } 渲染原始 HTML（用于链接/按钮等富内容）。点击列头排序后，HTMX 重新加载会从 sessionStorage
-                                    恢复排序状态。
-                                </blockquote>
+                                <p style="margin-bottom:12px; font-size:13px; color:var(--black-shallow);">
+                                    富内容（标签、链接等）用 <code>cell-template</code> 引用 <code>&lt;template&gt;</code> 模板生成；
+                                    <code>table-server</code> 模式下点击表头排序发 <code>sort</code>/<code>order</code> 参数重新请求（不重排当前页 DOM），排序参数记入基准地址，翻页时自动携带，箭头状态随响应地址回显。
+                                </p>
+                                <table hx-ext="bny-table" table-static table-server table-key="rich-users"
+                                       hx-get="/test/data/table-rich.json" hx-trigger="load"
+                                       hx-target="find tbody" hx-swap="innerHTML">
+                                    <thead>
+                                        <tr>
+                                            <th cell-field="id" cell-align="center">ID</th>
+                                            <th cell-field="name" cell-sort>姓名</th>
+                                            <th cell-field="role" cell-template="#tpl-n06b-role">角色</th>
+                                            <th cell-field="email" cell-template="#tpl-n06b-email">邮箱</th>
+                                            <th cell-field="age" cell-sort="number" cell-align="center">年龄</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                </table>
+                                <template id="tpl-n06b-role"><span class="bny-tag" tag-color="blue">{{data.role}}</span></template>
+                                <template id="tpl-n06b-email"><a href="mailto:{{data.email}}">{{data.email}}</a></template>
                             </div>
                         </div>
                         <div>
                             <pre hx-ext="bny-code">
-&lt;button hx-ext=&quot;bny-table&quot; hx-get=&quot;/test/data/table03.json&quot;
-    hx-target=&quot;#table-raw-demo&quot; hx-swap=&quot;innerHTML&quot;&gt;加载表格&lt;/button&gt;
+&lt;table hx-ext=&quot;bny-table&quot; table-static table-server table-key=&quot;rich-users&quot;
+       hx-get=&quot;/test/data/table-rich.json&quot; hx-trigger=&quot;load&quot;
+       hx-target=&quot;find tbody&quot; hx-swap=&quot;innerHTML&quot;&gt;
+    &lt;thead&gt;&lt;tr&gt;
+        &lt;th cell-field=&quot;id&quot; cell-align=&quot;center&quot;&gt;ID&lt;/th&gt;
+        &lt;th cell-field=&quot;name&quot; cell-sort&gt;姓名&lt;/th&gt;
+        &lt;th cell-field=&quot;role&quot; cell-template=&quot;#tpl-role&quot;&gt;角色&lt;/th&gt;
+        &lt;th cell-field=&quot;email&quot; cell-template=&quot;#tpl-email&quot;&gt;邮箱&lt;/th&gt;
+        &lt;th cell-field=&quot;age&quot; cell-sort=&quot;number&quot; cell-align=&quot;center&quot;&gt;年龄&lt;/th&gt;
+    &lt;/tr&gt;&lt;/thead&gt;
+    &lt;tbody&gt;&lt;/tbody&gt;
+&lt;/table&gt;
 
-// 单元格使用对象 { __html: '&lt;a ...&gt;编辑&lt;/a&gt;' } 时会渲染原始 HTML
-            </pre>
+&lt;template id=&quot;tpl-role&quot;&gt;&lt;span class=&quot;bny-tag&quot; tag-color=&quot;blue&quot;&gt;{{data.role}}&lt;/span&gt;&lt;/template&gt;
+&lt;template id=&quot;tpl-email&quot;&gt;&lt;a href=&quot;mailto:{{data.email}}&quot;&gt;{{data.email}}&lt;/a&gt;&lt;/template&gt;
+
+// 富内容由模板元素生成（{{data.field}} 占位符替换行数据，值转义），不再依赖 JSON 描述列类型
+// table-server：排序发 sort/order 参数重查；排序参数记入基准地址，翻页自动携带，箭头随响应地址回显
+                </pre>
                         </div>
                         <div>
                             <pre hx-ext="bny-code">
-// table03.json
+// /test/data/table-rich.json
 {
-    "key": "user-list",
-    "cols": [
-        {"name": "姓名", "sortable": true, "sort": "string"},
-        {"name": "操作", "sortable": false}
-    ],
-    "rows": [
-        ["张三", {"__html": "&lt;a class='bny-btn' model='border'&gt;编辑&lt;/a&gt;"}]
+    "total": 3, "per_page": 10, "current_page": 1, "last_page": 1,
+    "data": [
+        {"id": 1, "name": "张伟", "role": "管理员", "status": "1", "age": 25,
+         "email": "zhangwei@test.com",
+         "avatar": "https://picsum.photos/seed/u1/80/80",
+         "remark": "初始管理员账号，负责系统配置与权限分配……"},
+        ...
     ]
 }
-            </pre>
+                </pre>
                         </div>
                     </div>
                 </div>
@@ -439,24 +485,47 @@
                     <div class="body">
                         <div>
                             <div class="p-12">
-                                <button class="bny-btn" hx-ext="bny-table" hx-get="/test/data/table04.json"
-                                    hx-target="#table-empty-demo" hx-swap="innerHTML" hx-trigger="click">加载空数据</button>
-                                <div id="table-empty-demo" class="mt-12"></div>
+                                <p style="margin-bottom:12px; font-size:13px; color:var(--black-shallow);">
+                                    响应 <code>data</code> 为空数组时，自动渲染一行占位文案，文案取响应 <code>empty</code> 字段（缺省"暂无数据"）。
+                                </p>
+                                <table hx-ext="bny-table" table-static table-key="empty-users"
+                                       hx-get="/test/data/table-empty.json" hx-trigger="load"
+                                       hx-target="find tbody" hx-swap="innerHTML">
+                                    <thead>
+                                        <tr>
+                                            <th cell-field="name">姓名</th>
+                                            <th cell-field="email">邮箱</th>
+                                            <th cell-field="reg_time">注册时间</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                </table>
                             </div>
                         </div>
                         <div>
                             <pre hx-ext="bny-code">
-&lt;button hx-ext=&quot;bny-table&quot; hx-get=&quot;/test/data/table04.json&quot;
-    hx-target=&quot;#table-empty-demo&quot;&gt;加载空数据&lt;/button&gt;
+&lt;table hx-ext=&quot;bny-table&quot; table-static table-key=&quot;empty-users&quot;
+       hx-get=&quot;/test/data/table-empty.json&quot; hx-trigger=&quot;load&quot;
+       hx-target=&quot;find tbody&quot; hx-swap=&quot;innerHTML&quot;&gt;
+    &lt;thead&gt;&lt;tr&gt;
+        &lt;th cell-field=&quot;name&quot;&gt;姓名&lt;/th&gt;
+        &lt;th cell-field=&quot;email&quot;&gt;邮箱&lt;/th&gt;
+        &lt;th cell-field=&quot;reg_time&quot;&gt;注册时间&lt;/th&gt;
+    &lt;/tr&gt;&lt;/thead&gt;
+    &lt;tbody&gt;&lt;/tbody&gt;
+&lt;/table&gt;
+
+// data 为空数组时自动渲染占位行（colspan 跨全部列）
+// 空文案取响应 empty 字段，缺省「暂无数据」
             </pre>
                         </div>
                         <div>
                             <pre hx-ext="bny-code">
-// table04.json
+// /test/data/table-empty.json
 {
-    "key": "empty-table",
-    "cols": ["姓名", "年龄", "积分"],
-    "rows": [],
+    "per_page": 10,
+    "current_page": 1,
+    "data": [],
     "empty": "暂无符合条件的记录"
 }
             </pre>
@@ -477,46 +546,83 @@
                         <div>
                             <div class="p-12">
                                 <p style="margin-bottom:12px; font-size:13px; color:var(--black-shallow);">
-                                    rows 里的行可用 <code>children</code> 嵌套任意层级子行；首列带箭头<i class="bny-icon icon-caret-right bny-table-tree-toggle"></i>的可点开/收起整棵子树。
-                                    手机端自动切换为卡片式，子行按层级缩进。
+                                    数据表格的行对象可带 <code>children</code> 数组嵌套任意层级子行：
+                                    组件把嵌套数据先序拍平渲染，首列自动生成层级缩进与展开/折叠按钮，
+                                    点击按钮展开/收起整棵子树（叶子行不渲染按钮）。
+                                    树形行不参与排序（行序即层级从属），平铺数据不受影响。
                                 </p>
-                                <button class="bny-btn" hx-ext="bny-table" hx-get="/test/data/table-tree.json"
-                                    hx-target="#table-tree-demo" hx-swap="innerHTML" hx-trigger="click">加载树形表格</button>
-                                <div id="table-tree-demo" class="mt-12"></div>
+                                <table hx-ext="bny-table" table-static table-server table-key="org-tree"
+                                       hx-get="/test/data/table-tree-static.json" hx-trigger="load"
+                                       hx-target="find tbody" hx-swap="innerHTML">
+                                    <thead>
+                                        <tr>
+                                            <th cell-field="name">部门 / 成员</th>
+                                            <th cell-field="leader">负责人</th>
+                                            <th cell-field="count" cell-align="center">人数</th>
+                                            <th cell-field="updated">更新时间</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                </table>
                             </div>
                         </div>
                         <div>
                             <pre hx-ext="bny-code">
-&lt;button hx-ext=&quot;bny-table&quot; hx-get=&quot;/test/data/table-tree.json&quot;
-    hx-target=&quot;#table-tree-demo&quot;&gt;加载树形表格&lt;/button&gt;
+&lt;table hx-ext=&quot;bny-table&quot; table-static table-server table-key=&quot;org-tree&quot;
+       hx-get=&quot;/test/data/table-tree-static.json&quot; hx-trigger=&quot;load&quot;
+       hx-target=&quot;find tbody&quot; hx-swap=&quot;innerHTML&quot;&gt;
+    &lt;thead&gt;&lt;tr&gt;
+        &lt;th cell-field=&quot;name&quot;&gt;部门 / 成员&lt;/th&gt;
+        &lt;th cell-field=&quot;leader&quot;&gt;负责人&lt;/th&gt;
+        &lt;th cell-field=&quot;count&quot; cell-align=&quot;center&quot;&gt;人数&lt;/th&gt;
+        &lt;th cell-field=&quot;updated&quot;&gt;更新时间&lt;/th&gt;
+    &lt;/tr&gt;&lt;/thead&gt;
+    &lt;tbody&gt;&lt;/tbody&gt;
+&lt;/table&gt;
 
-&lt;div id=&quot;table-tree-demo&quot;&gt;&lt;/div&gt;
-                </pre>
+// 行对象 children 数组嵌套子行（任意层级），组件先序拍平渲染：
+// 首列自动渲染层级缩进（每级 16px）与展开/折叠按钮，叶子行不渲染按钮
+// 树形行禁用排序（行序即层级从属）
+            </pre>
                         </div>
                         <div>
                             <pre hx-ext="bny-code">
-// table-tree.json
+// /test/data/table-tree-static.json（节选）
 {
-    "cols": ["部门/成员", "负责人", "人数", "状态"],
-    "rows": [
+    "total": 4, "per_page": 10, "current_page": 1, "last_page": 1,
+    "data": [
         {
-            "cells": ["技术部", "阿明", "18", "正常"],
+            "name": "技术部", "leader": "阿明", "count": 18, "updated": "2025-08-20",
             "children": [
                 {
-                    "cells": ["前端组", "小张", "7", "正常"],
+                    "name": "前端组", "leader": "小张", "count": 7, "updated": "2025-08-18",
                     "children": [
-                        { "cells": ["体验小组", "小李", "3", "正常"] },
-                        { "cells": ["工程小组", "小王", "4", "正常"] }
+                        { "name": "体验小组", "leader": "小李", "count": 3, "updated": "2025-07-30" },
+                        { "name": "工程小组", "leader": "小王", "count": 4, "updated": "2025-08-05" }
                     ]
                 },
-                { "cells": ["后端组", "阿亮", "6", "正常"] },
-                { "cells": ["测试组", "小美", "5", "正常"] }
+                {
+                    "name": "后端组", "leader": "阿亮", "count": 6, "updated": "2025-08-12",
+                    "children": [
+                        { "name": "接口小组", "leader": "小赵", "count": 3, "updated": "2025-08-11" },
+                        { "name": "平台小组", "leader": "小钱", "count": 3, "updated": "2025-07-28" }
+                    ]
+                },
+                { "name": "测试组", "leader": "小美", "count": 5, "updated": "2025-08-19" }
             ]
         },
-        { "cells": ["财务部", "阿燕", "5", "正常"] }
+        {
+            "name": "运营部", "leader": "阿芳", "count": 10, "updated": "2025-08-15",
+            "children": [
+                { "name": "内容组", "leader": "阿伟", "count": 4, "updated": "2025-08-01" },
+                { "name": "商务组", "leader": "阿强", "count": 6, "updated": "2025-08-14" }
+            ]
+        },
+        { "name": "财务部", "leader": "阿燕", "count": 5, "updated": "2025-07-22" },
+        { "name": "行政部", "leader": "阿乐", "count": 3, "updated": "2025-06-30" }
     ]
 }
-                </pre>
+            </pre>
                         </div>
                     </div>
                 </div>
@@ -533,72 +639,94 @@
                     <div class="body">
                         <div>
                             <div class="p-12">
-                                <button class="bny-btn" hx-ext="bny-table" hx-get="/test/data/pagination-table.json"
-                                    hx-target="#table-typed-demo" hx-swap="innerHTML" hx-trigger="click"
-                                    pg-page-size="5" pg-page-sizes="5,10,20">加载列类型表格</button>
-                                <div id="table-typed-demo" class="mt-12"></div>
-                                <blockquote class="bny-blockquote">
-                                    对象行（<code>list</code>/<code>allList</code>）配合 <code>columns</code> 列模型，单元格按 <code>type</code> 声明渲染富内容：
-                                    <code>image</code> 头像、<code>tag</code> 标签（map 值映射）、<code>link</code> 链接、<code>template</code> 自定义模板、
-                                    <code>actions</code> 操作按钮组（confirm 确认 / url 请求 / event 事件派发；<code>group</code> 按钮组、<code>children</code> "更多"下拉收纳次要操作）。
-                                    声明 <code>sortable</code>/<code>sort</code> 的列可点击表头排序（<code>sortVal</code> 指定排序取值字段）。<br>
-                                    桌面端长文本省略、放大镜查看完整内容与加载骨架屏渐显，见下节<a href="#n06g" class="bny-link">"长文本省略与加载动画"</a>。<br>
-                                    JSON 带 <code>total</code> 时表格后自动渲染<strong>内置分页条</strong>（allList 按 page/pageSize 前端切片，点击页码自动重新请求）。<br>
+                                <p style="margin-bottom:12px; font-size:13px; color:var(--black-shallow);">
+                                    列模型写在静态表头（<code>cell-*</code> 声明），服务端只回当前页数据 + 总条数；
+                                    富内容用 <code>cell-template="#id"</code> / <code>".class"</code> 选择器引用 <code>&lt;template&gt;</code> 模板元素，
+                                    <code>{{data.field}}</code> 字段直取（点路径，值转义），也支持 <code>{{data.status == 1 ? '正常' : '禁用'}}</code> 三元等表达式（<code>data</code> 即行对象，结果同样转义），模板是独立 HTML 块——
+                                    标签（<code>bny-tag</code>）、链接、按钮（<code>bny-btn</code>）皆由模板生成。
+                                    点击表头排序（服务端模式发 sort/order 参数），表格下方自动渲染内置分页条。
+                                </p>
+                                <table hx-ext="bny-table" table-static table-server table-key="typed-users"
+                                       table-list="5,10,20"
+                                       hx-get="/test/data/table-static.json" hx-trigger="load"
+                                       hx-target="find tbody" hx-swap="innerHTML">
+                                    <thead>
+                                        <tr>
+                                            <th cell-field="id" cell-align="center">ID</th>
+                                            <th cell-field="name" cell-template="#tpl-n06e-name" cell-sort>姓名</th>
+                                            <th cell-field="role" cell-template="#tpl-n06e-role">角色</th>
+                                            <th cell-field="status" cell-sort="number" cell-template=".tpl-n06e-status">状态</th>
+                                            <th cell-field="email" cell-template=".tpl-n06e-email">邮箱</th>
+                                            <th cell-field="reg_time" cell-sort>注册时间</th>
+                                            <th cell-field="id" cell-align="center" cell-template="#tpl-n06e-op">操作</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                </table>
+                                <template id="tpl-n06e-name"><b>{{data.name}}</b></template>
+                                <template id="tpl-n06e-role"><span class="bny-tag" tag-color="blue">{{data.role}}</span></template>
+                                <!-- {{表达式}}：data 即行对象，三元/比较等，结果转义 -->
+                                <template class="tpl-n06e-status"><span class="bny-tag" tag-color="{{data.status == 1 ? '' : 'red'}}">{{data.status == 1 ? '正常' : '禁用'}}</span></template>
+                                <template class="tpl-n06e-email"><a href="mailto:{{data.email}}">{{data.email}}</a></template>
+                                <template id="tpl-n06e-op"><button class="bny-btn" btn-size="sm" btn-model="border" title="详情：{{data.name}}">查看</button></template>
+                                <blockquote class="bny-blockquote" style="margin-top:12px;">
+                                    列模型写在<strong>静态表头</strong>（<code>cell-*</code> 声明），服务端只回当前页数据 + 总条数（paginate 契约）。
+                                    富内容用 <code>cell-template="#id"</code> / <code>".class"</code> 选择器引用 <code>&lt;template&gt;</code> 模板元素：<code>{{data.field}}</code> 字段直取（点路径，值转义），
+                                    也支持 <code>{{表达式}}</code>——<code>data</code> 即行对象，可写三元/比较/逻辑等（如 <code>{{data.status == 1 ? '正常' : '禁用'}}</code>，状态列即此写法），结果同样转义；模板是独立 HTML 块——免属性转义、可读可复用，标签（<code>bny-tag</code>）、链接、按钮（<code>bny-btn</code>）皆由模板生成。<br>
+                                    声明 <code>cell-sort</code> 的列可点击表头排序（服务端模式发 <code>sort</code>/<code>order</code> 参数，不重排 DOM）。<br>
+                                    总条数（<code>total</code>）随响应返回时，表格后自动渲染<strong>内置分页条</strong>（table-server 按 page/pageSize 重新请求）。
                                 </blockquote>
                             </div>
                         </div>
                         <div>
                             <pre hx-ext="bny-code">
-&lt;button hx-ext=&quot;bny-table&quot; hx-get=&quot;/test/data/pagination-table.json&quot;
-    hx-target=&quot;#table-typed-demo&quot; hx-swap=&quot;innerHTML&quot;&gt;加载列类型表格&lt;/button&gt;
+&lt;table hx-ext=&quot;bny-table&quot; table-static table-server table-key=&quot;typed-users&quot;
+       table-list=&quot;5,10,20&quot;
+       hx-get=&quot;/test/data/table-static.json&quot; hx-trigger=&quot;load&quot;
+       hx-target=&quot;find tbody&quot; hx-swap=&quot;innerHTML&quot;&gt;
+    &lt;thead&gt;&lt;tr&gt;
+        &lt;th cell-field=&quot;id&quot; cell-align=&quot;center&quot;&gt;ID&lt;/th&gt;
+        &lt;th cell-field=&quot;name&quot; cell-template=&quot;#tpl-name&quot; cell-sort&gt;姓名&lt;/th&gt;
+        &lt;th cell-field=&quot;role&quot; cell-template=&quot;#tpl-role&quot;&gt;角色&lt;/th&gt;
+        &lt;th cell-field=&quot;status&quot; cell-sort=&quot;number&quot;&gt;状态&lt;/th&gt;
+        &lt;th cell-field=&quot;email&quot; cell-template=&quot;.tpl-email&quot;&gt;邮箱&lt;/th&gt;
+        &lt;th cell-field=&quot;reg_time&quot; cell-sort&gt;注册时间&lt;/th&gt;
+        &lt;th cell-field=&quot;id&quot; cell-align=&quot;center&quot; cell-template=&quot;#tpl-op&quot;&gt;操作&lt;/th&gt;
+    &lt;/tr&gt;&lt;/thead&gt;
+    &lt;tbody&gt;&lt;/tbody&gt;
+&lt;/table&gt;
 
-// 对象行用 field 取值；列模型按 type 声明单元格渲染方式
-// 文本/链接列默认单行省略：悬停由 tip 组件提示"点击展开"，点击右侧放大镜查看完整内容、点击空白处收回：
-//         ellipsis: false 恢复换行；ellipsis: true 对 template 等列强制开启；移动端不截断
-// actions：主操作平铺按钮；列级 "group": true 渲染为 bny-btn-group 按钮组；
-//         动作带 "children" 时渲染为"更多"弹出菜单（菜单组件垂直菜单白主题），次要操作收进面板，
-//         下拉项与主按钮走同一 confirm/url/event 协议，执行后面板自动关闭
-// 业务侧监听 event 动作派发的自定义事件：
-document.addEventListener('user-log', e =&gt; console.log(e.detail)) // {row, page}
+&lt;!-- 模板元素：cell-template 用选择器（#id / .class）引用，{{data.field}} 占位符替换行数据（值转义，支持点路径） --&gt;
+&lt;template id=&quot;tpl-name&quot;&gt;&lt;b&gt;{{data.name}}&lt;/b&gt;&lt;/template&gt;
+&lt;template id=&quot;tpl-role&quot;&gt;&lt;span class=&quot;bny-tag&quot; tag-color=&quot;blue&quot;&gt;{{data.role}}&lt;/span&gt;&lt;/template&gt;
+&lt;!-- {{表达式}}：data 即行对象，三元/比较等，结果转义 --&gt;
+&lt;template class=&quot;tpl-status&quot;&gt;&lt;span class=&quot;bny-tag&quot; tag-color=&quot;{{data.status == 1 ? '' : 'red'}}&quot;&gt;{{data.status == 1 ? '正常' : '禁用'}}&lt;/span&gt;&lt;/template&gt;
+&lt;template class=&quot;tpl-email&quot;&gt;&lt;a href=&quot;mailto:{{data.email}}&quot;&gt;{{data.email}}&lt;/a&gt;&lt;/template&gt;
+&lt;template id=&quot;tpl-op&quot;&gt;&lt;button class=&quot;bny-btn&quot; btn-size=&quot;sm&quot; btn-model=&quot;border&quot; title=&quot;详情：{{data.name}}&quot;&gt;查看&lt;/button&gt;&lt;/template&gt;
 
-// JSON 带 total 时自动渲染内置分页条（allList 按 page/pageSize 前端切片）
+// 模板是独立 HTML 块——免属性转义、可读、同页可复用；标签（bny-tag）、链接、按钮（bny-btn）皆由模板生成
+// 声明 cell-sort 的列服务端排序；文本/链接列默认单行省略（cell-ellipsis="false" 可关闭），悬停/放大镜查看完整内容
             </pre>
                         </div>
                         <div>
                             <pre hx-ext="bny-code">
-// pagination-table.json
+// table-static.json — 服务端分页契约（ThinkPHP / Laravel paginate() 原生格式）
 {
-    "total": 30,
-    "pageSize": 5,
-    "columns": [
-        {"field": "id",     "title": "ID",   "width": "56px", "align": "center"},
-        {"field": "avatar", "title": "头像", "type": "image", "round": true,
-         "src": "https://picsum.photos/seed/u{id}/80/80"},
-        {"field": "name",   "title": "姓名", "template": "&lt;b&gt;{name}&lt;/b&gt;", "sortable": true},
-        {"field": "role",   "title": "角色", "type": "tag",
-         "map": {"管理员": "red", "编辑": "blue", "default": "green"}},
-        {"field": "status", "title": "状态", "type": "tag", "sortable": true, "sort": "number",
-         "sortVal": "status",
-         "map": {"1": {"text": "在职", "color": "green"},
-                  "0": {"text": "离职", "color": "yellow"}}},
-        {"field": "email",  "title": "邮箱", "type": "link", "href": "mailto:{email}"},
-        {"field": "age",    "title": "年龄", "align": "center", "sortable": true, "sort": "number"},
-        {"field": "remark", "title": "备注"},
-        {"field": "id",     "title": "操作", "type": "actions", "align": "center",
-         "group": true,
-         "actions": [
-            {"text": "编辑", "color": "blue", "icon": "icon-edit", "event": "pg-user-edit"},
-            {"text": "删除", "color": "red", "icon": "icon-delete",
-             "confirm": "确定删除 {name} 吗？", "url": "/user/{id}", "method": "DELETE"},
-            {"text": "更多", "icon": "icon-ellipsis", "children": [
-                {"text": "重置密码", "icon": "icon-key",
-                 "confirm": "确定重置 {name} 的密码吗？", "url": "/user/{id}/reset", "method": "POST"},
-                {"text": "导出日志", "event": "user-log"}
-            ]}
-         ]}
-    ],
-    "allList": [{"id": 1, "name": "张伟", ...}, ...]
+    "total": 14,              // 总记录数
+    "per_page": 5,            // 每页记录数
+    "current_page": 1,        // 当前页码
+    "last_page": 3,           // 总页数
+    "has_more": true,         // 是否还有更多
+    "data": [                 // 当前页数据（行对象，超出表头声明的字段忽略）
+        {"id": "1", "name": "张伟", "role": "管理员", "status": "1",
+         "email": "zhangwei@test.com", "reg_time": "2024-03-12",
+         "remark": "初始管理员账号，负责系统配置与权限分配。"},
+        ...
+    ]
 }
+
+// 真实环境：后台按 page/pageSize/sort/order 参数查询后返回该页数据即可
+// 静态演示：test/table.html 用固定 JSON 模拟接口（翻页会重新请求，内容不变）
             </pre>
                         </div>
                     </div>
@@ -616,46 +744,58 @@ document.addEventListener('user-log', e =&gt; console.log(e.detail)) // {row, pa
                     <div class="body">
                         <div>
                             <div class="p-12">
-                                <button class="bny-btn" hx-ext="bny-table" hx-get="/test/data/pagination-table.json"
-                                    hx-target="#table-ellipsis-demo" hx-swap="innerHTML" hx-trigger="click"
-                                    pg-page-size="5">加载示例表格</button>
-                                <div id="table-ellipsis-demo" class="mt-12"></div>
-                                <blockquote class="bny-blockquote">
-                                    <strong>长文本省略</strong>：桌面端文本/链接列默认单行省略，行高不因长文本撑高；内容真实溢出的单元格右侧出现<strong>放大镜图标</strong>（未溢出不渲染）。<br>
+                                <table hx-ext="bny-table" table-static table-server table-key="ellipsis-users"
+                                       hx-get="/test/data/table-rich.json" hx-trigger="load"
+                                       hx-target="find tbody" hx-swap="innerHTML">
+                                    <thead>
+                                        <tr>
+                                            <th cell-field="id" cell-align="center">ID</th>
+                                            <th cell-field="name">姓名</th>
+                                            <th cell-field="email" cell-template="#tpl-n06g-email">邮箱</th>
+                                            <th cell-field="remark">备注（长文本）</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                </table>
+                                <template id="tpl-n06g-email"><a href="mailto:{{data.email}}">{{data.email}}</a></template>
+                                <blockquote class="bny-blockquote" style="margin-top:12px;">
+                                    <strong>长文本省略</strong>：桌面端非模板列默认单行省略，行高不因长文本撑高；内容真实溢出的单元格右侧出现<strong>放大镜图标</strong>（未溢出不渲染）。<br>
                                     <strong>查看完整内容</strong>：悬停溢出单元格由 tip 组件提示"点击展开"；点击放大镜固定弹出完整内容，鼠标可移入气泡<strong>框选复制</strong>；
                                     放大镜按钮在链接外，查看内容<strong>不会触发链接跳转</strong>。再点一次放大镜 / 点击空白处 / 滚动表格即收回。<br>
-                                    <strong>省略开关</strong>：列配置 <code>ellipsis: false</code> 关闭省略（恢复换行），<code>ellipsis: true</code> 对 template 等列强制开启；移动端卡片布局不做截断、不渲染放大镜。<br>
-                                    <strong>加载骨架屏与渐显</strong>：加载/重载超过 200ms 未返回时，目标容器自动渲染表格形骨架（表头条 + 行条，复用骨架屏组件流光，行数取
-                                    <code>table-page-size</code>/<code>pg-page-size</code>，介于 3~10）；数据到位后骨架随内容交换被替换，表格与内置分页条同拍渐显（0.35s）；
-                                    快响应不显示骨架不闪烁，请求失败自动清理。可用浏览器 DevTools 网络限速体验完整流程。
+                                    <strong>省略开关</strong>：列声明 <code>cell-ellipsis="false"</code> 关闭省略（恢复换行），<code>cell-ellipsis="true"</code> 对模板列强制开启（模板列默认不省略）；移动端卡片布局不做截断、不渲染放大镜。<br>
+                                    <strong>加载骨架屏与渐显</strong>：加载/重载超过 200ms 未返回时，tbody 自动渲染表格形骨架（表头条 + 行条，复用骨架屏组件流光，行数取 <code>table-list</code> 首项，介于 3~10）；数据到位后骨架随内容交换被替换，表格与内置分页条同拍渐显（0.35s）；
+                                    快响应不显示骨架不闪烁，请求失败自动清理。本地静态 JSON 响应极快，可用浏览器 DevTools 网络限速体验完整流程。
                                 </blockquote>
                             </div>
                         </div>
                         <div>
                             <pre hx-ext="bny-code">
-&lt;button hx-ext=&quot;bny-table&quot; hx-get=&quot;/test/data/pagination-table.json&quot;
-    hx-target=&quot;#table-ellipsis-demo&quot; hx-swap=&quot;innerHTML&quot;&gt;加载示例表格&lt;/button&gt;
+&lt;table hx-ext=&quot;bny-table&quot; table-static table-server table-key=&quot;ellipsis-users&quot;
+       hx-get=&quot;/test/data/table-rich.json&quot; hx-trigger=&quot;load&quot;
+       hx-target=&quot;find tbody&quot; hx-swap=&quot;innerHTML&quot;&gt;
+    &lt;thead&gt;&lt;tr&gt;
+        &lt;th cell-field=&quot;id&quot; cell-align=&quot;center&quot;&gt;ID&lt;/th&gt;
+        &lt;th cell-field=&quot;name&quot;&gt;姓名&lt;/th&gt;
+        &lt;th cell-field=&quot;email&quot; cell-template=&quot;#tpl-email&quot;&gt;邮箱&lt;/th&gt;
+        &lt;th cell-field=&quot;remark&quot;&gt;备注（长文本）&lt;/th&gt;
+    &lt;/tr&gt;&lt;/thead&gt;
+    &lt;tbody&gt;&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;template id=&quot;tpl-email&quot;&gt;&lt;a href=&quot;mailto:{{data.email}}&quot;&gt;{{data.email}}&lt;/a&gt;&lt;/template&gt;
 
-// 长文本：文本/链接列默认单行省略；ellipsis:false 恢复换行、true 对 template 等列强制开启
+// 省略：非模板列默认单行省略；cell-ellipsis=&quot;false&quot; 恢复换行、cell-ellipsis=&quot;true&quot; 对模板列强制开启
 // 悬停溢出单元格：tip 组件提示"点击展开"；点击右侧放大镜：固定查看完整内容（可框选复制，不触发链接跳转）
-// 加载/重载 &gt; 200ms 未返回：自动渲染表格骨架屏（复用骨架屏组件流光）；到位后表格与分页条渐显
+// 加载/重载 &gt; 200ms 未返回：tbody 自动渲染表格骨架屏（行数取 table-list 首项，介于 3~10）；到位后表格与分页条渐显
             </pre>
                         </div>
                         <div>
                             <pre hx-ext="bny-code">
-// pagination-table.json（节选）
+// /test/data/table-rich.json — remark 长文本演示省略与放大镜
 {
-    "columns": [
-        {"field": "name",   "title": "姓名"},
-        {"field": "email",  "title": "邮箱", "type": "link", "href": "mailto:{email}"},
-        {"field": "remark", "title": "备注"},
-        // 关闭省略（恢复换行）示例：
-        // {"field": "remark", "title": "备注(换行)", "ellipsis": false},
-        {"field": "id",     "title": "操作", "type": "actions", "actions": [...]}
-    ],
-    "allList": [
+    "total": 3, "per_page": 10, "current_page": 1, "last_page": 1,
+    "data": [
         {"id": 1, "name": "张伟", "email": "zhangwei@test.com",
-         "remark": "较长的备注文本，桌面端单行省略，悬停提示点击展开，点放大镜查看全部"},
+         "remark": "初始管理员账号，负责系统配置与权限分配……（60+ 字长文本，桌面端单行省略，悬停提示点击展开，点放大镜查看全部）"},
         ...
     ]
 }
@@ -671,6 +811,7 @@ document.addEventListener('user-log', e =&gt; console.log(e.detail)) // {row, pa
                     <ul class="head">
                         <li>Preview</li>
                         <li>Code</li>
+                        <li>Json</li>
                     </ul>
                     <div class="body">
                         <div>
@@ -678,18 +819,18 @@ document.addEventListener('user-log', e =&gt; console.log(e.detail)) // {row, pa
                                 <h3 style="margin:0 0 10px;">多条件搜索</h3>
                                 <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;">
                                     <input class="bny-input" style="width:150px" name="name" placeholder="按姓名搜索"
-                                           hx-ext="bny-table" hx-get="/test/data/pagination-table.json"
-                                           hx-target="#table-search-demo" hx-swap="innerHTML"
+                                           hx-ext="bny-table" hx-get="/test/data/table-static.json"
+                                           hx-target="#table-search tbody" hx-swap="innerHTML"
                                            hx-trigger="input changed delay:400ms, search"
                                            hx-include="closest div">
                                     <input class="bny-input" style="width:210px" name="email" placeholder="按邮箱搜索"
-                                           hx-ext="bny-table" hx-get="/test/data/pagination-table.json"
-                                           hx-target="#table-search-demo" hx-swap="innerHTML"
+                                           hx-ext="bny-table" hx-get="/test/data/table-static.json"
+                                           hx-target="#table-search tbody" hx-swap="innerHTML"
                                            hx-trigger="input changed delay:400ms, search"
                                            hx-include="closest div">
                                     <select class="bny-select" style="width:120px" name="status"
-                                            hx-ext="bny-table" hx-get="/test/data/pagination-table.json"
-                                            hx-target="#table-search-demo" hx-swap="innerHTML"
+                                            hx-ext="bny-table" hx-get="/test/data/table-static.json"
+                                            hx-target="#table-search tbody" hx-swap="innerHTML"
                                             hx-trigger="change"
                                             hx-include="closest div">
                                         <option value="">全部状态</option>
@@ -697,14 +838,24 @@ document.addEventListener('user-log', e =&gt; console.log(e.detail)) // {row, pa
                                         <option value="0">离职</option>
                                     </select>
                                 </div>
-                                <div hx-ext="bny-table" hx-get="/test/data/pagination-table.json"
-                                     hx-target="#table-search-demo" hx-swap="innerHTML" hx-trigger="load"
-                                     table-filter="name,email,status" pg-page-sizes="5,10"></div>
-                                <div id="table-search-demo"></div>
+                                <table id="table-search" hx-ext="bny-table" table-static table-server table-key="search-users"
+                                       hx-get="/test/data/table-static.json" hx-trigger="load"
+                                       hx-target="find tbody" hx-swap="innerHTML">
+                                    <thead>
+                                        <tr>
+                                            <th cell-field="id" cell-align="center">ID</th>
+                                            <th cell-field="name">姓名</th>
+                                            <th cell-field="status" cell-align="center">状态</th>
+                                            <th cell-field="email">邮箱</th>
+                                            <th cell-field="reg_time">注册时间</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                </table>
                                 <blockquote class="bny-blockquote" style="margin-top:14px;">
-                                    多条件搜索：条件控件放同一容器，<code>hx-include="closest div"</code> 让任一控件触发时带上全部条件（AND 组合）；
-                                    表格 <code>table-filter</code> 声明可过滤字段（URL 同名参数本地过滤，allList 模式，total 同步）；
-                                    翻页/切条数自动保持当前条件。
+                                    多条件搜索：条件控件放同一容器，<code>hx-include="closest div"</code> 让任一控件触发时带上全部条件（AND 组合，过滤由后台按参数完成）；
+                                    条件请求落地后，组件把响应 URL（含条件）记为表格基准地址——翻页 / 排序 / 条数切换自动延续当前条件；
+                                    也可用 <code>bny.tableReload('#table-search', { name: '' })</code> 编程重载，参数传空串即删除该条件。
                                 </blockquote>
                             </div>
                         </div>
@@ -712,18 +863,161 @@ document.addEventListener('user-log', e =&gt; console.log(e.detail)) // {row, pa
                             <pre hx-ext="bny-code">
 &lt;!-- 多条件搜索：条件控件同一容器，hx-include 让任一控件带上全部条件 --&gt;
 &lt;div style=&quot;display:flex;gap:8px&quot;&gt;
-    &lt;input name=&quot;name&quot; hx-ext=&quot;bny-table&quot; hx-get=&quot;/api/list&quot;
-        hx-target=&quot;#demo&quot; hx-trigger=&quot;input changed delay:400ms, search&quot;
+    &lt;input name=&quot;name&quot; hx-ext=&quot;bny-table&quot; hx-get=&quot;/api/users&quot;
+        hx-target=&quot;#users tbody&quot; hx-swap=&quot;innerHTML&quot;
+        hx-trigger=&quot;input changed delay:400ms, search&quot;
         hx-include=&quot;closest div&quot;&gt;
-    &lt;select name=&quot;status&quot; hx-ext=&quot;bny-table&quot; hx-get=&quot;/api/list&quot;
-        hx-target=&quot;#demo&quot; hx-trigger=&quot;change&quot; hx-include=&quot;closest div&quot;&gt;
+    &lt;select name=&quot;status&quot; hx-ext=&quot;bny-table&quot; hx-get=&quot;/api/users&quot;
+        hx-target=&quot;#users tbody&quot; hx-swap=&quot;innerHTML&quot;
+        hx-trigger=&quot;change&quot; hx-include=&quot;closest div&quot;&gt;
+        ...
+    &lt;/select&gt;
 &lt;/div&gt;
-&lt;div hx-ext=&quot;bny-table&quot; hx-get=&quot;/api/list&quot; hx-target=&quot;#demo&quot; hx-trigger=&quot;load&quot;
-     table-filter=&quot;name,email,status&quot;&gt;&lt;/div&gt;
-&lt;div id=&quot;demo&quot;&gt;&lt;/div&gt;
 
-&lt;!-- 翻页/切条数自动保持当前条件（分页条携带查询串，内置行为） --&gt;
+&lt;table id=&quot;users&quot; hx-ext=&quot;bny-table&quot; table-static table-server
+       hx-get=&quot;/api/users&quot; hx-trigger=&quot;load&quot;
+       hx-target=&quot;find tbody&quot; hx-swap=&quot;innerHTML&quot;&gt;...&lt;/table&gt;
+
+// 条件由后台按参数过滤（如 name/email 模糊、status 精确），组件只负责发参数与渲染
+// 条件响应落地后，组件记录含条件的 URL 为基准：翻页/排序/条数切换自动延续条件
+// bny.tableReload('#users', { name: '' })：参数传空串即删除该条件
                             </pre>
+                        </div>
+                        <div>
+                            <pre hx-ext="bny-code">
+// 条件参数随请求发出（示例）：
+// GET /api/users?name=张&email=&status=1&page=1&pageSize=10
+// 后台按非空参数过滤后返回 paginate 契约 JSON（与 table-static.json 同格式）
+{
+    "total": 2, "per_page": 10, "current_page": 1, "last_page": 1,
+    "data": [
+        {"id": "1", "name": "张伟", "status": "1", "email": "zhangwei@test.com",
+         "reg_time": "2024-03-12"},
+        ...
+    ]
+}
+                            </pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h2 id="n06h">静态表头 + 服务端数据</h2>
+            <blockquote class="bny-blockquote">
+                真实后台架构：列模型（表头）写在页面静态 HTML 里，服务端只返回<b>当前页数据 + 总条数</b>。
+                分页 / 排序 / 筛选全部由后台 SQL 完成，前端只发参数——数据量大的生产场景用这个模式，
+                不再要求后台一次性返回全量数据。
+            </blockquote>
+
+            <h3>在线演示</h3>
+            <div class="bny-card">
+                <div hx-ext="bny-tab">
+                    <ul class="head">
+                        <li>Preview</li>
+                        <li>Code</li>
+                        <li>Json</li>
+                    </ul>
+                    <div class="body">
+                        <div>
+                            <div class="p-12">
+                                <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;">
+                                    <input class="bny-input" style="width:160px" name="kw" placeholder="按姓名搜索"
+                                           hx-ext="bny-table" hx-get="/test/data/table-static.json"
+                                           hx-target="#users tbody" hx-swap="innerHTML"
+                                           hx-trigger="input changed delay:400ms"
+                                           hx-include="closest div">
+                                    <button class="bny-btn" hx-ext="bny-table"
+                                            hx-get="/test/data/table-static.json"
+                                            hx-target="#users tbody" hx-swap="innerHTML"
+                                            hx-trigger="click" hx-include="closest div">搜索</button>
+                                    <button class="bny-btn" model="border" onclick="bny.tableReload('#users', { page: 1 })">重置</button>
+                                </div>
+                                <table id="users" hx-ext="bny-table" table-static table-server table-key="demo-users"
+                                       table-list="5,10,20"
+                                       hx-get="/test/data/table-static.json" hx-trigger="load"
+                                       hx-target="find tbody" hx-swap="innerHTML">
+                                    <thead>
+                                        <tr>
+                                            <th cell-field="id" cell-align="center">ID</th>
+                                            <th cell-field="name" cell-sort cell-ellipsis="false">姓名</th>
+                                            <th cell-field="role" cell-template="#tpl-n06h-role">角色</th>
+                                            <th cell-field="status" cell-sort="number">状态</th>
+                                            <th cell-field="email" cell-template="#tpl-n06h-email">邮箱</th>
+                                            <th cell-field="reg_time" cell-sort>注册时间</th>
+                                            <th cell-field="id" cell-align="center" cell-template="#tpl-n06h-op">操作</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                </table>
+                                <template id="tpl-n06h-role"><span class="bny-tag" tag-color="blue">{{data.role}}</span></template>
+                                <template id="tpl-n06h-email"><a href="mailto:{{data.email}}">{{data.email}}</a></template>
+                                <template id="tpl-n06h-op"><a class="bny-btn" btn-size="sm" btn-model="border" href="mailto:{{data.email}}">联系</a></template>
+                                <blockquote class="bny-blockquote" style="margin-top:14px;">
+                                    搜索输入框与按钮同放一个容器，<code>hx-include="closest div"</code> 把 <code>kw</code> 条件随请求发出；
+                                    翻页 / 排序时组件自动回带该条件（可在浏览器网络面板查看请求 URL）。
+                                    静态演示用固定 JSON 模拟接口，真实环境由后台按 <code>page / pageSize / sort / order / kw</code> 查询返回对应页。
+                                    "重置"调用 <code>bny.tableReload('#users', { page: 1 })</code> 按条件重新请求。
+                                </blockquote>
+                            </div>
+                        </div>
+                        <div>
+                            <pre hx-ext="bny-code">
+&lt;!-- 搜索控件：任一条件变化即带全部条件请求（hx-include 收集同容器字段） --&gt;
+&lt;div style=&quot;display:flex;gap:8px&quot;&gt;
+    &lt;input class=&quot;bny-input&quot; name=&quot;kw&quot; placeholder=&quot;按姓名搜索&quot;
+           hx-ext=&quot;bny-table&quot; hx-get=&quot;/test/data/table-static.json&quot;
+           hx-target=&quot;#users tbody&quot; hx-swap=&quot;innerHTML&quot;
+           hx-trigger=&quot;input changed delay:400ms&quot; hx-include=&quot;closest div&quot;&gt;
+    &lt;button class=&quot;bny-btn&quot; hx-ext=&quot;bny-table&quot; hx-get=&quot;/test/data/table-static.json&quot;
+            hx-target=&quot;#users tbody&quot; hx-swap=&quot;innerHTML&quot;
+            hx-trigger=&quot;click&quot; hx-include=&quot;closest div&quot;&gt;搜索&lt;/button&gt;
+&lt;/div&gt;
+
+&lt;!-- 列模型写在静态表头；table-static + table-server 开启服务端模式 --&gt;
+&lt;table id=&quot;users&quot; hx-ext=&quot;bny-table&quot; table-static table-server table-key=&quot;demo-users&quot;
+       table-list=&quot;5,10,20&quot;
+       hx-get=&quot;/test/data/table-static.json&quot; hx-trigger=&quot;load&quot;
+       hx-target=&quot;find tbody&quot; hx-swap=&quot;innerHTML&quot;&gt;
+    &lt;thead&gt;&lt;tr&gt;
+        &lt;th cell-field=&quot;id&quot; cell-align=&quot;center&quot;&gt;ID&lt;/th&gt;
+        &lt;th cell-field=&quot;name&quot; cell-sort&gt;姓名&lt;/th&gt;
+        &lt;th cell-field=&quot;role&quot; cell-template=&quot;#tpl-role&quot;&gt;角色&lt;/th&gt;
+        &lt;th cell-field=&quot;status&quot; cell-sort=&quot;number&quot;&gt;状态&lt;/th&gt;
+        &lt;th cell-field=&quot;email&quot; cell-template=&quot;#tpl-email&quot;&gt;邮箱&lt;/th&gt;
+        &lt;th cell-field=&quot;reg_time&quot; cell-sort&gt;注册时间&lt;/th&gt;
+        &lt;th cell-field=&quot;id&quot; cell-align=&quot;center&quot; cell-template=&quot;#tpl-op&quot;&gt;操作&lt;/th&gt;
+    &lt;/tr&gt;&lt;/thead&gt;
+    &lt;tbody&gt;&lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;!-- 模板元素：富内容用 cell-template="#id" 引用，{{data.field}} 占位符替换行数据（值转义） --&gt;
+&lt;template id=&quot;tpl-role&quot;&gt;&lt;span class=&quot;bny-tag&quot; tag-color=&quot;blue&quot;&gt;{{data.role}}&lt;/span&gt;&lt;/template&gt;
+&lt;template id=&quot;tpl-email&quot;&gt;&lt;a href=&quot;mailto:{{data.email}}&quot;&gt;{{data.email}}&lt;/a&gt;&lt;/template&gt;
+&lt;template id=&quot;tpl-op&quot;&gt;&lt;a class=&quot;bny-btn&quot; btn-size=&quot;sm&quot; btn-model=&quot;border&quot; href=&quot;mailto:{{data.email}}&quot;&gt;联系&lt;/a&gt;&lt;/template&gt;
+
+// 请求：组件自动携带并延续查询条件（翻页/排序后 kw 不丢）
+// GET /test/data/table-static.json?page=2&pageSize=10&sort=reg_time&order=desc&kw=张
+            </pre>
+                        </div>
+                        <div>
+                            <pre hx-ext="bny-code">
+// table-static.json — 服务端分页契约（ThinkPHP / Laravel paginate() 原生格式）
+{
+    "total": 14,              // 总记录数
+    "per_page": 5,            // 每页记录数
+    "current_page": 1,        // 当前页码
+    "last_page": 3,           // 总页数
+    "has_more": true,
+    "data": [                 // 当前页数据（行对象，超出表头声明的字段忽略）
+        {"id": "1", "name": "张伟", "role": "管理员", "status": "1",
+         "email": "zhangwei@test.com", "reg_time": "2024-03-12", "remark": "..."},
+        ...
+    ]
+}
+
+// 后台侧（以 ThinkPHP 为例）就是常规分页查询，组件负责发参数、渲染行与分页条
+// User::where('name','like','%'.$kw.'%')->order($sort ?: 'id', $order ?: 'asc')->paginate($pageSize)
+            </pre>
                         </div>
                     </div>
                 </div>
@@ -757,153 +1051,131 @@ document.addEventListener('user-log', e =&gt; console.log(e.detail)) // {row, pa
                         <td></td>
                     </tr>
                     <tr>
-                        <td>table-sort</td>
-                        <td>string</td>
-                        <td>否</td>
-                        <td>作用于 th，启用排序。值 number 表示按数字排序，默认为字符串</td>
-                        <td></td>
-                    </tr>
-                    <tr>
-                        <td>table-sort-val</td>
+                        <td>table-static</td>
                         <td>—</td>
                         <td>否</td>
-                        <td>作用于 td，指定该单元格参与排序的值（显示与排序值不同时使用）</td>
-                        <td></td>
+                        <td>静态表头模式：表头写在页面 HTML，行由响应 JSON 渲染</td>
+                        <td>v2.3.1+</td>
                     </tr>
                     <tr>
-                        <td>table-page-size / table-page-param</td>
-                        <td>10 / page</td>
+                        <td>table-server</td>
+                        <td>—</td>
                         <td>否</td>
-                        <td>allList 前端分页切片的每页条数与 URL 分页参数名</td>
-                        <td>v2.3.0</td>
+                        <td>服务端模式：排序 / 翻页发请求参数，由后台计算返回</td>
+                        <td>v2.3.1+</td>
+                    </tr>
+                    <tr>
+                        <td>table-key</td>
+                        <td>—</td>
+                        <td>否</td>
+                        <td>表格唯一标识：本地排序时记忆排序状态（sessionStorage），刷新自动回显</td>
+                        <td>v2.3.1+</td>
+                    </tr>
+                    <tr>
+                        <td>table-list</td>
+                        <td>10</td>
+                        <td>否</td>
+                        <td>每页条数选项，逗号分隔（如 10,20,50），首项为默认值；缺省 10</td>
+                        <td>v2.3.1+</td>
+                    </tr>
+                    <tr>
+                        <td>table-sort-param / table-order-param / table-page-param</td>
+                        <td>sort / order / page</td>
+                        <td>否</td>
+                        <td>服务端排序的三个请求参数名，可按后台约定定制</td>
+                        <td>v2.3.1+</td>
                     </tr>
                     <tr>
                         <td>pg-*</td>
                         <td>—</td>
                         <td>否</td>
-                        <td>内置分页条配置（JSON 带 total 时生效）：pg-page-size、pg-page-sizes（条数选择列表，如 "10,20,50"）、pg-size-param、pg-max-buttons、pg-page-param、pg-jumper="false"、pg-total="false"、pg-color、pg-model，详见<a href="/test/pagination.html" class="bny-link">分页组件</a></td>
-                        <td>v2.3.0</td>
+                        <td>分页条配置（pg-page-size、pg-jumper 等），详见<a href="/test/pagination.html" class="bny-link">分页组件</a></td>
+                        <td>v2.3.1+</td>
                     </tr>
                 </tbody>
             </table>
 
-            <h3>JSON属性</h3>
+            <h3>响应契约（paginate JSON）</h3>
+            <p style="margin-bottom:12px; font-size:13px; color:var(--black-shallow);">
+                <code>table-static</code> 模式下接口返回标准分页结构（ThinkPHP / Laravel <code>paginate()</code> 原生格式），行对象按 th 的 <code>cell-field</code> 取值渲染：
+            </p>
             <table hx-ext="bny-table">
                 <thead>
                     <tr>
-                        <th>属性</th>
-                        <th>默认值</th>
+                        <th>字段</th>
                         <th>必须</th>
                         <th>描述</th>
-                        <th>版本</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
-                        <td>color</td>
-                        <td>—</td>
-                        <td>否</td>
-                        <td>表头颜色：green/yellow/red/blue</td>
-                        <td></td>
-                    </tr>
-                    <tr>
-                        <td>key</td>
-                        <td>—</td>
-                        <td>否</td>
-                        <td>表格唯一标识，用于排序状态持久化（sessionStorage）</td>
-                        <td></td>
-                    </tr>
-                    <tr>
-                        <td>empty</td>
-                        <td>暂无数据</td>
-                        <td>否</td>
-                        <td>空数据占位文案</td>
-                        <td></td>
-                    </tr>
-                    <tr>
-                        <td>cols / columns</td>
-                        <td>[]</td>
+                        <td>data</td>
                         <td>是</td>
-                        <td>列定义：字符串或对象（name/title、sortable、sort、field、type、align、width 等，见下方"单元格类型"）</td>
-                        <td>columns 为 v2.3.0 新增</td>
-                    </tr>
-                    <tr>
-                        <td>rows</td>
-                        <td>[]</td>
-                        <td>否</td>
-                        <td>位置行：二维数组；支持树形行 {cells, children} 与 {__html} 原始行</td>
-                        <td></td>
-                    </tr>
-                    <tr>
-                        <td>list / allList</td>
-                        <td>[]</td>
-                        <td>否</td>
-                        <td>对象行：配合 columns 按 field 取值，支持全部列类型；allList 为全量数据自动按 page/pageSize 前端分页切片</td>
-                        <td>v2.3.0</td>
+                        <td>当前页行对象数组；兼容 <code>list</code> / <code>rows</code> 键名；行对象可带 <code>children</code> 数组嵌套子行（树形表格）</td>
                     </tr>
                     <tr>
                         <td>total</td>
-                        <td>—</td>
                         <td>否</td>
-                        <td>内置分页：带 total 时表格后自动渲染分页条（pg-* 属性配置样式与行为，见分页组件文档）</td>
-                        <td>v2.3.0</td>
+                        <td>总条数；存在时自动渲染分页条</td>
                     </tr>
                     <tr>
-                        <td>table-filter</td>
-                        <td>—</td>
-                        <td>否</td>
-                        <td>本地过滤（仅 allList 模式）：逗号分隔的可过滤字段列表，请求 URL 里同名非空参数作为条件（AND 组合、包含匹配），total 同步过滤后条数</td>
-                        <td>v2.3.0</td>
+                        <td>per_page / current_page / last_page / has_more</td>
+                        <td>配合 total</td>
+                        <td>每页条数 / 当前页码 / 总页数 / 是否还有下一页（分页计算依据）</td>
                     </tr>
                     <tr>
-                        <td>pageSize / page</td>
-                        <td>10 / 1</td>
+                        <td>empty</td>
                         <td>否</td>
-                        <td>allList 前端分页：每页条数与当前页（page 优先取请求 URL 的 page 参数）；元素属性 table-page-size / table-page-param 可覆盖</td>
-                        <td>v2.3.0</td>
+                        <td>data 为空时的占位文案，缺省"暂无数据"</td>
                     </tr>
                 </tbody>
             </table>
 
-            <h3>单元格类型（columns 的 type）</h3>
+            <h3>列声明（th 的 cell-* 属性）</h3>
             <table hx-ext="bny-table">
-                <thead><tr><th>type</th><th>渲染为</th><th>列配置</th></tr></thead>
+                <thead><tr><th>属性</th><th>描述</th></tr></thead>
                 <tbody>
-                    <tr><td><code>text</code>（默认）</td><td>纯文本（一律转义）</td><td><code>ellipsis: false</code> 关闭单行省略（默认开启，行高统一；溢出单元格悬停由 tip 组件提示"点击展开"，点击右侧放大镜查看完整内容，不触发链接跳转；移动端不截断）</td></tr>
-                    <tr><td><code>tag</code></td><td><code>bny-tag</code> 标签</td><td><code>map</code>：值 → 颜色（"red"）或 {text, color}；<code>default</code> 键兜底</td></tr>
-                    <tr><td><code>link</code></td><td><code>&lt;a&gt;</code> 链接</td><td><code>href</code>（{field} 占位，值 URL 编码）、<code>text</code>、<code>target</code></td></tr>
-                    <tr><td><code>image</code></td><td>图片/头像</td><td><code>src</code>（{field} 占位）、<code>width</code>、<code>height</code>、<code>round</code></td></tr>
-                            <tr><td><code>actions</code></td><td>操作按钮（bny-btn，<code>group: true</code> 时为 bny-btn-group 按钮组）</td><td><code>actions[]</code>：text/icon/color/model/size/title/confirm/url/method/target/event；带 <code>children[]</code> 的项渲染为"更多"垂直菜单（菜单组件白主题），收纳次要操作（子项配置同主按钮）</td></tr>
-                    <tr><td><code>template</code></td><td>自定义模板</td><td><code>template</code>：{field} 占位符替换为转义后的行数据，模板本身可含 HTML</td></tr>
-                    <tr><td>任意 + <code>html: true</code></td><td>原样 HTML</td><td>列级逃生门；cell 级用 <code>{__html}</code>（rows 位置行同样支持）。仅限受信任的服务端内容</td></tr>
+                    <tr><td><code>cell-field</code></td><td>行对象取值字段（模板列可不声明）</td></tr>
+                    <tr><td><code>cell-align</code></td><td>列对齐：left / center / right</td></tr>
+                    <tr><td><code>cell-ellipsis</code></td><td>单行省略：非模板列默认开启；<code>false</code> 关闭，<code>true</code> 对模板列强制开启；仅桌面端生效</td></tr>
+                    <tr><td><code>cell-template</code></td><td><code>&lt;template&gt;</code> 模板选择器（<code>#id</code> / <code>.class</code> 等，以 <code>#</code> / <code>.</code> 开头即按选择器引用，否则为内联模板串）：模板内 <code>{{data.字段}}</code> 字段直取（点路径），也支持 <code>{{表达式}}</code>——<code>data</code> 即行对象，三元 / 比较 / 逻辑等 JS 表达式（求值失败保留原文并告警），结果自动转义，可含 HTML（按钮 / 标签 / 链接）</td></tr>
+                    <tr><td><code>cell-sort</code></td><td>启用列排序：值 <code>number</code> 按数值排序，缺省按字符串排序（旧写法 <code>table-sort</code> 兼容）</td></tr>
+                    <tr><td><code>cell-sort-val</code></td><td>排序取值字段——显示文案与排序值不同时使用（如标签列按底层值排序）</td></tr>
+                </tbody>
+            </table>
+
+            <h3>操作按钮（data-bny-action）</h3>
+            <p style="margin-bottom:12px; font-size:13px; color:var(--black-shallow);">
+                操作列由 <code>cell-template</code> 模板渲染按钮，按钮加 <code>data-bny-action</code> 即接入统一协议（dropdown 菜单内同样生效，点击自动收起面板）：
+            </p>
+            <table hx-ext="bny-table">
+                <thead><tr><th>属性</th><th>描述</th></tr></thead>
+                <tbody>
+                    <tr><td><code>data-confirm</code></td><td>先弹确认框，确认后继续</td></tr>
+                    <tr><td><code>data-event</code></td><td>派发自定义事件（detail 为 <code>{row, page}</code>），由业务处理</td></tr>
+                    <tr><td><code>data-url</code> / <code>data-method</code> / <code>data-target</code></td><td>htmx.ajax 发请求；method 缺省 GET，target 缺省刷回表格容器</td></tr>
+                    <tr><td><code>data-row</code></td><td>按钮携带的行数据 JSON，由模板插值生成：<code>data-row='{"id":{{data.id}},"name":"{{data.name}}"}'</code></td></tr>
                 </tbody>
             </table>
             <blockquote class="bny-blockquote" style="margin-top:14px;">
-                所有列均支持 <code>title</code>/<code>name</code>、<code>width</code>、<code>align</code>（left/center/right）、<code>sortable</code>/<code>sort</code>（列排序）、<code>sortVal</code>（排序取值字段）、<code>ellipsis</code>（单行省略：文本/链接列默认开启，false 关闭，true 强制开启；仅桌面端生效）。<br>
-                actions 动作：<code>confirm</code> 先弹确认框；<code>url</code>（配 <code>method</code>/<code>target</code>）发请求，无 target 默认刷回表格容器；
-                <code>event</code> 派发自定义事件（detail: <code>{row, page}</code>）交由业务处理。<br>
-                安全约定：行数据一律转义/URL 编码；<code>actions</code> 按钮仅输出白名单属性（拒绝 on* 注入）；链接协议拒绝 <code>javascript:/data:/vbscript:</code>。
+                安全约定：<code>{{data.field}}</code> 插值一律转义，模板 HTML 与 htmx 直接 swap 同级信任——仅用于受信任的服务端内容。
             </blockquote>
 
             <h3>排序行为</h3>
-            <ol style="line-height:var(--line-height); tab :var(--black-middle);">
-                <li>点击带 <code>table-sort</code> 属性的表头即可排序</li>
-                <li>首次点击 → 升序（▲ 高亮），再次点击 → 降序（▼ 高亮）</li>
-                <li><code>table-sort="number"</code> 按数值排序，否则按字符串排序</li>
-                <li>单元格可通过 <code>table-sort-val</code> 指定参与排序的实际值</li>
-                <li>JSON 响应自动渲染为完整表格，同时支持直接追加 HTML 行</li>
-                <li>JSON 列模型（columns）里用 <code>sortable</code> / <code>sort</code> 声明列排序（v2.3.0），对象行同样生效</li>
-                <li>列配置 <code>sortVal</code> 指定排序取值字段（v2.3.0）——显示文案与排序值不同时使用（如 tag 映射列按底层值排序）</li>
-                <li>树形表格自动禁用排序（行序即层级从属，排序会打乱父子结构）</li>
+            <ol style="line-height:var(--line-height);">
+                <li>点击带 <code>cell-sort</code> 的标题循环：升序（▲）→ 降序（▼）→ 还原</li>
+                <li><code>cell-sort="number"</code> 按数值排序，缺省按字符串；<code>cell-sort-val</code> 指定排序取值字段（显示与排序值不同时）</li>
+                <li><code>table-server</code> 模式排序发请求：带 <code>sort</code> / <code>order</code> 参数并回第 1 页，箭头状态由响应 URL 回显</li>
+                <li>本地排序模式声明 <code>table-key</code> 时，排序状态记忆到 sessionStorage，刷新自动回显</li>
+                <li>树形表格自动禁用排序（行序即层级从属）</li>
             </ol>
 
             <h3>交互与加载行为</h3>
             <ol style="line-height:var(--line-height);">
-                <li>桌面端文本/链接列默认单行省略；<code>ellipsis: false</code> 关闭（恢复换行）、<code>ellipsis: true</code> 对 template 等列强制开启；移动端卡片布局不截断</li>
+                <li>桌面端非模板列默认单行省略；<code>cell-ellipsis="false"</code> 关闭（恢复换行）、<code>cell-ellipsis="true"</code> 对模板列强制开启；移动端卡片布局不截断</li>
                 <li>内容真实溢出的单元格右侧渲染放大镜图标（未溢出不渲染；图标字体就绪与窗口尺寸变化自动校准）</li>
                 <li>悬停溢出单元格：tip 组件提示"点击展开"；点击放大镜：固定弹出完整内容（可框选复制、不触发链接跳转）；再点一次 / 点击空白处 / 滚动表格收回</li>
-                <li>加载/重载超过 200ms 未返回：目标容器自动渲染表格骨架屏（行数取 table-page-size / pg-page-size，介于 3~10）；数据到位后表格与内置分页条渐显；请求失败自动清理骨架</li>
-                <li>"更多"弹出菜单复用菜单组件垂直菜单观感（白主题，暗色模式自动适配），菜单项走 actions 同一协议（confirm/url/event）</li>
+                <li>加载/重载超过 200ms 未返回：目标容器自动渲染表格骨架屏（行数取 <code>table-list</code> 首项，介于 3~10）；数据到位后表格与内置分页条渐显；请求失败自动清理骨架</li>
             </ol>
         </div>
     </div>
@@ -914,12 +1186,15 @@ document.addEventListener('user-log', e =&gt; console.log(e.detail)) // {row, pa
                 <li class="link" anchor-target="#n02">颜色</li>
                 <li class="link" anchor-target="#n03">表头排序</li>
                 <li class="link" anchor-target="#n04">自定义排序值</li>
-                <li class="link" anchor-target="#n05">Htmx用法</li>
+                <li class="link" anchor-target="#n05">数据表格</li>
                 <li class="link" anchor-target="#n06">Htmx-动态追加行</li>
+                <li class="link" anchor-target="#n06b">富内容单元格</li>
+                <li class="link" anchor-target="#n06c">空状态</li>
                 <li class="link" anchor-target="#n06d">树形表格</li>
                 <li class="link" anchor-target="#n06e">列类型</li>
                 <li class="link" anchor-target="#n06g">长文本与加载动画</li>
                 <li class="link" anchor-target="#n06f">搜索与联动</li>
+                <li class="link" anchor-target="#n06h">服务端数据</li>
                 <li class="link" anchor-target="#n07">API</li>
             </ul>
         </div>
