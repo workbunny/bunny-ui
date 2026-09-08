@@ -77,7 +77,7 @@
     <div class="doc-container">
         <span class="eyebrow"><i class="bny-icon icon-calendar"></i> Changelog</span>
         <h1 class="section-title">更新日志</h1>
-        <p class="section-subtitle">BunnyUI 组件库版本发布记录，按发布时间（新 → 旧）排列。当前最新版本 v2.3.0。</p>
+        <p class="section-subtitle">BunnyUI 组件库版本发布记录，按发布时间（新 → 旧）排列。当前最新版本 v2.4.0。</p>
     </div>
 </section>
 
@@ -87,6 +87,25 @@
         <h2 id="n01">版本时间线</h2>
         <div class="bny-timeline">
             <div class="bny-timeline-item is-primary">
+                <div class="bny-timeline-node"></div>
+                <div class="bny-timestamp">2026-09-08</div>
+                <div class="bny-timeline-title">v2.4.0</div>
+                <div class="bny-timeline-content">
+                    <p class="cl"><span class="bny-tag" tag-color="green">新增</span> 多功能选择框组件（bny-select）：单选 / 多选 / 树形单选 / 树形多选（父子联动 + 半选），支持禁用、分组、远程选项，推荐 ul 直接承载写法。</p>
+                    <p class="cl"><span class="bny-tag" tag-color="green">新增</span> 上传组件（bny-upload）：声明式上传，文件逐个独立上传。</p>
+                    <p class="cl"><span class="bny-tag" tag-color="green">新增</span> 表格 cell-template 模板表达式：{{...}} 占位符支持三元 / 比较 / 拼接等 JS 表达式（data 即行对象），结果自动转义。</p>
+                    <p class="cl"><span class="bny-tag" tag-color="blue">优化</span> 表单清错改 form 级事件委托：动态生成的字段（如选择框值域）同样生效；各拓展样式选择器微调；新增本地片段预览服务（test/post-server.js）。</p>
+                    <p class="cl"><span class="bny-tag" tag-color="red">修复</span> 属性组件操作表单控件"触发了但视觉没反应"：手动交互过的复选框/输入框受浏览器 dirty 标志影响，attribute 变化不再同步视觉——写 checked/value/selected 后同步 DOM property，attr 全部操作与 attr-json 响应统一生效。</p>
+                    <p class="cl"><span class="bny-tag" tag-color="red">修复</span> 下拉菜单/日期选择器点击其他按钮面板不关闭：全局关闭委托改捕获阶段，规避 tab/menu 等组件 stopPropagation 截断冒泡。</p>
+                    <p class="cl"><span class="bny-tag" tag-color="red">修复</span> 表格 cell-template 选择器仅认 # 开头：.class 等任意选择器均可引用页面 template 元素；模板未命中告警并回退内联渲染，不再缓存空结果。</p>
+                    <p class="cl"><span class="bny-tag" tag-color="red">修复</span> 图片分组预览点击非第一张闪现旧图：灯箱复用残留上一次 src，打开/翻页瞬间立即清空由骨架占位接管。</p>
+                    <p class="cl"><span class="bny-tag" tag-color="red">修复</span> 表格行内大图拖住列表：刷新/翻页/搜索时旧图下载占满浏览器连接（图片移出 DOM 不立即取消下载），新列表请求被拖到旧图下完才发出——发请求前主动中断交换目标内未完成的图片下载释放连接（实测 3480ms → 81ms）。</p>
+                    <p class="cl"><span class="bny-tag" tag-color="red">修复</span> 新建页签页面请求发两次：页签初始化分支内修改自身属性导致 afterProcessNode 重入、自动激活点击执行两遍——消费激活标记保证幂等。</p>
+                    <p class="cl"><span class="bny-tag" tag-color="yellow">文档</span> 选择框/上传/表格演示页与说明同步（树形数据格式、模板表达式、选择器引用）；README 组件清单补全。</p>
+                    <p class="dl"><a class="bny-btn" btn-model="border" btn-size="sm" href="https://github.com/workbunny/bunny.ui/releases/download/v2.4.0/bunny.zip" target="_blank" spa-skip><i class="bny-icon icon-download"></i> 下载 bunny.zip</a></p>
+                </div>
+            </div>
+            <div class="bny-timeline-item is-success">
                 <div class="bny-timeline-node"></div>
                 <div class="bny-timestamp">2026-08-28</div>
                 <div class="bny-timeline-title">v2.3.0</div>

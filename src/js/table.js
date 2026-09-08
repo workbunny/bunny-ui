@@ -367,7 +367,11 @@ htmx.defineExtension('bny-table', {
                 (src.getAttribute('hx-get') !== null || src.getAttribute('hx-post') !== null) &&
                 (!src.getAttribute('hx-swap') || src.getAttribute('hx-swap') === 'innerHTML')) {
                 var skelTarget = resolveSwapTarget(src);
-                if (skelTarget) scheduleTableSkeleton(skelTarget, src);
+                if (skelTarget) {
+                    // 先中断旧内容在途图片释放连接，新请求不被旧图下载拖住
+                    abortPendingImages(skelTarget);
+                    scheduleTableSkeleton(skelTarget, src);
+                }
             }
             return true;
         }
@@ -483,7 +487,7 @@ htmx.defineExtension('bny-table', {
  * 元素属性 pg-* / table-list* 控制样式与行为。
  *
  * 安全模型：数据（cell/行值）一律转义或 URL 编码；配置（表头声明来自开发者）中的模板可含 HTML，
- * 与 htmx 直接 swap 服务端 HTML 同级信任；模板占位符 {{data.field}} 的值始终转义，不构成注入面。
+ * 与 htmx 直接 swap 服务端 HTML 同级信任；模板占位符 {{表达式}} 的求值结果始终转义，不构成注入面。
  * ============================================================ */
 
 /**
@@ -526,25 +530,83 @@ function colEllipsis(col) {
     return !col.template;
 }
 
+/** 表达式求值失败哨兵：占位符保留原文输出 */
+var _TPL_ERR = {};
+
+/** 表达式编译缓存：表达式文本 → Function（或 null = 语法错误） */
+var _tplExprCache = {};
+
+var _tplDecodeEl = null;
+
 /**
- * 模板插值：把 {{data.field}} 占位符替换为行数据（支持点路径）
- * 占位符以 data. 前缀取当前行对象字段，值一律 HTML 转义后嵌入
+ * HTML 实体还原（仅用于 {{表达式}} 求值前的表达式文本）：
+ * template.innerHTML 读出时 &gt; / &lt; / &amp; 是序列化产物（作者写 >= / && 亦是），
+ * 求值前须还原，否则比较/逻辑运算符失效。模板其余部分不经过此处理
+ * @param {String} s 表达式文本
+ * @returns {String}
+ */
+function tplExprDecode(s) {
+    if (s.indexOf('&') === -1) return s;
+    if (!_tplDecodeEl) _tplDecodeEl = document.createElement('textarea');
+    _tplDecodeEl.innerHTML = s;
+    return _tplDecodeEl.value;
+}
+
+/**
+ * 求值 {{表达式}}：三元/比较/逻辑/拼接等任意 JS 表达式，data 为行对象上下文。
+ * 模板来自页面作者（与页面脚本同信任级别）；结果经 escapeChars 转义输出，
+ * 行数据携带的 HTML 不会注入。编译结果按表达式文本缓存；
+ * 语法错误只告警一次（缓存 null），运行期错误逐行告警并保留原文
+ * @param {String} expr 表达式文本（已 trim、已实体还原）
+ * @param {Object} row 行数据
+ * @returns {*} 正常返回求值结果；失败返回哨兵 _TPL_ERR
+ */
+function tplEvalExpr(expr, row) {
+    var fn = _tplExprCache[expr];
+    if (fn === undefined) {
+        try {
+            fn = new Function('data', 'return (' + expr + ');');
+        } catch (e) {
+            console.warn('[bny.table] cell-template 表达式无效（保留原文）: {{' + expr + '}}');
+            fn = null;
+        }
+        _tplExprCache[expr] = fn;
+    }
+    if (!fn) return _TPL_ERR;
+    try {
+        return fn(row);
+    } catch (e) {
+        console.warn('[bny.table] cell-template 表达式求值失败（保留原文）: {{' + expr + '}}');
+        return _TPL_ERR;
+    }
+}
+
+/**
+ * 模板插值：{{表达式}} 求值替换为行数据，结果一律 HTML 转义后嵌入
+ * - 快路径：{{data.path}} 纯字段直取（点路径，绝大多数场景零求值开销）
+ * - 表达式：如 {{data.status == 1 ? '正常' : '禁用'}}、{{data.age >= 18 && data.vip ? '会员' : ''}}，
+ *   data 即行对象；求值失败保留原文并告警（编译错误只告警一次）
  * @param {String} tpl 模板
  * @param {Object} row 行数据
  * @returns {string}
  */
 function tplInterpolate(tpl, row) {
     return String(tpl === undefined || tpl === null ? '' : tpl).replace(
-        /\{\{\s*data\.([a-zA-Z0-9_$]+(?:\.[a-zA-Z0-9_$]+)*)\s*\}\}/g,
-        function (m, path) {
-            return bny.escapeChars(String(getVal(row, path)));
+        /\{\{([\s\S]*?)\}\}/g,
+        function (m, expr) {
+            expr = expr.trim();
+            var fm = expr.match(/^data\.([a-zA-Z0-9_$]+(?:\.[a-zA-Z0-9_$]+)*)$/);
+            if (fm) return bny.escapeChars(String(getVal(row, fm[1])));
+            var v = tplEvalExpr(tplExprDecode(expr), row);
+            if (v === _TPL_ERR) return m;
+            return bny.escapeChars(String(v === undefined || v === null ? '' : v));
         }
     );
 }
 
 /**
  * 渲染对象行单元格（list 对象行 + 列模型）
- * 富内容统一走 cell-template 表达（模板本身可含 HTML，{{data.field}} 值转义）；
+ * 富内容统一走 cell-template 表达（模板本身可含 HTML，{{表达式}} 求值结果转义）；
  * 无模板的列按纯文本渲染（值转义）。
  * @param {Object} row 行数据
  * @param {Object} col 列定义
@@ -582,7 +644,7 @@ function cellTemplateSource(col) {
 
 /**
  * template 单元格：cell-template 声明模板（"#id"/".class" 选择器引用 <template> 元素或内联串），
- * {{data.field}} 占位符替换为转义后的行数据
+ * {{表达式}} 求值替换（data 即行对象），结果转义后嵌入
  * @param {Object} row 行数据
  * @param {Object} col 列定义
  * @returns {string}
@@ -924,6 +986,24 @@ function resolveSwapTarget(src) {
  * @param {HTMLElement} target 交换目标容器
  * @param {HTMLElement} src 请求源元素（读取行数配置）
  */
+/** 1×1 透明占位图：中断图片下载用（换 src 按规范立即中止旧请求） */
+var BLANK_IMG = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
+
+/**
+ * 中断交换目标内容里仍在下载的图片：行内大图（如原图缩略）下载中用户翻页/搜索/重载时，
+ * 旧图会继续占着浏览器连接（Chromium 对已移出 DOM 的图片也要等 GC 才释放），
+ * 新列表请求被拖到旧图下完才发出——列表"等一下才展示"。把未完成图片的 src
+ * 换成内联占位图可立即中止下载释放连接；已加载完成的不动。
+ * @param {HTMLElement} container 交换目标容器
+ */
+function abortPendingImages(container) {
+    if (!container || !container.querySelectorAll) return;
+    const imgs = container.querySelectorAll('img');
+    for (let i = 0; i < imgs.length; i++) {
+        if (!imgs[i].complete) imgs[i].src = BLANK_IMG;
+    }
+}
+
 function scheduleTableSkeleton(target, src) {
     clearTimeout(target._bnyTableSkeletonTimer);
     target._bnyTableSkeletonShown = false;
@@ -1153,7 +1233,7 @@ function reloadTableWithParams(container, table, params) {
  *   - cell-field：行对象取值字段（缺省空串，模板列可仅声明 cell-template 不取值）
  *   - cell-sort：列排序（服务端模式发 sort/order）
  *   - cell-template：富内容模板，值为 "#id" / ".class" 等选择器（引用页面 <template> 元素，推荐）或内联模板串，
- *     {{data.field}} 占位符替换行数据（支持点路径，值转义），模板本身可含 HTML（按钮/标签/链接等）
+ *     {{表达式}} 求值替换行数据（data 即行对象：字段直取 data.field、三元/比较等表达式，值转义），模板本身可含 HTML（按钮/标签/链接等）
  * 已废弃不再解析：cell-type / cell-map / cell-actions / cell-href / cell-text / cell-src /
  * cell-round / cell-group —— 富内容统一走 cell-template，无其他入口。
  * @param {HTMLElement} th

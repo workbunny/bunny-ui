@@ -642,7 +642,7 @@
                                 <p style="margin-bottom:12px; font-size:13px; color:var(--black-shallow);">
                                     列模型写在静态表头（<code>cell-*</code> 声明），服务端只回当前页数据 + 总条数；
                                     富内容用 <code>cell-template="#id"</code> / <code>".class"</code> 选择器引用 <code>&lt;template&gt;</code> 模板元素，
-                                    <code>{{data.field}}</code> 占位符替换行数据（值转义），模板是独立 HTML 块——
+                                    <code>{{data.field}}</code> 字段直取（点路径，值转义），也支持 <code>{{data.status == 1 ? '正常' : '禁用'}}</code> 三元等表达式（<code>data</code> 即行对象，结果同样转义），模板是独立 HTML 块——
                                     标签（<code>bny-tag</code>）、链接、按钮（<code>bny-btn</code>）皆由模板生成。
                                     点击表头排序（服务端模式发 sort/order 参数），表格下方自动渲染内置分页条。
                                 </p>
@@ -655,7 +655,7 @@
                                             <th cell-field="id" cell-align="center">ID</th>
                                             <th cell-field="name" cell-template="#tpl-n06e-name" cell-sort>姓名</th>
                                             <th cell-field="role" cell-template="#tpl-n06e-role">角色</th>
-                                            <th cell-field="status" cell-sort="number">状态</th>
+                                            <th cell-field="status" cell-sort="number" cell-template=".tpl-n06e-status">状态</th>
                                             <th cell-field="email" cell-template=".tpl-n06e-email">邮箱</th>
                                             <th cell-field="reg_time" cell-sort>注册时间</th>
                                             <th cell-field="id" cell-align="center" cell-template="#tpl-n06e-op">操作</th>
@@ -665,11 +665,14 @@
                                 </table>
                                 <template id="tpl-n06e-name"><b>{{data.name}}</b></template>
                                 <template id="tpl-n06e-role"><span class="bny-tag" tag-color="blue">{{data.role}}</span></template>
+                                <!-- {{表达式}}：data 即行对象，三元/比较等，结果转义 -->
+                                <template class="tpl-n06e-status"><span class="bny-tag" tag-color="{{data.status == 1 ? '' : 'red'}}">{{data.status == 1 ? '正常' : '禁用'}}</span></template>
                                 <template class="tpl-n06e-email"><a href="mailto:{{data.email}}">{{data.email}}</a></template>
                                 <template id="tpl-n06e-op"><button class="bny-btn" btn-size="sm" btn-model="border" title="详情：{{data.name}}">查看</button></template>
                                 <blockquote class="bny-blockquote" style="margin-top:12px;">
                                     列模型写在<strong>静态表头</strong>（<code>cell-*</code> 声明），服务端只回当前页数据 + 总条数（paginate 契约）。
-                                    富内容用 <code>cell-template="#id"</code> / <code>".class"</code> 选择器引用 <code>&lt;template&gt;</code> 模板元素：<code>{{data.field}}</code> 占位符替换行数据（值转义），模板是独立 HTML 块——免属性转义、可读可复用，标签（<code>bny-tag</code>）、链接、按钮（<code>bny-btn</code>）皆由模板生成。<br>
+                                    富内容用 <code>cell-template="#id"</code> / <code>".class"</code> 选择器引用 <code>&lt;template&gt;</code> 模板元素：<code>{{data.field}}</code> 字段直取（点路径，值转义），
+                                    也支持 <code>{{表达式}}</code>——<code>data</code> 即行对象，可写三元/比较/逻辑等（如 <code>{{data.status == 1 ? '正常' : '禁用'}}</code>，状态列即此写法），结果同样转义；模板是独立 HTML 块——免属性转义、可读可复用，标签（<code>bny-tag</code>）、链接、按钮（<code>bny-btn</code>）皆由模板生成。<br>
                                     声明 <code>cell-sort</code> 的列可点击表头排序（服务端模式发 <code>sort</code>/<code>order</code> 参数，不重排 DOM）。<br>
                                     总条数（<code>total</code>）随响应返回时，表格后自动渲染<strong>内置分页条</strong>（table-server 按 page/pageSize 重新请求）。
                                 </blockquote>
@@ -696,6 +699,8 @@
 &lt;!-- 模板元素：cell-template 用选择器（#id / .class）引用，{{data.field}} 占位符替换行数据（值转义，支持点路径） --&gt;
 &lt;template id=&quot;tpl-name&quot;&gt;&lt;b&gt;{{data.name}}&lt;/b&gt;&lt;/template&gt;
 &lt;template id=&quot;tpl-role&quot;&gt;&lt;span class=&quot;bny-tag&quot; tag-color=&quot;blue&quot;&gt;{{data.role}}&lt;/span&gt;&lt;/template&gt;
+&lt;!-- {{表达式}}：data 即行对象，三元/比较等，结果转义 --&gt;
+&lt;template class=&quot;tpl-status&quot;&gt;&lt;span class=&quot;bny-tag&quot; tag-color=&quot;{{data.status == 1 ? '' : 'red'}}&quot;&gt;{{data.status == 1 ? '正常' : '禁用'}}&lt;/span&gt;&lt;/template&gt;
 &lt;template class=&quot;tpl-email&quot;&gt;&lt;a href=&quot;mailto:{{data.email}}&quot;&gt;{{data.email}}&lt;/a&gt;&lt;/template&gt;
 &lt;template id=&quot;tpl-op&quot;&gt;&lt;button class=&quot;bny-btn&quot; btn-size=&quot;sm&quot; btn-model=&quot;border&quot; title=&quot;详情：{{data.name}}&quot;&gt;查看&lt;/button&gt;&lt;/template&gt;
 
@@ -1133,7 +1138,7 @@
                     <tr><td><code>cell-field</code></td><td>行对象取值字段（模板列可不声明）</td></tr>
                     <tr><td><code>cell-align</code></td><td>列对齐：left / center / right</td></tr>
                     <tr><td><code>cell-ellipsis</code></td><td>单行省略：非模板列默认开启；<code>false</code> 关闭，<code>true</code> 对模板列强制开启；仅桌面端生效</td></tr>
-                    <tr><td><code>cell-template</code></td><td><code>&lt;template&gt;</code> 模板选择器（<code>#id</code> / <code>.class</code> 等，以 <code>#</code> / <code>.</code> 开头即按选择器引用，否则为内联模板串）：模板内 <code>{{data.字段}}</code> 占位符替换为行数据（自动转义，支持点路径），可含 HTML（按钮 / 标签 / 链接）</td></tr>
+                    <tr><td><code>cell-template</code></td><td><code>&lt;template&gt;</code> 模板选择器（<code>#id</code> / <code>.class</code> 等，以 <code>#</code> / <code>.</code> 开头即按选择器引用，否则为内联模板串）：模板内 <code>{{data.字段}}</code> 字段直取（点路径），也支持 <code>{{表达式}}</code>——<code>data</code> 即行对象，三元 / 比较 / 逻辑等 JS 表达式（求值失败保留原文并告警），结果自动转义，可含 HTML（按钮 / 标签 / 链接）</td></tr>
                     <tr><td><code>cell-sort</code></td><td>启用列排序：值 <code>number</code> 按数值排序，缺省按字符串排序（旧写法 <code>table-sort</code> 兼容）</td></tr>
                     <tr><td><code>cell-sort-val</code></td><td>排序取值字段——显示文案与排序值不同时使用（如标签列按底层值排序）</td></tr>
                 </tbody>

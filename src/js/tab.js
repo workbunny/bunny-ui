@@ -275,6 +275,10 @@ htmx.defineExtension('bny-tab', {
                     htmx.process(evt.target)
                     // 点击行为
                     if (trigger === "click" && evt.target.getAttribute("this") !== null) {
+                        // afterProcessNode 会因本分支 setAttribute("hx-trigger") 改变属性哈希而
+                        // 重入两次（htmx 哈希变化即重新 init 并再次派发），激活点击必须幂等：
+                        // 先消费 this 标记，否则嵌套内外各 click 一次，页面请求发两遍
+                        evt.target.removeAttribute("this");
                         evt.target.click()
                         // 滚动到最右边
                         head.scrollBy({ left: head.scrollWidth, behavior: "smooth" })

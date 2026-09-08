@@ -8465,6 +8465,8 @@ html.dark .bny-backtop {
             /* src 未就绪时给一组较小占位，尽量与随机尺寸大图落差小、少跳变 */
             min-width: min(46vw, 420px);
             min-height: min(32vh, 300px);
+            /* 旧 src 已清空，兜底隐藏可能的 alt 文本/碎图标 */
+            color: transparent;
         }
     }
 

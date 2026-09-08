@@ -5402,7 +5402,10 @@
         var src = evt.target;
         if (src && src.nodeType === 1 && bny.hasExtName(src, "bny-table") && (src.getAttribute("hx-get") !== null || src.getAttribute("hx-post") !== null) && (!src.getAttribute("hx-swap") || src.getAttribute("hx-swap") === "innerHTML")) {
           var skelTarget = resolveSwapTarget(src);
-          if (skelTarget) scheduleTableSkeleton(skelTarget, src);
+          if (skelTarget) {
+            abortPendingImages(skelTarget);
+            scheduleTableSkeleton(skelTarget, src);
+          }
         }
         return true;
       }
@@ -5502,11 +5505,44 @@
     if (col.ellipsis === false) return false;
     return !col.template;
   }
+  var _TPL_ERR = {};
+  var _tplExprCache = {};
+  var _tplDecodeEl = null;
+  function tplExprDecode(s) {
+    if (s.indexOf("&") === -1) return s;
+    if (!_tplDecodeEl) _tplDecodeEl = document.createElement("textarea");
+    _tplDecodeEl.innerHTML = s;
+    return _tplDecodeEl.value;
+  }
+  function tplEvalExpr(expr, row) {
+    var fn = _tplExprCache[expr];
+    if (fn === void 0) {
+      try {
+        fn = new Function("data", "return (" + expr + ");");
+      } catch (e) {
+        console.warn("[bny.table] cell-template 表达式无效（保留原文）: {{" + expr + "}}");
+        fn = null;
+      }
+      _tplExprCache[expr] = fn;
+    }
+    if (!fn) return _TPL_ERR;
+    try {
+      return fn(row);
+    } catch (e) {
+      console.warn("[bny.table] cell-template 表达式求值失败（保留原文）: {{" + expr + "}}");
+      return _TPL_ERR;
+    }
+  }
   function tplInterpolate(tpl, row) {
     return String(tpl === void 0 || tpl === null ? "" : tpl).replace(
-      /\{\{\s*data\.([a-zA-Z0-9_$]+(?:\.[a-zA-Z0-9_$]+)*)\s*\}\}/g,
-      function(m, path) {
-        return bny.escapeChars(String(getVal(row, path)));
+      /\{\{([\s\S]*?)\}\}/g,
+      function(m, expr) {
+        expr = expr.trim();
+        var fm = expr.match(/^data\.([a-zA-Z0-9_$]+(?:\.[a-zA-Z0-9_$]+)*)$/);
+        if (fm) return bny.escapeChars(String(getVal(row, fm[1])));
+        var v = tplEvalExpr(tplExprDecode(expr), row);
+        if (v === _TPL_ERR) return m;
+        return bny.escapeChars(String(v === void 0 || v === null ? "" : v));
       }
     );
   }
@@ -5747,6 +5783,14 @@
       return document.querySelector(sel);
     } catch (_) {
       return null;
+    }
+  }
+  var BLANK_IMG = "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7";
+  function abortPendingImages(container) {
+    if (!container || !container.querySelectorAll) return;
+    const imgs = container.querySelectorAll("img");
+    for (let i = 0; i < imgs.length; i++) {
+      if (!imgs[i].complete) imgs[i].src = BLANK_IMG;
     }
   }
   function scheduleTableSkeleton(target, src) {
@@ -6276,6 +6320,7 @@
             }
             htmx.process(evt.target);
             if (trigger === "click" && evt.target.getAttribute("this") !== null) {
+              evt.target.removeAttribute("this");
               evt.target.click();
               head.scrollBy({ left: head.scrollWidth, behavior: "smooth" });
             }
@@ -7830,6 +7875,8 @@
       var src = current.list[current.index];
       if (!src) return;
       imgEl.classList.add("loading");
+      imgEl.removeAttribute("src");
+      imgEl.alt = "";
       var tmp = new Image();
       tmp.onload = function() {
         imgEl.src = src;
